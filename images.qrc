@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="按钮图标">
+    <file>窗体/res/gitee.png</file>
+    <file>窗体/res/github.png</file>
+    <file>窗体/res/清除.png</file>
+    <file>窗体/res/刷新.png</file>
+    <file>窗体/res/add.png</file>
+    <file>窗体/res/图标.png</file>
+    <file>窗体/res/帮助.png</file>
+    <file>窗体/res/保存.png</file>
+    <file>窗体/res/导入指令.png</file>
+    <file>窗体/res/更新.png</file>
+    <file>窗体/res/关于.png</file>
+    <file>窗体/res/删除.png</file>
+    <file>窗体/res/上移.png</file>
+    <file>窗体/res/设置.png</file>
+    <file>窗体/res/下移.png</file>
+    <file>窗体/res/修改.png</file>
+  </qresource>
+</RCC>
