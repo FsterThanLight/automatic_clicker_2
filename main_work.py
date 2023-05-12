@@ -15,9 +15,14 @@ import time
 
 import keyboard
 import mouse
+import openpyxl
 import pyautogui
 import pyperclip
 import pypyodbc
+import ctypes
+
+import win32con
+import win32gui
 
 from setting import SettingsData
 
@@ -74,6 +79,9 @@ class MainWork:
         list_instructions = cursor.fetchall()
         self.close_database(cursor, conn)
         print(list_instructions)
+        # value = self.extra_excel_cell_value(r"C:\Users\federalsadler\Desktop\automatic_clicker_2\资料.xlsx", '表1',
+        #                                     'A2')
+        # print(value)
 
     def extracted_data(self):
         """提取数据"""
@@ -83,12 +91,12 @@ class MainWork:
         self.close_database(cursor, conn)
         return list_instructions
 
-    def star_work(self):
+    def start_work(self):
         """主要工作"""
+        self.start_state = True
+        self.suspended = False
         # 读取数据库中的数据
         list_instructions = self.extracted_data()
-        # 控制窗体的显示与隐藏
-        # self.control_window()
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -127,21 +135,29 @@ class MainWork:
         """执行接受到的操作指令"""
         # 读取指令
         for i in range(len(list_instructions)):
-            # list_instructions=(id,图像名称，指令类型，参数1，参数2，重复次数)
-            # list_instructions=(2, '0', '移动鼠标', '→', '100', 1)
-            # list_instructions=(1, 'dd.png', '图像点击', '左键单击', '', 1)
-            # 读取指令类型和重复次数
+            # list_instructions=(1, '图像路径', '图像点击', '左键单击', 'Excel路径', '工作表名称', 单元格位置,参数, 1, '自动跳过')
+            # ID：0
+            # 图像路径：1
+            # 指令类型：2
+            # 键鼠指令：3
+            # 参数：4
+            # 参数：5
+            # 参数：6
+            # 参数：7
+            # 重复次数：8
+            # 异常处理：9
             cmd_type = list_instructions[i][2]
-            re_try = list_instructions[i][5]
+            re_try = list_instructions[i][8]
             # 设置一个容器，用于存储参数
             list_ins = []
 
             # 图像识别点击的事件
             if cmd_type == "图像点击":
                 # 读取图像名称
-                img = (self.file_path + "/" + list_instructions[i][1]).replace('/', '//')
+                # img = (self.file_path + "/" + list_instructions[i][1]).replace('/', '//')
+                img = list_instructions[i][1]
                 # 取重复次数
-                re_try = list_instructions[i][5]
+                re_try = list_instructions[i][7]
                 # 是否跳过参数
                 skip = list_instructions[i][4]
                 if list_instructions[i][3] == '左键单击':
@@ -239,6 +255,28 @@ class MainWork:
                 list_ins = [command_type, click_count]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
+            # 鼠标事件
+            elif cmd_type == '鼠标事件':
+                if list_instructions[i][3] == '左键单击':
+                    list_ins = [1, 'left']
+                elif list_instructions[i][3] == '左键双击':
+                    list_ins = [2, 'left']
+                elif list_instructions[i][3] == '右键单击':
+                    list_ins = [1, 'right']
+                elif list_instructions[i][3] == '右键双击':
+                    list_ins = [2, 'right']
+                self.execution_repeats(cmd_type, list_ins, re_try)
+
+            # 图片信息录取
+            elif cmd_type == '图像信息录入':
+                excel_path = list_instructions[i][4].replace('"', '')
+                img = list_instructions[i][1].replace('"', '')
+                sheet_name = list_instructions[i][5]
+                cell_position = list_instructions[i][6]
+                exception_type = list_instructions[i][8]
+                list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
+                self.execution_repeats(cmd_type, list_ins, re_try)
+
     def execution_repeats(self, cmd_type, list_ins, reTry):
         """执行重复次数"""
 
@@ -288,6 +326,30 @@ class MainWork:
                 command_type = list_ins[0]
                 click_count = list_ins[1]
                 self.middle_mouse_button(command_type, click_count)
+            elif cmd_type == '鼠标事件':
+                click_times = list_ins[0]
+                lOrR = list_ins[1]
+                position = pyautogui.position()
+                pyautogui.click(position[0], position[1], click_times, interval=self.settings.interval,
+                                duration=self.settings.duration,
+                                button=lOrR)
+                print('执行鼠标事件')
+            elif cmd_type == '图像信息录入':
+                # 图像参数
+                img = list_ins[2]
+                # excel参数
+                excel_path = list_ins[3]
+                cell_position = list_ins[5]
+                sheet_name = list_ins[4]
+                # 鼠标单击参数
+                click_times = list_ins[0]
+                lOrR = list_ins[1]
+                exception_type = list_ins[6]
+                # 获取excel表格中的值
+                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
+                self.execute_click(click_times, lOrR, img, exception_type)
+                self.text_input(cell_value)
+                print('已执行信息录入')
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
@@ -301,6 +363,27 @@ class MainWork:
                 time.sleep(self.settings.time_sleep)
         else:
             pass
+
+    def extra_excel_cell_value(self, excel_path, sheet_name, cell_position):
+        """获取excel表格中的值"""
+        try:
+            # 打开excel表格
+            wb = openpyxl.load_workbook(excel_path)
+            # 选择表格
+            sheet = wb[str(sheet_name)]
+            # 获取单元格的值
+            cell_value = sheet[cell_position].value
+            print('获取到的单元格值为：' + str(cell_value))
+            return cell_value
+        except FileNotFoundError:
+            x = input('没有找到工作簿')
+            exit_main_work()
+        except KeyError:
+            x = input('没有找到表格')
+            exit_main_work()
+        except AttributeError:
+            x = input('单元格格式错误')
+            exit_main_work()
 
     def check_time(self, year_target, month_target, day_target, hour_target, minute_target, second_target, inrerval):
         """检查时间，指定时间则执行操作"""
@@ -363,7 +446,6 @@ class MainWork:
                 else:
                     print('未找到匹配图片' + str(self.number))
                 # self.real_time_display_status()
-                print('未找到匹配图片' + str(self.number))
 
         # location = pyautogui.locateCenterOnScreen(img, confidence=setting.confidence)
         try:
@@ -409,7 +491,7 @@ class MainWork:
         pyperclip.copy(input_value)
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(self.settings.time_sleep)
-        print('执行文本输入' + input_value)
+        print('执行文本输入' + str(input_value))
 
     # def real_time_display_status(self):
     #     """设置实时显示状态文本"""
@@ -450,6 +532,9 @@ def exit_main_work():
 
 
 if __name__ == '__main__':
+    x = input('按回车键开始')
     odbc_name = '命令集.accdb'
     main_work = MainWork(odbc_name)
-    main_work.test()
+    # main_work.test()
+    main_work.start_work()
+    y = input('按回车键退出')
