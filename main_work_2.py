@@ -8,7 +8,7 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 import datetime
-import sqlite3
+import os
 import sys
 import threading
 import time
@@ -17,6 +17,7 @@ import keyboard
 import mouse
 import pyautogui
 import pyperclip
+import pypyodbc
 
 from setting import SettingsData
 
@@ -30,45 +31,62 @@ COMMAND_TYPE_CUSTOM = "自定义"
 class MainWork:
     """主要工作类"""
 
-    def __init__(self, file_path):
+    def __init__(self, odbc_name):
         # 终止和暂停标志
         self.start_state = True
         self.suspended = False
         # 文件路径和主窗体
-        self.file_path = file_path
+        self.odbc_name = odbc_name
         # 读取配置文件
         self.settings = SettingsData()
-        self.settings.init()
+        self.settings.init(odbc_name)
         # 在窗体中显示循环次数
         self.number = 1
         # 全部指令的循环次数，无限循环为标志
         self.infinite_cycle = False
         self.number_cycles = 1
 
-    # 读取数据库中的数据
-    def extrate_data(self):
-        """读取数据库中的数据"""
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('select * from 命令')
-        list_instructions = cursor.fetchall()
-        print(list_instructions)
-        con.close()
-        return list_instructions
+    def accdb(self):
+        """建立与数据库的连接，返回游标"""
+        try:
+            path = os.path.abspath('.')
+            # 取得当前文件目录
+            mdb = r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + path + '\\' + self.odbc_name
+            # 连接字符串
+            conn = pypyodbc.win_connect_mdb(mdb)
+            # 建立连接
+            cursor = conn.cursor()
+            print('成功连接数据库！')
+            return cursor, conn
+        except pypyodbc.Error:
+            x = input("未连接到数据库！！请检查数据库路径是否异常。")
+            sys.exit()
 
-    # def control_window(self):
-    #     """控制窗体的显示与隐藏"""
-    #     if self.main_window.checkBox_2.isChecked() and self.main_window.isHidden():
-    #         self.main_window.show()
-    #     elif self.main_window.checkBox_2.isChecked() and self.main_window.isVisible():
-    #         self.main_window.hide()
+    def close_database(self, cursor, conn):
+        """关闭数据库"""
+        cursor.close()
+        conn.close()
+
+    def test(self):
+        print('test')
+        cursor, conn = self.accdb()
+        cursor.execute("select * from 指令集")
+        list_instructions = cursor.fetchall()
+        self.close_database(cursor, conn)
+        print(list_instructions)
+
+    def extracted_data(self):
+        """提取数据"""
+        cursor, conn = self.accdb()
+        cursor.execute("select * from 指令集")
+        list_instructions = cursor.fetchall()
+        self.close_database(cursor, conn)
+        return list_instructions
 
     def star_work(self):
         """主要工作"""
         # 读取数据库中的数据
-        list_instructions = self.extrate_data()
-        # 获取设置参数并初始化
-        self.settings.init()
+        list_instructions = self.extracted_data()
         # 控制窗体的显示与隐藏
         # self.control_window()
         # 开始执行主要操作
@@ -383,7 +401,7 @@ class MainWork:
     def wheel_slip(self, scroll_direction, scroll_distance):
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
-        print('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离'
+        print('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
         # self.real_time_display_status()
 
     def text_input(self, input_value):
@@ -429,3 +447,9 @@ class MainWork:
 
 def exit_main_work():
     sys.exit()
+
+
+if __name__ == '__main__':
+    odbc_name = '命令集.accdb'
+    main_work = MainWork(odbc_name)
+    main_work.test()
