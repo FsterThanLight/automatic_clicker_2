@@ -336,7 +336,7 @@ class MainWork:
                                 clicks=click_times, interval=self.settings.interval, duration=self.settings.duration,
                                 button=lOrR)
                 print('执行鼠标点击' + str(self.number))
-                self.real_time_display_status()
+                # self.real_time_display_status()
                 repeat = False
             else:
                 if remind:
@@ -344,7 +344,7 @@ class MainWork:
                     number_1 += 1
                 else:
                     print('未找到匹配图片' + str(self.number))
-                self.real_time_display_status()
+                # self.real_time_display_status()
                 print('未找到匹配图片' + str(self.number))
 
         # location = pyautogui.locateCenterOnScreen(img, confidence=setting.confidence)
