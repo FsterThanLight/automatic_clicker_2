@@ -44,6 +44,10 @@ class MainWork:
         # 全部指令的循环次数，无限循环为标志
         self.infinite_cycle = False
         self.number_cycles = 1
+        # 从数据库中读取全局参数
+        self.image_folder_path, self.excel_folder_path, \
+            self.excel_table_name, \
+            self.branch_table_name = self.extracted_data_global_parameter()
 
     def accdb(self):
         """建立与数据库的连接，返回游标"""
@@ -68,29 +72,57 @@ class MainWork:
 
     def test(self):
         print('test')
-        cursor, conn = self.accdb()
-        cursor.execute("select * from 指令集")
-        list_instructions = cursor.fetchall()
-        self.close_database(cursor, conn)
-        print(list_instructions)
-        # value = self.extra_excel_cell_value(r"C:\Users\federalsadler\Desktop\automatic_clicker_2\资料.xlsx", '表1',
-        #                                     'A2')
-        # print(value)
+        all_list_instructions = self.extracted_data_all_list(self.branch_table_name)
+        print(all_list_instructions)
+        print(len(all_list_instructions))
 
-    def extracted_data(self):
-        """提取数据"""
+    def extracted_data_all_list(self, branch_table_name):
+        """提取指令集中的数据,返回主表和分支表的汇总数据"""
+        all_list_instructions = []
+        # 从主表中提取数据
         cursor, conn = self.accdb()
         cursor.execute("select * from 指令集")
-        list_instructions = cursor.fetchall()
+        main_list_instructions = cursor.fetchall()
+        all_list_instructions.append(main_list_instructions)
+        # 从分支表中提取数据
+        if len(branch_table_name) != 0:
+            for i in branch_table_name:
+                cursor.execute("select * from " + i)
+                branch_list_instructions = cursor.fetchall()
+                all_list_instructions.append(branch_list_instructions)
         self.close_database(cursor, conn)
-        return list_instructions
+        return all_list_instructions
+
+    # 编写一个函数用于去除列表中的none
+    def remove_none(self, list_):
+        """去除列表中的none"""
+        list_x = []
+        for i in list_:
+            if i[0] is not None:
+                list_x.append(i[0].replace('"', ''))
+        return list_x
+
+    def extracted_data_global_parameter(self):
+        """从全局参数表中提取数据"""
+        cursor, conn = self.accdb()
+        cursor.execute("select 图像文件夹路径 from 全局参数")
+        image_folder_path = self.remove_none(cursor.fetchall())
+        cursor.execute("select excel文件路径 from 全局参数")
+        excel_folder_path = self.remove_none(cursor.fetchall())
+        cursor.execute("select excel表名 from 全局参数")
+        excel_table_name = self.remove_none(cursor.fetchall())
+        cursor.execute("select 分支表名 from 全局参数")
+        branch_table_name = self.remove_none(cursor.fetchall())
+        self.close_database(cursor, conn)
+        print("全局参数读取成功！")
+        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name
 
     def start_work(self):
         """主要工作"""
         self.start_state = True
         self.suspended = False
         # 读取数据库中的数据
-        list_instructions = self.extracted_data()
+        list_instructions = self.extracted_data_all_list(self.branch_table_name)
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -98,7 +130,7 @@ class MainWork:
             if self.infinite_cycle:
                 self.number = 1
                 while True:
-                    self.execute_instructions(list_instructions)
+                    self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
                         print('结束任务')
                         break
@@ -112,7 +144,7 @@ class MainWork:
                 number = 1
                 repeat_number = self.number_cycles
                 while number <= repeat_number and self.start_state:
-                    self.execute_instructions(list_instructions)
+                    self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
                         print('结束任务')
                         break
@@ -125,10 +157,12 @@ class MainWork:
             elif not self.infinite_cycle and self.number_cycles <= 0:
                 print("请设置执行循环次数！")
 
-    def execute_instructions(self, list_instructions):
+    def execute_instructions(self, current_list_index, current_index, list_instructions):
         """执行接受到的操作指令"""
         # 读取指令
-        for i in range(len(list_instructions)):
+        while current_index < len(list_instructions[current_list_index]):
+            elem = list_instructions[current_list_index][current_index]
+            print('执行当前指令：', elem)
             # list_instructions=(1, '图像路径', '图像点击', '左键单击', 'Excel路径', '工作表名称', 单元格位置,参数, 1, '自动跳过')
             # ID：0
             # 图像路径：1
@@ -140,8 +174,8 @@ class MainWork:
             # 参数：7
             # 重复次数：8
             # 异常处理：9
-            cmd_type = list_instructions[i][2]
-            re_try = list_instructions[i][8]
+            cmd_type = list_instructions[current_list_index][2]
+            re_try = list_instructions[current_list_index][8]
             # 设置一个容器，用于存储参数
             list_ins = []
 
@@ -149,18 +183,18 @@ class MainWork:
             if cmd_type == "图像点击":
                 # 读取图像名称
                 # img = (self.file_path + "/" + list_instructions[i][1]).replace('/', '//')
-                img = list_instructions[i][1]
+                img = list_instructions[current_list_index][1]
                 # 取重复次数
-                re_try = list_instructions[i][7]
+                re_try = list_instructions[current_list_index][7]
                 # 是否跳过参数
-                skip = list_instructions[i][4]
-                if list_instructions[i][3] == '左键单击':
+                skip = list_instructions[current_list_index][4]
+                if list_instructions[current_list_index][3] == '左键单击':
                     list_ins = [1, 'left', img, skip]
-                elif list_instructions[i][3] == '左键双击':
+                elif list_instructions[current_list_index][3] == '左键双击':
                     list_ins = [2, 'left', img, skip]
-                elif list_instructions[i][3] == '右键单击':
+                elif list_instructions[current_list_index][3] == '右键单击':
                     list_ins = [1, 'right', img, skip]
-                elif list_instructions[i][3] == '右键双击':
+                elif list_instructions[current_list_index][3] == '右键双击':
                     list_ins = [2, 'right', img, skip]
                 # 执行鼠标点击事件
                 self.execution_repeats(cmd_type, list_ins, re_try)
@@ -168,33 +202,33 @@ class MainWork:
             # 屏幕坐标点击事件
             elif cmd_type == '坐标点击':
                 # 取x,y坐标的值
-                x = int(list_instructions[i][4].split('-')[0])
-                y = int(list_instructions[i][4].split('-')[1])
-                z = int(list_instructions[i][4].split('-')[2])
+                x = int(list_instructions[current_list_index][4].split('-')[0])
+                y = int(list_instructions[current_list_index][4].split('-')[1])
+                z = int(list_instructions[current_list_index][4].split('-')[2])
                 # 调用鼠标点击事件（点击次数，按钮类型，图像名称）
-                if list_instructions[i][3] == '左键单击':
+                if list_instructions[current_list_index][3] == '左键单击':
                     list_ins = [1, 'left', x, y]
-                elif list_instructions[i][3] == '左键双击':
+                elif list_instructions[current_list_index][3] == '左键双击':
                     list_ins = [2, 'left', x, y]
-                elif list_instructions[i][3] == '右键单击':
+                elif list_instructions[current_list_index][3] == '右键单击':
                     list_ins = [1, 'right', x, y]
-                elif list_instructions[i][3] == '右键双击':
+                elif list_instructions[current_list_index][3] == '右键双击':
                     list_ins = [2, 'right', x, y]
-                elif list_instructions[i][3] == '左键（自定义次数）':
+                elif list_instructions[current_list_index][3] == '左键（自定义次数）':
                     list_ins = [z, 'left', x, y]
                 # 执行鼠标点击事件
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 等待的事件
             elif cmd_type == '等待':
-                wait_type = list_instructions[i][3]
+                wait_type = list_instructions[current_list_index][3]
                 if wait_type == '等待':
-                    wait_time = int(list_instructions[i][4])
+                    wait_time = int(list_instructions[current_list_index][4])
                     print('等待时长' + str(wait_time) + '秒')
                     self.stop_time(wait_time)
                 elif wait_type == '等待到指定时间':
-                    target_time = list_instructions[i][4].split('+')[0].replace('-', '/')
-                    interval_time = list_instructions[i][4].split('+')[1]
+                    target_time = list_instructions[current_list_index][4].split('+')[0].replace('-', '/')
+                    interval_time = list_instructions[current_list_index][4].split('+')[1]
                     now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     # 将now_time转换为时间格式
                     now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
@@ -212,8 +246,8 @@ class MainWork:
 
             # 滚轮滑动的事件
             elif cmd_type == '滚轮滑动':
-                scroll_direction = list_instructions[i][3]
-                scroll_distance = int(list_instructions[i][4])
+                scroll_direction = list_instructions[current_list_index][3]
+                scroll_distance = int(list_instructions[current_list_index][4])
                 if scroll_direction == '↑':
                     scroll_distance = scroll_distance
                 elif scroll_direction == '↓':
@@ -223,15 +257,15 @@ class MainWork:
 
             # 文本输入的事件
             elif cmd_type == '文本输入':
-                input_value = str(list_instructions[i][3])
+                input_value = str(list_instructions[current_list_index][3])
                 list_ins = [input_value]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 鼠标移动的事件
             elif cmd_type == '鼠标移动':
                 try:
-                    direction = list_instructions[i][3]
-                    distance = list_instructions[i][4]
+                    direction = list_instructions[current_list_index][3]
+                    distance = list_instructions[current_list_index][4]
                     list_ins = [direction, distance]
                     self.execution_repeats(cmd_type, list_ins, re_try)
                 except IndexError:
@@ -239,37 +273,47 @@ class MainWork:
 
             # 键盘按键的事件
             elif cmd_type == '按下键盘':
-                key = list_instructions[i][3]
+                key = list_instructions[current_list_index][3]
                 list_ins = [key]
                 self.execution_repeats(cmd_type, list_ins, re_try)
             # 中键激活的事件
             elif cmd_type == '中键激活':
-                command_type = list_instructions[i][3]
-                click_count = list_instructions[i][4]
+                command_type = list_instructions[current_list_index][3]
+                click_count = list_instructions[current_list_index][4]
                 list_ins = [command_type, click_count]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 鼠标事件
             elif cmd_type == '鼠标事件':
-                if list_instructions[i][3] == '左键单击':
+                if list_instructions[current_list_index][3] == '左键单击':
                     list_ins = [1, 'left']
-                elif list_instructions[i][3] == '左键双击':
+                elif list_instructions[current_list_index][3] == '左键双击':
                     list_ins = [2, 'left']
-                elif list_instructions[i][3] == '右键单击':
+                elif list_instructions[current_list_index][3] == '右键单击':
                     list_ins = [1, 'right']
-                elif list_instructions[i][3] == '右键双击':
+                elif list_instructions[current_list_index][3] == '右键双击':
                     list_ins = [2, 'right']
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 图片信息录取
             elif cmd_type == '图像信息录入':
-                excel_path = list_instructions[i][4].replace('"', '')
-                img = list_instructions[i][1].replace('"', '')
-                sheet_name = list_instructions[i][5]
-                cell_position = list_instructions[i][6]
-                exception_type = list_instructions[i][8]
+                excel_path = list_instructions[current_list_index][4].replace('"', '')
+                img = list_instructions[current_list_index][1].replace('"', '')
+                sheet_name = list_instructions[current_list_index][5]
+                cell_position = list_instructions[current_list_index][6]
+                exception_type = list_instructions[current_list_index][8]
                 list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
                 self.execution_repeats(cmd_type, list_ins, re_try)
+
+            # 跳转分支的指定指令
+            if elem[-1] == '':
+                current_index += 1
+            elif elem[-1] != '':
+                branch_name_index, branch_index = elem[-1].split('-')
+                x = int(branch_name_index) - 1
+                y = int(branch_index) - 1
+                self.execute_instructions(x, y, list_instructions)
+                break
 
     def execution_repeats(self, cmd_type, list_ins, reTry):
         """执行重复次数"""
@@ -478,7 +522,6 @@ class MainWork:
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
         print('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
-        # self.real_time_display_status()
 
     def text_input(self, input_value):
         """文本输入事件"""
@@ -486,12 +529,6 @@ class MainWork:
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(self.settings.time_sleep)
         print('执行文本输入' + str(input_value))
-
-    # def real_time_display_status(self):
-    #     """设置实时显示状态文本"""
-    #     QApplication.processEvents()
-    #     # 当信息超过200行则清空
-    #     self.main_window.clear_plaintext(200)
 
     def stop_time(self, seconds):
         """暂停时间"""
@@ -579,9 +616,13 @@ def exit_main_work():
 
 
 if __name__ == '__main__':
-    x = input('按回车键开始')
+    # x = input('按回车键开始')
+    # odbc_name = '命令集.accdb'
+    # main_work = MainWork(odbc_name)
+    # main_work.start_work()
+    # y = input('按回车键退出')
+
+    # test
     odbc_name = '命令集.accdb'
     main_work = MainWork(odbc_name)
-    # main_work.test()
-    main_work.start_work()
-    y = input('按回车键退出')
+    main_work.test()
