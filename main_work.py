@@ -48,7 +48,7 @@ class MainWork:
         # 从数据库中读取全局参数
         self.image_folder_path, self.excel_folder_path, \
             self.excel_table_name, \
-            self.branch_table_name = self.extracted_data_global_parameter()
+            self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
 
     # def accdb(self):
     #     """建立与数据库的连接，返回游标"""
@@ -95,7 +95,7 @@ class MainWork:
         all_list_instructions = []
         # 从主表中提取数据
         cursor, conn = self.sqlitedb()
-        cursor.execute("select * from 指令集")
+        cursor.execute("select * from 命令")
         main_list_instructions = cursor.fetchall()
         all_list_instructions.append(main_list_instructions)
         # 从分支表中提取数据
@@ -118,18 +118,20 @@ class MainWork:
 
     def extracted_data_global_parameter(self):
         """从全局参数表中提取数据"""
-        cursor, conn = self.accdb()
+        cursor, conn = self.sqlitedb()
         cursor.execute("select 图像文件夹路径 from 全局参数")
         image_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select excel文件路径 from 全局参数")
+        cursor.execute("select 工作簿路径 from 全局参数")
         excel_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select excel表名 from 全局参数")
+        cursor.execute("select 工作表名 from 全局参数")
         excel_table_name = self.remove_none(cursor.fetchall())
         cursor.execute("select 分支表名 from 全局参数")
         branch_table_name = self.remove_none(cursor.fetchall())
+        cursor.execute("select 扩展程序 from 全局参数")
+        extenders = self.remove_none(cursor.fetchall())
         self.close_database(cursor, conn)
         print("全局参数读取成功！")
-        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name
+        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name, extenders
 
     def start_work(self):
         """主要工作"""
@@ -177,19 +179,18 @@ class MainWork:
         while current_index < len(list_instructions[current_list_index]):
             elem = list_instructions[current_list_index][current_index]
             print('执行当前指令：', elem)
-            # list_instructions=(1, '图像路径', '图像点击', '左键单击', 'Excel路径', '工作表名称', 单元格位置,参数, 1, '自动跳过')
+            # list_instructions=(1, '图像路径', '图像点击', '左键单击', 'Excel路径', '工作表名称', 单元格位置, 1, '自动跳过')
             # ID：0
-            # 图像路径：1
+            # 图像路径（名称）：1
             # 指令类型：2
-            # 键鼠指令：3
-            # 参数：4
-            # 参数：5
-            # 参数：6
-            # 参数：7
-            # 重复次数：8
-            # 异常处理：9
+            # 参数1（键鼠指令）：3
+            # 参数2：4
+            # 参数3：5
+            # 参数4：6
+            # 重复次数：7
+            # 异常处理：8
             cmd_type = list_instructions[current_list_index][2]
-            re_try = list_instructions[current_list_index][8]
+            re_try = list_instructions[current_list_index][7]
             # 设置一个容器，用于存储参数
             list_ins = []
 
@@ -624,7 +625,6 @@ class SettingsData:
 
 def exit_main_work():
     sys.exit()
-
 
 # if __name__ == '__main__':
 #     # x = input('按回车键开始')
