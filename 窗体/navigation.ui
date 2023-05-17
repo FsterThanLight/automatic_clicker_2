@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>357</width>
-    <height>321</height>
+    <width>401</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="font">
@@ -34,7 +34,7 @@
       <enum>QTabWidget::North</enum>
      </property>
      <property name="tabShape">
-      <enum>QTabWidget::Triangular</enum>
+      <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -75,18 +75,11 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>添加文件夹</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string>当前文件：</string>
+              <string>当前文件夹：</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -112,7 +105,30 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>指令名称：</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBox_2">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>匹配不到指定图像时自动略过该指令</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox"/>
+         </item>
+         <item row="2" column="1">
           <widget class="QComboBox" name="comboBox_2">
            <property name="currentIndex">
             <number>0</number>
@@ -139,27 +155,7 @@
            </item>
           </widget>
          </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBox_2">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>匹配不到指定图像时自动略过该指令</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>指令名称：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>图像名称：</string>
@@ -169,8 +165,18 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_36">
+           <property name="text">
+            <string>文件夹名称：</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox"/>
+          <widget class="QComboBox" name="comboBox_8"/>
          </item>
         </layout>
        </item>
@@ -466,23 +472,6 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBox">
-           <property name="text">
-            <string>启用定时功能</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="pushButton_5">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>获取当前时间</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="QDateTimeEdit" name="dateTimeEdit">
            <property name="enabled">
@@ -504,6 +493,19 @@
            <property name="text">
             <string>等待至指定时间：</string>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkBox">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>启用定时功能</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -512,6 +514,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
           <widget class="QLabel" name="label_25">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
            <property name="text">
             <string>每</string>
            </property>
@@ -1020,8 +1025,8 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_15">
-     <item>
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0">
       <widget class="QLabel" name="label_21">
        <property name="text">
         <string>重复次数：</string>
@@ -1031,7 +1036,46 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="3">
+      <widget class="QComboBox" name="comboBox_9">
+       <item>
+        <property name="text">
+         <string>自动跳过</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>抛出异常并暂停</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>抛出异常并停止</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_34">
+       <property name="text">
+        <string>分支名称：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_33">
+       <property name="text">
+        <string>异常处理：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
       <widget class="QSpinBox" name="spinBox">
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -1043,6 +1087,26 @@
         <number>999</number>
        </property>
       </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBox_10">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="label_35">
+       <property name="text">
+        <string>扩展程序：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QComboBox" name="comboBox_11"/>
      </item>
     </layout>
    </item>
@@ -1115,22 +1179,6 @@
     <hint type="destinationlabel">
      <x>262</x>
      <y>123</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>pushButton_5</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>180</x>
-     <y>74</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>262</x>
-     <y>150</y>
     </hint>
    </hints>
   </connection>

@@ -802,13 +802,14 @@ class Na(QWidget, Ui_navigation):
 
         # 添加文件夹选择按钮事件
         # self.na_Path = ''
-        self.pushButton.clicked.connect(lambda: self.select_file(0))
+        # self.pushButton.clicked.connect(lambda: self.select_file(0))
         # 添加保存按钮事件
         self.pushButton_2.clicked.connect(self.save_data)
         # 获取鼠标位置参数
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
         # 设置当前日期和时间
-        self.pushButton_5.clicked.connect(self.get_now_date_time)
+        self.checkBox.clicked.connect(self.get_now_date_time)
+        # self.pushButton_5.clicked.connect(self.get_now_date_time)
         # 当按钮按下时，获取按键的名称
         self.pushButton_6.clicked.connect(self.print_key_name)
 
@@ -886,12 +887,11 @@ class Na(QWidget, Ui_navigation):
         def writes_commands_to_the_database(instruction, image, parameter, parameter_2, parameter_3, parameter_4,
                                             repeat_number, exception_handling):
             """向数据库写入命令"""
-            # if fil_path != '':
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
             try:
                 cursor.execute(
-                    'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?)',
+                    'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)',
                     (image, instruction, parameter, parameter_2, parameter_3, parameter_4, repeat_number,
                      exception_handling))
                 con.commit()
