@@ -21,20 +21,20 @@ import cryptocode
 import keyboard
 import pyautogui
 import requests
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
-    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog
+    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QTabWidget, QInputDialog
 from pyscreeze import unicode
 
-# from main_work import mainWork, exit_main_work
-from main_work_2 import MainWork, exit_main_work
+from main_work import MainWork, exit_main_work
 from 窗体.about import Ui_Dialog
-# from 窗体.add_instruction import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
 from 窗体.info import Ui_Form
+from 窗体.global_s import Ui_Global
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -86,7 +86,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 软件版本
         self.version = 'v0.21'
         # 窗体的功能
-        self.main_work = MainWork(fil_path, self)
+        self.main_work = MainWork(self)
         # 实例化子窗口1
         # self.dialog_1 = Dialog()
         # 实例化导航页窗口
@@ -98,10 +98,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.about = About()
         # 提示窗口
         self.info = Info()
+        # 全局设置窗口
+        self.global_s = Global_s()
         # 设置表格列宽自动变化，并使第5列列宽固定
         self.format_table()
         # 显示导航页窗口
         self.pushButton.clicked.connect(self.show_navigation)
+        # 显示全局参数窗口
+        self.pushButton_3.clicked.connect(self.show_global_s)
         # 获取数据，修改按钮
         self.toolButton_5.clicked.connect(self.get_data)
         # 获取数据，子窗体取消按钮
@@ -143,18 +147,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 打开使用说明
         self.actionhelp.triggered.connect(self.open_readme)
 
-    # def keyPressEvent(self, event):
-    #     """检测键盘按键事件"""
-    #     if event.key()==Qt.Key_Escape:
-    #         # 检测到退出键，结束任务
-    #         self.start_statu=False
-    #         self.textEdit.append('结束任务')
-
-    def show_dialog(self):
-        self.dialog_1.show()
-        print('子窗口开启')
-        resize = self.geometry()
-        self.dialog_1.move(resize.x() + 50, resize.y() + 200)
+    # def show_dialog(self):
+    #     self.dialog_1.show()
+    #     print('子窗口开启')
+    #     resize = self.geometry()
+    #     self.dialog_1.move(resize.x() + 50, resize.y() + 200)
 
     def format_table(self):
         """设置主窗口表格格式"""
@@ -190,6 +187,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         resize = self.geometry()
         self.setting.move(resize.x() + 90, resize.y())
 
+    def show_global_s(self):
+        self.global_s.show()
+        print("全局参数窗口开启")
+        resize = self.geometry()
+        self.setting.move(resize.x() + 90, resize.y())
+
     def get_data(self):
         """从数据库获取数据并存入表格"""
         print('获取数据')
@@ -201,7 +204,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取数据库数据
         con = sqlite3.connect('命令集.db')
         cursor = con.cursor()
-        cursor.execute('select 图像名称,键鼠命令,参数,参数2,重复次数,ID from 命令')
+        cursor.execute('select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
         list_order = cursor.fetchall()
         con.close()
         # 在表格中写入数据
@@ -423,7 +426,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.info.move(resize.x() + 45, resize.y() - 30)
         # 开始主任务
         self.main_work.file_path = fil_path
-        self.main_work.star_work()
+        self.main_work.start_work()
         self.info.close()
 
     def clear_plaintext(self, judge):
@@ -880,14 +883,17 @@ class Na(QWidget, Ui_navigation):
     def save_data(self):
         """获取4个参数命令，并保存至数据库"""
 
-        def writes_commands_to_the_database(instruction, image, parameter, parameter_2, repeat_number):
+        def writes_commands_to_the_database(instruction, image, parameter, parameter_2, parameter_3, parameter_4,
+                                            repeat_number, exception_handling):
             """向数据库写入命令"""
             # if fil_path != '':
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
             try:
-                cursor.execute('INSERT INTO 命令(图像名称,键鼠命令,参数,参数2,重复次数) VALUES (?,?,?,?,?)',
-                               (image, instruction, parameter, parameter_2, repeat_number))
+                cursor.execute(
+                    'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?)',
+                    (image, instruction, parameter, parameter_2, parameter_3, parameter_4, repeat_number,
+                     exception_handling))
                 con.commit()
                 con.close()
             except sqlite3.OperationalError:
@@ -929,7 +935,8 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = '自动略过'
             else:
                 parameter_2 = ''
-            writes_commands_to_the_database(instruction, image, parameter, parameter_2, repeat_number)
+            writes_commands_to_the_database(instruction, image, parameter, parameter_2, parameter_3, parameter_4,
+                                            repeat_number, exception_handling)
             print('已经保存图像识别点击的数据至数据库')
         # 鼠标点击事件的参数获取
         elif self.tabWidget.currentIndex() == 1:
@@ -1065,31 +1072,204 @@ class Info(QDialog, Ui_Form):
         self.setWindowModality(Qt.ApplicationModal)
 
 
-if __name__ == "__main__":
-    # app = QApplication([])
-    # # 创建主窗体
-    # main_window = Main_window()
-    # # 显示窗体，并根据设置检查更新
-    # main_window.main_show()
-    # # 显示添加对话框窗口
-    # sys.exit(app.exec_())
-    def is_admin():
+class Global_s(QDialog, Ui_Global):
+    """全局参数设置窗体"""
+
+    def __init__(self, parent=None):
+        super(Global_s, self).__init__(parent)
+        self.setupUi(self)
+        self.setWindowModality(Qt.ApplicationModal)
+        # 去除最大化最小化按钮
+        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.setWindowModality(Qt.ApplicationModal)
+        # 刷新listview
+        self.refresh_listview()
+        # 添加图像文件夹路径
+        self.pushButton.clicked.connect(lambda: self.select_file("图像文件夹路径"))
+        # 添加工作簿路径
+        self.pushButton_3.clicked.connect(lambda: self.select_file("工作簿路径"))
+        # 添加工作表名
+        self.pushButton_5.clicked.connect(lambda: self.select_file("工作表名"))
+        # 添加分支表名
+        self.pushButton_7.clicked.connect(lambda: self.select_file("分支表名"))
+        # 添加扩展程序
+        self.pushButton_9.clicked.connect(lambda: self.select_file("扩展程序"))
+        # 删除listview中的项
+        self.pushButton_2.clicked.connect(lambda: self.delete_listview(self.listView, "图像文件夹路径"))
+        self.pushButton_4.clicked.connect(lambda: self.delete_listview(self.listView_2, "工作簿路径"))
+        self.pushButton_6.clicked.connect(lambda: self.delete_listview(self.listView_3, "工作表名"))
+        self.pushButton_8.clicked.connect(lambda: self.delete_listview(self.listView_4, "分支表名"))
+        self.pushButton_10.clicked.connect(lambda: self.delete_listview(self.listView_5, "扩展程序"))
+
+    def select_file(self, judge):
+        """选择文件"""
+        if judge == "图像文件夹路径":
+            fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
+            if fil_path != '':
+                self.write_to_database(fil_path, None, None, None, None)
+        elif judge == "工作簿路径":
+            fil_path, _ = QFileDialog.getOpenFileName(self, "选择工作簿", filter="Excel 工作簿(*.xlsx)")
+            if fil_path != '':
+                self.write_to_database(None, fil_path, None, None, None)
+        elif judge == "工作表名":
+            # 弹出对话框输入工作表名
+            text, ok = QInputDialog.getText(self, "输入工作表名", "请输入工作表名：")
+            if ok:
+                self.write_to_database(None, None, text, None, None)
+        elif judge == "分支表名":
+            # 弹出对话框输入分支表名
+            text, ok = QInputDialog.getText(self, "输入分支表名", "请输入分支表名：")
+            if ok:
+                self.write_to_database(None, None, None, text, None)
+        elif judge == "扩展程序":
+            # 弹出对话框输入扩展程序
+            text, ok = QInputDialog.getText(self, "输入扩展程序", "请输入扩展程序：")
+            if ok:
+                self.write_to_database(None, None, None, None, text)
+        self.refresh_listview()
+
+    def delete_listview(self, list_view, judge):
+        """删除listview中选中的那行数据"""
+        # 获取选中的行的值
         try:
-            return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
-            return False
+            indexes = list_view.selectedIndexes()
+            item = list_view.model().itemFromIndex(indexes[0])
+            value = item.text()
+            print("删除的值为：", value)
+            # 删除数据库中的数据
+            self.delete_data(value, judge)
+            # 刷新listview
+            self.refresh_listview()
+        except AttributeError:
+            pass
+        except IndexError:
+            pass
+
+    def delete_data(self, value, judge):
+        """删除数据库中的数据"""
+        # 连接数据库
+        conn = sqlite3.connect('命令集.db')
+        c = conn.cursor()
+        # 删除数据
+        if judge == '图像文件夹路径':
+            c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 = ?", (value,))
+        elif judge == '工作簿路径':
+            c.execute("DELETE FROM 全局参数 WHERE 工作簿路径 = ?", (value,))
+        elif judge == '工作表名':
+            c.execute("DELETE FROM 全局参数 WHERE 工作表名 = ?", (value,))
+        elif judge == '分支表名':
+            c.execute("DELETE FROM 全局参数 WHERE 分支表名 = ?", (value,))
+        elif judge == '扩展程序':
+            c.execute("DELETE FROM 全局参数 WHERE 扩展程序 = ?", (value,))
+        # 删除无用数据
+        c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 is NULL and "
+                  "工作簿路径 is NULL and 工作表名 is NULL and 分支表名 is NULL and 扩展程序 is NULL")
+        conn.commit()
+        conn.close()
+
+    def refresh_listview(self):
+        """刷新listview"""
+        # 获取数据库中的数据
+        image_folder_path, excel_folder_path, excel_table_name, \
+            branch_table_name, extenders = self.extracted_data_global_parameter()
+
+        def add_listview(list_, listview):
+            """添加listview"""
+            listview.setModel(QStandardItemModel())
+            if len(list_) != 0:
+                model_2 = listview.model()
+                for i in list_:
+                    model_2.appendRow(QStandardItem(i))
+
+        add_listview(image_folder_path, self.listView)
+        add_listview(excel_folder_path, self.listView_2)
+        add_listview(excel_table_name, self.listView_3)
+        add_listview(branch_table_name, self.listView_4)
+        add_listview(extenders, self.listView_5)
+
+    def sqlitedb(self):
+        """建立与数据库的连接，返回游标"""
+        try:
+            path = os.path.abspath('.')
+            # 取得当前文件目录
+            con = sqlite3.connect('命令集.db')
+            cursor = con.cursor()
+            print('成功连接数据库！')
+            return cursor, con
+        except sqlite3.Error:
+            x = input("未连接到数据库！！请检查数据库路径是否异常。")
+            sys.exit()
+
+    def close_database(self, cursor, conn):
+        """关闭数据库"""
+        cursor.close()
+        conn.close()
+
+    def remove_none(self, list_):
+        """去除列表中的none"""
+        list_x = []
+        for i in list_:
+            if i[0] is not None:
+                list_x.append(i[0].replace('"', ''))
+        return list_x
+
+    def extracted_data_global_parameter(self):
+        """从全局参数表中提取数据"""
+        cursor, conn = self.sqlitedb()
+        cursor.execute("select 图像文件夹路径 from 全局参数")
+        image_folder_path = self.remove_none(cursor.fetchall())
+        cursor.execute("select 工作簿路径 from 全局参数")
+        excel_folder_path = self.remove_none(cursor.fetchall())
+        cursor.execute("select 工作表名 from 全局参数")
+        excel_table_name = self.remove_none(cursor.fetchall())
+        cursor.execute("select 分支表名 from 全局参数")
+        branch_table_name = self.remove_none(cursor.fetchall())
+        cursor.execute("select 扩展程序 from 全局参数")
+        extenders = self.remove_none(cursor.fetchall())
+        self.close_database(cursor, conn)
+        print("全局参数读取成功！")
+        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name, extenders
+
+    def write_to_database(self, images_file, work_book_path, work_sheet_name, branch_table_name, extension_program):
+        """将全局参数写入数据库"""
+        # 连接数据库
+        conn = sqlite3.connect('命令集.db')
+        c = conn.cursor()
+        # 向数据库中的“图像文件夹路径”字段添加文件夹路径
+        c.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,工作表名,分支表名,扩展程序) VALUES (?,?,?,?,?)',
+                  (images_file, work_book_path, work_sheet_name, branch_table_name, extension_program))
+        conn.commit()
+        conn.close()
 
 
-    if is_admin():
-        app = QApplication([])
-        # 创建主窗体
-        main_window = Main_window()
-        # 显示窗体，并根据设置检查更新
-        main_window.main_show()
-        # 显示添加对话框窗口
-        sys.exit(app.exec_())
-    else:
-        if sys.version_info[0] == 3:
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-        else:  # in python2.x
-            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+if __name__ == "__main__":
+    # 自适应高分辨率
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+
+    app = QApplication([])
+    # 创建主窗体
+    main_window = Main_window()
+    # 显示窗体，并根据设置检查更新
+    main_window.main_show()
+    # 显示添加对话框窗口
+    sys.exit(app.exec_())
+    # def is_admin():
+    #     try:
+    #         return ctypes.windll.shell32.IsUserAnAdmin()
+    #     except:
+    #         return False
+    #
+    #
+    # if is_admin():
+    #     app = QApplication([])
+    #     # 创建主窗体
+    #     main_window = Main_window()
+    #     # 显示窗体，并根据设置检查更新
+    #     main_window.main_show()
+    #     # 显示添加对话框窗口
+    #     sys.exit(app.exec_())
+    # else:
+    #     if sys.version_info[0] == 3:
+    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+    #     else:  # in python2.x
+    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
