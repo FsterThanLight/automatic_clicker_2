@@ -39,38 +39,12 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item row="2" column="1">
       <widget class="QPushButton" name="pushButton">
        <property name="text">
         <string>选择文件夹</string>
        </property>
       </widget>
-     </item>
-     <item row="2" column="3">
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
      <item row="1" column="0" colspan="4">
       <widget class="QListView" name="listView"/>
@@ -86,19 +60,6 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="2" column="0">
-      <spacer name="horizontalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item row="2" column="2">
       <widget class="QPushButton" name="pushButton_4">
        <property name="text">
@@ -113,19 +74,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
      <item row="1" column="0" colspan="4">
       <widget class="QListView" name="listView_2"/>
      </item>
@@ -133,21 +81,24 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="1" column="2" colspan="2">
+      <widget class="QListView" name="listView_5"/>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="pushButton_9">
        <property name="text">
-        <string>工作表名：</string>
+        <string>添加</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pushButton_7">
+       <property name="text">
+        <string>添加</string>
        </property>
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>分支名：</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
       <widget class="QLabel" name="label_5">
        <property name="text">
         <string>扩展程序：</string>
@@ -155,53 +106,26 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="2">
-      <widget class="QListView" name="listView_3"/>
-     </item>
-     <item row="1" column="2" colspan="2">
       <widget class="QListView" name="listView_4"/>
      </item>
-     <item row="1" column="4" colspan="2">
-      <widget class="QListView" name="listView_5"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="pushButton_5">
-       <property name="text">
-        <string>添加</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_6">
+     <item row="2" column="3">
+      <widget class="QPushButton" name="pushButton_10">
        <property name="text">
         <string>删除</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QPushButton" name="pushButton_7">
-       <property name="text">
-        <string>添加</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
+     <item row="2" column="1">
       <widget class="QPushButton" name="pushButton_8">
        <property name="text">
         <string>删除</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QPushButton" name="pushButton_9">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>添加</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="5">
-      <widget class="QPushButton" name="pushButton_10">
-       <property name="text">
-        <string>删除</string>
+        <string>分支名：</string>
        </property>
       </widget>
      </item>

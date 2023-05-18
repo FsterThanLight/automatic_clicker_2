@@ -47,7 +47,6 @@ class MainWork:
         self.number_cycles = 1
         # 从数据库中读取全局参数
         self.image_folder_path, self.excel_folder_path, \
-            self.excel_table_name, \
             self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
 
     # def accdb(self):
@@ -123,15 +122,13 @@ class MainWork:
         image_folder_path = self.remove_none(cursor.fetchall())
         cursor.execute("select 工作簿路径 from 全局参数")
         excel_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select 工作表名 from 全局参数")
-        excel_table_name = self.remove_none(cursor.fetchall())
         cursor.execute("select 分支表名 from 全局参数")
         branch_table_name = self.remove_none(cursor.fetchall())
         cursor.execute("select 扩展程序 from 全局参数")
         extenders = self.remove_none(cursor.fetchall())
         self.close_database(cursor, conn)
         print("全局参数读取成功！")
-        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name, extenders
+        return image_folder_path, excel_folder_path, branch_table_name, extenders
 
     def start_work(self):
         """主要工作"""
@@ -314,10 +311,9 @@ class MainWork:
             elif cmd_type == '图像信息录入':
                 excel_path = list_instructions[current_list_index][4].replace('"', '')
                 img = list_instructions[current_list_index][1].replace('"', '')
-                sheet_name = list_instructions[current_list_index][5]
-                cell_position = list_instructions[current_list_index][6]
-                exception_type = list_instructions[current_list_index][8]
-                list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
+                cell_position = list_instructions[current_list_index][5]
+                exception_type = list_instructions[current_list_index][7]
+                list_ins = [3, 'left', img, excel_path, cell_position, exception_type]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 跳转分支的指定指令
@@ -392,14 +388,13 @@ class MainWork:
                 img = list_ins[2]
                 # excel参数
                 excel_path = list_ins[3]
-                cell_position = list_ins[5]
-                sheet_name = list_ins[4]
+                cell_position = list_ins[4]
                 # 鼠标单击参数
                 click_times = list_ins[0]
                 lOrR = list_ins[1]
-                exception_type = list_ins[6]
+                exception_type = list_ins[5]
                 # 获取excel表格中的值
-                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
+                cell_value = self.extra_excel_cell_value(excel_path, cell_position)
                 self.execute_click(click_times, lOrR, img, exception_type)
                 self.text_input(cell_value)
                 print('已执行信息录入')

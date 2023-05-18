@@ -16,6 +16,7 @@ import sqlite3
 import sys
 import time
 import webbrowser
+import openpyxl
 
 import cryptocode
 import keyboard
@@ -26,6 +27,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QTabWidget, QInputDialog
+from openpyxl.utils.exceptions import InvalidFileException
 from pyscreeze import unicode
 
 from main_work import MainWork, exit_main_work
@@ -89,17 +91,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.main_work = MainWork(self)
         # 实例化子窗口1
         # self.dialog_1 = Dialog()
+        # 全局设置窗口
+        self.global_s = Global_s()
         # 实例化导航页窗口
-        self.navigation = Na()
-        # self.dialog_na = Na()
+        self.navigation = Na(self.global_s)
         # 实例化设置窗口
         self.setting = Setting()
         # 设置关于窗体
         self.about = About()
         # 提示窗口
         self.info = Info()
-        # 全局设置窗口
-        self.global_s = Global_s()
         # 设置表格列宽自动变化，并使第5列列宽固定
         self.format_table()
         # 显示导航页窗口
@@ -159,13 +160,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 列的大小为可交互式的，用户可以调整
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
-        # 列的大小调整为固定，列宽不会改变
-        self.tableWidget.horizontalHeader().setSectionResizeMode(5, QHeaderView.Fixed)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Fixed)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Interactive)
+        # # 列的大小调整为固定，列宽不会改变
+        self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(7, QHeaderView.Fixed)
         # 设置列宽为50像素
-        self.tableWidget.setColumnWidth(5, 50)
-        self.tableWidget.setColumnWidth(4, 70)
-        self.tableWidget.setColumnWidth(0, 100)
+        self.tableWidget.setColumnWidth(6, 30)
+        self.tableWidget.setColumnWidth(7, 30)
 
     def show_setting(self):
         self.setting.show()
@@ -183,6 +184,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def show_navigation(self):
         self.navigation.show()
+        # 加载导航页数据
+        self.navigation.load_values_to_controls()
         print("导航页窗口开启")
         resize = self.geometry()
         self.setting.move(resize.x() + 90, resize.y())
@@ -789,36 +792,52 @@ class About(QWidget, Ui_Dialog):
 class Na(QWidget, Ui_navigation):
     """导航页窗体及其功能"""
 
-    def __init__(self):
+    def __init__(self, global_window):
         super().__init__()
+        # 使用全局变量窗体的一些方法
+        self.global_window = global_window
         self.setupUi(self)
         self.setWindowModality(Qt.ApplicationModal)
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
         # 是否激活自定义点击次数
-        # 如果comboBox_3中的文本为“左键（自定义次数）”，则激活spinBox_2,否则禁用
         self.comboBox_3.currentTextChanged.connect(self.spinBox_2_enable)
-
-        # 添加文件夹选择按钮事件
-        # self.na_Path = ''
-        # self.pushButton.clicked.connect(lambda: self.select_file(0))
         # 添加保存按钮事件
         self.pushButton_2.clicked.connect(self.save_data)
         # 获取鼠标位置参数
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
         # 设置当前日期和时间
         self.checkBox.clicked.connect(self.get_now_date_time)
-        # self.pushButton_5.clicked.connect(self.get_now_date_time)
         # 当按钮按下时，获取按键的名称
         self.pushButton_6.clicked.connect(self.print_key_name)
+        # 当combobox_8的值改变时，加载combobox的值
+        self.comboBox_8.currentTextChanged.connect(lambda: self.find_images(self.comboBox_8, self.comboBox))
+        self.comboBox_14.currentTextChanged.connect(lambda: self.find_images(self.comboBox_14, self.comboBox_15))
+        self.comboBox_12.currentTextChanged.connect(self.find_excel_sheet_name)
 
-    def select_file(self, judge):
+    def load_values_to_controls(self):
+        """将值加入到下拉列表中"""
+        print('加载导航页下拉列表数据')
+        image_folder_path, excel_folder_path, \
+            branch_table_name, extenders = self.global_window.extracted_data_global_parameter()
+        # 清空下拉列表
+        self.comboBox_8.clear()
+        self.comboBox_9.clear()
+        self.comboBox_12.clear()
+        self.comboBox_13.clear()
+        self.comboBox_14.clear()
+        self.comboBox_11.clear()
+        # 加载下拉列表数据
+        self.comboBox_8.addItems(image_folder_path)
+        self.comboBox_9.addItems(branch_table_name)
+        self.comboBox_12.addItems(excel_folder_path)
+        self.comboBox_14.addItems(image_folder_path)
+        self.comboBox_11.addItems(extenders)
+
+    def find_images(self, combox, combox_2):
         """选择文件夹并返回文件夹名称"""
-        global fil_path
-        if judge == 0:
-            # self.na_Path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
-            fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
+        fil_path = combox.currentText()
         try:
             images_name = os.listdir(fil_path)
         except FileNotFoundError:
@@ -828,11 +847,25 @@ class Na(QWidget, Ui_navigation):
             if ".png" not in images_name[i]:
                 images_name.remove(images_name[i])
         print(images_name)
-        print(fil_path)
-        # self.label_3.setText(fil_path.split('/')[-1])
-        self.label_3.setText(fil_path)
-        self.comboBox.clear()
-        self.comboBox.addItems(images_name)
+        # 清空combox_2中的所有元素
+        combox_2.clear()
+        # 将images_name中的所有元素添加到combox_2中
+        combox_2.addItems(images_name)
+
+    def find_excel_sheet_name(self):
+        """获取excel表格中的所有sheet名称"""
+        excel_path = self.comboBox_12.currentText()
+        try:
+            # 用openpyxl获取excel表格中的所有sheet名称
+            excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
+        except FileNotFoundError:
+            excel_sheet_name = []
+        except InvalidFileException:
+            excel_sheet_name = []
+        # 清空combox_13中的所有元素
+        self.comboBox_13.clear()
+        # 将excel_sheet_name中的所有元素添加到combox_13中
+        self.comboBox_13.addItems(excel_sheet_name)
 
     def print_key_name(self):
         pressed_keys = set()  # create an empty set to store pressed keys
@@ -1088,8 +1121,6 @@ class Global_s(QDialog, Ui_Global):
         self.pushButton.clicked.connect(lambda: self.select_file("图像文件夹路径"))
         # 添加工作簿路径
         self.pushButton_3.clicked.connect(lambda: self.select_file("工作簿路径"))
-        # 添加工作表名
-        self.pushButton_5.clicked.connect(lambda: self.select_file("工作表名"))
         # 添加分支表名
         self.pushButton_7.clicked.connect(lambda: self.select_file("分支表名"))
         # 添加扩展程序
@@ -1097,7 +1128,6 @@ class Global_s(QDialog, Ui_Global):
         # 删除listview中的项
         self.pushButton_2.clicked.connect(lambda: self.delete_listview(self.listView, "图像文件夹路径"))
         self.pushButton_4.clicked.connect(lambda: self.delete_listview(self.listView_2, "工作簿路径"))
-        self.pushButton_6.clicked.connect(lambda: self.delete_listview(self.listView_3, "工作表名"))
         self.pushButton_8.clicked.connect(lambda: self.delete_listview(self.listView_4, "分支表名"))
         self.pushButton_10.clicked.connect(lambda: self.delete_listview(self.listView_5, "扩展程序"))
 
@@ -1106,26 +1136,21 @@ class Global_s(QDialog, Ui_Global):
         if judge == "图像文件夹路径":
             fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
             if fil_path != '':
-                self.write_to_database(fil_path, None, None, None, None)
+                self.write_to_database(fil_path, None, None, None)
         elif judge == "工作簿路径":
             fil_path, _ = QFileDialog.getOpenFileName(self, "选择工作簿", filter="Excel 工作簿(*.xlsx)")
             if fil_path != '':
-                self.write_to_database(None, fil_path, None, None, None)
-        elif judge == "工作表名":
-            # 弹出对话框输入工作表名
-            text, ok = QInputDialog.getText(self, "输入工作表名", "请输入工作表名：")
-            if ok:
-                self.write_to_database(None, None, text, None, None)
+                self.write_to_database(None, fil_path, None, None)
         elif judge == "分支表名":
             # 弹出对话框输入分支表名
             text, ok = QInputDialog.getText(self, "输入分支表名", "请输入分支表名：")
             if ok:
-                self.write_to_database(None, None, None, text, None)
+                self.write_to_database(None, None, text, None)
         elif judge == "扩展程序":
             # 弹出对话框输入扩展程序
             text, ok = QInputDialog.getText(self, "输入扩展程序", "请输入扩展程序：")
             if ok:
-                self.write_to_database(None, None, None, None, text)
+                self.write_to_database(None, None, None, text)
         self.refresh_listview()
 
     def delete_listview(self, list_view, judge):
@@ -1155,22 +1180,20 @@ class Global_s(QDialog, Ui_Global):
             c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 = ?", (value,))
         elif judge == '工作簿路径':
             c.execute("DELETE FROM 全局参数 WHERE 工作簿路径 = ?", (value,))
-        elif judge == '工作表名':
-            c.execute("DELETE FROM 全局参数 WHERE 工作表名 = ?", (value,))
         elif judge == '分支表名':
             c.execute("DELETE FROM 全局参数 WHERE 分支表名 = ?", (value,))
         elif judge == '扩展程序':
             c.execute("DELETE FROM 全局参数 WHERE 扩展程序 = ?", (value,))
         # 删除无用数据
         c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 is NULL and "
-                  "工作簿路径 is NULL and 工作表名 is NULL and 分支表名 is NULL and 扩展程序 is NULL")
+                  "工作簿路径 is NULL and 分支表名 is NULL and 扩展程序 is NULL")
         conn.commit()
         conn.close()
 
     def refresh_listview(self):
         """刷新listview"""
         # 获取数据库中的数据
-        image_folder_path, excel_folder_path, excel_table_name, \
+        image_folder_path, excel_folder_path, \
             branch_table_name, extenders = self.extracted_data_global_parameter()
 
         def add_listview(list_, listview):
@@ -1183,7 +1206,6 @@ class Global_s(QDialog, Ui_Global):
 
         add_listview(image_folder_path, self.listView)
         add_listview(excel_folder_path, self.listView_2)
-        add_listview(excel_table_name, self.listView_3)
         add_listview(branch_table_name, self.listView_4)
         add_listview(extenders, self.listView_5)
 
@@ -1220,24 +1242,22 @@ class Global_s(QDialog, Ui_Global):
         image_folder_path = self.remove_none(cursor.fetchall())
         cursor.execute("select 工作簿路径 from 全局参数")
         excel_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select 工作表名 from 全局参数")
-        excel_table_name = self.remove_none(cursor.fetchall())
         cursor.execute("select 分支表名 from 全局参数")
         branch_table_name = self.remove_none(cursor.fetchall())
         cursor.execute("select 扩展程序 from 全局参数")
         extenders = self.remove_none(cursor.fetchall())
         self.close_database(cursor, conn)
         print("全局参数读取成功！")
-        return image_folder_path, excel_folder_path, excel_table_name, branch_table_name, extenders
+        return image_folder_path, excel_folder_path, branch_table_name, extenders
 
-    def write_to_database(self, images_file, work_book_path, work_sheet_name, branch_table_name, extension_program):
+    def write_to_database(self, images_file, work_book_path, branch_table_name, extension_program):
         """将全局参数写入数据库"""
         # 连接数据库
         conn = sqlite3.connect('命令集.db')
         c = conn.cursor()
         # 向数据库中的“图像文件夹路径”字段添加文件夹路径
-        c.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,工作表名,分支表名,扩展程序) VALUES (?,?,?,?,?)',
-                  (images_file, work_book_path, work_sheet_name, branch_table_name, extension_program))
+        c.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) VALUES (?,?,?,?)',
+                  (images_file, work_book_path, branch_table_name, extension_program))
         conn.commit()
         conn.close()
 
