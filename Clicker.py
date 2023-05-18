@@ -128,7 +128,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 清空指令按钮
         self.toolButton_6.clicked.connect(self.clear_table)
         # 导入数据按钮
-        self.actionf.triggered.connect(self.data_import)
+        # self.actionf.triggered.connect(self.data_import)
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         # 实时计时
@@ -161,12 +161,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 列的大小为可交互式的，用户可以调整
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Interactive)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Interactive)
         # # 列的大小调整为固定，列宽不会改变
-        self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
         self.tableWidget.horizontalHeader().setSectionResizeMode(7, QHeaderView.Fixed)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(8, QHeaderView.Fixed)
         # 设置列宽为50像素
-        self.tableWidget.setColumnWidth(6, 30)
         self.tableWidget.setColumnWidth(7, 30)
+        self.tableWidget.setColumnWidth(8, 30)
 
     def show_setting(self):
         self.setting.show()
@@ -207,7 +208,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取数据库数据
         con = sqlite3.connect('命令集.db')
         cursor = con.cursor()
-        cursor.execute('select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
+        cursor.execute('select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
         list_order = cursor.fetchall()
         con.close()
         # 在表格中写入数据
@@ -254,10 +255,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         row = self.tableWidget.currentRow()
         column = self.tableWidget.currentColumn()
         try:
-            xx = self.tableWidget.item(row, 5).text()
-            print(row, column, xx)
+            xx = self.tableWidget.item(row, 8).text()
             # 将选中行的数据在数据库中与上一行数据交换，如果是第一行则不交换
-            id = int(self.tableWidget.item(row, 5).text())
+            id = int(self.tableWidget.item(row, 8).text())
             # 初始化值
             id_up_down = id
             row_up_down = row
@@ -282,18 +282,25 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 con = sqlite3.connect('命令集.db')
                 cursor = con.cursor()
                 # 获取选中行和上一行的数据
-                cursor.execute('select 图像名称,键鼠命令,参数,参数2,重复次数 from 命令 where ID=?', (id,))
+                cursor.execute(
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from 命令 where ID=?', (id,))
                 list_id = cursor.fetchall()
-                cursor.execute('select 图像名称,键鼠命令,参数,参数2,重复次数 from 命令 where ID=?', (id_up_down,))
+                cursor.execute(
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from 命令 where ID=?',
+                    (id_up_down,))
                 list_id_up = cursor.fetchall()
                 # 交换选中行和上一行的数据
-                cursor.execute('update 命令 set 图像名称=?,键鼠命令=?,参数=?,参数2=?,重复次数=? where ID=?', (
-                    list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4], id))
-                cursor.execute('update 命令 set 图像名称=?,键鼠命令=?,参数=?,参数2=?,重复次数=? where ID=?',
-                               (list_id[0][0], list_id[0][1], list_id[0][2], list_id[0][3], list_id[0][4], id_up_down))
+                cursor.execute(
+                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?',
+                    (
+                        list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
+                        list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], id))
+                cursor.execute(
+                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?',
+                    (list_id[0][0], list_id[0][1], list_id[0][2], list_id[0][3], list_id[0][4], list_id[0][5],
+                     list_id[0][6], list_id[0][7], id_up_down))
                 con.commit()
                 con.close()
-                execute_sql = False
             # 调用get_data()函数，刷新表格
             self.get_data()
             # 将焦点移动到交换后的行
@@ -511,7 +518,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def open_readme(self):
         """打开使用说明"""
-        # os.popen('README.pdf')
         QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
 
 
@@ -851,6 +857,7 @@ class Na(QWidget, Ui_navigation):
         combox_2.clear()
         # 将images_name中的所有元素添加到combox_2中
         combox_2.addItems(images_name)
+        self.label_3.setText(self.comboBox_8.currentText())
 
     def find_excel_sheet_name(self):
         """获取excel表格中的所有sheet名称"""
@@ -917,15 +924,16 @@ class Na(QWidget, Ui_navigation):
     def save_data(self):
         """获取4个参数命令，并保存至数据库"""
 
-        def writes_commands_to_the_database(instruction, image, parameter, parameter_2, parameter_3, parameter_4,
-                                            repeat_number, exception_handling):
+        def writes_commands_to_the_database(instruction, repeat_number, exception_handling, image=None,
+                                            parameter_1=None,
+                                            parameter_2=None, parameter_3=None, parameter_4=None):
             """向数据库写入命令"""
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
             try:
                 cursor.execute(
                     'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)',
-                    (image, instruction, parameter, parameter_2, parameter_3, parameter_4, repeat_number,
+                    (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
                      exception_handling))
                 con.commit()
                 con.close()
@@ -955,65 +963,74 @@ class Na(QWidget, Ui_navigation):
 
         # 打印当前tab页
         print(self.tabWidget.currentIndex())
-        # 判断当前tab页，并获取5个参数命令，保存至数据库
+        # 判断当前tab页
+        # 读取功能区的参数
+        repeat_number = self.spinBox.value()
+        exception_handling = self.comboBox_9.currentText()
         # 图像点击事件的参数获取
         if self.tabWidget.currentIndex() == 0:
-            # 获取5个参数命令
+            # 获取5个参数命令，写入数据库
             instruction = "图像点击"
-            image = self.comboBox.currentText()
-            repeat_number = self.spinBox.value()
-            parameter = self.comboBox_2.currentText()
+            image = self.comboBox_8.currentText() + '\\' + self.comboBox.currentText()
+            print(image)
+            parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
             if self.checkBox_2.isChecked():
                 parameter_2 = '自动略过'
             else:
-                parameter_2 = ''
-            writes_commands_to_the_database(instruction, image, parameter, parameter_2, parameter_3, parameter_4,
-                                            repeat_number, exception_handling)
+                parameter_2 = None
+            # 将命令写入数据库
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            image=image, parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
             print('已经保存图像识别点击的数据至数据库')
         # 鼠标点击事件的参数获取
         elif self.tabWidget.currentIndex() == 1:
             instruction = "坐标点击"
-            images = 0
-            repeat_number = self.spinBox.value()
-            parameter = self.comboBox_3.currentText()
+            parameter_1 = self.comboBox_3.currentText()
             parameter_2 = self.label_9.text() + "-" + self.label_10.text() + "-" + str(self.spinBox_2.value())
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
 
         elif self.tabWidget.currentIndex() == 2:
             # 获取5个参数命令
             instruction = "鼠标移动"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取鼠标移动的参数
             # 鼠标移动的方向
-            parameter = self.comboBox_4.currentText()
+            parameter_1 = self.comboBox_4.currentText()
             # 鼠标移动的距离
             try:
                 parameter_2 = int(self.lineEdit.text())
             except ValueError:
                 QMessageBox.critical(self, "错误", "移动距离请输入数字！")
                 return
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
             print('已经保存鼠标移动的数据至数据库')
         # 等待事件的参数获取
         elif self.tabWidget.currentIndex() == 3:
             instruction = "等待"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取等待的参数
             # 如果checkBox没有被选中，则第一个参数为等待时间
-            parameter = ''
-            parameter_2 = ''
+            parameter_1 = None
+            parameter_2 = None
             if not self.checkBox.isChecked():
-                parameter = "等待"
+                parameter_1 = "等待"
                 try:
                     parameter_2 = int(self.lineEdit_2.text())
                 except ValueError:
                     QMessageBox.critical(self, "错误", "等待时间请输入数字！")
                     return
             elif self.checkBox.isChecked():
-                parameter = "等待到指定时间"
+                parameter_1 = "等待到指定时间"
                 # 判断时间是否大于当前时间
                 parameter_2 = self.dateTimeEdit.text() + "+" + self.comboBox_6.currentText()
                 try:
@@ -1024,72 +1041,97 @@ class Na(QWidget, Ui_navigation):
                     QMessageBox.critical(self, "错误", "启动时间小于当前系统时间，无效的指令。")
                     return
 
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
         # 鼠标滚轮滑动事件的参数获取
         elif self.tabWidget.currentIndex() == 4:
             # 获取5个参数命令
             instruction = "滚轮滑动"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取鼠标滚轮滑动的参数
             # 鼠标滚轮滑动的方向
-            parameter = self.comboBox_5.currentText()
+            parameter_1 = self.comboBox_5.currentText()
             # 鼠标滚轮滑动的距离
             try:
                 parameter_2 = self.lineEdit_3.text()
             except ValueError:
                 QMessageBox.critical(self, "错误", "滑动距离请输入数字！")
                 return
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
             print('已经保存鼠标滚轮滑动的数据至数据库')
         # 文本输入事件的参数获取
         elif self.tabWidget.currentIndex() == 5:
             # 获取5个参数命令
             instruction = "文本输入"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取文本输入的参数
             # 文本输入的内容
-            parameter = self.textEdit.toPlainText()
-            parameter_2 = ''
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            parameter_1 = self.textEdit.toPlainText()
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1)
             print('已经保存文本输入的数据至数据库')
         # 按下键盘事件的参数获取
         elif self.tabWidget.currentIndex() == 6:
             instruction = "按下键盘"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取按下键盘的参数
             # 按下键盘的内容
-            parameter = self.label_31.text()
-            parameter_2 = ''
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            parameter_1 = self.label_31.text()
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1)
             print('已经保存按键的数据至数据库')
         # 中键激活事件的参数获取
         elif self.tabWidget.currentIndex() == 7:
             instruction = "中键激活"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取中键激活的参数
             # 中键激活的内容
-            parameter = ''
-            parameter_2 = ''
+            parameter_1 = None
+            parameter_2 = None
             if self.radioButton.isChecked():
-                parameter = '模拟点击'
+                parameter_1 = '模拟点击'
                 parameter_2 = self.spinBox_3.value()
             elif self.radioButton_2.isChecked():
-                parameter = '自定义'
-                parameter_2 = ''
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+                parameter_1 = '自定义'
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
         # 鼠标当前位置事件的参数获取
         elif self.tabWidget.currentIndex() == 8:
             instruction = "鼠标事件"
-            images = 0
-            repeat_number = self.spinBox.value()
             # 获取鼠标当前位置的参数
-            parameter = self.comboBox_7.currentText()
-            parameter_2 = ''
-            writes_commands_to_the_database(instruction, images, parameter, parameter_2, repeat_number)
+            parameter_1 = self.comboBox_7.currentText()
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1)
+        # excel信息录入功能的参数获取
+        elif self.tabWidget.currentIndex() == 9:
+            instruction = "excel信息录入"
+            # 获取excel工作簿路径和工作表名称
+            parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
+            # 获取图像文件路径
+            image = self.comboBox_14.currentText() + '\\' + self.comboBox_15.currentText()
+            # 获取单元格值
+            parameter_2 = self.lineEdit_4.text()
+            # 判断是否递增行号
+            parameter_3 = self.checkBox_3.isChecked()
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2,
+                                            parameter_3=parameter_3,
+                                            image=image)
 
         # 关闭窗体
         self.close()

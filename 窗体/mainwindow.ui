@@ -149,7 +149,7 @@
           <number>0</number>
          </property>
          <property name="columnCount">
-          <number>8</number>
+          <number>9</number>
          </property>
          <attribute name="horizontalHeaderVisible">
           <bool>true</bool>
@@ -177,6 +177,14 @@
          <column>
           <property name="text">
            <string>键鼠指令</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>异常处理</string>
           </property>
           <property name="textAlignment">
            <set>AlignCenter</set>
