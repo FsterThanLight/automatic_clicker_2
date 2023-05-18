@@ -19,7 +19,6 @@ import mouse
 import openpyxl
 import pyautogui
 import pyperclip
-import pypyodbc
 
 event = threading.Event()
 
@@ -175,26 +174,28 @@ class MainWork:
         # 读取指令
         while current_index < len(list_instructions[current_list_index]):
             elem = list_instructions[current_list_index][current_index]
-            print('执行当前指令：', elem)
-            # list_instructions=(1, '图像路径', '图像点击', '左键单击', 'Excel路径', '工作表名称', 单元格位置, 1, '自动跳过')
-            # ID：0
-            # 图像路径（名称）：1
-            # 指令类型：2
-            # 参数1（键鼠指令）：3
-            # 参数2：4
-            # 参数3：5
-            # 参数4：6
-            # 重复次数：7
-            # 异常处理：8
-            cmd_type = list_instructions[current_list_index][2]
-            re_try = list_instructions[current_list_index][7]
+            # 【指令集合【指令分支（指令元素[元素索引]）】】
+            # print('执行当前指令：', elem)
+            dic = {
+                'ID': elem[0],
+                '图像路径': elem[1],
+                '指令类型': elem[2],
+                '参数1（键鼠指令）': elem[3],
+                '参数2': elem[4],
+                '参数3': elem[5],
+                '参数4': elem[6],
+                '重复次数': elem[7],
+                '异常处理': elem[8]
+            }
+            # 读取指令类型
+            cmd_type = dict(dic)['指令类型']
+            re_try = dict(dic)['重复次数']
             # 设置一个容器，用于存储参数
             list_ins = []
 
             # 图像识别点击的事件
             if cmd_type == "图像点击":
                 # 读取图像名称
-                # img = (self.file_path + "/" + list_instructions[i][1]).replace('/', '//')
                 img = list_instructions[current_list_index][1]
                 # 取重复次数
                 re_try = list_instructions[current_list_index][7]
@@ -214,19 +215,20 @@ class MainWork:
             # 屏幕坐标点击事件
             elif cmd_type == '坐标点击':
                 # 取x,y坐标的值
-                x = int(list_instructions[current_list_index][4].split('-')[0])
-                y = int(list_instructions[current_list_index][4].split('-')[1])
-                z = int(list_instructions[current_list_index][4].split('-')[2])
+                x = int(dict(dic)['参数2'].split('-')[0])
+                y = int(dict(dic)['参数2'].split('-')[1])
+                z = int(dict(dic)['参数2'].split('-')[1])
+                print('x,y坐标：', x, y)
                 # 调用鼠标点击事件（点击次数，按钮类型，图像名称）
-                if list_instructions[current_list_index][3] == '左键单击':
+                if dict(dic)['参数1（键鼠指令）'] == '左键单击':
                     list_ins = [1, 'left', x, y]
-                elif list_instructions[current_list_index][3] == '左键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
                     list_ins = [2, 'left', x, y]
-                elif list_instructions[current_list_index][3] == '右键单击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
                     list_ins = [1, 'right', x, y]
-                elif list_instructions[current_list_index][3] == '右键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
                     list_ins = [2, 'right', x, y]
-                elif list_instructions[current_list_index][3] == '左键（自定义次数）':
+                elif dict(dic)['参数1（键鼠指令）'] == '左键（自定义次数）':
                     list_ins = [z, 'left', x, y]
                 # 执行鼠标点击事件
                 self.execution_repeats(cmd_type, list_ins, re_try)

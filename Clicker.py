@@ -8,7 +8,7 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
-import ctypes, sys
+
 import datetime
 import json
 import os
@@ -16,27 +16,26 @@ import sqlite3
 import sys
 import time
 import webbrowser
-import openpyxl
 
 import cryptocode
 import keyboard
+import openpyxl
 import pyautogui
 import requests
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
-    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QTabWidget, QInputDialog
+    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 from openpyxl.utils.exceptions import InvalidFileException
-from pyscreeze import unicode
 
 from main_work import MainWork, exit_main_work
 from 窗体.about import Ui_Dialog
+from 窗体.global_s import Ui_Global
+from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
-from 窗体.info import Ui_Form
-from 窗体.global_s import Ui_Global
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -223,7 +222,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取选中值的行号和id
         row = self.tableWidget.currentRow()
         column = self.tableWidget.currentColumn()
-        xx = self.tableWidget.item(row, 5).text()
+        xx = self.tableWidget.item(row, 8).text()
         print(row, column, xx)
         # 删除数据库中指定id的数据
         con = sqlite3.connect('命令集.db')
