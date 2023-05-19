@@ -235,16 +235,16 @@ class MainWork:
 
             # 等待的事件
             elif cmd_type == '等待':
-                wait_type=dict(dic)['参数1（键鼠指令）']
+                wait_type = dict(dic)['参数1（键鼠指令）']
                 if wait_type == '等待':
-                    wait_time= dict(dic)['参数2']
+                    wait_time = dict(dic)['参数2']
                     print('等待时长' + str(wait_time) + '秒')
                     self.stop_time(int(wait_time))
                 elif wait_type == '等待到指定时间':
                     target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
                     # target_time = list_instructions[current_list_index][4].split('+')[0].replace('-', '/')
                     # interval_time = list_instructions[current_list_index][4].split('+')[1]
-                    interval_time=dict(dic)['参数2'].split('+')[1]
+                    interval_time = dict(dic)['参数2'].split('+')[1]
                     now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     # 将now_time转换为时间格式
                     now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
@@ -263,8 +263,8 @@ class MainWork:
             # 滚轮滑动的事件
             elif cmd_type == '滚轮滑动':
                 # scroll_direction = list_instructions[current_list_index][3]
-                scroll_direction=dict(dic)['参数1（键鼠指令）']
-                scroll_distance=int(dict(dic)['参数2'])
+                scroll_direction = dict(dic)['参数1（键鼠指令）']
+                scroll_distance = int(dict(dic)['参数2'])
                 # scroll_distance = int(list_instructions[current_list_index][4])
                 if scroll_direction == '↑':
                     scroll_distance = scroll_distance
@@ -276,7 +276,7 @@ class MainWork:
             # 文本输入的事件
             elif cmd_type == '文本输入':
                 # input_value = str(list_instructions[current_list_index][3])
-                input_value=str(dict(dic)['参数1（键鼠指令）'])
+                input_value = str(dict(dic)['参数1（键鼠指令）'])
                 list_ins = [input_value]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
@@ -284,9 +284,9 @@ class MainWork:
             elif cmd_type == '鼠标移动':
                 try:
                     # direction = list_instructions[current_list_index][3]
-                    direction=dict(dic)['参数1（键鼠指令）']
+                    direction = dict(dic)['参数1（键鼠指令）']
                     # distance = list_instructions[current_list_index][4]
-                    distance=dict(dic)['参数2']
+                    distance = dict(dic)['参数2']
                     list_ins = [direction, distance]
                     self.execution_repeats(cmd_type, list_ins, re_try)
                 except IndexError:
@@ -295,15 +295,15 @@ class MainWork:
             # 键盘按键的事件
             elif cmd_type == '按下键盘':
                 # key = list_instructions[current_list_index][3]
-                key=dict(dic)['参数1（键鼠指令）']
+                key = dict(dic)['参数1（键鼠指令）']
                 list_ins = [key]
                 self.execution_repeats(cmd_type, list_ins, re_try)
             # 中键激活的事件
             elif cmd_type == '中键激活':
                 # command_type = list_instructions[current_list_index][3]
-                command_type= dict(dic)['参数1（键鼠指令）']
+                command_type = dict(dic)['参数1（键鼠指令）']
                 # click_count = list_instructions[current_list_index][4]
-                click_count=dict(dic)['参数2']
+                click_count = dict(dic)['参数2']
                 list_ins = [command_type, click_count]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
@@ -322,10 +322,11 @@ class MainWork:
             # 图片信息录取
             elif cmd_type == 'excel信息录入':
                 excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
-                img=dict(dic)['图像路径']
-                cell_position=dict(dic)['参数2']
+                sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
+                img = dict(dic)['图像路径']
+                cell_position = dict(dic)['参数2']
                 exception_type = dict(dic)['异常处理']
-                list_ins = [3, 'left', img, excel_path, cell_position, exception_type]
+                list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 跳转分支的指定指令
@@ -395,18 +396,19 @@ class MainWork:
                                 duration=self.settings.duration,
                                 button=lOrR)
                 print('执行鼠标事件')
-            elif cmd_type == '图像信息录入':
+            elif cmd_type == 'excel信息录入':
                 # 图像参数
                 img = list_ins[2]
                 # excel参数
                 excel_path = list_ins[3]
-                cell_position = list_ins[4]
+                sheet_name = list_ins[4]
+                cell_position = list_ins[5]
                 # 鼠标单击参数
                 click_times = list_ins[0]
                 lOrR = list_ins[1]
-                exception_type = list_ins[5]
+                exception_type = list_ins[6]
                 # 获取excel表格中的值
-                cell_value = self.extra_excel_cell_value(excel_path, cell_position)
+                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
                 self.execute_click(click_times, lOrR, img, exception_type)
                 self.text_input(cell_value)
                 print('已执行信息录入')
@@ -426,6 +428,7 @@ class MainWork:
 
     def extra_excel_cell_value(self, excel_path, sheet_name, cell_position):
         """获取excel表格中的值"""
+        print('正在获取单元格值')
         try:
             # 打开excel表格
             wb = openpyxl.load_workbook(excel_path)

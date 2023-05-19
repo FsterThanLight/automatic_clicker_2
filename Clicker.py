@@ -970,7 +970,7 @@ class Na(QWidget, Ui_navigation):
         if self.tabWidget.currentIndex() == 0:
             # 获取5个参数命令，写入数据库
             instruction = "图像点击"
-            image = self.comboBox_8.currentText() + '\\' + self.comboBox.currentText()
+            image = self.comboBox_8.currentText() + '/' + self.comboBox.currentText()
             print(image)
             parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
@@ -1119,7 +1119,7 @@ class Na(QWidget, Ui_navigation):
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
             # 获取图像文件路径
-            image = self.comboBox_14.currentText() + '\\' + self.comboBox_15.currentText()
+            image = self.comboBox_14.currentText() + '/' + self.comboBox_15.currentText()
             # 获取单元格值
             parameter_2 = self.lineEdit_4.text()
             # 判断是否递增行号
