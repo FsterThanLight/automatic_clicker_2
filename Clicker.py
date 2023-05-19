@@ -146,6 +146,20 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionabout.triggered.connect(self.show_about)
         # 打开使用说明
         self.actionhelp.triggered.connect(self.open_readme)
+        # 修改指令按钮
+        self.tab_index = {
+            "图像点击": 0,
+            "坐标点击": 1,
+            "鼠标移动": 2,
+            "等待": 3,
+            "滚轮滑动": 4,
+            "文本输入": 5,
+            "按下键盘": 6,
+            "中键激活": 7,
+            "鼠标事件": 8,
+            "excel信息录入": 9
+        }
+        self.pushButton_8.clicked.connect(lambda: self.modify_parameters(self.tab_index))
 
     # def show_dialog(self):
     #     self.dialog_1.show()
@@ -447,20 +461,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         else:
             self.plainTextEdit.clear()
 
-    # def display_running_time(self, judge):
-    #     """在主屏幕显示运行时长"""
-    #     if judge == "显示时间":
-    #         self.lcdNumber.display(self.lcd_time)
-    #         self.lcd_time += 1
-    #     elif judge == "开始计时":
-    #         self.timer.start(1000)
-    #     elif judge == "结束计时":
-    #         self.lcd_time = 0
-    #         self.timer.stop()
-    #         self.lcdNumber.display(self.lcd_time)
-    #     elif judge == "暂停计时":
-    #         self.timer.stop()
-
     def check_update(self, warning):
         """检查更新功能"""
         pass
@@ -514,6 +514,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.toolBar.show()
         elif not self.actiong.isChecked():
             self.toolBar.hide()
+
+    def modify_parameters(self, tab_index):
+        """修改参数"""
+        self.show_navigation()
+        # 获取当前行行号列号
+        row = self.tableWidget.currentRow()
+        # 获取当前行的ID
+        try:
+            xx = self.tableWidget.item(row, 8).text()
+            yy = self.tableWidget.item(row, 1).text()
+            # 将导航页的tabWidget设置为对应的页
+            self.navigation.tabWidget.setCurrentIndex(dict(tab_index)[yy])
+            # 修改数据中的参数
+            self.navigation.modify_judgment = '修改'
+            self.navigation.modify_id = xx
+        except AttributeError:
+            pass
 
     def open_readme(self):
         """打开使用说明"""
@@ -809,7 +826,9 @@ class Na(QWidget, Ui_navigation):
         # 是否激活自定义点击次数
         self.comboBox_3.currentTextChanged.connect(self.spinBox_2_enable)
         # 添加保存按钮事件
-        self.pushButton_2.clicked.connect(self.save_data)
+        self.modify_judgment = '保存'
+        self.modify_id = None
+        self.pushButton_2.clicked.connect(lambda: self.save_data(self.modify_judgment, self.modify_id))
         # 获取鼠标位置参数
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
         # 设置当前日期和时间
@@ -920,7 +939,7 @@ class Na(QWidget, Ui_navigation):
         # self.setMouseTracking(True)
         self.get_mouse_position()
 
-    def save_data(self):
+    def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
 
         def writes_commands_to_the_database(instruction, repeat_number, exception_handling, image=None,
@@ -930,10 +949,16 @@ class Na(QWidget, Ui_navigation):
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
             try:
-                cursor.execute(
-                    'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)',
-                    (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
-                     exception_handling))
+                if judge == '保存':
+                    cursor.execute(
+                        'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)',
+                        (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
+                         exception_handling))
+                elif judge == '修改':
+                    cursor.execute(
+                        'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? WHERE ID=?',
+                        (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
+                         exception_handling, xx))
                 con.commit()
                 con.close()
             except sqlite3.OperationalError:
@@ -1134,6 +1159,8 @@ class Na(QWidget, Ui_navigation):
 
         # 关闭窗体
         self.close()
+        self.modify_judgment = '保存'
+        self.modify_id = None
 
 
 class Info(QDialog, Ui_Form):
