@@ -196,18 +196,18 @@ class MainWork:
             # 图像识别点击的事件
             if cmd_type == "图像点击":
                 # 读取图像名称
-                img = list_instructions[current_list_index][1]
+                img = dict(dic)['图像路径']
                 # 取重复次数
-                re_try = list_instructions[current_list_index][7]
+                re_try = dict(dic)['重复次数']
                 # 是否跳过参数
-                skip = list_instructions[current_list_index][4]
-                if list_instructions[current_list_index][3] == '左键单击':
+                skip = dict(dic)['参数2']
+                if dict(dic)['参数1（键鼠指令）'] == '左键单击':
                     list_ins = [1, 'left', img, skip]
-                elif list_instructions[current_list_index][3] == '左键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
                     list_ins = [2, 'left', img, skip]
-                elif list_instructions[current_list_index][3] == '右键单击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
                     list_ins = [1, 'right', img, skip]
-                elif list_instructions[current_list_index][3] == '右键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
                     list_ins = [2, 'right', img, skip]
                 # 执行鼠标点击事件
                 self.execution_repeats(cmd_type, list_ins, re_try)
@@ -235,14 +235,16 @@ class MainWork:
 
             # 等待的事件
             elif cmd_type == '等待':
-                wait_type = list_instructions[current_list_index][3]
+                wait_type=dict(dic)['参数1（键鼠指令）']
                 if wait_type == '等待':
-                    wait_time = int(list_instructions[current_list_index][4])
+                    wait_time= dict(dic)['参数2']
                     print('等待时长' + str(wait_time) + '秒')
-                    self.stop_time(wait_time)
+                    self.stop_time(int(wait_time))
                 elif wait_type == '等待到指定时间':
-                    target_time = list_instructions[current_list_index][4].split('+')[0].replace('-', '/')
-                    interval_time = list_instructions[current_list_index][4].split('+')[1]
+                    target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
+                    # target_time = list_instructions[current_list_index][4].split('+')[0].replace('-', '/')
+                    # interval_time = list_instructions[current_list_index][4].split('+')[1]
+                    interval_time=dict(dic)['参数2'].split('+')[1]
                     now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     # 将now_time转换为时间格式
                     now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
@@ -260,8 +262,10 @@ class MainWork:
 
             # 滚轮滑动的事件
             elif cmd_type == '滚轮滑动':
-                scroll_direction = list_instructions[current_list_index][3]
-                scroll_distance = int(list_instructions[current_list_index][4])
+                # scroll_direction = list_instructions[current_list_index][3]
+                scroll_direction=dict(dic)['参数1（键鼠指令）']
+                scroll_distance=int(dict(dic)['参数2'])
+                # scroll_distance = int(list_instructions[current_list_index][4])
                 if scroll_direction == '↑':
                     scroll_distance = scroll_distance
                 elif scroll_direction == '↓':
@@ -271,15 +275,18 @@ class MainWork:
 
             # 文本输入的事件
             elif cmd_type == '文本输入':
-                input_value = str(list_instructions[current_list_index][3])
+                # input_value = str(list_instructions[current_list_index][3])
+                input_value=str(dict(dic)['参数1（键鼠指令）'])
                 list_ins = [input_value]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 鼠标移动的事件
             elif cmd_type == '鼠标移动':
                 try:
-                    direction = list_instructions[current_list_index][3]
-                    distance = list_instructions[current_list_index][4]
+                    # direction = list_instructions[current_list_index][3]
+                    direction=dict(dic)['参数1（键鼠指令）']
+                    # distance = list_instructions[current_list_index][4]
+                    distance=dict(dic)['参数2']
                     list_ins = [direction, distance]
                     self.execution_repeats(cmd_type, list_ins, re_try)
                 except IndexError:
@@ -287,34 +294,37 @@ class MainWork:
 
             # 键盘按键的事件
             elif cmd_type == '按下键盘':
-                key = list_instructions[current_list_index][3]
+                # key = list_instructions[current_list_index][3]
+                key=dict(dic)['参数1（键鼠指令）']
                 list_ins = [key]
                 self.execution_repeats(cmd_type, list_ins, re_try)
             # 中键激活的事件
             elif cmd_type == '中键激活':
-                command_type = list_instructions[current_list_index][3]
-                click_count = list_instructions[current_list_index][4]
+                # command_type = list_instructions[current_list_index][3]
+                command_type= dict(dic)['参数1（键鼠指令）']
+                # click_count = list_instructions[current_list_index][4]
+                click_count=dict(dic)['参数2']
                 list_ins = [command_type, click_count]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 鼠标事件
             elif cmd_type == '鼠标事件':
-                if list_instructions[current_list_index][3] == '左键单击':
+                if dict(dic)['参数1（键鼠指令）'] == '左键单击':
                     list_ins = [1, 'left']
-                elif list_instructions[current_list_index][3] == '左键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
                     list_ins = [2, 'left']
-                elif list_instructions[current_list_index][3] == '右键单击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
                     list_ins = [1, 'right']
-                elif list_instructions[current_list_index][3] == '右键双击':
+                elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
                     list_ins = [2, 'right']
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
             # 图片信息录取
-            elif cmd_type == '图像信息录入':
-                excel_path = list_instructions[current_list_index][4].replace('"', '')
-                img = list_instructions[current_list_index][1].replace('"', '')
-                cell_position = list_instructions[current_list_index][5]
-                exception_type = list_instructions[current_list_index][7]
+            elif cmd_type == 'excel信息录入':
+                excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
+                img=dict(dic)['图像路径']
+                cell_position=dict(dic)['参数2']
+                exception_type = dict(dic)['异常处理']
                 list_ins = [3, 'left', img, excel_path, cell_position, exception_type]
                 self.execution_repeats(cmd_type, list_ins, re_try)
 
