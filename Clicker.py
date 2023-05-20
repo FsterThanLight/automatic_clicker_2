@@ -12,6 +12,7 @@ from __future__ import print_function
 import datetime
 import json
 import os
+import shutil
 import sqlite3
 import sys
 import time
@@ -119,21 +120,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 交换数据，上移按钮
         self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))
         self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))
-        # # 单元格变动自动存储
-        # self.change_state = True
-        # self.tableWidget.cellChanged.connect(lambda: self.table_cell_changed(False))
-        # 保存按钮
+        # 导出数据，导出按钮
         self.actionb.triggered.connect(self.save_data_to_current)
         # 清空指令按钮
         self.toolButton_6.clicked.connect(self.clear_table)
         # 导入数据按钮
-        # self.actionf.triggered.connect(self.data_import)
+        self.actionf.triggered.connect(self.data_import)
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
-        # 实时计时
-        # self.lcd_time = 1
-        # self.timer = QTimer()
-        # self.timer.timeout.connect(lambda: self.display_running_time('显示时间'))
         # 打开设置
         self.actions_2.triggered.connect(self.show_setting)
         # 结束任务按钮
@@ -159,13 +153,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "鼠标事件": 8,
             "excel信息录入": 9
         }
-        self.pushButton_8.clicked.connect(lambda: self.modify_parameters(self.tab_index))
-
-    # def show_dialog(self):
-    #     self.dialog_1.show()
-    #     print('子窗口开启')
-    #     resize = self.geometry()
-    #     self.dialog_1.move(resize.x() + 50, resize.y() + 200)
+        self.pushButton_8.clicked.connect(self.modify_parameters)
 
     def format_table(self):
         """设置主窗口表格格式"""
@@ -346,33 +334,53 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def save_data_to_current(self):
         """保存配置文件到当前文件夹下"""
-        # 获取图像文件夹路径
-        global fil_path
-        # 提取数据库中的所有数据
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('select * from 命令')
-        list_orders = cursor.fetchall()
-        con.close()
-        # 判断是否选择了文件夹
-        if fil_path == '':
-            fil_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
-        elif fil_path != '':
-            pass
-        # 创建txt文件
-        file = fil_path + "/命令集.txt"
-        # 向txt中写入数据
-        try:
-            with open(file, 'w', encoding='utf-8') as f:
-                f.write('请将本文件放入保存图像的文件夹中。\n')
-                for i in range(len(list_orders)):
-                    for j in range(len(list_orders[i])):
-                        f.write(str(list_orders[i][j]) + ',')
-                    f.write('\n')
-                QMessageBox.information(self, '保存成功', '数据已保存至' + file)
-        except PermissionError:
-            QMessageBox.warning(self, '保存失败', '无效的文件路径。')
-
+        # 打开选择文件夹对话框
+        target_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
+        # 弹出输入框，获取文件名
+        file_name, ok = QInputDialog.getText(self, "保存文件", "请输入保存指令的文件名：")
+        if ok:
+            # 连接数据库
+            con = sqlite3.connect('命令集.db')
+            # 获取数据库文件路径
+            db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
+            con.close()
+            # 判断是否输入文件名
+            if file_name == '':
+                QMessageBox.warning(self, "警告", "请输入文件名！")
+            else:
+                # 判断是否选择了文件夹
+                if target_path == '':
+                    QMessageBox.warning(self, "警告", "请选择保存路径！")
+                else:
+                    # 将数据库文件复制到指定文件夹下
+                    shutil.copy(db_file, target_path + '/' + file_name + '.db')
+                    QMessageBox.information(self, "提示", "指令数据保存成功！")
+        # # 获取图像文件夹路径
+        # global fil_path
+        # # 提取数据库中的所有数据
+        # con = sqlite3.connect('命令集.db')
+        # cursor = con.cursor()
+        # cursor.execute('select * from 命令')
+        # list_orders = cursor.fetchall()
+        # con.close()
+        # # 判断是否选择了文件夹
+        # if fil_path == '':
+        #     fil_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
+        # elif fil_path != '':
+        #     pass
+        # # 创建txt文件
+        # file = fil_path + "/命令集.txt"
+        # # 向txt中写入数据
+        # try:
+        #     with open(file, 'w', encoding='utf-8') as f:
+        #         f.write('请将本文件放入保存图像的文件夹中。\n')
+        #         for i in range(len(list_orders)):
+        #             for j in range(len(list_orders[i])):
+        #                 f.write(str(list_orders[i][j]) + ',')
+        #             f.write('\n')
+        #         QMessageBox.information(self, '保存成功', '数据已保存至' + file)
+        # except PermissionError:
+        #     QMessageBox.warning(self, '保存失败', '无效的文件路径。')
     # QMessageBox.warning(self, '未选择文件夹', "请点击'添加指令'并选择存放目标图像的文件夹！")
 
     def clear_database(self):
@@ -404,40 +412,17 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def data_import(self):
         """导入数据功能"""
-        global fil_path
-        data_file_path = QFileDialog.getOpenFileName(self, "请选择'命令集.txt'", '', "(*.txt)")
-        print(data_file_path)
-        # 获取命令集文件夹路径
-        fil_path = '/'.join(data_file_path[0].split('/')[0:-1])
-        self.navigation.select_file(1)
-        # 清空数据库并导入新数据
-        # if data_file_path[0] != '':
-        self.clear_database()
-        with open(data_file_path[0], 'r', encoding='utf-8') as f:
-            list_order = f.readlines()
-            print(list_order)
-            for i in list_order:
-                j = i.split(',')
-                if len(j) == 7:
-                    # 将txt文本转化为数据库对应参数
-                    id = int(j[0])
-                    image_name = j[1]
-                    instruction = j[2]
-                    parameter = j[3]
-                    parameter_2 = j[4]
-                    repeat_number = int(j[5])
-                    # 连接数据库，插入数据
-                    con = sqlite3.connect('命令集.db')
-                    cursor = con.cursor()
-                    try:
-                        print("插入数据")
-                        cursor.execute('insert into 命令(ID,图像名称,键鼠命令,参数,参数2,重复次数) values(?,?,?,?,?,?)',
-                                       (id, image_name, instruction, parameter, parameter_2, repeat_number))
-                    except sqlite3.IntegrityError:
-                        pass
-                    con.commit()
-                    con.close()
-            self.get_data()
+        # 打开选择文件对话框
+        target_path = QFileDialog.getOpenFileName(self, "请选择指令备份文件", '', "(*.db)")
+        # 判断是否选择了文件
+        if target_path[0] == '':
+            pass
+        else:
+            # 获取当前文件夹路径
+            cwd = os.getcwd()
+            # 复制数据库文件到当前文件夹下，并将其重命名为'命令集.db'取代原有数据库文件
+            shutil.copy(target_path[0], cwd + '/命令集.db')
+            QMessageBox.information(self, "提示", "指令数据导入成功！")
 
     def start(self):
         """主窗体开始按钮"""
@@ -515,21 +500,22 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif not self.actiong.isChecked():
             self.toolBar.hide()
 
-    def modify_parameters(self, tab_index):
+    def modify_parameters(self):
         """修改参数"""
-        self.show_navigation()
-        # 获取当前行行号列号
-        row = self.tableWidget.currentRow()
-        # 获取当前行的ID
         try:
+            # 获取当前行行号列号
+            row = self.tableWidget.currentRow()
+            # 获取当前行的ID
             xx = self.tableWidget.item(row, 8).text()
             yy = self.tableWidget.item(row, 1).text()
             # 将导航页的tabWidget设置为对应的页
-            self.navigation.tabWidget.setCurrentIndex(dict(tab_index)[yy])
+            self.show_navigation()
+            self.navigation.tabWidget.setCurrentIndex(dict(self.tab_index)[yy])
             # 修改数据中的参数
             self.navigation.modify_judgment = '修改'
             self.navigation.modify_id = xx
         except AttributeError:
+            QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
             pass
 
     def open_readme(self):

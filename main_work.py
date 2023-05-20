@@ -19,6 +19,7 @@ import mouse
 import openpyxl
 import pyautogui
 import pyperclip
+from PyQt5.QtWidgets import QMessageBox, QApplication
 
 event = threading.Event()
 
@@ -42,8 +43,8 @@ class MainWork:
         # 在窗体中显示循环次数
         self.number = 1
         # 全部指令的循环次数，无限循环为标志
-        self.infinite_cycle = False
-        self.number_cycles = 1
+        self.infinite_cycle = self.main_window.radioButton.isChecked()
+        self.number_cycles = self.main_window.spinBox.value()
         # 从数据库中读取全局参数
         self.image_folder_path, self.excel_folder_path, \
             self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
@@ -71,6 +72,7 @@ class MainWork:
             # 取得当前文件目录
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
+            # self.main_window.plainTextEdit.appendPlainText('成功连接数据库！')
             print('成功连接数据库！')
             return cursor, con
         except sqlite3.Error:
@@ -144,7 +146,8 @@ class MainWork:
                 while True:
                     self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
-                        print('结束任务')
+                        self.main_window.plainTextEdit.appendPlainText('结束任务')
+                        # print('结束任务')
                         break
                     if self.suspended:
                         event.clear()
@@ -158,14 +161,16 @@ class MainWork:
                 while number <= repeat_number and self.start_state:
                     self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
-                        print('结束任务')
+                        self.main_window.plainTextEdit.appendPlainText('结束任务')
+                        # print('结束任务')
                         break
                     if self.suspended:
                         event.clear()
                         event.wait(86400)
                     number += 1
                     time.sleep(self.settings.time_sleep)
-                print('结束任务')
+                self.main_window.plainTextEdit.appendPlainText('结束任务')
+                # print('结束任务')
             elif not self.infinite_cycle and self.number_cycles <= 0:
                 print("请设置执行循环次数！")
 
@@ -218,7 +223,8 @@ class MainWork:
                 x = int(dict(dic)['参数2'].split('-')[0])
                 y = int(dict(dic)['参数2'].split('-')[1])
                 z = int(dict(dic)['参数2'].split('-')[1])
-                print('x,y坐标：', x, y)
+                self.main_window.plainTextEdit.appendPlainText('x,y坐标：' + str(x) + ',' + str(y))
+                # print('x,y坐标：', x, y)
                 # 调用鼠标点击事件（点击次数，按钮类型，图像名称）
                 if dict(dic)['参数1（键鼠指令）'] == '左键单击':
                     list_ins = [1, 'left', x, y]
@@ -238,12 +244,11 @@ class MainWork:
                 wait_type = dict(dic)['参数1（键鼠指令）']
                 if wait_type == '等待':
                     wait_time = dict(dic)['参数2']
-                    print('等待时长' + str(wait_time) + '秒')
+                    QApplication.processEvents()
+                    self.main_window.plainTextEdit.appendPlainText('等待时长' + str(wait_time) + '秒')
                     self.stop_time(int(wait_time))
                 elif wait_type == '等待到指定时间':
                     target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
-                    # target_time = list_instructions[current_list_index][4].split('+')[0].replace('-', '/')
-                    # interval_time = list_instructions[current_list_index][4].split('+')[1]
                     interval_time = dict(dic)['参数2'].split('+')[1]
                     now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
                     # 将now_time转换为时间格式
@@ -262,10 +267,8 @@ class MainWork:
 
             # 滚轮滑动的事件
             elif cmd_type == '滚轮滑动':
-                # scroll_direction = list_instructions[current_list_index][3]
                 scroll_direction = dict(dic)['参数1（键鼠指令）']
                 scroll_distance = int(dict(dic)['参数2'])
-                # scroll_distance = int(list_instructions[current_list_index][4])
                 if scroll_direction == '↑':
                     scroll_distance = scroll_distance
                 elif scroll_direction == '↓':
@@ -275,7 +278,6 @@ class MainWork:
 
             # 文本输入的事件
             elif cmd_type == '文本输入':
-                # input_value = str(list_instructions[current_list_index][3])
                 input_value = str(dict(dic)['参数1（键鼠指令）'])
                 list_ins = [input_value]
                 self.execution_repeats(cmd_type, list_ins, re_try)
@@ -359,7 +361,8 @@ class MainWork:
                 lOrR = list_ins[1]
                 pyautogui.click(x, y, click_times, interval=self.settings.interval, duration=self.settings.duration,
                                 button=lOrR)
-                print('执行坐标%s:%s点击' % (x, y) + str(self.number))
+                # print('执行坐标%s:%s点击' % (x, y) + str(self.number))
+                self.main_window.plainTextEdit.appendPlainText('执行坐标%s:%s点击' % (x, y) + str(self.number))
 
             elif cmd_type == '鼠标移动':
                 direction = list_ins[0]
@@ -383,7 +386,8 @@ class MainWork:
                     hotkey = '+'.join(keys)
                     pyautogui.hotkey(hotkey)
                 time.sleep(self.settings.time_sleep)
-                print('已经按下按键' + list_ins[0])
+                self.main_window.plainTextEdit.appendPlainText('已经按下按键' + list_ins[0])
+                # print('已经按下按键' + list_ins[0])
             elif cmd_type == '中键激活':
                 command_type = list_ins[0]
                 click_count = list_ins[1]
@@ -395,7 +399,8 @@ class MainWork:
                 pyautogui.click(position[0], position[1], click_times, interval=self.settings.interval,
                                 duration=self.settings.duration,
                                 button=lOrR)
-                print('执行鼠标事件')
+                self.main_window.plainTextEdit.appendPlainText('执行鼠标事件')
+                # print('执行鼠标事件')
             elif cmd_type == 'excel信息录入':
                 # 图像参数
                 img = list_ins[2]
@@ -411,7 +416,8 @@ class MainWork:
                 cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
                 self.execute_click(click_times, lOrR, img, exception_type)
                 self.text_input(cell_value)
-                print('已执行信息录入')
+                self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
+                # print('已执行信息录入')
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
@@ -436,7 +442,8 @@ class MainWork:
             sheet = wb[str(sheet_name)]
             # 获取单元格的值
             cell_value = sheet[cell_position].value
-            print('获取到的单元格值为：' + str(cell_value))
+            self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+            # print('获取到的单元格值为：' + str(cell_value))
             return cell_value
         except FileNotFoundError:
             x = input('没有找到工作簿')
@@ -455,13 +462,17 @@ class MainWork:
         while True:
             now = time.localtime()
             if show_times == 1:
-                print("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
+                QApplication.processEvents()
+                self.main_window.plainTextEdit.appendPlainText("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
                                                         now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
+                # print("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
+                                                        # now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
                 show_times = sleep_time
             if now.tm_year == year_target and now.tm_mon == month_target and \
                     now.tm_mday == day_target and now.tm_hour == hour_target and \
                     now.tm_min == minute_target and now.tm_sec == second_target:
-                print("退出等待")
+                self.main_window.plainTextEdit.appendPlainText("退出等待")
+                # print("退出等待")
                 break
             # 时间暂停
             time.sleep(sleep_time)
@@ -469,19 +480,23 @@ class MainWork:
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""
-        print('等待按下鼠标中键中...按下esc键退出')
+        QApplication.processEvents()
+        self.main_window.plainTextEdit.appendPlainText('等待按下鼠标中键中...按下esc键退出')
+        # print('等待按下鼠标中键中...按下esc键退出')
         # 如果按下esc键则退出
         mouse.wait(button='middle')
         try:
             if command_type == COMMAND_TYPE_SIMULATE_CLICK:
                 # print('执行鼠标点击'+click_times+'次')
                 pyautogui.click(clicks=int(click_times), button='left')
-                print('执行鼠标点击' + click_times + '次')
+                self.main_window.plainTextEdit.appendPlainText('执行鼠标点击' + click_times + '次')
+                # print('执行鼠标点击' + click_times + '次')
             elif command_type == COMMAND_TYPE_CUSTOM:
                 pass
         except OSError:
             # 弹出提示框。提示检查鼠标是否连接
-            print('连接失败，请检查鼠标是否连接正确。')
+            self.main_window.plainTextEdit.appendPlainText('连接失败，请检查鼠标是否连接正确。')
+            # print('连接失败，请检查鼠标是否连接正确。')
             pass
 
     def execute_click(self, click_times, lOrR, img, skip):
@@ -495,36 +510,41 @@ class MainWork:
             nonlocal repeat, number_1
             if location is not None:
                 # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
-                print('找到匹配图片' + str(self.number))
+                self.main_window.plainTextEdit.appendPlainText('找到匹配图片' + str(self.number))
+                # print('找到匹配图片' + str(self.number))
                 pyautogui.click(location.x, location.y,
                                 clicks=click_times, interval=self.settings.interval, duration=self.settings.duration,
                                 button=lOrR)
-                print('执行鼠标点击' + str(self.number))
+                self.main_window.plainTextEdit.appendPlainText('执行鼠标点击' + str(self.number))
+                # print('执行鼠标点击' + str(self.number))
                 # self.real_time_display_status()
                 repeat = False
             else:
                 if remind:
-                    print('未找到匹配图片' + str(self.number) + '正在重试' + str(number_1))
+                    self.main_window.plainTextEdit.appendPlainText('未找到匹配图片' + str(self.number) + '正在重试' + str(number_1))
+                    # print('未找到匹配图片' + str(self.number) + '正在重试' + str(number_1))
                     number_1 += 1
                 else:
-                    print('未找到匹配图片' + str(self.number))
+                    self.main_window.plainTextEdit.appendPlainText('未找到匹配图片' + str(self.number))
+                    # print('未找到匹配图片' + str(self.number))
                 # self.real_time_display_status()
 
         # location = pyautogui.locateCenterOnScreen(img, confidence=setting.confidence)
         try:
-            print(img)
             if skip == "自动略过":
-                print('执行自动略过')
+                self.main_window.plainTextEdit.appendPlainText('执行自动略过')
+                # print('执行自动略过')
                 location = pyautogui.locateCenterOnScreen(img, confidence=self.settings.confidence)
                 image_match_click(False)
             else:
                 while self.start_state and repeat:
-                    print('执行图像点击')
+                    self.main_window.plainTextEdit.appendPlainText('执行图像点击')
+                    # print('执行图像点击')
                     location = pyautogui.locateCenterOnScreen(img, confidence=self.settings.confidence)
                     print(location)
                     image_match_click(True)
         except OSError:
-            print('目标图像文件夹、图片命名或路径暂不支持中文！')
+            QMessageBox.critical(self.main_window, '错误', '目标图像文件夹、图片命名或路径暂不支持中文！')
 
     def mouse_moves(self, direction, distance):
         """鼠标移动事件"""
@@ -540,27 +560,28 @@ class MainWork:
             pyautogui.moveRel(-abs(int(distance)), 0, duration=self.settings.duration)
         elif direction == '→':
             pyautogui.moveRel(int(distance), 0, duration=self.settings.duration)
-        print('移动鼠标' + direction + distance + '像素距离')
-        # self.real_time_display_status()
+        self.main_window.plainTextEdit.appendPlainText('移动鼠标' + direction + distance + '像素距离')
 
     def wheel_slip(self, scroll_direction, scroll_distance):
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
-        print('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
+        self.main_window.plainTextEdit.appendPlainText('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
 
     def text_input(self, input_value):
         """文本输入事件"""
         pyperclip.copy(input_value)
         pyautogui.hotkey('ctrl', 'v')
         time.sleep(self.settings.time_sleep)
-        print('执行文本输入' + str(input_value))
+        self.main_window.plainTextEdit.appendPlainText('执行文本输入' + str(input_value))
 
     def stop_time(self, seconds):
         """暂停时间"""
         for i in range(seconds):
             keyboard.hook(self.abc)
             # 显示剩下等待时间
-            print('等待中...剩余' + str(seconds - i) + '秒')
+            QApplication.processEvents()
+            self.main_window.plainTextEdit.appendPlainText('等待中...剩余' + str(seconds - i) + '秒')
+            # print('等待中...剩余' + str(seconds - i) + '秒')
             if self.start_state is False:
                 break
             time.sleep(1)
@@ -573,12 +594,15 @@ class MainWork:
         # var = x.scan_code
         # print(var)
         if x.event_type == 'down' and x.name == a.name:
+            self.main_window.plainTextEdit.appendPlainText('你按下了退出键')
             print("你按下了退出键")
             self.start_state = False
         if x.event_type == 'down' and x.name == s.name:
+            self.main_window.plainTextEdit.appendPlainText('你按下了暂停键')
             print("你按下了暂停键")
             self.suspended = True
         if x.event_type == 'down' and x.name == r.name:
+            self.main_window.plainTextEdit.appendPlainText('你按下了恢复键')
             print('你按下了恢复键')
             self.suspended = False
 
