@@ -40,8 +40,6 @@ from 窗体.setting import Ui_Setting
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
-# 声明一个路径的全局变量
-fil_path = ''
 
 
 def load_json():
@@ -155,6 +153,29 @@ class Main_window(QMainWindow, Ui_MainWindow):
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
+        # 分支表名
+        self.branch_name = []
+        self.load_branch()
+        # 创建和删除分支
+        self.toolButton_2.clicked.connect(self.create_branch)
+        self.toolButton.clicked.connect(self.delete_branch)
+        self.comboBox.currentIndexChanged.connect(self.get_data)
+
+    def sqlitedb(self):
+        """建立与数据库的连接，返回游标"""
+        try:
+            con = sqlite3.connect('命令集.db')
+            cursor = con.cursor()
+            return cursor, con
+        except sqlite3.Error:
+            print("数据库连接失败")
+            sys.exit()
+
+    def close_database(self, cursor, conn):
+        """关闭数据库"""
+        cursor.close()
+        conn.close()
+
     def format_table(self):
         """设置主窗口表格格式"""
         # 列的大小拉伸，可被调整
@@ -200,40 +221,47 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def get_data(self):
         """从数据库获取数据并存入表格"""
-        print('获取数据')
-        print(fil_path)
-        self.tableWidget.clearContents()
-        self.tableWidget.setRowCount(0)
-        # 进度条归零
-        self.progressBar.setValue(0)
-        # 获取数据库数据
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
-        list_order = cursor.fetchall()
-        con.close()
-        # 在表格中写入数据
-        print(list_order)
-        for i in range(len(list_order)):
-            self.tableWidget.insertRow(i)
-            for j in range(len(list_order[i])):
-                self.tableWidget.setItem(i, j, QTableWidgetItem(str(list_order[i][j])))
+        print('刷新表格')
+        try:
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
+            # 进度条归零
+            self.progressBar.setValue(0)
+            # 获取数据库数据
+            cursor, con = self.sqlitedb()
+            branch_name = self.comboBox.currentText()
+            cursor.execute(
+                'select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from {}'.format(branch_name))
+            # cursor.execute('select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
+            list_order = cursor.fetchall()
+            self.close_database(cursor, con)
+            # 在表格中写入数据
+            for i in range(len(list_order)):
+                self.tableWidget.insertRow(i)
+                for j in range(len(list_order[i])):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(list_order[i][j])))
+        except sqlite3.OperationalError:
+            pass
 
     def delete_data(self):
         """删除选中的数据行"""
         # 获取选中值的行号和id
-        row = self.tableWidget.currentRow()
-        column = self.tableWidget.currentColumn()
-        xx = self.tableWidget.item(row, 8).text()
-        print(row, column, xx)
-        # 删除数据库中指定id的数据
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('delete from 命令 where ID=?', (xx,))
-        con.commit()
-        con.close()
-        # 调用get_data()函数，刷新表格
-        self.get_data()
+        try:
+            row = self.tableWidget.currentRow()
+            column = self.tableWidget.currentColumn()
+            xx = self.tableWidget.item(row, 8).text()
+            print(row, column, xx)
+            # 删除数据库中指定id的数据
+            con = sqlite3.connect('命令集.db')
+            cursor = con.cursor()
+            branch_name = self.comboBox.currentText()
+            cursor.execute('delete from {} where ID=?'.format(branch_name), (xx,))
+            con.commit()
+            con.close()
+            # 调用get_data()函数，刷新表格
+            self.get_data()
+        except AttributeError:
+            pass
 
         # if row != -1:
         #     xx = self.tableWidget.item(row, 4).text()
@@ -283,21 +311,26 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 con = sqlite3.connect('命令集.db')
                 cursor = con.cursor()
                 # 获取选中行和上一行的数据
+                branch_name = self.comboBox.currentText()
                 cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from 命令 where ID=?', (id,))
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from {} where ID=?'.format(
+                        branch_name), (id,))
                 list_id = cursor.fetchall()
                 cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from 命令 where ID=?',
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from {} where ID=?'.format(
+                        branch_name),
                     (id_up_down,))
                 list_id_up = cursor.fetchall()
                 # 交换选中行和上一行的数据
                 cursor.execute(
-                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?',
+                    'update {} set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?'.format(
+                        branch_name),
                     (
                         list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
                         list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], id))
                 cursor.execute(
-                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?',
+                    'update {} set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?'.format(
+                        branch_name),
                     (list_id[0][0], list_id[0][1], list_id[0][2], list_id[0][3], list_id[0][4], list_id[0][5],
                      list_id[0][6], list_id[0][7], id_up_down))
                 con.commit()
@@ -355,41 +388,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     # 将数据库文件复制到指定文件夹下
                     shutil.copy(db_file, target_path + '/' + file_name + '.db')
                     QMessageBox.information(self, "提示", "指令数据保存成功！")
-        # # 获取图像文件夹路径
-        # global fil_path
-        # # 提取数据库中的所有数据
-        # con = sqlite3.connect('命令集.db')
-        # cursor = con.cursor()
-        # cursor.execute('select * from 命令')
-        # list_orders = cursor.fetchall()
-        # con.close()
-        # # 判断是否选择了文件夹
-        # if fil_path == '':
-        #     fil_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
-        # elif fil_path != '':
-        #     pass
-        # # 创建txt文件
-        # file = fil_path + "/命令集.txt"
-        # # 向txt中写入数据
-        # try:
-        #     with open(file, 'w', encoding='utf-8') as f:
-        #         f.write('请将本文件放入保存图像的文件夹中。\n')
-        #         for i in range(len(list_orders)):
-        #             for j in range(len(list_orders[i])):
-        #                 f.write(str(list_orders[i][j]) + ',')
-        #             f.write('\n')
-        #         QMessageBox.information(self, '保存成功', '数据已保存至' + file)
-        # except PermissionError:
-        #     QMessageBox.warning(self, '保存失败', '无效的文件路径。')
-    # QMessageBox.warning(self, '未选择文件夹', "请点击'添加指令'并选择存放目标图像的文件夹！")
 
     def clear_database(self):
         """清空数据库"""
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('delete from 命令 where ID<>-1')
+        cursor, con = self.sqlitedb()
+        # 清空分支列表中所有的数据
+        for i in range(len(self.branch_name)):
+            cursor.execute('delete from {} where ID<>-1'.format(self.branch_name[i]))
         con.commit()
-        con.close()
+        self.close_database(cursor, con)
 
     def closeEvent(self, event):
         choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
@@ -423,17 +430,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 复制数据库文件到当前文件夹下，并将其重命名为'命令集.db'取代原有数据库文件
             shutil.copy(target_path[0], cwd + '/命令集.db')
             QMessageBox.information(self, "提示", "指令数据导入成功！")
+            self.load_branch()
 
     def start(self):
         """主窗体开始按钮"""
-        global fil_path
-        # mainWork(fil_path, self)
         self.info.show()
         # print("导航页窗口开启")
         resize = self.geometry()
         self.info.move(resize.x() + 45, resize.y() - 30)
         # 开始主任务
-        self.main_work.file_path = fil_path
         self.main_work.start_work()
         self.info.close()
 
@@ -521,6 +526,64 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def open_readme(self):
         """打开使用说明"""
         QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
+
+    def create_branch(self):
+        """创建分支表并重命名"""
+        # 弹出输入对话框，提示输入分支名称
+        text, ok = QInputDialog.getText(self, "创建分支", "请输入分支名称：")
+        if ok:
+            try:
+                # 连接数据库
+                cursor, con = self.sqlitedb()
+                # 创建分支表，分支名为text，分支表中的结构从主表“命令”中复制
+                sql = 'CREATE TABLE {}("ID" INTEGER NOT NULL UNIQUE, "图像名称" TEXT,"指令类型" TEXT NOT NULL,"参数1" text,' \
+                      '"参数2" TEXT,"参数3" TEXT,"参数4" TEXT,"重复次数" integer NOT NULL,"异常处理" TEXT,PRIMARY KEY("ID"))'.format(text)
+                cursor.execute(sql)
+                con.commit()
+                self.close_database(cursor, con)
+                self.branch_name.append(text)
+                QMessageBox.information(self, "提示", "分支创建成功！")
+                self.load_branch()
+            except sqlite3.OperationalError:
+                QMessageBox.critical(self, "提示", "分支创建失败！")
+                pass
+
+    def delete_branch(self):
+        """删除分支"""
+        # 弹出输入对话框，提示输入分支名称
+        cursor, con = self.sqlitedb()
+        text = self.comboBox.currentText()
+        if text == '命令':
+            QMessageBox.information(self, "提示", "无法删除主分支！")
+        else:
+            # 将combox显示的名称切换为命令
+            self.comboBox.setCurrentText('命令')
+            # 删除分支表
+            cursor.execute('drop table ' + text)
+            # 关闭数据库连接
+            con.commit()
+            self.close_database(cursor, con)
+            # 将分支名从分支列表中删除
+            self.branch_name.remove(text)
+            # 弹出提示框
+            QMessageBox.information(self, "提示", "分支删除成功！")
+            # 重新加载分支列表
+            self.load_branch()
+
+    def load_branch(self):
+        """加载分支"""
+        # 初始化功能
+        cursor, con = self.sqlitedb()
+        # 获取所有分支名
+        cursor.execute("select name from sqlite_master where type='table'")
+        self.branch_name = [x[0] for x in cursor.fetchall()]
+        system_built_in = ['设置', '全局参数', 'sqlite_sequence']
+        for i in system_built_in:
+            self.branch_name.remove(i)
+        # 关闭数据库连接
+        self.close_database(cursor, con)
+        self.comboBox.clear()
+        self.comboBox.addItems(self.branch_name)
 
 
 # class Dialog(QWidget, Ui_Form):
@@ -934,15 +997,18 @@ class Na(QWidget, Ui_navigation):
             """向数据库写入命令"""
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
+            branch_name = main_window.comboBox.currentText()
             try:
                 if judge == '保存':
                     cursor.execute(
-                        'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)',
+                        'INSERT INTO {}(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)'.format(
+                            branch_name),
                         (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
                          exception_handling))
                 elif judge == '修改':
                     cursor.execute(
-                        'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? WHERE ID=?',
+                        'UPDATE {} SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? WHERE ID=?'.format(
+                            branch_name),
                         (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
                          exception_handling, xx))
                 con.commit()
