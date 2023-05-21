@@ -24,6 +24,23 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,4">
+     <item>
+      <widget class="QLabel" name="label_43">
+       <property name="text">
+        <string>功能选择：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_16"/>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="font">
       <font>

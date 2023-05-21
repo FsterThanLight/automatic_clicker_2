@@ -910,6 +910,8 @@ class Na(QWidget, Ui_navigation):
         self.tabWidget.currentChanged.connect(self.tab_widget_change)
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
+        # 快捷选择导航页
+        self.comboBox_16.currentTextChanged.connect(self.quick_select_navigation_page)
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -935,6 +937,23 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_14.addItems(image_folder_path)
         # 从数据库加载的扩展名
         self.comboBox_11.addItems(extenders)
+        # 获取tabwidget的所有页标题
+        tab_title = []
+        for i in range(self.tabWidget.count()):
+            tab_title.append(self.tabWidget.tabText(i))
+        self.comboBox_16.clear()
+        self.comboBox_16.addItems(tab_title)
+
+    def quick_select_navigation_page(self):
+        """快捷选择导航页"""
+        tab_title = []
+        for i in range(self.tabWidget.count()):
+            tab_title.append(self.tabWidget.tabText(i))
+        tab_a= self.comboBox_16.currentText()
+        tab_index = tab_title.index(tab_a)
+        print(tab_index)
+        self.tabWidget.setCurrentIndex(tab_index)
+
 
     def find_images(self, combox, combox_2):
         """选择文件夹并返回文件夹名称"""
