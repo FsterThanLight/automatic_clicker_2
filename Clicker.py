@@ -537,8 +537,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 cursor, con = self.sqlitedb()
                 # 创建分支表，分支名为text，分支表中的结构从主表“命令”中复制
                 sql = 'CREATE TABLE {}("ID" INTEGER NOT NULL UNIQUE, "图像名称" TEXT,"指令类型" TEXT NOT NULL,"参数1" text,' \
-                      '"参数2" TEXT,"参数3" TEXT,"参数4" TEXT,"重复次数" integer NOT NULL,"异常处理" TEXT,PRIMARY KEY("ID"))'.format(text)
+                      '"参数2" TEXT,"参数3" TEXT,"参数4" TEXT,"重复次数" integer NOT NULL,"异常处理" TEXT,PRIMARY KEY("ID"))'.format(
+                    text)
                 cursor.execute(sql)
+                # 将分支名添加到全局参数表中
+                cursor.execute(' select 分支表名 from 全局参数')
+                result = cursor.fetchall()
+                if (text,) not in result:
+                    cursor.execute(
+                        'insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
+                        (None, None, text, None))
                 con.commit()
                 self.close_database(cursor, con)
                 self.branch_name.append(text)
@@ -560,6 +568,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.comboBox.setCurrentText('命令')
             # 删除分支表
             cursor.execute('drop table ' + text)
+            cursor.execute('delete from 全局参数 where 分支表名=?', (text,))
             # 关闭数据库连接
             con.commit()
             self.close_database(cursor, con)
@@ -577,10 +586,19 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取所有分支名
         cursor.execute("select name from sqlite_master where type='table'")
         self.branch_name = [x[0] for x in cursor.fetchall()]
+        # 去除系统内置表
         system_built_in = ['设置', '全局参数', 'sqlite_sequence']
         for i in system_built_in:
             self.branch_name.remove(i)
+        # 将分支名写入数据库中，如果已存在则不写入
+        cursor.execute(' select 分支表名 from 全局参数')
+        result = cursor.fetchall()
+        for i in self.branch_name:
+            if (i,) not in result:
+                cursor.execute('insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
+                               (None, None, i, None))
         # 关闭数据库连接
+        con.commit()
         self.close_database(cursor, con)
         self.comboBox.clear()
         self.comboBox.addItems(self.branch_name)
@@ -888,6 +906,10 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_8.currentTextChanged.connect(lambda: self.find_images(self.comboBox_8, self.comboBox))
         self.comboBox_14.currentTextChanged.connect(lambda: self.find_images(self.comboBox_14, self.comboBox_15))
         self.comboBox_12.currentTextChanged.connect(self.find_excel_sheet_name)
+        # 切换到导航页时，控制窗口控件的状态
+        self.tabWidget.currentChanged.connect(self.tab_widget_change)
+        # 调整异常处理选项时，控制窗口控件的状态
+        self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -903,9 +925,15 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_11.clear()
         # 加载下拉列表数据
         self.comboBox_8.addItems(image_folder_path)
+        # 从数据库加载的分支表名
+        system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止']
+        self.comboBox_9.addItems(system_command)
         self.comboBox_9.addItems(branch_table_name)
+        self.comboBox_9.removeItem(3)
+        # 从数据库加载的excel表名和图像名称
         self.comboBox_12.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
+        # 从数据库加载的扩展名
         self.comboBox_11.addItems(extenders)
 
     def find_images(self, combox, combox_2):
@@ -988,6 +1016,88 @@ class Na(QWidget, Ui_navigation):
         # self.setMouseTracking(True)
         self.get_mouse_position()
 
+    def tab_widget_change(self):
+        """切换导航页功能"""
+        # 获取当前导航页索引
+        index = self.tabWidget.currentIndex()
+        print(index)
+        #     "图像点击": 0,
+        #     "坐标点击": 1,
+        #     "鼠标移动": 2,
+        #     "等待": 3,
+        #     "滚轮滑动": 4,
+        #     "文本输入": 5,
+        #     "按下键盘": 6,
+        #     "中键激活": 7,
+        #     "鼠标事件": 8,
+        #     "excel信息录入": 9
+        # 禁用类
+        discards = [1, 2, 3, 4, 5, 6, 7, 8]
+        discards_not = [0, 9]
+        # 不禁用类
+        if index in discards:
+            print('执行了')
+            self.comboBox_9.setEnabled(True)
+            self.comboBox_9.setCurrentIndex(0)
+            self.comboBox_9.setEnabled(False)
+        elif index in discards_not:
+            self.comboBox_9.setEnabled(True)
+
+    def exception_handling_judgment(self):
+        """判断异常处理方式"""
+        exception_handling_text=None
+
+        def remove_none(list_):
+            """去除列表中的none"""
+            list_x = []
+            for i in list_:
+                if i[0] is not None and i[0] != '命令':
+                    list_x.append(i[0])
+            return list_x
+
+        if self.comboBox_9.currentText() == '自动跳过':
+            exception_handling_text = '自动跳过'
+        elif self.comboBox_9.currentText() == '抛出异常并暂停':
+            exception_handling_text = '抛出异常并暂停'
+        elif self.comboBox_9.currentText() == '抛出异常并停止':
+            exception_handling_text = '抛出异常并停止'
+        else:
+            # 连接数据库
+            con = sqlite3.connect('命令集.db')
+            cursor = con.cursor()
+            # 获取表中数据记录的个数
+            cursor.execute('SELECT 分支表名 FROM 全局参数')
+            result = cursor.fetchall()
+            branch_table_name = remove_none(result)
+            print(branch_table_name)
+            cursor.close()
+            con.close()
+            branch_table_name_index = branch_table_name.index(self.comboBox_9.currentText())
+            exception_handling_text = str(branch_table_name_index) + '-' + str(int(self.comboBox_10.currentText()) - 1)
+        return exception_handling_text
+
+    def exception_handling_judgment_type(self):
+        """判断异常护理选项并调整控件"""
+        try:
+            if self.comboBox_9.currentText() == '自动跳过' and '抛出异常并暂停' and '抛出异常并停止':
+                self.comboBox_10.clear()
+                self.comboBox_10.setEnabled(False)
+            elif self.comboBox_9.currentText() != '自动跳过' and '抛出异常并暂停' and '抛出异常并停止':
+                self.comboBox_10.setEnabled(True)
+                # 连接数据库
+                con = sqlite3.connect('命令集.db')
+                cursor = con.cursor()
+                # 获取表中数据记录的个数
+                cursor.execute('SELECT count(*) FROM {}'.format(self.comboBox_9.currentText()))
+                count_record = cursor.fetchone()[0]
+                # 关闭连接
+                cursor.close()
+                con.close()
+                self.comboBox_10.clear()
+                self.comboBox_10.addItems([str(i) for i in range(1, count_record + 1)])
+        except sqlite3.OperationalError:
+            pass
+
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
 
@@ -1037,12 +1147,11 @@ class Na(QWidget, Ui_navigation):
                 xx = 1
             return xx
 
-        # 打印当前tab页
-        print(self.tabWidget.currentIndex())
         # 判断当前tab页
         # 读取功能区的参数
         repeat_number = self.spinBox.value()
-        exception_handling = self.comboBox_9.currentText()
+        # 判断异常类型
+        exception_handling = self.exception_handling_judgment()
         # 图像点击事件的参数获取
         if self.tabWidget.currentIndex() == 0:
             # 获取5个参数命令，写入数据库
