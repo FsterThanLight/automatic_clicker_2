@@ -105,28 +105,18 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_5">
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_36">
            <property name="text">
-            <string>指令名称：</string>
+            <string>文件夹名称：</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBox_2">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>匹配不到指定图像时自动略过该指令</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox"/>
          </item>
          <item row="2" column="1">
           <widget class="QComboBox" name="comboBox_2">
@@ -165,16 +155,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_36">
-           <property name="text">
-            <string>文件夹名称：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QComboBox" name="comboBox_8">
            <property name="layoutDirection">
@@ -188,6 +168,60 @@
            </property>
            <property name="sizeAdjustPolicy">
             <enum>QComboBox::AdjustToContents</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>指令名称：</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <item>
+            <widget class="QLabel" name="label_42">
+             <property name="text">
+              <string>秒数：</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="spinBox_4">
+             <property name="maximum">
+              <number>9999</number>
+             </property>
+             <property name="value">
+              <number>5</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QRadioButton" name="radioButton_2">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>匹配不到指定图像时自动略过该指令</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QRadioButton" name="radioButton_4">
+           <property name="text">
+            <string>匹配不到图片超时报错</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>

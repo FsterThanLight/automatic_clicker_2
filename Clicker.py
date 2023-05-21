@@ -1051,10 +1051,11 @@ class Na(QWidget, Ui_navigation):
             print(image)
             parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
-            if self.checkBox_2.isChecked():
+            parameter_2 = None
+            if self.radioButton_2.isChecked():
                 parameter_2 = '自动略过'
-            else:
-                parameter_2 = None
+            elif self.radioButton_4.isChecked():
+                parameter_2 = self.spinBox_4.value()
             # 将命令写入数据库
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,

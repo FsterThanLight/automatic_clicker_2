@@ -147,7 +147,6 @@ class MainWork:
                     self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
                         self.main_window.plainTextEdit.appendPlainText('结束任务')
-                        # print('结束任务')
                         break
                     if self.suspended:
                         event.clear()
@@ -162,7 +161,6 @@ class MainWork:
                     self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
                         self.main_window.plainTextEdit.appendPlainText('结束任务')
-                        # print('结束任务')
                         break
                     if self.suspended:
                         event.clear()
@@ -170,7 +168,6 @@ class MainWork:
                     number += 1
                     time.sleep(self.settings.time_sleep)
                 self.main_window.plainTextEdit.appendPlainText('结束任务')
-                # print('结束任务')
             elif not self.infinite_cycle and self.number_cycles <= 0:
                 print("请设置执行循环次数！")
 
@@ -463,10 +460,11 @@ class MainWork:
             now = time.localtime()
             if show_times == 1:
                 QApplication.processEvents()
-                self.main_window.plainTextEdit.appendPlainText("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
-                                                        now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
+                self.main_window.plainTextEdit.appendPlainText(
+                    "当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
+                                                      now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
                 # print("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
-                                                        # now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
+                # now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
                 show_times = sleep_time
             if now.tm_year == year_target and now.tm_mon == month_target and \
                     now.tm_mday == day_target and now.tm_hour == hour_target and \
@@ -506,43 +504,47 @@ class MainWork:
         repeat = True
         number_1 = 1
 
-        def image_match_click(remind):
+        def image_match_click(skip, start_time=None):
             nonlocal repeat, number_1
             if location is not None:
                 # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
                 self.main_window.plainTextEdit.appendPlainText('找到匹配图片' + str(self.number))
-                # print('找到匹配图片' + str(self.number))
                 pyautogui.click(location.x, location.y,
                                 clicks=click_times, interval=self.settings.interval, duration=self.settings.duration,
                                 button=lOrR)
-                self.main_window.plainTextEdit.appendPlainText('执行鼠标点击' + str(self.number))
-                # print('执行鼠标点击' + str(self.number))
                 # self.real_time_display_status()
                 repeat = False
             else:
-                if remind:
-                    self.main_window.plainTextEdit.appendPlainText('未找到匹配图片' + str(self.number) + '正在重试' + str(number_1))
-                    # print('未找到匹配图片' + str(self.number) + '正在重试' + str(number_1))
+                if skip != "自动略过":
+                    # 计算如果时间差的秒数大于skip则退出
+                    # 获取当前时间，计算时间差
+                    end_time = time.time()
+                    time_difference = end_time - start_time
+                    # 显示剩余等待时间
+                    QApplication.processEvents()
+                    self.main_window.plainTextEdit.appendPlainText(
+                        '未找到匹配图片' + str(self.number) + '正在重试第' + str(number_1) + '次')
+                    self.main_window.plainTextEdit.appendPlainText(
+                        '剩余等待' + str(round(int(skip) - time_difference, 0)) + '秒')
                     number_1 += 1
-                else:
+                    # 终止条件
+                    if time_difference > int(skip):
+                        repeat = False
+                    time.sleep(0.1)
+                elif skip == "自动略过":
                     self.main_window.plainTextEdit.appendPlainText('未找到匹配图片' + str(self.number))
-                    # print('未找到匹配图片' + str(self.number))
                 # self.real_time_display_status()
 
-        # location = pyautogui.locateCenterOnScreen(img, confidence=setting.confidence)
         try:
+            # 获取当前时间
+            start_time = time.time()
             if skip == "自动略过":
-                self.main_window.plainTextEdit.appendPlainText('执行自动略过')
-                # print('执行自动略过')
                 location = pyautogui.locateCenterOnScreen(img, confidence=self.settings.confidence)
-                image_match_click(False)
+                image_match_click(skip)
             else:
                 while self.start_state and repeat:
-                    self.main_window.plainTextEdit.appendPlainText('执行图像点击')
-                    # print('执行图像点击')
                     location = pyautogui.locateCenterOnScreen(img, confidence=self.settings.confidence)
-                    print(location)
-                    image_match_click(True)
+                    image_match_click(skip, start_time)
         except OSError:
             QMessageBox.critical(self.main_window, '错误', '目标图像文件夹、图片命名或路径暂不支持中文！')
 
@@ -565,7 +567,8 @@ class MainWork:
     def wheel_slip(self, scroll_direction, scroll_distance):
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
-        self.main_window.plainTextEdit.appendPlainText('滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
+        self.main_window.plainTextEdit.appendPlainText(
+            '滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
 
     def text_input(self, input_value):
         """文本输入事件"""
