@@ -280,15 +280,14 @@ class MainWork:
                 # 文本输入的事件
                 elif cmd_type == '文本输入':
                     input_value = str(dict(dic)['参数1（键鼠指令）'])
-                    list_ins = [input_value]
+                    special_control_judgment = dict(dic)['参数2']
+                    list_ins = [input_value, special_control_judgment]
                     self.execution_repeats(cmd_type, list_ins, re_try)
 
                 # 鼠标移动的事件
                 elif cmd_type == '鼠标移动':
                     try:
-                        # direction = list_instructions[current_list_index][3]
                         direction = dict(dic)['参数1（键鼠指令）']
-                        # distance = list_instructions[current_list_index][4]
                         distance = dict(dic)['参数2']
                         list_ins = [direction, distance]
                         self.execution_repeats(cmd_type, list_ins, re_try)
@@ -297,15 +296,12 @@ class MainWork:
 
                 # 键盘按键的事件
                 elif cmd_type == '按下键盘':
-                    # key = list_instructions[current_list_index][3]
                     key = dict(dic)['参数1（键鼠指令）']
                     list_ins = [key]
                     self.execution_repeats(cmd_type, list_ins, re_try)
                 # 中键激活的事件
                 elif cmd_type == '中键激活':
-                    # command_type = list_instructions[current_list_index][3]
                     command_type = dict(dic)['参数1（键鼠指令）']
-                    # click_count = list_instructions[current_list_index][4]
                     click_count = dict(dic)['参数2']
                     list_ins = [command_type, click_count]
                     self.execution_repeats(cmd_type, list_ins, re_try)
@@ -357,7 +353,7 @@ class MainWork:
                 else:  # 跳转分支
                     self.main_window.plainTextEdit.appendPlainText('转到分支')
                     branch_name_index, branch_index = exception_handling.split('-')
-                    x = int(branch_name_index)+1
+                    x = int(branch_name_index) + 1
                     y = int(branch_index)
                     self.execute_instructions(x, y, list_instructions)
                     break
@@ -395,7 +391,8 @@ class MainWork:
                 self.wheel_slip(scroll_direction, scroll_distance)
             elif cmd_type == '文本输入':
                 input_value = list_ins[0]
-                self.text_input(input_value)
+                special_control_judgment = list_ins[1]
+                self.text_input(input_value, special_control_judgment)
             elif cmd_type == '按下键盘':
                 # 获取键盘按键
                 keys = list_ins[0].split('+')
@@ -436,7 +433,7 @@ class MainWork:
                 # 获取excel表格中的值
                 cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
                 self.execute_click(click_times, lOrR, img, exception_type)
-                self.text_input(cell_value)
+                self.text_input(cell_value, False)
                 self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
                 # print('已执行信息录入')
 
@@ -595,12 +592,19 @@ class MainWork:
         self.main_window.plainTextEdit.appendPlainText(
             '滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
 
-    def text_input(self, input_value):
+    def text_input(self, input_value, special_control_judgment):
         """文本输入事件"""
-        pyperclip.copy(input_value)
-        pyautogui.hotkey('ctrl', 'v')
-        time.sleep(self.settings.time_sleep)
-        self.main_window.plainTextEdit.appendPlainText('执行文本输入' + str(input_value))
+        print('special_control_judgment:' + str(special_control_judgment))
+        print(type(special_control_judgment))
+        if special_control_judgment == '0':
+            pyperclip.copy(input_value)
+            pyautogui.hotkey('ctrl', 'v')
+            time.sleep(self.settings.time_sleep)
+            self.main_window.plainTextEdit.appendPlainText('执行文本输入' + str(input_value))
+        elif special_control_judgment == '1':
+            pyautogui.typewrite(input_value, interval=self.settings.interval)
+            self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入' + str(input_value))
+            time.sleep(self.settings.time_sleep)
 
     def stop_time(self, seconds):
         """暂停时间"""

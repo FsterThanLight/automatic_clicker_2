@@ -12,6 +12,7 @@ from __future__ import print_function
 import datetime
 import json
 import os
+import re
 import shutil
 import sqlite3
 import sys
@@ -900,6 +901,8 @@ class Na(QWidget, Ui_navigation):
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
         # 设置当前日期和时间
         self.checkBox.clicked.connect(self.get_now_date_time)
+        # 检查输入的数据是否合法
+        self.checkBox_2.clicked.connect(self.check_text_type)
         # 当按钮按下时，获取按键的名称
         self.pushButton_6.clicked.connect(self.print_key_name)
         # 当combobox_8的值改变时，加载combobox的值
@@ -911,6 +914,8 @@ class Na(QWidget, Ui_navigation):
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
         # 快捷选择导航页
+        self.tab_title = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
+        self.comboBox_16.addItems(self.tab_title)
         self.comboBox_16.currentTextChanged.connect(self.quick_select_navigation_page)
 
     def load_values_to_controls(self):
@@ -937,23 +942,12 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_14.addItems(image_folder_path)
         # 从数据库加载的扩展名
         self.comboBox_11.addItems(extenders)
-        # 获取tabwidget的所有页标题
-        tab_title = []
-        for i in range(self.tabWidget.count()):
-            tab_title.append(self.tabWidget.tabText(i))
-        self.comboBox_16.clear()
-        self.comboBox_16.addItems(tab_title)
 
     def quick_select_navigation_page(self):
         """快捷选择导航页"""
-        tab_title = []
-        for i in range(self.tabWidget.count()):
-            tab_title.append(self.tabWidget.tabText(i))
-        tab_a= self.comboBox_16.currentText()
-        tab_index = tab_title.index(tab_a)
-        print(tab_index)
+        tab_a = self.comboBox_16.currentText()
+        tab_index = self.tab_title.index(tab_a)
         self.tabWidget.setCurrentIndex(tab_index)
-
 
     def find_images(self, combox, combox_2):
         """选择文件夹并返回文件夹名称"""
@@ -1039,7 +1033,6 @@ class Na(QWidget, Ui_navigation):
         """切换导航页功能"""
         # 获取当前导航页索引
         index = self.tabWidget.currentIndex()
-        print(index)
         #     "图像点击": 0,
         #     "坐标点击": 1,
         #     "鼠标移动": 2,
@@ -1055,7 +1048,6 @@ class Na(QWidget, Ui_navigation):
         discards_not = [0, 9]
         # 不禁用类
         if index in discards:
-            print('执行了')
             self.comboBox_9.setEnabled(True)
             self.comboBox_9.setCurrentIndex(0)
             self.comboBox_9.setEnabled(False)
@@ -1064,7 +1056,7 @@ class Na(QWidget, Ui_navigation):
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
-        exception_handling_text=None
+        exception_handling_text = None
 
         def remove_none(list_):
             """去除列表中的none"""
@@ -1116,6 +1108,14 @@ class Na(QWidget, Ui_navigation):
                 self.comboBox_10.addItems([str(i) for i in range(1, count_record + 1)])
         except sqlite3.OperationalError:
             pass
+
+    def check_text_type(self):
+        """检查文本输入类型"""
+        text=self.textEdit.toPlainText()
+        # 检查text中是否未英文大小写字母
+        if re.search('[a-zA-Z]', text) is None:
+            QMessageBox.warning(self, '警告', '特殊控件输入仅支持输入英文大小写字母！', QMessageBox.Yes)
+            self.checkBox_2.setChecked(False)
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
@@ -1277,10 +1277,12 @@ class Na(QWidget, Ui_navigation):
             # 获取文本输入的参数
             # 文本输入的内容
             parameter_1 = self.textEdit.toPlainText()
+            parameter_2 = self.checkBox_2.isChecked()
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
-                                            parameter_1=parameter_1)
+                                            parameter_1=parameter_1,
+                                            parameter_2=parameter_2)
             print('已经保存文本输入的数据至数据库')
         # 按下键盘事件的参数获取
         elif self.tabWidget.currentIndex() == 6:
