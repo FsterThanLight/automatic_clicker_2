@@ -95,17 +95,17 @@ class MainWork:
         all_list_instructions = []
         # 从主表中提取数据
         cursor, conn = self.sqlitedb()
-        # cursor.execute("select * from 命令")
-        # main_list_instructions = cursor.fetchall()
-        # all_list_instructions.append(main_list_instructions)
         # 从分支表中提取数据
-        if len(branch_table_name) != 0:
-            for i in branch_table_name:
-                cursor.execute("select * from " + i)
-                branch_list_instructions = cursor.fetchall()
-                all_list_instructions.append(branch_list_instructions)
-        self.close_database(cursor, conn)
-        return all_list_instructions
+        try:
+            if len(branch_table_name) != 0:
+                for i in branch_table_name:
+                    cursor.execute("select * from " + i)
+                    branch_list_instructions = cursor.fetchall()
+                    all_list_instructions.append(branch_list_instructions)
+            self.close_database(cursor, conn)
+            return all_list_instructions
+        except sqlite3.OperationalError:
+            QMessageBox.critical(self.main_window, "警告", "找不到分支！请检查分支表名是否正确！", QMessageBox.Yes)
 
     # 编写一个函数用于去除列表中的none
     def remove_none(self, list_):
@@ -177,186 +177,198 @@ class MainWork:
         """执行接受到的操作指令"""
         # 读取指令
         while current_index < len(list_instructions[current_list_index]):
-            elem = list_instructions[current_list_index][current_index]
-            print(elem)
-            # 【指令集合【指令分支（指令元素[元素索引]）】】
-            # print('执行当前指令：', elem)
-            dic = {
-                'ID': elem[0],
-                '图像路径': elem[1],
-                '指令类型': elem[2],
-                '参数1（键鼠指令）': elem[3],
-                '参数2': elem[4],
-                '参数3': elem[5],
-                '参数4': elem[6],
-                '重复次数': elem[7],
-                '异常处理': elem[8]
-            }
-            # 读取指令类型
-            cmd_type = dict(dic)['指令类型']
-            re_try = dict(dic)['重复次数']
-            exception_handling = dict(dic)['异常处理']
-            # 设置一个容器，用于存储参数
-            list_ins = []
             try:
-                # 图像识别点击的事件
-                if cmd_type == "图像点击":
-                    # 读取图像名称
-                    img = dict(dic)['图像路径']
-                    # 取重复次数
-                    re_try = dict(dic)['重复次数']
-                    # 是否跳过参数
-                    skip = dict(dic)['参数2']
-                    if dict(dic)['参数1（键鼠指令）'] == '左键单击':
-                        list_ins = [1, 'left', img, skip]
-                    elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
-                        list_ins = [2, 'left', img, skip]
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
-                        list_ins = [1, 'right', img, skip]
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
-                        list_ins = [2, 'right', img, skip]
-                    # 执行鼠标点击事件
-                    self.execution_repeats(cmd_type, list_ins, re_try)
-
-                # 屏幕坐标点击事件
-                elif cmd_type == '坐标点击':
-                    # 取x,y坐标的值
-                    x = int(dict(dic)['参数2'].split('-')[0])
-                    y = int(dict(dic)['参数2'].split('-')[1])
-                    z = int(dict(dic)['参数2'].split('-')[1])
-                    self.main_window.plainTextEdit.appendPlainText('x,y坐标：' + str(x) + ',' + str(y))
-                    # print('x,y坐标：', x, y)
-                    # 调用鼠标点击事件（点击次数，按钮类型，图像名称）
-                    if dict(dic)['参数1（键鼠指令）'] == '左键单击':
-                        list_ins = [1, 'left', x, y]
-                    elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
-                        list_ins = [2, 'left', x, y]
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
-                        list_ins = [1, 'right', x, y]
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
-                        list_ins = [2, 'right', x, y]
-                    elif dict(dic)['参数1（键鼠指令）'] == '左键（自定义次数）':
-                        list_ins = [z, 'left', x, y]
-                    # 执行鼠标点击事件
-                    self.execution_repeats(cmd_type, list_ins, re_try)
-
-                # 等待的事件
-                elif cmd_type == '等待':
-                    wait_type = dict(dic)['参数1（键鼠指令）']
-                    if wait_type == '等待':
-                        wait_time = dict(dic)['参数2']
-                        QApplication.processEvents()
-                        self.main_window.plainTextEdit.appendPlainText('等待时长' + str(wait_time) + '秒')
-                        self.stop_time(int(wait_time))
-                    elif wait_type == '等待到指定时间':
-                        target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
-                        interval_time = dict(dic)['参数2'].split('+')[1]
-                        now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                        # 将now_time转换为时间格式
-                        now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
-                        # 将target_time转换为时间格式
-                        t_time = datetime.datetime.strptime(target_time, '%Y/%m/%d %H:%M:%S')
-                        if t_time > now_time:
-                            year_target = int(t_time.strftime('%Y'))
-                            month_target = int(t_time.strftime('%m'))
-                            day_target = int(t_time.strftime('%d'))
-                            hour_target = int(t_time.strftime('%H'))
-                            minute_target = int(t_time.strftime('%M'))
-                            second_target = int(t_time.strftime('%S'))
-                            self.check_time(year_target, month_target, day_target,
-                                            hour_target, minute_target, second_target, interval_time)
-
-                # 滚轮滑动的事件
-                elif cmd_type == '滚轮滑动':
-                    scroll_direction = dict(dic)['参数1（键鼠指令）']
-                    scroll_distance = int(dict(dic)['参数2'])
-                    if scroll_direction == '↑':
-                        scroll_distance = scroll_distance
-                    elif scroll_direction == '↓':
-                        scroll_distance = -scroll_distance
-                    list_ins = [scroll_direction, scroll_distance]
-                    self.execution_repeats(cmd_type, list_ins, re_try)
-
-                # 文本输入的事件
-                elif cmd_type == '文本输入':
-                    input_value = str(dict(dic)['参数1（键鼠指令）'])
-                    special_control_judgment = dict(dic)['参数2']
-                    list_ins = [input_value, special_control_judgment]
-                    self.execution_repeats(cmd_type, list_ins, re_try)
-
-                # 鼠标移动的事件
-                elif cmd_type == '鼠标移动':
-                    try:
-                        direction = dict(dic)['参数1（键鼠指令）']
-                        distance = dict(dic)['参数2']
-                        list_ins = [direction, distance]
+                elem = list_instructions[current_list_index][current_index]
+                print(elem)
+                # 【指令集合【指令分支（指令元素[元素索引]）】】
+                # print('执行当前指令：', elem)
+                dic = {
+                    'ID': elem[0],
+                    '图像路径': elem[1],
+                    '指令类型': elem[2],
+                    '参数1（键鼠指令）': elem[3],
+                    '参数2': elem[4],
+                    '参数3': elem[5],
+                    '参数4': elem[6],
+                    '重复次数': elem[7],
+                    '异常处理': elem[8]
+                }
+                # 读取指令类型
+                cmd_type = dict(dic)['指令类型']
+                re_try = dict(dic)['重复次数']
+                exception_handling = dict(dic)['异常处理']
+                # 设置一个容器，用于存储参数
+                list_ins = []
+                try:
+                    # 图像识别点击的事件
+                    if cmd_type == "图像点击":
+                        # 读取图像名称
+                        img = dict(dic)['图像路径']
+                        # 取重复次数
+                        re_try = dict(dic)['重复次数']
+                        # 是否跳过参数
+                        skip = dict(dic)['参数2']
+                        if dict(dic)['参数1（键鼠指令）'] == '左键单击':
+                            list_ins = [1, 'left', img, skip]
+                        elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
+                            list_ins = [2, 'left', img, skip]
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
+                            list_ins = [1, 'right', img, skip]
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
+                            list_ins = [2, 'right', img, skip]
+                        # 执行鼠标点击事件
                         self.execution_repeats(cmd_type, list_ins, re_try)
-                    except IndexError:
-                        print('鼠标移动参数格式错误！')
 
-                # 键盘按键的事件
-                elif cmd_type == '按下键盘':
-                    key = dict(dic)['参数1（键鼠指令）']
-                    list_ins = [key]
-                    self.execution_repeats(cmd_type, list_ins, re_try)
-                # 中键激活的事件
-                elif cmd_type == '中键激活':
-                    command_type = dict(dic)['参数1（键鼠指令）']
-                    click_count = dict(dic)['参数2']
-                    list_ins = [command_type, click_count]
-                    self.execution_repeats(cmd_type, list_ins, re_try)
+                    # 屏幕坐标点击事件
+                    elif cmd_type == '坐标点击':
+                        # 取x,y坐标的值
+                        x = int(dict(dic)['参数2'].split('-')[0])
+                        y = int(dict(dic)['参数2'].split('-')[1])
+                        z = int(dict(dic)['参数2'].split('-')[1])
+                        self.main_window.plainTextEdit.appendPlainText('x,y坐标：' + str(x) + ',' + str(y))
+                        # print('x,y坐标：', x, y)
+                        # 调用鼠标点击事件（点击次数，按钮类型，图像名称）
+                        if dict(dic)['参数1（键鼠指令）'] == '左键单击':
+                            list_ins = [1, 'left', x, y]
+                        elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
+                            list_ins = [2, 'left', x, y]
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
+                            list_ins = [1, 'right', x, y]
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
+                            list_ins = [2, 'right', x, y]
+                        elif dict(dic)['参数1（键鼠指令）'] == '左键（自定义次数）':
+                            list_ins = [z, 'left', x, y]
+                        # 执行鼠标点击事件
+                        self.execution_repeats(cmd_type, list_ins, re_try)
 
-                # 鼠标事件
-                elif cmd_type == '鼠标事件':
-                    if dict(dic)['参数1（键鼠指令）'] == '左键单击':
-                        list_ins = [1, 'left']
-                    elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
-                        list_ins = [2, 'left']
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
-                        list_ins = [1, 'right']
-                    elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
-                        list_ins = [2, 'right']
-                    self.execution_repeats(cmd_type, list_ins, re_try)
+                    # 等待的事件
+                    elif cmd_type == '等待':
+                        wait_type = dict(dic)['参数1（键鼠指令）']
+                        if wait_type == '等待':
+                            wait_time = dict(dic)['参数2']
+                            QApplication.processEvents()
+                            self.main_window.plainTextEdit.appendPlainText('等待时长' + str(wait_time) + '秒')
+                            self.stop_time(int(wait_time))
+                        elif wait_type == '等待到指定时间':
+                            target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
+                            interval_time = dict(dic)['参数2'].split('+')[1]
+                            now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                            # 将now_time转换为时间格式
+                            now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
+                            # 将target_time转换为时间格式
+                            t_time = datetime.datetime.strptime(target_time, '%Y/%m/%d %H:%M:%S')
+                            if t_time > now_time:
+                                year_target = int(t_time.strftime('%Y'))
+                                month_target = int(t_time.strftime('%m'))
+                                day_target = int(t_time.strftime('%d'))
+                                hour_target = int(t_time.strftime('%H'))
+                                minute_target = int(t_time.strftime('%M'))
+                                second_target = int(t_time.strftime('%S'))
+                                self.check_time(year_target, month_target, day_target,
+                                                hour_target, minute_target, second_target, interval_time)
+                        elif wait_type == '等待到指定图片':
+                            wait_img = dict(dic)['图像路径']
+                            wait_instruction_type = dict(dic)['参数2']
+                            timeout_period = dict(dic)['参数3']
+                            self.wait_to_the_specified_image(wait_img, wait_instruction_type, timeout_period)
 
-                # 图片信息录取
-                elif cmd_type == 'excel信息录入':
-                    excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
-                    sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
-                    img = dict(dic)['图像路径']
-                    cell_position = dict(dic)['参数2']
-                    exception_type = dict(dic)['异常处理']
-                    list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
-                    self.execution_repeats(cmd_type, list_ins, re_try)
 
-                current_index += 1
-            except pyautogui.ImageNotFoundException:
-                # 跳转分支的指定指令
-                if exception_handling == '自动跳过':
+
+                    # 滚轮滑动的事件
+                    elif cmd_type == '滚轮滑动':
+                        scroll_direction = dict(dic)['参数1（键鼠指令）']
+                        scroll_distance = int(dict(dic)['参数2'])
+                        if scroll_direction == '↑':
+                            scroll_distance = scroll_distance
+                        elif scroll_direction == '↓':
+                            scroll_distance = -scroll_distance
+                        list_ins = [scroll_direction, scroll_distance]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
+                    # 文本输入的事件
+                    elif cmd_type == '文本输入':
+                        input_value = str(dict(dic)['参数1（键鼠指令）'])
+                        special_control_judgment = dict(dic)['参数2']
+                        list_ins = [input_value, special_control_judgment]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
+                    # 鼠标移动的事件
+                    elif cmd_type == '鼠标移动':
+                        try:
+                            direction = dict(dic)['参数1（键鼠指令）']
+                            distance = dict(dic)['参数2']
+                            list_ins = [direction, distance]
+                            self.execution_repeats(cmd_type, list_ins, re_try)
+                        except IndexError:
+                            print('鼠标移动参数格式错误！')
+
+                    # 键盘按键的事件
+                    elif cmd_type == '按下键盘':
+                        key = dict(dic)['参数1（键鼠指令）']
+                        list_ins = [key]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+                    # 中键激活的事件
+                    elif cmd_type == '中键激活':
+                        command_type = dict(dic)['参数1（键鼠指令）']
+                        click_count = dict(dic)['参数2']
+                        list_ins = [command_type, click_count]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
+                    # 鼠标事件
+                    elif cmd_type == '鼠标事件':
+                        if dict(dic)['参数1（键鼠指令）'] == '左键单击':
+                            list_ins = [1, 'left']
+                        elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
+                            list_ins = [2, 'left']
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键单击':
+                            list_ins = [1, 'right']
+                        elif dict(dic)['参数1（键鼠指令）'] == '右键双击':
+                            list_ins = [2, 'right']
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
+                    # 图片信息录取
+                    elif cmd_type == 'excel信息录入':
+                        excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
+                        sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
+                        img = dict(dic)['图像路径']
+                        cell_position = dict(dic)['参数2']
+                        exception_type = dict(dic)['异常处理']
+                        list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
                     current_index += 1
-                elif exception_handling == '抛出异常并暂停':
-                    # 弹出提示框
-                    reply = QMessageBox.question(self.main_window, '提示',
-                                                 'ID为{}的指令抛出异常！\n是否继续执行？'.format(dict(dic)['ID']),
-                                                 QMessageBox.Yes | QMessageBox.No,
-                                                 QMessageBox.No)
-                    if reply == QMessageBox.Yes:
+                except pyautogui.ImageNotFoundException:
+                    # 跳转分支的指定指令
+                    if exception_handling == '自动跳过':
                         current_index += 1
-                    else:
+                    elif exception_handling == '抛出异常并暂停':
+                        # 弹出提示框
+                        reply = QMessageBox.question(self.main_window, '提示',
+                                                     'ID为{}的指令抛出异常！\n是否继续执行？'.format(dict(dic)['ID']),
+                                                     QMessageBox.Yes | QMessageBox.No,
+                                                     QMessageBox.No)
+                        if reply == QMessageBox.Yes:
+                            current_index += 1
+                        else:
+                            self.start_state = False
+                            current_index += 1
+                    elif exception_handling == '抛出异常并停止':
+                        # 弹出提示框
+                        QMessageBox.warning(self.main_window, '提示',
+                                            'ID为{}的指令抛出异常！\n已停止执行！'.format(dict(dic)['ID']))
+                        current_index += 1
                         self.start_state = False
-                        current_index += 1
-                elif exception_handling == '抛出异常并停止':
-                    # 弹出提示框
-                    QMessageBox.warning(self.main_window, '提示',
-                                        'ID为{}的指令抛出异常！\n已停止执行！'.format(dict(dic)['ID']))
-                    current_index += 1
-                    self.start_state = False
-                else:  # 跳转分支
-                    self.main_window.plainTextEdit.appendPlainText('转到分支')
-                    branch_name_index, branch_index = exception_handling.split('-')
-                    x = int(branch_name_index) + 1
-                    y = int(branch_index)
-                    self.execute_instructions(x, y, list_instructions)
-                    break
+                    else:  # 跳转分支
+                        self.main_window.plainTextEdit.appendPlainText('转到分支')
+                        branch_name_index, branch_index = exception_handling.split('-')
+                        x = int(branch_name_index) + 1
+                        y = int(branch_index)
+                        self.execute_instructions(x, y, list_instructions)
+                        break
+            except IndexError:
+                self.main_window.plainTextEdit.appendPlainText('分支执行异常！')
+                QMessageBox.warning(self.main_window, '提示', '分支执行异常！')
+                exit_main_work()
 
     def execution_repeats(self, cmd_type, list_ins, reTry):
         """执行重复次数"""
@@ -496,6 +508,39 @@ class MainWork:
             # 时间暂停
             time.sleep(sleep_time)
             show_times += sleep_time
+
+    def wait_to_the_specified_image(self, image, wait_instruction_type, timeout_period):
+        """执行图片等待"""
+        repeat = True
+        stat_time = time.time()
+
+        def event_in_waiting(text, start_time, timeout_period):
+            """等待中的事件"""
+            QApplication.processEvents()
+            difference_time = int(time.time() - start_time)
+            if difference_time > int(timeout_period):
+                self.main_window.plainTextEdit.appendPlainText('等待超时，已等待' + str(difference_time) + '秒')
+                raise pyautogui.ImageNotFoundException
+            self.main_window.plainTextEdit.appendPlainText(
+                '等待至图像' + text + ',已等待' + str(difference_time) + '秒')
+
+        while repeat and self.start_state:
+            location = pyautogui.locateCenterOnScreen(image, confidence=self.settings.confidence)
+            if wait_instruction_type == '等待到指定图像出现':
+                if location is not None:
+                    QApplication.processEvents()
+                    self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+                    repeat = False
+                else:
+                    event_in_waiting('出现', stat_time, timeout_period)
+            elif wait_instruction_type == '等待到指定图像消失':
+                if location is None:
+                    QApplication.processEvents()
+                    self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+                    repeat = False
+                else:
+                    event_in_waiting('消失', stat_time, timeout_period)
+            time.sleep(0.1)
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""

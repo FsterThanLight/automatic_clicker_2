@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>434</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="font">
@@ -507,149 +507,226 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QLabel" name="label_23">
-         <property name="text">
-          <string>操作说明：当选择等待时长并输入秒数后，该指定会停止对应的秒数。当选择启用定时后，该指令会停止到指定的时间退出，再继续执行后续的其他指令操作。</string>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>时间等待</string>
          </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_19">
+          <item>
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>操作说明：当选择等待时长并输入秒数后，该指定会停止对应的秒数。当选择启用定时后，该指令会停止到指定的时间退出，再继续执行后续的其他指令操作。</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>等待时长（秒）：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_2">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>等待至指定时间：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDateTimeEdit" name="dateTimeEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="displayFormat">
+               <string>yyyy/M/d H:mm:ss</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QCheckBox" name="checkBox">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text">
+               <string>启用定时功能</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QLabel" name="label_25">
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="text">
+                 <string>每</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_6">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="currentText">
+                 <string>1000</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>1000</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>500</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>200</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>100</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>50</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>10</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_26">
+              <property name="text">
+               <string>毫秒检测一次当前时间</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QLabel" name="label_14">
-           <property name="text">
-            <string>等待时长（秒）：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_2">
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="1" column="1">
-          <widget class="QDateTimeEdit" name="dateTimeEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-           <property name="displayFormat">
-            <string>yyyy/M/d H:mm:ss</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_15">
-           <property name="text">
-            <string>等待至指定时间：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="checkBox">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>启用定时功能</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="label_25">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>每</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBox_6">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="currentText">
-            <string>1000</string>
-           </property>
-           <item>
-            <property name="text">
-             <string>1000</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>500</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>200</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>100</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>50</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>10</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_26">
-           <property name="text">
-            <string>毫秒检测一次当前时间</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>图片等待</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>130</height>
-          </size>
-         </property>
-        </spacer>
+         <layout class="QVBoxLayout" name="verticalLayout_20">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_9">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_46">
+              <property name="text">
+               <string>图像名称：</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QSpinBox" name="spinBox_6">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>86400</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="QCheckBox" name="checkBox_5">
+              <property name="text">
+               <string>启用图片等待</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_45">
+              <property name="text">
+               <string>文件夹名称</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_47">
+              <property name="text">
+               <string>指令名称：</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1" colspan="2">
+             <widget class="QComboBox" name="comboBox_17"/>
+            </item>
+            <item row="2" column="1" colspan="2">
+             <widget class="QComboBox" name="comboBox_18"/>
+            </item>
+            <item row="3" column="1" colspan="2">
+             <widget class="QComboBox" name="comboBox_19">
+              <item>
+               <property name="text">
+                <string>等待到指定图像出现</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>等待到指定图像消失</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="QLabel" name="label_48">
+              <property name="text">
+               <string>超时报错秒数：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -972,11 +1049,14 @@
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="4,1,1">
              <item>
               <widget class="QLabel" name="label_27">
                <property name="text">
                 <string>当鼠标中键按下时，模拟鼠标左键点击</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>
@@ -1026,6 +1106,9 @@
             <widget class="QLabel" name="label_29">
              <property name="text">
               <string>当鼠标中键按下时，自动执行该指令后续的所有指令</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
              <property name="wordWrap">
               <bool>true</bool>

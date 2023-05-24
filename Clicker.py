@@ -605,159 +605,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.addItems(self.branch_name)
 
 
-# class Dialog(QWidget, Ui_Form):
-#     """添加指令对话框"""
-#
-#     def __init__(self):
-#         super().__init__()
-#         # 初始化窗体
-#         self.setupUi(self)
-#         self.pushButton_3.clicked.connect(lambda: self.select_file(0))
-#         self.spinBox_2.setValue(1)
-#         self.pushButton.clicked.connect(self.save_data)
-#         self.filePath = ''
-#         # 设置子窗口出现阻塞主窗口
-#         self.setWindowModality(Qt.ApplicationModal)
-#         self.list_combox_3_value = []
-#         list_controls = [self.textEdit, self.spinBox, self.spinBox_2, self.comboBox,
-#                          self.comboBox_3]
-#         for i in list_controls:
-#             i.setEnabled(False)
-#
-#     def select_file(self, judge):
-#         """选择文件夹并返回文件夹名称"""
-#         if judge == 0:
-#             self.filePath = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
-#         try:
-#             images_name = os.listdir(self.filePath)
-#         except FileNotFoundError:
-#             images_name = []
-#         # 去除文件夹中非png文件名称
-#         for i in range(len(images_name) - 1, -1, -1):
-#             if ".png" not in images_name[i]:
-#                 images_name.remove(images_name[i])
-#         print(images_name)
-#         self.label_6.setText(self.filePath.split('/')[-1])
-#         self.comboBox.addItems(images_name)
-#         self.comboBox_2.currentIndexChanged.connect(self.change_label3)
-#         self.comboBox.setEnabled(True)
-#         self.spinBox_2.setEnabled(True)
-#
-#     def change_label3(self):
-#         """标签3根据下拉框2的选择变化"""
-#         self.spinBox_2.setValue(1)
-#         combox_text = self.comboBox_2.currentText()
-#
-#         def commonly_used_controls(dialog_1):
-#             """常用控件恢复运行"""
-#             dialog_1.label_2.setStyleSheet('color:red')
-#             dialog_1.comboBox.setEnabled(True)
-#             dialog_1.spinBox_2.setEnabled(True)
-#             dialog_1.label_4.setStyleSheet('color:red')
-#
-#         def all_disabled(dialog_1):
-#             """指令框所有控件全部禁用"""
-#             list_controls = [dialog_1.textEdit, dialog_1.spinBox, dialog_1.spinBox_2, dialog_1.comboBox,
-#                              dialog_1.comboBox_3]
-#             list_label = [dialog_1.label_2, dialog_1.label_3, dialog_1.label_4, dialog_1.label_7,
-#                           dialog_1.label_8]
-#             for i in list_controls:
-#                 i.setEnabled(False)
-#             for i in list_label:
-#                 i.setStyleSheet('color:transparent')
-#             dialog_1.comboBox_3.clear()
-#
-#         if combox_text == '等待':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#             self.label_3.setStyleSheet('color:red')
-#             self.spinBox.setEnabled(True)
-#             self.label_3.setText('等待时长')
-#
-#         if combox_text == '左键单击':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#
-#         if combox_text == '左键双击':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#
-#         if combox_text == '右键单击':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#
-#         if combox_text == '滚轮滑动':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#             self.label_3.setStyleSheet('color:red')
-#             self.label_3.setText('滑动距离')
-#             self.label_8.setStyleSheet('color:red')
-#             self.label_8.setText('滑动方向')
-#             self.list_combox_3_value = ['向上滑动', '向下滑动']
-#             self.comboBox_3.addItems(self.list_combox_3_value)
-#             self.comboBox_3.setEnabled(True)
-#             self.spinBox.setEnabled(True)
-#
-#         if combox_text == '内容输入':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#             self.label_7.setStyleSheet('color:red')
-#             self.textEdit.setEnabled(True)
-#
-#         if combox_text == '鼠标移动':
-#             all_disabled(self)
-#             commonly_used_controls(self)
-#             self.label_8.setStyleSheet('color:red')
-#             self.label_8.setText('移动方向')
-#             self.label_3.setStyleSheet('color:red')
-#             self.label_3.setText('移动距离')
-#             self.list_combox_3_value = ['向上', '向下', '向左', '向右']
-#             self.comboBox_3.addItems(self.list_combox_3_value)
-#             self.comboBox_3.setEnabled(True)
-#             self.spinBox.setEnabled(True)
-#
-#     def save_data(self):
-#         """获取4个参数命令，并保存至数据库"""
-#         instruction = self.comboBox_2.currentText()
-#         # 根据参数的不同获取不同位置的4个参数
-#         # 获取图像名称和重读次数
-#         image = self.comboBox.currentText()
-#         repeat_number = self.spinBox_2.value()
-#         parameter = ''
-#         # 获取鼠标单击事件或等待的参数
-#         list_click = ['左键单击', '左键双击', '右键单击', '等待']
-#         if instruction in list_click:
-#             parameter = self.spinBox.value()
-#         # 获取滚轮滑动事件参数
-#         if instruction == '滚轮滑动':
-#             direction = self.comboBox_3.currentText()
-#             if direction == '向上滑动':
-#                 parameter = self.spinBox.value()
-#             elif direction == '向下滑动':
-#                 x = int(self.spinBox.value())
-#                 parameter = str(x - 2 * x)
-#         # 获取内容输入事件的参数
-#         if instruction == '内容输入':
-#             parameter = self.textEdit.toPlainText()
-#         # 获取鼠标移动的事件参数
-#         if instruction == '鼠标移动':
-#             direction = self.comboBox_3.currentText()
-#             distance = self.spinBox.value()
-#             parameter = direction + '-' + str(distance)
-#         # 连接数据库，将数据插入表中并关闭数据库
-#         if self.filePath != '':
-#             con = sqlite3.connect('命令集.db')
-#             cursor = con.cursor()
-#             try:
-#                 cursor.execute('INSERT INTO 命令(图像名称,键鼠命令,参数,重复次数) VALUES (?,?,?,?)',
-#                                (image, instruction, parameter, repeat_number))
-#                 con.commit()
-#                 con.close()
-#             except sqlite3.OperationalError:
-#                 QMessageBox.critical(self, "错误", "无写入数据权限，请以管理员身份运行！")
-#         self.close()
-
-
 class Setting(QWidget, Ui_Setting):
     """添加设置窗口"""
 
@@ -908,6 +755,7 @@ class Na(QWidget, Ui_navigation):
         # 当combobox_8的值改变时，加载combobox的值
         self.comboBox_8.currentTextChanged.connect(lambda: self.find_images(self.comboBox_8, self.comboBox))
         self.comboBox_14.currentTextChanged.connect(lambda: self.find_images(self.comboBox_14, self.comboBox_15))
+        self.comboBox_17.currentTextChanged.connect(lambda: self.find_images(self.comboBox_17, self.comboBox_18))
         self.comboBox_12.currentTextChanged.connect(self.find_excel_sheet_name)
         # 切换到导航页时，控制窗口控件的状态
         self.tabWidget.currentChanged.connect(self.tab_widget_change)
@@ -930,8 +778,11 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_13.clear()
         self.comboBox_14.clear()
         self.comboBox_11.clear()
+        self.comboBox_17.clear()
+        self.comboBox_18.clear()
         # 加载下拉列表数据
         self.comboBox_8.addItems(image_folder_path)
+        self.comboBox_17.addItems(image_folder_path)
         # 从数据库加载的分支表名
         system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止']
         self.comboBox_9.addItems(system_command)
@@ -1044,8 +895,8 @@ class Na(QWidget, Ui_navigation):
         #     "鼠标事件": 8,
         #     "excel信息录入": 9
         # 禁用类
-        discards = [1, 2, 3, 4, 5, 6, 7, 8]
-        discards_not = [0, 9]
+        discards = [1, 2, 4, 5, 6, 7, 8]
+        discards_not = [0, 3, 9]
         # 不禁用类
         if index in discards:
             self.comboBox_9.setEnabled(True)
@@ -1111,11 +962,11 @@ class Na(QWidget, Ui_navigation):
 
     def check_text_type(self):
         """检查文本输入类型"""
-        text=self.textEdit.toPlainText()
-        # 检查text中是否未英文大小写字母
-        if re.search('[a-zA-Z]', text) is None:
-            QMessageBox.warning(self, '警告', '特殊控件输入仅支持输入英文大小写字母！', QMessageBox.Yes)
-            self.checkBox_2.setChecked(False)
+        text = self.textEdit.toPlainText()
+        # 检查text中是否为英文大小写字母和数字
+        if re.search('[a-zA-Z0-9]', text) is None:
+            QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
+            self.checkBox.setChecked(False)
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
@@ -1176,7 +1027,6 @@ class Na(QWidget, Ui_navigation):
             # 获取5个参数命令，写入数据库
             instruction = "图像点击"
             image = self.comboBox_8.currentText() + '/' + self.comboBox.currentText()
-            print(image)
             parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
             parameter_2 = None
@@ -1225,16 +1075,18 @@ class Na(QWidget, Ui_navigation):
             instruction = "等待"
             # 获取等待的参数
             # 如果checkBox没有被选中，则第一个参数为等待时间
+            image = None
             parameter_1 = None
             parameter_2 = None
-            if not self.checkBox.isChecked():
+            parameter_3 = None
+            if not self.checkBox.isChecked() and not self.checkBox_5.isChecked():
                 parameter_1 = "等待"
                 try:
                     parameter_2 = int(self.lineEdit_2.text())
                 except ValueError:
                     QMessageBox.critical(self, "错误", "等待时间请输入数字！")
                     return
-            elif self.checkBox.isChecked():
+            elif self.checkBox.isChecked() and not self.checkBox_5.isChecked():
                 parameter_1 = "等待到指定时间"
                 # 判断时间是否大于当前时间
                 parameter_2 = self.dateTimeEdit.text() + "+" + self.comboBox_6.currentText()
@@ -1245,12 +1097,22 @@ class Na(QWidget, Ui_navigation):
                 except TimeoutError:
                     QMessageBox.critical(self, "错误", "启动时间小于当前系统时间，无效的指令。")
                     return
-
+            elif not self.checkBox.isChecked() and self.checkBox_5.isChecked():
+                parameter_1 = "等待到指定图片"
+                image = self.comboBox_17.currentText() + '/' + self.comboBox_18.currentText()
+                parameter_2 = self.comboBox_19.currentText()
+                parameter_3 = self.spinBox_6.value()
+            elif self.checkBox.isChecked() and self.checkBox_5.isChecked():
+                QMessageBox.critical(self, "错误", "等待指定时间和等待指定图片不能同时勾选！")
+                return
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
+                                            image=image,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2,
+                                            parameter_3=parameter_3)
+
         # 鼠标滚轮滑动事件的参数获取
         elif self.tabWidget.currentIndex() == 4:
             # 获取5个参数命令
