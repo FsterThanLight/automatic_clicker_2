@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>392</width>
-    <height>500</height>
+    <width>398</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="font">
@@ -1056,7 +1056,7 @@
                 <string>当鼠标中键按下时，模拟鼠标左键点击</string>
                </property>
                <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>
@@ -1108,7 +1108,7 @@
               <string>当鼠标中键按下时，自动执行该指令后续的所有指令</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
              <property name="wordWrap">
               <bool>true</bool>
@@ -1324,6 +1324,36 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_5">
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBox_10">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="3">
+      <widget class="QComboBox" name="comboBox_11">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="frame">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QComboBox" name="comboBox_9"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="label_33">
+       <property name="text">
+        <string>异常处理：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_21">
        <property name="text">
@@ -1333,6 +1363,9 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QLineEdit" name="lineEdit_5"/>
      </item>
      <item row="0" column="1">
       <widget class="QSpinBox" name="spinBox">
@@ -1347,17 +1380,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_34">
-       <property name="text">
-        <string>开始位置：</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_35">
        <property name="text">
         <string>扩展程序：</string>
@@ -1367,32 +1390,25 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QComboBox" name="comboBox_11">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="label_33">
+     <item row="1" column="2">
+      <widget class="QLabel" name="label_49">
        <property name="text">
-        <string>异常处理：</string>
+        <string>备注：</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="comboBox_10">
-       <property name="enabled">
-        <bool>false</bool>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_34">
+       <property name="text">
+        <string>开始位置：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QComboBox" name="comboBox_9"/>
      </item>
     </layout>
    </item>

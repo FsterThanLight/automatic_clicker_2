@@ -264,21 +264,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             pass
 
-        # if row != -1:
-        #     xx = self.tableWidget.item(row, 4).text()
-        # else:
-        #     xx = -1
-        # try:
-        #     self.tableWidget.removeRow(row)
-        #     # 删除数据库中数据
-        #     con = sqlite3.connect('命令集.db')
-        #     cursor = con.cursor()
-        #     cursor.execute('delete from 命令 where ID=?', (xx,))
-        #     con.commit()
-        #     con.close()
-        # except UnboundLocalError:
-        #     pass
-
     def go_up_down(self, judge):
         """向上或向下移动选中的行"""
         # 获取选中值的行号和id
@@ -342,29 +327,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.tableWidget.setCurrentCell(row_up_down, column)
         except AttributeError:
             pass
-
-        # def table_cell_changed(self, combox_change):
-        #     """单元格改变时自动存储"""
-        #     if self.change_state:
-        #         print('自动存储')
-        #         row = self.tableWidget.currentRow()
-        #         if combox_change:
-        #             self.tableWidget.item(row, 2).setText('0')
-        #         else:
-        #             pass
-        #         # 获取选中行的id，及其他参数
-        #         id = self.tableWidget.item(row, 4).text()
-        #         images = self.tableWidget.item(row, 0).text()
-        #         parameter = self.tableWidget.item(row, 2).text()
-        #         repeat_number = self.tableWidget.item(row, 3).text()
-        #         option = self.tableWidget.cellWidget(row, 1).currentText()
-        #         # 连接数据库，提交修改
-        #         con = sqlite3.connect('命令集.db')
-        #         cursor = con.cursor()
-        #         cursor.execute('update 命令 set 图像名称=?,键鼠命令=?,参数=?,重复次数=? where ID=?',
-        #                        (images, option, parameter, repeat_number, id))
-        #         con.commit()
-        #         con.close()
 
     def save_data_to_current(self):
         """保存配置文件到当前文件夹下"""
@@ -784,15 +746,13 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_8.addItems(image_folder_path)
         self.comboBox_17.addItems(image_folder_path)
         # 从数据库加载的分支表名
-        system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止']
+        system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止', '扩展程序']
         self.comboBox_9.addItems(system_command)
         self.comboBox_9.addItems(branch_table_name)
-        self.comboBox_9.removeItem(3)
+        self.comboBox_9.removeItem(4)
         # 从数据库加载的excel表名和图像名称
         self.comboBox_12.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
-        # 从数据库加载的扩展名
-        self.comboBox_11.addItems(extenders)
 
     def quick_select_navigation_page(self):
         """快捷选择导航页"""
@@ -923,6 +883,8 @@ class Na(QWidget, Ui_navigation):
             exception_handling_text = '抛出异常并暂停'
         elif self.comboBox_9.currentText() == '抛出异常并停止':
             exception_handling_text = '抛出异常并停止'
+        elif self.comboBox_9.currentText() == '扩展程序':
+            exception_handling_text = self.comboBox_11.currentText()
         else:
             # 连接数据库
             con = sqlite3.connect('命令集.db')
@@ -940,11 +902,19 @@ class Na(QWidget, Ui_navigation):
 
     def exception_handling_judgment_type(self):
         """判断异常护理选项并调整控件"""
+        system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止']
         try:
-            if self.comboBox_9.currentText() == '自动跳过' and '抛出异常并暂停' and '抛出异常并停止':
+            if self.comboBox_9.currentText() in system_command:
+                # 开始位置
                 self.comboBox_10.clear()
                 self.comboBox_10.setEnabled(False)
-            elif self.comboBox_9.currentText() != '自动跳过' and '抛出异常并暂停' and '抛出异常并停止':
+                # 扩展程序
+                self.comboBox_11.clear()
+                self.comboBox_11.setEnabled(False)
+            elif self.comboBox_9.currentText() not in system_command and self.comboBox_9.currentText() != '扩展程序':
+                # 扩展程序
+                self.comboBox_11.clear()
+                self.comboBox_11.setEnabled(False)
                 self.comboBox_10.setEnabled(True)
                 # 连接数据库
                 con = sqlite3.connect('命令集.db')
@@ -957,6 +927,16 @@ class Na(QWidget, Ui_navigation):
                 con.close()
                 self.comboBox_10.clear()
                 self.comboBox_10.addItems([str(i) for i in range(1, count_record + 1)])
+            elif self.comboBox_9.currentText() not in system_command and self.comboBox_9.currentText() == '扩展程序':
+                # 开始位置
+                self.comboBox_10.clear()
+                self.comboBox_10.setEnabled(False)
+                # 扩展程序
+                self.comboBox_11.setEnabled(True)
+                image_folder_path, excel_folder_path, \
+                    branch_table_name, extenders = self.global_window.extracted_data_global_parameter()
+                self.comboBox_11.clear()
+                self.comboBox_11.addItems(extenders)
         except sqlite3.OperationalError:
             pass
 
@@ -1186,20 +1166,28 @@ class Na(QWidget, Ui_navigation):
         # excel信息录入功能的参数获取
         elif self.tabWidget.currentIndex() == 9:
             instruction = "excel信息录入"
+            parameter_4 = None
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
             # 获取图像文件路径
             image = self.comboBox_14.currentText() + '/' + self.comboBox_15.currentText()
             # 获取单元格值
             parameter_2 = self.lineEdit_4.text()
-            # 判断是否递增行号
-            parameter_3 = self.checkBox_3.isChecked()
+            # 判断是否递增行号和特殊控件输入
+            parameter_3 = self.checkBox_3.isChecked() + '-' + self.checkBox_4.isChecked()
+            # 判断其他参数
+            if self.radioButton_3.isChecked() and not self.radioButton_5.isChecked():
+                parameter_4 = '自动跳过'
+            elif not self.radioButton_3.isChecked() and self.radioButton_5.isChecked():
+                parameter_4 = self.spinBox_5.value()
+
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
                                             parameter_2=parameter_2,
                                             parameter_3=parameter_3,
+                                            parameter_4=parameter_4,
                                             image=image)
 
         # 关闭窗体
@@ -1234,14 +1222,11 @@ class Global_s(QDialog, Ui_Global):
         self.pushButton.clicked.connect(lambda: self.select_file("图像文件夹路径"))
         # 添加工作簿路径
         self.pushButton_3.clicked.connect(lambda: self.select_file("工作簿路径"))
-        # 添加分支表名
-        self.pushButton_7.clicked.connect(lambda: self.select_file("分支表名"))
         # 添加扩展程序
         self.pushButton_9.clicked.connect(lambda: self.select_file("扩展程序"))
         # 删除listview中的项
         self.pushButton_2.clicked.connect(lambda: self.delete_listview(self.listView, "图像文件夹路径"))
         self.pushButton_4.clicked.connect(lambda: self.delete_listview(self.listView_2, "工作簿路径"))
-        self.pushButton_8.clicked.connect(lambda: self.delete_listview(self.listView_4, "分支表名"))
         self.pushButton_10.clicked.connect(lambda: self.delete_listview(self.listView_5, "扩展程序"))
 
     def select_file(self, judge):
@@ -1254,16 +1239,12 @@ class Global_s(QDialog, Ui_Global):
             fil_path, _ = QFileDialog.getOpenFileName(self, "选择工作簿", filter="Excel 工作簿(*.xlsx)")
             if fil_path != '':
                 self.write_to_database(None, fil_path, None, None)
-        elif judge == "分支表名":
-            # 弹出对话框输入分支表名
-            text, ok = QInputDialog.getText(self, "输入分支表名", "请输入分支表名：")
-            if ok:
-                self.write_to_database(None, None, text, None)
         elif judge == "扩展程序":
-            # 弹出对话框输入扩展程序
-            text, ok = QInputDialog.getText(self, "输入扩展程序", "请输入扩展程序：")
-            if ok:
-                self.write_to_database(None, None, None, text)
+            # 打开文件对话框，选择一个py或exe文件
+            fil_path, _ = QFileDialog.getOpenFileName(self, "选择扩展程序",
+                                                      filter="Python文件(*.py);;可执行文件(*.exe)")
+            if fil_path != '':
+                self.write_to_database(None, None, None, fil_path)
         self.refresh_listview()
 
     def delete_listview(self, list_view, judge):
@@ -1293,8 +1274,6 @@ class Global_s(QDialog, Ui_Global):
             c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 = ?", (value,))
         elif judge == '工作簿路径':
             c.execute("DELETE FROM 全局参数 WHERE 工作簿路径 = ?", (value,))
-        elif judge == '分支表名':
-            c.execute("DELETE FROM 全局参数 WHERE 分支表名 = ?", (value,))
         elif judge == '扩展程序':
             c.execute("DELETE FROM 全局参数 WHERE 扩展程序 = ?", (value,))
         # 删除无用数据
@@ -1309,6 +1288,8 @@ class Global_s(QDialog, Ui_Global):
         image_folder_path, excel_folder_path, \
             branch_table_name, extenders = self.extracted_data_global_parameter()
 
+        print('扩展程序：', extenders)
+
         def add_listview(list_, listview):
             """添加listview"""
             listview.setModel(QStandardItemModel())
@@ -1319,7 +1300,6 @@ class Global_s(QDialog, Ui_Global):
 
         add_listview(image_folder_path, self.listView)
         add_listview(excel_folder_path, self.listView_2)
-        add_listview(branch_table_name, self.listView_4)
         add_listview(extenders, self.listView_5)
 
     def sqlitedb(self):
@@ -1360,7 +1340,6 @@ class Global_s(QDialog, Ui_Global):
         cursor.execute("select 扩展程序 from 全局参数")
         extenders = self.remove_none(cursor.fetchall())
         self.close_database(cursor, conn)
-        print("全局参数读取成功！")
         return image_folder_path, excel_folder_path, branch_table_name, extenders
 
     def write_to_database(self, images_file, work_book_path, branch_table_name, extension_program):

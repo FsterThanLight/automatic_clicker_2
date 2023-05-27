@@ -10,6 +10,7 @@
 import datetime
 import os
 import sqlite3
+import subprocess
 import sys
 import threading
 import time
@@ -49,21 +50,6 @@ class MainWork:
         self.image_folder_path, self.excel_folder_path, \
             self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
 
-    # def accdb(self):
-    #     """建立与数据库的连接，返回游标"""
-    #     try:
-    #         path = os.path.abspath('.')
-    #         # 取得当前文件目录
-    #         mdb = r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=' + path + '\\' + self.odbc_name
-    #         # 连接字符串
-    #         conn = pypyodbc.win_connect_mdb(mdb)
-    #         # 建立连接
-    #         cursor = conn.cursor()
-    #         print('成功连接数据库！')
-    #         return cursor, conn
-    #     except pypyodbc.Error:
-    #         x = input("未连接到数据库！！请检查数据库路径是否异常。")
-    #         sys.exit()
 
     def sqlitedb(self):
         """建立与数据库的连接，返回游标"""
@@ -352,12 +338,22 @@ class MainWork:
                         else:
                             self.start_state = False
                             current_index += 1
+                            break
                     elif exception_handling == '抛出异常并停止':
                         # 弹出提示框
                         QMessageBox.warning(self.main_window, '提示',
                                             'ID为{}的指令抛出异常！\n已停止执行！'.format(dict(dic)['ID']))
                         current_index += 1
                         self.start_state = False
+                        break
+                    elif '.py' or '.exe' in exception_handling:
+                        self.start_state = False
+                        self.main_window.plainTextEdit.appendPlainText('执行扩展程序')
+                        if '.exe' in exception_handling:
+                            subprocess.run('calc.exe')
+                        elif '.py' in exception_handling:
+                            subprocess.run('python {}'.format(exception_handling))
+                        break
                     else:  # 跳转分支
                         self.main_window.plainTextEdit.appendPlainText('转到分支')
                         branch_name_index, branch_index = exception_handling.split('-')
@@ -736,15 +732,3 @@ class SettingsData:
 
 def exit_main_work():
     sys.exit()
-
-# if __name__ == '__main__':
-#     # x = input('按回车键开始')
-#     # odbc_name = '命令集.accdb'
-#     # main_work = MainWork(odbc_name)
-#     # main_work.start_work()
-#     # y = input('按回车键退出')
-#
-#     # test
-#     odbc_name = '命令集.accdb'
-#     main_work = MainWork(odbc_name)
-#     main_work.test()

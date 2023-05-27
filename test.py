@@ -22,3 +22,4 @@ def traverse_lists(current_list_index, current_index, list_all):
 
 if __name__ == '__main__':
     traverse_lists(0, 0, list_all)
+    x=input("输入任意字符结束")
