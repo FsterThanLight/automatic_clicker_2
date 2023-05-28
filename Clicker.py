@@ -833,6 +833,9 @@ class Na(QWidget, Ui_navigation):
     def get_now_date_time(self):
         """获取当前日期和时间"""
         now_date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        # 将当前的时间和日期加10分钟
+        now_date_time = (datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(
+            minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
         # 将dateTimeEdit的日期和时间设置为当前日期和时间
         self.dateTimeEdit.setDateTime(datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S'))
 
@@ -862,8 +865,11 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_9.setEnabled(True)
             self.comboBox_9.setCurrentIndex(0)
             self.comboBox_9.setEnabled(False)
+            self.comboBox_11.setEnabled(True)
+            self.comboBox_11.setEnabled(False)
         elif index in discards_not:
             self.comboBox_9.setEnabled(True)
+            self.comboBox_11.setEnabled(True)
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -945,8 +951,8 @@ class Na(QWidget, Ui_navigation):
         text = self.textEdit.toPlainText()
         # 检查text中是否为英文大小写字母和数字
         if re.search('[a-zA-Z0-9]', text) is None:
+            self.checkBox_2.setChecked(False)
             QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
-            self.checkBox.setChecked(False)
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
@@ -979,15 +985,15 @@ class Na(QWidget, Ui_navigation):
         def time_judgment(target_time):
             """判断时间是否大于当前时间"""
             # 获取当前时间年月日和时分秒
-            print(target_time)
+            # print(target_time)
             now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 将now_time转换为时间格式
             now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
             # 将字符参数转换为时间格式
             target_time = datetime.datetime.strptime(target_time, '%Y/%m/%d %H:%M:%S')
             # 判断是否重新输入
-            print(now_time)
-            print(target_time)
+            # print(now_time)
+            # print(target_time)
             xx = 0
             if now_time < target_time:
                 print('目标时间大于当前时间，正确')
@@ -1119,7 +1125,7 @@ class Na(QWidget, Ui_navigation):
             # 获取文本输入的参数
             # 文本输入的内容
             parameter_1 = self.textEdit.toPlainText()
-            parameter_2 = self.checkBox_2.isChecked()
+            parameter_2 = str(self.checkBox_2.isChecked())
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
@@ -1174,7 +1180,7 @@ class Na(QWidget, Ui_navigation):
             # 获取单元格值
             parameter_2 = self.lineEdit_4.text()
             # 判断是否递增行号和特殊控件输入
-            parameter_3 = self.checkBox_3.isChecked() + '-' + self.checkBox_4.isChecked()
+            parameter_3 = str(self.checkBox_3.isChecked()) + '-' + str(self.checkBox_4.isChecked())
             # 判断其他参数
             if self.radioButton_3.isChecked() and not self.radioButton_5.isChecked():
                 parameter_4 = '自动跳过'

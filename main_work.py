@@ -9,6 +9,7 @@
 # See the Mulan PSL v2 for more details.
 import datetime
 import os
+import re
 import sqlite3
 import subprocess
 import sys
@@ -50,7 +51,6 @@ class MainWork:
         self.image_folder_path, self.excel_folder_path, \
             self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
 
-
     def sqlitedb(self):
         """建立与数据库的连接，返回游标"""
         try:
@@ -64,6 +64,12 @@ class MainWork:
         except sqlite3.Error:
             x = input("未连接到数据库！！请检查数据库路径是否异常。")
             sys.exit()
+
+    def reset_loop_count_and_infinite_loop_judgment(self):
+        """重置循环次数和无限循环标志"""
+        self.number = 1
+        self.infinite_cycle = self.main_window.radioButton.isChecked()
+        self.number_cycles = self.main_window.spinBox.value()
 
     def close_database(self, cursor, conn):
         """关闭数据库"""
@@ -121,10 +127,12 @@ class MainWork:
         """主要工作"""
         self.start_state = True
         self.suspended = False
+        # 打印循环次数
+        self.reset_loop_count_and_infinite_loop_judgment()
         # 读取数据库中的数据
-        print(self.branch_table_name)
+        # print(self.branch_table_name)
         list_instructions = self.extracted_data_all_list(self.branch_table_name)
-        print(list_instructions)
+        # print(list_instructions)
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -142,10 +150,10 @@ class MainWork:
                     self.number += 1
                     time.sleep(self.settings.time_sleep)
             # 如果状态为有限次循环
-            elif self.infinite_cycle == False and self.number_cycles > 0:
-                number = 1
+            elif not self.infinite_cycle and self.number_cycles > 0:
+                self.number = 1
                 repeat_number = self.number_cycles
-                while number <= repeat_number and self.start_state:
+                while self.number <= repeat_number and self.start_state:
                     self.execute_instructions(0, 0, list_instructions)
                     if not self.start_state:
                         self.main_window.plainTextEdit.appendPlainText('结束任务')
@@ -153,7 +161,8 @@ class MainWork:
                     if self.suspended:
                         event.clear()
                         event.wait(86400)
-                    number += 1
+                    print('第', self.number, '次循环')
+                    self.number += 1
                     time.sleep(self.settings.time_sleep)
                 self.main_window.plainTextEdit.appendPlainText('结束任务')
             elif not self.infinite_cycle and self.number_cycles <= 0:
@@ -165,7 +174,7 @@ class MainWork:
         while current_index < len(list_instructions[current_list_index]):
             try:
                 elem = list_instructions[current_list_index][current_index]
-                print(elem)
+                # print(elem)
                 # 【指令集合【指令分支（指令元素[元素索引]）】】
                 # print('执行当前指令：', elem)
                 dic = {
@@ -318,9 +327,24 @@ class MainWork:
                         sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
                         img = dict(dic)['图像路径']
                         cell_position = dict(dic)['参数2']
+                        line_number_increment = dict(dic)['参数3'].split('-')[0]
+                        special_control_input = dict(dic)['参数3'].split('-')[1]
+                        time_out_error = dict(dic)['参数4']
                         exception_type = dict(dic)['异常处理']
-                        list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
-                        self.execution_repeats(cmd_type, list_ins, re_try)
+                        list_dic = {
+                            '点击次数': 3,
+                            '按钮类型': 'left',
+                            '工作簿路径': excel_path,
+                            '工作表名称': sheet_name,
+                            '图像路径': img,
+                            '单元格位置': cell_position,
+                            '行号递增': line_number_increment,
+                            '特殊控件输入': special_control_input,
+                            '超时报错': time_out_error,
+                            '异常处理': exception_type
+                        }
+                        # list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
+                        self.execution_repeats(cmd_type, list_dic, re_try)
 
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
@@ -428,20 +452,19 @@ class MainWork:
                 self.main_window.plainTextEdit.appendPlainText('执行鼠标事件')
                 # print('执行鼠标事件')
             elif cmd_type == 'excel信息录入':
-                # 图像参数
-                img = list_ins[2]
-                # excel参数
-                excel_path = list_ins[3]
-                sheet_name = list_ins[4]
-                cell_position = list_ins[5]
-                # 鼠标单击参数
-                click_times = list_ins[0]
-                lOrR = list_ins[1]
-                exception_type = list_ins[6]
+                excel_path = dict(list_ins)['工作簿路径']
+                sheet_name = dict(list_ins)['工作表名称']
+                cell_position = dict(list_ins)['单元格位置']
+                click_times = dict(list_ins)['点击次数']
+                lOrR = dict(list_ins)['按钮类型']
+                img = dict(list_ins)['图像路径']
+                line_number_increment = dict(list_ins)['行号递增']
+                special_control_input = dict(list_ins)['特殊控件输入']
+                time_out_error = dict(list_ins)['超时报错']
                 # 获取excel表格中的值
-                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position)
-                self.execute_click(click_times, lOrR, img, exception_type)
-                self.text_input(cell_value, False)
+                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position, line_number_increment)
+                self.execute_click(click_times, lOrR, img, time_out_error)
+                self.text_input(cell_value, special_control_input)
                 self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
                 # print('已执行信息录入')
 
@@ -458,18 +481,27 @@ class MainWork:
         else:
             pass
 
-    def extra_excel_cell_value(self, excel_path, sheet_name, cell_position):
+    def extra_excel_cell_value(self, excel_path, sheet_name, cell_position, line_number_increment):
         """获取excel表格中的值"""
         print('正在获取单元格值')
+        cell_value = None
+        # print('line_number_increment:', line_number_increment)
         try:
             # 打开excel表格
             wb = openpyxl.load_workbook(excel_path)
             # 选择表格
             sheet = wb[str(sheet_name)]
-            # 获取单元格的值
-            cell_value = sheet[cell_position].value
-            self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
-            # print('获取到的单元格值为：' + str(cell_value))
+            if line_number_increment == 'False':
+                # 获取单元格的值
+                cell_value = sheet[cell_position].value
+                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+            elif line_number_increment == 'True':
+                # 获取行号递增的单元格的值
+                column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
+                line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + self.number - 1
+                new_cell_position = column_number + str(line_number)
+                cell_value = sheet[new_cell_position].value
+                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
             return cell_value
         except FileNotFoundError:
             x = input('没有找到工作簿')
@@ -637,12 +669,12 @@ class MainWork:
         """文本输入事件"""
         print('special_control_judgment:' + str(special_control_judgment))
         print(type(special_control_judgment))
-        if special_control_judgment == '0':
+        if special_control_judgment == 'False':
             pyperclip.copy(input_value)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(self.settings.time_sleep)
             self.main_window.plainTextEdit.appendPlainText('执行文本输入' + str(input_value))
-        elif special_control_judgment == '1':
+        elif special_control_judgment == 'True':
             pyautogui.typewrite(input_value, interval=self.settings.interval)
             self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入' + str(input_value))
             time.sleep(self.settings.time_sleep)
