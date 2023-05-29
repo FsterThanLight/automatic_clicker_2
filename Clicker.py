@@ -129,10 +129,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionf.triggered.connect(self.data_import)
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
+        self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
         # 打开设置
         self.actions_2.triggered.connect(self.show_setting)
         # 结束任务按钮
         self.pushButton_6.clicked.connect(exit_main_work)
+        # 导出日志按钮
+        self.toolButton_8.clicked.connect(self.exporting_operation_logs)
         # 检查更新按钮（菜单栏）
         self.actionj.triggered.connect(lambda: self.check_update(1))
         # 隐藏工具栏
@@ -229,8 +232,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             self.tableWidget.clearContents()
             self.tableWidget.setRowCount(0)
-            # 进度条归零
-            self.progressBar.setValue(0)
             # 获取数据库数据
             cursor, con = self.sqlitedb()
             branch_name = self.comboBox.currentText()
@@ -397,15 +398,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "提示", "指令数据导入成功！")
             self.load_branch()
 
-    def start(self):
+    def start(self, only_current_instructions=False):
         """主窗体开始按钮"""
-        self.info.show()
-        # print("导航页窗口开启")
-        resize = self.geometry()
-        self.info.move(resize.x() + 45, resize.y() - 30)
+        def info_show():
+            """显示信息窗口"""
+            self.info.show()
+            resize = self.geometry()
+            self.info.move(resize.x() + 45, resize.y() - 30)
         # 开始主任务
-        self.main_work.start_work()
-        # self.main_work.test()
+        if not only_current_instructions:
+            info_show()
+            self.main_work.start_work()
+        elif only_current_instructions:
+            if self.comboBox.currentText() == '主流程':
+                QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
+            else:
+                info_show()
+                self.main_work.start_work(only_current_instructions)
         self.info.close()
 
     def clear_plaintext(self, judge):
@@ -470,6 +479,24 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.toolBar.show()
         elif not self.actiong.isChecked():
             self.toolBar.hide()
+
+    def exporting_operation_logs(self):
+        """导出操作日志"""
+        # 打开保存文件对话框
+        target_path = QFileDialog.getSaveFileName(self, "请选择保存路径", '', "(*.txt)")
+        # 判断是否选择了文件
+        if target_path[0] == '':
+            pass
+        else:
+            # 获取操作日志
+            logs= self.plainTextEdit.toPlainText()
+            # 获取当前日期时间
+            now = datetime.datetime.now()
+            # 将操作日志写入文件
+            with open(target_path[0], 'w') as f:
+                f.write('日志导出时间：' + now.strftime('%Y-%m-%d %H:%M:%S') + '\n')
+                f.write(logs)
+            QMessageBox.information(self, "提示", "操作日志导出成功！")
 
     def modify_parameters(self):
         """修改参数"""
@@ -873,7 +900,9 @@ class Na(QWidget, Ui_navigation):
     def line_number_increasing(self):
         """行号递增功能被选中后弹出提示框"""
         if self.checkBox_3.isChecked():
-            QMessageBox.information(self, '提示', '启用该功能后，请在主页面中设置循环次数大于1，执行全部指令后，循环执行时，单元格行号会自动递增。', QMessageBox.Ok)
+            QMessageBox.information(self, '提示',
+                                    '启用该功能后，请在主页面中设置循环次数大于1，执行全部指令后，循环执行时，单元格行号会自动递增。',
+                                    QMessageBox.Ok)
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -1377,32 +1406,31 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-    app = QApplication([])
-    # 创建主窗体
-    main_window = Main_window()
-    # 显示窗体，并根据设置检查更新
-    main_window.main_show()
-    # 显示添加对话框窗口
-    sys.exit(app.exec_())
+    # app = QApplication([])
+    # # 创建主窗体
+    # main_window = Main_window()
+    # # 显示窗体，并根据设置检查更新
+    # main_window.main_show()
+    # # 显示添加对话框窗口
+    # sys.exit(app.exec_())
+
+    def is_admin():
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
 
 
-    # def is_admin():
-    #     try:
-    #         return ctypes.windll.shell32.IsUserAnAdmin()
-    #     except:
-    #         return False
-    #
-    #
-    # if is_admin():
-    #     app = QApplication([])
-    #     # 创建主窗体
-    #     main_window = Main_window()
-    #     # 显示窗体，并根据设置检查更新
-    #     main_window.main_show()
-    #     # 显示添加对话框窗口
-    #     sys.exit(app.exec_())
-    # else:
-    #     if sys.version_info[0] == 3:
-    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-    #     else:  # in python2.x
-    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+    if is_admin():
+        app = QApplication([])
+        # 创建主窗体
+        main_window = Main_window()
+        # 显示窗体，并根据设置检查更新
+        main_window.main_show()
+        # 显示添加对话框窗口
+        sys.exit(app.exec_())
+    else:
+        if sys.version_info[0] == 3:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+        else:  # in python2.x
+            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)

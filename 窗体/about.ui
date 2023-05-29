@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>278</width>
-    <height>348</height>
+    <width>198</width>
+    <height>305</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,15 +43,15 @@
       <widget class="QLabel" name="label">
        <property name="maximumSize">
         <size>
-         <width>91</width>
-         <height>91</height>
+         <width>90</width>
+         <height>90</height>
         </size>
        </property>
        <property name="text">
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>:/按钮图标/图标.png</pixmap>
+        <pixmap resource="../images.qrc">:/按钮图标/窗体/res/图标.png</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -151,7 +151,7 @@
       </font>
      </property>
      <property name="text">
-      <string>版本：v0.21</string>
+      <string>版本：v0.25</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

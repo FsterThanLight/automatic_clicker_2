@@ -82,18 +82,23 @@ class MainWork:
         print(all_list_instructions)
         print(len(all_list_instructions))
 
-    def extracted_data_all_list(self):
+    def extracted_data_all_list(self, only_current_instructions=False):
         """提取指令集中的数据,返回主表和分支表的汇总数据"""
         all_list_instructions = []
         # 从主表中提取数据
         cursor, conn = self.sqlitedb()
         # 从分支表中提取数据
         try:
-            if len(self.branch_table_name) != 0:
-                for i in self.branch_table_name:
-                    cursor.execute("select * from 命令 where 隶属分支 = ?", (i,))
-                    branch_list_instructions = cursor.fetchall()
-                    all_list_instructions.append(branch_list_instructions)
+            if not only_current_instructions:
+                if len(self.branch_table_name) != 0:
+                    for i in self.branch_table_name:
+                        cursor.execute("select * from 命令 where 隶属分支 = ?", (i,))
+                        branch_list_instructions = cursor.fetchall()
+                        all_list_instructions.append(branch_list_instructions)
+            if only_current_instructions:
+                cursor.execute("select * from 命令 where 隶属分支 = ?", (self.main_window.comboBox.currentText(),))
+                branch_list_instructions = cursor.fetchall()
+                all_list_instructions.append(branch_list_instructions)
             self.close_database(cursor, conn)
             return all_list_instructions
         except sqlite3.OperationalError:
@@ -123,14 +128,14 @@ class MainWork:
         print("全局参数读取成功！")
         return image_folder_path, excel_folder_path, branch_table_name, extenders
 
-    def start_work(self):
+    def start_work(self, only_current_instructions=False):
         """主要工作"""
         self.start_state = True
         self.suspended = False
         # 打印循环次数
         self.reset_loop_count_and_infinite_loop_judgment()
         # 读取数据库中的数据
-        list_instructions = self.extracted_data_all_list()
+        list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -159,7 +164,8 @@ class MainWork:
                     if self.suspended:
                         event.clear()
                         event.wait(86400)
-                    print('第', self.number, '次循环')
+                    # print('第', self.number, '次循环')
+                    self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
                     self.number += 1
                     time.sleep(self.settings.time_sleep)
                 self.main_window.plainTextEdit.appendPlainText('结束任务')
@@ -171,8 +177,6 @@ class MainWork:
         # 读取指令
         while current_index < len(list_instructions[current_list_index]):
             try:
-                x = (current_index+1 + 1) / len(list_instructions) * 100
-                self.main_window.progressBar.setValue(int(x))
                 elem = list_instructions[current_list_index][current_index]
                 # print(elem)
                 # 【指令集合【指令分支（指令元素[元素索引]）】】
@@ -349,7 +353,7 @@ class MainWork:
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
                     # 跳转分支的指定指令
-                    print('分支指令:'+exception_handling)
+                    print('分支指令:' + exception_handling)
                     if exception_handling == '自动跳过':
                         current_index += 1
                     elif exception_handling == '抛出异常并暂停':

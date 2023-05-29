@@ -135,6 +135,9 @@
          <property name="editTriggers">
           <set>QAbstractItemView::NoEditTriggers</set>
          </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
@@ -169,7 +172,7 @@
           <bool>false</bool>
          </attribute>
          <attribute name="verticalHeaderDefaultSectionSize">
-          <number>30</number>
+          <number>23</number>
          </attribute>
          <column>
           <property name="text">
@@ -639,7 +642,35 @@
       <property name="title">
        <string>操作</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0,0" rowminimumheight="0,0,0">
+      <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0,0,0" rowminimumheight="0,0,0,0">
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_7">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>暂停/恢复</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>结束任务</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QPushButton" name="pushButton_5">
          <property name="font">
@@ -659,30 +690,9 @@ color: rgb(255, 255, 255);</string>
         </widget>
        </item>
        <item row="1" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_7">
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
+        <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>暂停/恢复</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_6">
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>结束任务</string>
+          <string>仅运行当前分支</string>
          </property>
         </widget>
        </item>
@@ -747,9 +757,9 @@ color: rgb(255, 255, 255);</string>
       <property name="title">
        <string>处理状态</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+        <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
          <property name="spacing">
           <number>6</number>
          </property>
@@ -1025,10 +1035,32 @@ color: rgb(255, 255, 255);</string>
            </property>
           </widget>
          </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>16</number>
+         </property>
          <item>
-          <widget class="QProgressBar" name="progressBar">
-           <property name="value">
-            <number>0</number>
+          <widget class="QToolButton" name="toolButton_7">
+           <property name="text">
+            <string>清空</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../images.qrc">
+             <normaloff>:/按钮图标/窗体/res/清除.png</normaloff>:/按钮图标/窗体/res/清除.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton_8">
+           <property name="text">
+            <string>导出</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../images.qrc">
+             <normaloff>:/按钮图标/窗体/res/导入指令.png</normaloff>:/按钮图标/窗体/res/导入指令.png</iconset>
            </property>
           </widget>
          </item>
@@ -1451,5 +1483,22 @@ color: rgb(255, 255, 255);</string>
  <resources>
   <include location="../images.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>toolButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>plainTextEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
