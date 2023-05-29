@@ -51,11 +51,7 @@ def load_json():
     with open(file_name, 'r', encoding='utf8') as f:
         data = json.load(f)
     url = cryptocode.decrypt(data['url_encrypt'], '123456')
-    # list_keep = []
-    # for v in data.values():
-    #     list_keep.append(v)
-    print(url)
-    # print(list_keep)
+    # print(url)
     return url
 
 
@@ -63,12 +59,12 @@ def get_download_address(main_window, warning):
     """获取下载地址、版本信息、更新说明"""
     global headers
     url = load_json()
-    print(url)
+    # print(url)
     try:
         res = requests.get(url, headers=headers, timeout=0.2)
         info = cryptocode.decrypt(res.text, '123456')
         list_1 = info.split('=')
-        print(list_1)
+        # print(list_1)
         return list_1
     except requests.exceptions.ConnectionError:
         if warning == 1:
@@ -90,8 +86,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.version = 'v0.21'
         # 窗体的功能
         self.main_work = MainWork(self)
-        # 实例化子窗口1
-        # self.dialog_1 = Dialog()
         # 全局设置窗口
         self.global_s = Global_s()
         # 实例化导航页窗口

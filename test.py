@@ -1,5 +1,5 @@
 import re
-import sys
+import cryptocode
 
 list_all = [[(1, 2, 3, 4, ""), (4, 5, 6, 7, ""), (3, 4, 6, 8, "")],
             [(7, 8, 9, 2, ""), (3, 6, 9, 4, "3-1")],
@@ -36,11 +36,21 @@ def string_judgment(filename):
         print('未知文件类型')
 
 
+def encrypt(string, judge):
+    if judge == '加密':
+        return cryptocode.encrypt(string, "123456")
+    elif judge == '解密':
+        return cryptocode.decrypt(string, '123456')
+
+
 if __name__ == '__main__':
     # cell_position = 'b2'
     # new_cell_position = get_a_number(cell_position, 4)
     # print(new_cell_position)
     # traverse_lists(0, 0, list_all)
     # x=input("输入任意字符结束")
-    filename = r"C:\Users\federalsadler\Desktop\automatic_clicker_2\test.png"
-    string_judgment(filename)
+    with open('SoftwareUpdateInformation.txt', 'r') as f:
+        # 读取文件中的所有内容
+        content = f.read()
+        content = encrypt(content, '解密')
+    print(content)
