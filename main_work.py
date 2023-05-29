@@ -78,20 +78,20 @@ class MainWork:
 
     def test(self):
         print('test')
-        all_list_instructions = self.extracted_data_all_list(self.branch_table_name)
+        all_list_instructions = self.extracted_data_all_list()
         print(all_list_instructions)
         print(len(all_list_instructions))
 
-    def extracted_data_all_list(self, branch_table_name):
+    def extracted_data_all_list(self):
         """提取指令集中的数据,返回主表和分支表的汇总数据"""
         all_list_instructions = []
         # 从主表中提取数据
         cursor, conn = self.sqlitedb()
         # 从分支表中提取数据
         try:
-            if len(branch_table_name) != 0:
-                for i in branch_table_name:
-                    cursor.execute("select * from " + i)
+            if len(self.branch_table_name) != 0:
+                for i in self.branch_table_name:
+                    cursor.execute("select * from 命令 where 隶属分支 = ?", (i,))
                     branch_list_instructions = cursor.fetchall()
                     all_list_instructions.append(branch_list_instructions)
             self.close_database(cursor, conn)
@@ -130,9 +130,7 @@ class MainWork:
         # 打印循环次数
         self.reset_loop_count_and_infinite_loop_judgment()
         # 读取数据库中的数据
-        # print(self.branch_table_name)
-        list_instructions = self.extracted_data_all_list(self.branch_table_name)
-        # print(list_instructions)
+        list_instructions = self.extracted_data_all_list()
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -173,6 +171,8 @@ class MainWork:
         # 读取指令
         while current_index < len(list_instructions[current_list_index]):
             try:
+                x = (current_index+1 + 1) / len(list_instructions) * 100
+                self.main_window.progressBar.setValue(int(x))
                 elem = list_instructions[current_list_index][current_index]
                 # print(elem)
                 # 【指令集合【指令分支（指令元素[元素索引]）】】
@@ -349,6 +349,7 @@ class MainWork:
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
                     # 跳转分支的指定指令
+                    print('分支指令:'+exception_handling)
                     if exception_handling == '自动跳过':
                         current_index += 1
                     elif exception_handling == '抛出异常并暂停':
@@ -370,7 +371,7 @@ class MainWork:
                         current_index += 1
                         self.start_state = False
                         break
-                    elif '.py' or '.exe' in exception_handling:
+                    elif exception_handling.endswith('.py') or exception_handling.endswith('.exe'):
                         self.start_state = False
                         self.main_window.plainTextEdit.appendPlainText('执行扩展程序')
                         if '.exe' in exception_handling:
@@ -378,11 +379,13 @@ class MainWork:
                         elif '.py' in exception_handling:
                             subprocess.run('python {}'.format(exception_handling))
                         break
-                    else:  # 跳转分支
+                    elif '分支' in exception_handling:  # 跳转分支
                         self.main_window.plainTextEdit.appendPlainText('转到分支')
-                        branch_name_index, branch_index = exception_handling.split('-')
-                        x = int(branch_name_index) + 1
+                        branch_name_index = exception_handling.split('-')[1]
+                        branch_index = exception_handling.split('-')[2]
+                        x = int(branch_name_index)
                         y = int(branch_index)
+                        print('x:', x, 'y:', y)
                         self.execute_instructions(x, y, list_instructions)
                         break
             except IndexError:

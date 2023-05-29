@@ -29,9 +29,18 @@ def get_a_number(cell_position, number=1):
     return new_cell_position
 
 
+def string_judgment(filename):
+    if filename.endswith('.py') or filename.endswith('.exe'):
+        print('Python文件或可执行文件')
+    else:
+        print('未知文件类型')
+
+
 if __name__ == '__main__':
-    cell_position = 'b2'
-    new_cell_position = get_a_number(cell_position,4)
-    print(new_cell_position)
+    # cell_position = 'b2'
+    # new_cell_position = get_a_number(cell_position, 4)
+    # print(new_cell_position)
     # traverse_lists(0, 0, list_all)
     # x=input("输入任意字符结束")
+    filename = r"C:\Users\federalsadler\Desktop\automatic_clicker_2\test.png"
+    string_judgment(filename)
