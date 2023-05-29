@@ -9,6 +9,7 @@
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
 
+import ctypes
 import datetime
 import json
 import os
@@ -30,6 +31,7 @@ from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 from openpyxl.utils.exceptions import InvalidFileException
+from pyscreeze import unicode
 
 from main_work import MainWork, exit_main_work
 from 窗体.about import Ui_Dialog
@@ -49,11 +51,7 @@ def load_json():
     with open(file_name, 'r', encoding='utf8') as f:
         data = json.load(f)
     url = cryptocode.decrypt(data['url_encrypt'], '123456')
-    # list_keep = []
-    # for v in data.values():
-    #     list_keep.append(v)
-    print(url)
-    # print(list_keep)
+    # print(url)
     return url
 
 
@@ -61,12 +59,12 @@ def get_download_address(main_window, warning):
     """获取下载地址、版本信息、更新说明"""
     global headers
     url = load_json()
-    print(url)
+    # print(url)
     try:
         res = requests.get(url, headers=headers, timeout=0.2)
         info = cryptocode.decrypt(res.text, '123456')
         list_1 = info.split('=')
-        print(list_1)
+        # print(list_1)
         return list_1
     except requests.exceptions.ConnectionError:
         if warning == 1:
@@ -88,8 +86,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.version = 'v0.21'
         # 窗体的功能
         self.main_work = MainWork(self)
-        # 实例化子窗口1
-        # self.dialog_1 = Dialog()
         # 全局设置窗口
         self.global_s = Global_s()
         # 实例化导航页窗口
@@ -127,10 +123,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionf.triggered.connect(self.data_import)
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
+        self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
         # 打开设置
         self.actions_2.triggered.connect(self.show_setting)
         # 结束任务按钮
         self.pushButton_6.clicked.connect(exit_main_work)
+        # 导出日志按钮
+        self.toolButton_8.clicked.connect(self.exporting_operation_logs)
         # 检查更新按钮（菜单栏）
         self.actionj.triggered.connect(lambda: self.check_update(1))
         # 隐藏工具栏
@@ -185,12 +184,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Interactive)
         self.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Interactive)
-        # # 列的大小调整为固定，列宽不会改变
+        self.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Interactive)
+        # 列的大小调整为固定，列宽不会改变
+        self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
         self.tableWidget.horizontalHeader().setSectionResizeMode(7, QHeaderView.Fixed)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(8, QHeaderView.Fixed)
         # 设置列宽为50像素
+        self.tableWidget.setColumnWidth(6, 30)
         self.tableWidget.setColumnWidth(7, 30)
-        self.tableWidget.setColumnWidth(8, 30)
 
     def show_setting(self):
         self.setting.show()
@@ -226,13 +226,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             self.tableWidget.clearContents()
             self.tableWidget.setRowCount(0)
-            # 进度条归零
-            self.progressBar.setValue(0)
             # 获取数据库数据
             cursor, con = self.sqlitedb()
             branch_name = self.comboBox.currentText()
             cursor.execute(
-                'select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from {}'.format(branch_name))
+                'select 图像名称,指令类型,异常处理,备注,参数1,参数2,重复次数,ID from 命令 where 隶属分支=?',
+                (branch_name,))
             # cursor.execute('select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
             list_order = cursor.fetchall()
             self.close_database(cursor, con)
@@ -250,13 +249,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             row = self.tableWidget.currentRow()
             column = self.tableWidget.currentColumn()
-            xx = self.tableWidget.item(row, 8).text()
+            xx = self.tableWidget.item(row, 7).text()
             print(row, column, xx)
             # 删除数据库中指定id的数据
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
             branch_name = self.comboBox.currentText()
-            cursor.execute('delete from {} where ID=?'.format(branch_name), (xx,))
+            cursor.execute('delete from 命令 where ID=? and 隶属分支=?', (xx, branch_name,))
             con.commit()
             con.close()
             # 调用get_data()函数，刷新表格
@@ -270,9 +269,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         row = self.tableWidget.currentRow()
         column = self.tableWidget.currentColumn()
         try:
-            xx = self.tableWidget.item(row, 8).text()
+            xx = self.tableWidget.item(row, 7).text()
             # 将选中行的数据在数据库中与上一行数据交换，如果是第一行则不交换
-            id = int(self.tableWidget.item(row, 8).text())
+            id = int(self.tableWidget.item(row, 7).text())
             # 初始化值
             id_up_down = id
             row_up_down = row
@@ -299,26 +298,25 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 获取选中行和上一行的数据
                 branch_name = self.comboBox.currentText()
                 cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from {} where ID=?'.format(
-                        branch_name), (id,))
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
+                    (id, branch_name,))
                 list_id = cursor.fetchall()
                 cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,ID from {} where ID=?'.format(
-                        branch_name),
-                    (id_up_down,))
+                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
+                    (id_up_down, branch_name,))
                 list_id_up = cursor.fetchall()
                 # 交换选中行和上一行的数据
                 cursor.execute(
-                    'update {} set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?'.format(
-                        branch_name),
-                    (
-                        list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
-                        list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], id))
+                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
+                    '隶属分支=?',
+                    (list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
+                     list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], list_id_up[0][8], list_id_up[0][9], id,
+                     branch_name,))
                 cursor.execute(
-                    'update {} set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? where ID=?'.format(
-                        branch_name),
+                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
+                    '隶属分支=?',
                     (list_id[0][0], list_id[0][1], list_id[0][2], list_id[0][3], list_id[0][4], list_id[0][5],
-                     list_id[0][6], list_id[0][7], id_up_down))
+                     list_id[0][6], list_id[0][7], list_id[0][8], list_id[0][9], id_up_down, branch_name,))
                 con.commit()
                 con.close()
             # 调用get_data()函数，刷新表格
@@ -356,8 +354,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """清空数据库"""
         cursor, con = self.sqlitedb()
         # 清空分支列表中所有的数据
-        for i in range(len(self.branch_name)):
-            cursor.execute('delete from {} where ID<>-1'.format(self.branch_name[i]))
+        cursor.execute('delete from 命令 where ID<>-1')
         con.commit()
         self.close_database(cursor, con)
 
@@ -395,14 +392,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "提示", "指令数据导入成功！")
             self.load_branch()
 
-    def start(self):
+    def start(self, only_current_instructions=False):
         """主窗体开始按钮"""
-        self.info.show()
-        # print("导航页窗口开启")
-        resize = self.geometry()
-        self.info.move(resize.x() + 45, resize.y() - 30)
+        def info_show():
+            """显示信息窗口"""
+            self.info.show()
+            resize = self.geometry()
+            self.info.move(resize.x() + 45, resize.y() - 30)
         # 开始主任务
-        self.main_work.start_work()
+        if not only_current_instructions:
+            info_show()
+            self.main_work.start_work()
+        elif only_current_instructions:
+            if self.comboBox.currentText() == '主流程':
+                QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
+            else:
+                info_show()
+                self.main_work.start_work(only_current_instructions)
         self.info.close()
 
     def clear_plaintext(self, judge):
@@ -468,13 +474,31 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif not self.actiong.isChecked():
             self.toolBar.hide()
 
+    def exporting_operation_logs(self):
+        """导出操作日志"""
+        # 打开保存文件对话框
+        target_path = QFileDialog.getSaveFileName(self, "请选择保存路径", '', "(*.txt)")
+        # 判断是否选择了文件
+        if target_path[0] == '':
+            pass
+        else:
+            # 获取操作日志
+            logs= self.plainTextEdit.toPlainText()
+            # 获取当前日期时间
+            now = datetime.datetime.now()
+            # 将操作日志写入文件
+            with open(target_path[0], 'w') as f:
+                f.write('日志导出时间：' + now.strftime('%Y-%m-%d %H:%M:%S') + '\n')
+                f.write(logs)
+            QMessageBox.information(self, "提示", "操作日志导出成功！")
+
     def modify_parameters(self):
         """修改参数"""
         try:
             # 获取当前行行号列号
             row = self.tableWidget.currentRow()
             # 获取当前行的ID
-            xx = self.tableWidget.item(row, 8).text()
+            xx = self.tableWidget.item(row, 7).text()
             yy = self.tableWidget.item(row, 1).text()
             # 将导航页的tabWidget设置为对应的页
             self.show_navigation()
@@ -498,22 +522,25 @@ class Main_window(QMainWindow, Ui_MainWindow):
             try:
                 # 连接数据库
                 cursor, con = self.sqlitedb()
-                # 创建分支表，分支名为text，分支表中的结构从主表“命令”中复制
-                sql = 'CREATE TABLE {}("ID" INTEGER NOT NULL UNIQUE, "图像名称" TEXT,"指令类型" TEXT NOT NULL,"参数1" text,' \
-                      '"参数2" TEXT,"参数3" TEXT,"参数4" TEXT,"重复次数" integer NOT NULL,"异常处理" TEXT,PRIMARY KEY("ID"))'.format(
-                    text)
-                cursor.execute(sql)
-                # 将分支名添加到全局参数表中
-                cursor.execute(' select 分支表名 from 全局参数')
-                result = cursor.fetchall()
-                if (text,) not in result:
-                    cursor.execute(
-                        'insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
-                        (None, None, text, None))
-                con.commit()
+                # 查找是否有同名分支
+                cursor.execute('select 分支表名 from 全局参数 where 分支表名=?', (text,))
+                x = cursor.fetchall()
+                # print('x:' + str(x))
+                # print('x:' + str(len(x)))
+                if len(x) > 0:
+                    QMessageBox.information(self, "提示", "分支已存在！")
+                    return
+                else:
+                    # 向全局参数表中添加分支表名
+                    print('添加分支')
+                    cursor.execute('insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
+                                   (None, None, text, None))
+                    con.commit()
+                    # 弹出提示框，提示创建成功
+                    QMessageBox.information(self, "提示", "分支创建成功！")
+                # 关闭数据库连接
                 self.close_database(cursor, con)
-                self.branch_name.append(text)
-                QMessageBox.information(self, "提示", "分支创建成功！")
+                # 加载分支
                 self.load_branch()
             except sqlite3.OperationalError:
                 QMessageBox.critical(self, "提示", "分支创建失败！")
@@ -522,15 +549,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def delete_branch(self):
         """删除分支"""
         # 弹出输入对话框，提示输入分支名称
+        print('删除分支')
         cursor, con = self.sqlitedb()
         text = self.comboBox.currentText()
-        if text == '命令':
+        if text == '主流程':
             QMessageBox.information(self, "提示", "无法删除主分支！")
         else:
             # 将combox显示的名称切换为命令
-            self.comboBox.setCurrentText('命令')
-            # 删除分支表
-            cursor.execute('drop table ' + text)
+            self.comboBox.setCurrentText('主流程')
+            # 删除分支名称
             cursor.execute('delete from 全局参数 where 分支表名=?', (text,))
             # 关闭数据库连接
             con.commit()
@@ -545,23 +572,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def load_branch(self):
         """加载分支"""
         # 初始化功能
+        print('加载分支')
         cursor, con = self.sqlitedb()
         # 获取所有分支名
-        cursor.execute("select name from sqlite_master where type='table'")
-        self.branch_name = [x[0] for x in cursor.fetchall()]
-        # 去除系统内置表
-        system_built_in = ['设置', '全局参数', 'sqlite_sequence']
-        for i in system_built_in:
-            self.branch_name.remove(i)
-        # 将分支名写入数据库中，如果已存在则不写入
-        cursor.execute(' select 分支表名 from 全局参数')
-        result = cursor.fetchall()
-        for i in self.branch_name:
-            if (i,) not in result:
-                cursor.execute('insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
-                               (None, None, i, None))
+        cursor.execute("select 分支表名 from 全局参数")
+        self.branch_name = [x[0] for x in cursor.fetchall() if x[0] is not None]
         # 关闭数据库连接
-        con.commit()
         self.close_database(cursor, con)
         self.comboBox.clear()
         self.comboBox.addItems(self.branch_name)
@@ -722,11 +738,14 @@ class Na(QWidget, Ui_navigation):
         # 切换到导航页时，控制窗口控件的状态
         self.tabWidget.currentChanged.connect(self.tab_widget_change)
         # 调整异常处理选项时，控制窗口控件的状态
-        self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
+        # self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
+        self.comboBox_9.activated.connect(self.exception_handling_judgment_type)
         # 快捷选择导航页
         self.tab_title = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
         self.comboBox_16.addItems(self.tab_title)
         self.comboBox_16.currentTextChanged.connect(self.quick_select_navigation_page)
+        # 行号自动递增提示
+        self.checkBox_3.clicked.connect(self.line_number_increasing)
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -749,10 +768,11 @@ class Na(QWidget, Ui_navigation):
         system_command = ['自动跳过', '抛出异常并暂停', '抛出异常并停止', '扩展程序']
         self.comboBox_9.addItems(system_command)
         self.comboBox_9.addItems(branch_table_name)
-        self.comboBox_9.removeItem(4)
         # 从数据库加载的excel表名和图像名称
         self.comboBox_12.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
+        # 清空备注
+        self.lineEdit_5.clear()
 
     def quick_select_navigation_page(self):
         """快捷选择导航页"""
@@ -871,6 +891,13 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_9.setEnabled(True)
             self.comboBox_11.setEnabled(True)
 
+    def line_number_increasing(self):
+        """行号递增功能被选中后弹出提示框"""
+        if self.checkBox_3.isChecked():
+            QMessageBox.information(self, '提示',
+                                    '启用该功能后，请在主页面中设置循环次数大于1，执行全部指令后，循环执行时，单元格行号会自动递增。',
+                                    QMessageBox.Ok)
+
     def exception_handling_judgment(self):
         """判断异常处理方式"""
         exception_handling_text = None
@@ -879,7 +906,7 @@ class Na(QWidget, Ui_navigation):
             """去除列表中的none"""
             list_x = []
             for i in list_:
-                if i[0] is not None and i[0] != '命令':
+                if i[0] is not None:
                     list_x.append(i[0])
             return list_x
 
@@ -899,11 +926,13 @@ class Na(QWidget, Ui_navigation):
             cursor.execute('SELECT 分支表名 FROM 全局参数')
             result = cursor.fetchall()
             branch_table_name = remove_none(result)
-            print(branch_table_name)
+            # print(branch_table_name)
             cursor.close()
             con.close()
             branch_table_name_index = branch_table_name.index(self.comboBox_9.currentText())
-            exception_handling_text = str(branch_table_name_index) + '-' + str(int(self.comboBox_10.currentText()) - 1)
+            exception_handling_text = '分支-' + str(branch_table_name_index) + '-' + str(
+                int(self.comboBox_10.currentText()) - 1)
+        # print('异常处理方式：', exception_handling_text)
         return exception_handling_text
 
     def exception_handling_judgment_type(self):
@@ -926,13 +955,22 @@ class Na(QWidget, Ui_navigation):
                 con = sqlite3.connect('命令集.db')
                 cursor = con.cursor()
                 # 获取表中数据记录的个数
-                cursor.execute('SELECT count(*) FROM {}'.format(self.comboBox_9.currentText()))
+                branch_name = self.comboBox_9.currentText()
+                cursor.execute('SELECT count(*) FROM 命令 where 隶属分支=?', (branch_name,))
                 count_record = cursor.fetchone()[0]
                 # 关闭连接
                 cursor.close()
                 con.close()
                 self.comboBox_10.clear()
-                self.comboBox_10.addItems([str(i) for i in range(1, count_record + 1)])
+                # 加载分支中的命令序号
+                branch_order = [str(i) for i in range(1, count_record + 1)]
+                if len(branch_order) == 0:
+                    # 弹出警告框
+                    self.comboBox_9.setCurrentIndex(0)
+                    QMessageBox.warning(self, '警告', '该分支下没有指令，请先添加！', QMessageBox.Yes)
+                else:
+                    self.comboBox_10.addItems(branch_order)
+
             elif self.comboBox_9.currentText() not in system_command and self.comboBox_9.currentText() == '扩展程序':
                 # 开始位置
                 self.comboBox_10.clear()
@@ -959,7 +997,7 @@ class Na(QWidget, Ui_navigation):
 
         def writes_commands_to_the_database(instruction, repeat_number, exception_handling, image=None,
                                             parameter_1=None,
-                                            parameter_2=None, parameter_3=None, parameter_4=None):
+                                            parameter_2=None, parameter_3=None, parameter_4=None, remarks=None):
             """向数据库写入命令"""
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
@@ -967,16 +1005,14 @@ class Na(QWidget, Ui_navigation):
             try:
                 if judge == '保存':
                     cursor.execute(
-                        'INSERT INTO {}(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理) VALUES (?,?,?,?,?,?,?,?)'.format(
-                            branch_name),
+                        'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?)',
                         (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
-                         exception_handling))
+                         exception_handling, remarks, branch_name))
                 elif judge == '修改':
                     cursor.execute(
-                        'UPDATE {} SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=? WHERE ID=?'.format(
-                            branch_name),
+                        'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=? WHERE ID=?',
                         (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
-                         exception_handling, xx))
+                         exception_handling, remarks, xx))
                 con.commit()
                 con.close()
             except sqlite3.OperationalError:
@@ -1004,10 +1040,10 @@ class Na(QWidget, Ui_navigation):
             return xx
 
         # 判断当前tab页
-        # 读取功能区的参数
+        # 读取功能区的参数：重复次数、异常处理、备注
         repeat_number = self.spinBox.value()
-        # 判断异常类型
         exception_handling = self.exception_handling_judgment()
+        remarks = self.lineEdit_5.text()
         # 图像点击事件的参数获取
         if self.tabWidget.currentIndex() == 0:
             # 获取5个参数命令，写入数据库
@@ -1025,7 +1061,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             image=image, parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
             print('已经保存图像识别点击的数据至数据库')
         # 鼠标点击事件的参数获取
         elif self.tabWidget.currentIndex() == 1:
@@ -1036,7 +1072,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
 
         elif self.tabWidget.currentIndex() == 2:
             # 获取5个参数命令
@@ -1054,7 +1090,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
             print('已经保存鼠标移动的数据至数据库')
         # 等待事件的参数获取
         elif self.tabWidget.currentIndex() == 3:
@@ -1097,7 +1133,7 @@ class Na(QWidget, Ui_navigation):
                                             image=image,
                                             parameter_1=parameter_1,
                                             parameter_2=parameter_2,
-                                            parameter_3=parameter_3)
+                                            parameter_3=parameter_3, remarks=remarks)
 
         # 鼠标滚轮滑动事件的参数获取
         elif self.tabWidget.currentIndex() == 4:
@@ -1116,7 +1152,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
             print('已经保存鼠标滚轮滑动的数据至数据库')
         # 文本输入事件的参数获取
         elif self.tabWidget.currentIndex() == 5:
@@ -1130,7 +1166,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
             print('已经保存文本输入的数据至数据库')
         # 按下键盘事件的参数获取
         elif self.tabWidget.currentIndex() == 6:
@@ -1141,7 +1177,7 @@ class Na(QWidget, Ui_navigation):
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
-                                            parameter_1=parameter_1)
+                                            parameter_1=parameter_1, remarks=remarks)
             print('已经保存按键的数据至数据库')
         # 中键激活事件的参数获取
         elif self.tabWidget.currentIndex() == 7:
@@ -1159,7 +1195,7 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
                                             parameter_1=parameter_1,
-                                            parameter_2=parameter_2)
+                                            parameter_2=parameter_2, remarks=remarks)
         # 鼠标当前位置事件的参数获取
         elif self.tabWidget.currentIndex() == 8:
             instruction = "鼠标事件"
@@ -1168,7 +1204,7 @@ class Na(QWidget, Ui_navigation):
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
-                                            parameter_1=parameter_1)
+                                            parameter_1=parameter_1, remarks=remarks)
         # excel信息录入功能的参数获取
         elif self.tabWidget.currentIndex() == 9:
             instruction = "excel信息录入"
@@ -1194,7 +1230,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2=parameter_2,
                                             parameter_3=parameter_3,
                                             parameter_4=parameter_4,
-                                            image=image)
+                                            image=image, remarks=remarks)
 
         # 关闭窗体
         self.close()
@@ -1364,30 +1400,31 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-    app = QApplication([])
-    # 创建主窗体
-    main_window = Main_window()
-    # 显示窗体，并根据设置检查更新
-    main_window.main_show()
-    # 显示添加对话框窗口
-    sys.exit(app.exec_())
-    # def is_admin():
-    #     try:
-    #         return ctypes.windll.shell32.IsUserAnAdmin()
-    #     except:
-    #         return False
-    #
-    #
-    # if is_admin():
-    #     app = QApplication([])
-    #     # 创建主窗体
-    #     main_window = Main_window()
-    #     # 显示窗体，并根据设置检查更新
-    #     main_window.main_show()
-    #     # 显示添加对话框窗口
-    #     sys.exit(app.exec_())
-    # else:
-    #     if sys.version_info[0] == 3:
-    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-    #     else:  # in python2.x
-    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+    # app = QApplication([])
+    # # 创建主窗体
+    # main_window = Main_window()
+    # # 显示窗体，并根据设置检查更新
+    # main_window.main_show()
+    # # 显示添加对话框窗口
+    # sys.exit(app.exec_())
+
+    def is_admin():
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+
+
+    if is_admin():
+        app = QApplication([])
+        # 创建主窗体
+        main_window = Main_window()
+        # 显示窗体，并根据设置检查更新
+        main_window.main_show()
+        # 显示添加对话框窗口
+        sys.exit(app.exec_())
+    else:
+        if sys.version_info[0] == 3:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+        else:  # in python2.x
+            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)

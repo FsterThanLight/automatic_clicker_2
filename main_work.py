@@ -78,22 +78,27 @@ class MainWork:
 
     def test(self):
         print('test')
-        all_list_instructions = self.extracted_data_all_list(self.branch_table_name)
+        all_list_instructions = self.extracted_data_all_list()
         print(all_list_instructions)
         print(len(all_list_instructions))
 
-    def extracted_data_all_list(self, branch_table_name):
+    def extracted_data_all_list(self, only_current_instructions=False):
         """提取指令集中的数据,返回主表和分支表的汇总数据"""
         all_list_instructions = []
         # 从主表中提取数据
         cursor, conn = self.sqlitedb()
         # 从分支表中提取数据
         try:
-            if len(branch_table_name) != 0:
-                for i in branch_table_name:
-                    cursor.execute("select * from " + i)
-                    branch_list_instructions = cursor.fetchall()
-                    all_list_instructions.append(branch_list_instructions)
+            if not only_current_instructions:
+                if len(self.branch_table_name) != 0:
+                    for i in self.branch_table_name:
+                        cursor.execute("select * from 命令 where 隶属分支 = ?", (i,))
+                        branch_list_instructions = cursor.fetchall()
+                        all_list_instructions.append(branch_list_instructions)
+            if only_current_instructions:
+                cursor.execute("select * from 命令 where 隶属分支 = ?", (self.main_window.comboBox.currentText(),))
+                branch_list_instructions = cursor.fetchall()
+                all_list_instructions.append(branch_list_instructions)
             self.close_database(cursor, conn)
             return all_list_instructions
         except sqlite3.OperationalError:
@@ -123,16 +128,14 @@ class MainWork:
         print("全局参数读取成功！")
         return image_folder_path, excel_folder_path, branch_table_name, extenders
 
-    def start_work(self):
+    def start_work(self, only_current_instructions=False):
         """主要工作"""
         self.start_state = True
         self.suspended = False
         # 打印循环次数
         self.reset_loop_count_and_infinite_loop_judgment()
         # 读取数据库中的数据
-        # print(self.branch_table_name)
-        list_instructions = self.extracted_data_all_list(self.branch_table_name)
-        # print(list_instructions)
+        list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
         if len(list_instructions) != 0:
             keyboard.hook(self.abc)
@@ -161,7 +164,8 @@ class MainWork:
                     if self.suspended:
                         event.clear()
                         event.wait(86400)
-                    print('第', self.number, '次循环')
+                    # print('第', self.number, '次循环')
+                    self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
                     self.number += 1
                     time.sleep(self.settings.time_sleep)
                 self.main_window.plainTextEdit.appendPlainText('结束任务')
@@ -349,6 +353,7 @@ class MainWork:
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
                     # 跳转分支的指定指令
+                    print('分支指令:' + exception_handling)
                     if exception_handling == '自动跳过':
                         current_index += 1
                     elif exception_handling == '抛出异常并暂停':
@@ -370,7 +375,7 @@ class MainWork:
                         current_index += 1
                         self.start_state = False
                         break
-                    elif '.py' or '.exe' in exception_handling:
+                    elif exception_handling.endswith('.py') or exception_handling.endswith('.exe'):
                         self.start_state = False
                         self.main_window.plainTextEdit.appendPlainText('执行扩展程序')
                         if '.exe' in exception_handling:
@@ -378,11 +383,13 @@ class MainWork:
                         elif '.py' in exception_handling:
                             subprocess.run('python {}'.format(exception_handling))
                         break
-                    else:  # 跳转分支
+                    elif '分支' in exception_handling:  # 跳转分支
                         self.main_window.plainTextEdit.appendPlainText('转到分支')
-                        branch_name_index, branch_index = exception_handling.split('-')
-                        x = int(branch_name_index) + 1
+                        branch_name_index = exception_handling.split('-')[1]
+                        branch_index = exception_handling.split('-')[2]
+                        x = int(branch_name_index)
                         y = int(branch_index)
+                        print('x:', x, 'y:', y)
                         self.execute_instructions(x, y, list_instructions)
                         break
             except IndexError:

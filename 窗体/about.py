@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(278, 348)
+        Dialog.resize(198, 305)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
@@ -32,9 +32,9 @@ class Ui_Dialog(object):
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.label = QtWidgets.QLabel(Dialog)
-        self.label.setMaximumSize(QtCore.QSize(91, 91))
+        self.label.setMaximumSize(QtCore.QSize(90, 90))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(":/按钮图标/图标.png"))
+        self.label.setPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"))
         self.label.setScaledContents(True)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
@@ -132,6 +132,6 @@ class Ui_Dialog(object):
         self.github.setText(_translate("Dialog", "github地址"))
         self.gitee.setText(_translate("Dialog", "gitee地址"))
         self.label_3.setText(_translate("Dialog", "PyAutoGUI可视化，自动处理需要大量重复操作鼠标键盘的事件。"))
-        self.label_2.setText(_translate("Dialog", "版本：v0.21"))
+        self.label_2.setText(_translate("Dialog", "版本：v0.25"))
         self.label_5.setText(_translate("Dialog", "Clicker"))
 import images_rc
