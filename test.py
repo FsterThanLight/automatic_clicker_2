@@ -1,5 +1,7 @@
 import re
 import cryptocode
+import pyautogui
+import time
 
 list_all = [[(1, 2, 3, 4, ""), (4, 5, 6, 7, ""), (3, 4, 6, 8, "")],
             [(7, 8, 9, 2, ""), (3, 6, 9, 4, "3-1")],
@@ -43,14 +45,17 @@ def encrypt(string, judge):
         return cryptocode.decrypt(string, '123456')
 
 
-if __name__ == '__main__':
+
+# if __name__ == '__main__':
     # cell_position = 'b2'
     # new_cell_position = get_a_number(cell_position, 4)
     # print(new_cell_position)
     # traverse_lists(0, 0, list_all)
     # x=input("输入任意字符结束")
-    with open('SoftwareUpdateInformation.txt', 'r') as f:
-        # 读取文件中的所有内容
-        content = f.read()
-        content = encrypt(content, '解密')
-    print(content)
+    # 解密字符串
+    # with open('SoftwareUpdateInformation.txt', 'r') as f:
+    #     # 读取文件中的所有内容
+    #     content = f.read()
+    #     content = encrypt(content, '解密')
+    # print(content)
+    # 截图功能测试

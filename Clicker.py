@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright (c) [2022] [federalsadler@sohu.com]
 # [Clicker] is licensed under Mulan PSL v2.
 # You can use this software according to the terms and conditions of the Mulan PSL v2.
@@ -1400,31 +1401,31 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-    # app = QApplication([])
-    # # 创建主窗体
-    # main_window = Main_window()
-    # # 显示窗体，并根据设置检查更新
-    # main_window.main_show()
-    # # 显示添加对话框窗口
-    # sys.exit(app.exec_())
+    app = QApplication([])
+    # 创建主窗体
+    main_window = Main_window()
+    # 显示窗体，并根据设置检查更新
+    main_window.main_show()
+    # 显示添加对话框窗口
+    sys.exit(app.exec_())
 
-    def is_admin():
-        try:
-            return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
-            return False
-
-
-    if is_admin():
-        app = QApplication([])
-        # 创建主窗体
-        main_window = Main_window()
-        # 显示窗体，并根据设置检查更新
-        main_window.main_show()
-        # 显示添加对话框窗口
-        sys.exit(app.exec_())
-    else:
-        if sys.version_info[0] == 3:
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-        else:  # in python2.x
-            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+    # def is_admin():
+    #     try:
+    #         return ctypes.windll.shell32.IsUserAnAdmin()
+    #     except:
+    #         return False
+    #
+    #
+    # if is_admin():
+    #     app = QApplication([])
+    #     # 创建主窗体
+    #     main_window = Main_window()
+    #     # 显示窗体，并根据设置检查更新
+    #     main_window.main_show()
+    #     # 显示添加对话框窗口
+    #     sys.exit(app.exec_())
+    # else:
+    #     if sys.version_info[0] == 3:
+    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+    #     else:  # in python2.x
+    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
