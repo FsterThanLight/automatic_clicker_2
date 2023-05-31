@@ -41,6 +41,8 @@ from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
+# 截图模块
+from screen_capture import ScreenCapture
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -395,11 +397,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def start(self, only_current_instructions=False):
         """主窗体开始按钮"""
+
         def info_show():
             """显示信息窗口"""
             self.info.show()
             resize = self.geometry()
             self.info.move(resize.x() + 45, resize.y() - 30)
+
         # 开始主任务
         if not only_current_instructions:
             info_show()
@@ -484,7 +488,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             pass
         else:
             # 获取操作日志
-            logs= self.plainTextEdit.toPlainText()
+            logs = self.plainTextEdit.toPlainText()
             # 获取当前日期时间
             now = datetime.datetime.now()
             # 将操作日志写入文件
@@ -747,6 +751,12 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_16.currentTextChanged.connect(self.quick_select_navigation_page)
         # 行号自动递增提示
         self.checkBox_3.clicked.connect(self.line_number_increasing)
+        # 快捷截图功能
+        self.pushButton.clicked.connect(lambda: self.quick_screenshot(self.comboBox_8, self.comboBox))
+        self.pushButton_7.clicked.connect(lambda: self.delete_all_images(self.comboBox_8, self.comboBox))
+        # 信息录入页面的快捷截图功能
+        self.pushButton_5.clicked.connect(lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15))
+        self.pushButton_8.clicked.connect(lambda: self.delete_all_images(self.comboBox_14, self.comboBox_15))
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -992,6 +1002,46 @@ class Na(QWidget, Ui_navigation):
         if re.search('[a-zA-Z0-9]', text) is None:
             self.checkBox_2.setChecked(False)
             QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
+
+    def quick_screenshot(self, combox, combox_2):
+        """截图功能"""
+        if combox.currentText() == '':
+            QMessageBox.warning(self, '警告', '未选择图像文件夹！', QMessageBox.Yes)
+        else:
+            # 隐藏主窗口
+            self.hide()
+            main_window.hide()
+            # 截图
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()
+            # 显示主窗口
+            self.show()
+            main_window.show()
+            # 文件夹路径和文件名
+            image_folder_path = combox.currentText()
+            image_name, ok = QInputDialog.getText(self, "截图", "请输入图像名称：")
+            if ok:
+                # 检查image_name是否包含中文字符
+                if re.search('[\u4e00-\u9fa5]', image_name) is not None:
+                    QMessageBox.warning(self, '警告', '图像名称暂不支持中文字符！保存失败。', QMessageBox.Yes)
+                else:
+                    screen_capture.screen_shot(image_folder_path, image_name)
+            # 刷新图像文件夹
+            self.find_images(combox, combox_2)
+            main_window.plainTextEdit.appendPlainText('已快捷截图：' + image_name)
+            combox_2.setCurrentText(image_name)
+
+    def delete_all_images(self, combox, combox_2):
+        if combox.currentText() == '':
+            pass
+        else:
+            file_path = combox.currentText()
+            # 删除文件夹中所有文件，保留文件夹
+            shutil.rmtree(file_path)
+            os.mkdir(file_path)
+            self.find_images(combox, combox_2)
+            # 弹出提示框
+            QMessageBox.information(self, '提示', '已删除所有图像！', QMessageBox.Yes)
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
@@ -1401,31 +1451,31 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-    app = QApplication([])
-    # 创建主窗体
-    main_window = Main_window()
-    # 显示窗体，并根据设置检查更新
-    main_window.main_show()
-    # 显示添加对话框窗口
-    sys.exit(app.exec_())
+    # app = QApplication([])
+    # # 创建主窗体
+    # main_window = Main_window()
+    # # 显示窗体，并根据设置检查更新
+    # main_window.main_show()
+    # # 显示添加对话框窗口
+    # sys.exit(app.exec_())
 
-    # def is_admin():
-    #     try:
-    #         return ctypes.windll.shell32.IsUserAnAdmin()
-    #     except:
-    #         return False
-    #
-    #
-    # if is_admin():
-    #     app = QApplication([])
-    #     # 创建主窗体
-    #     main_window = Main_window()
-    #     # 显示窗体，并根据设置检查更新
-    #     main_window.main_show()
-    #     # 显示添加对话框窗口
-    #     sys.exit(app.exec_())
-    # else:
-    #     if sys.version_info[0] == 3:
-    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-    #     else:  # in python2.x
-    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+    def is_admin():
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+
+
+    if is_admin():
+        app = QApplication([])
+        # 创建主窗体
+        main_window = Main_window()
+        # 显示窗体，并根据设置检查更新
+        main_window.main_show()
+        # 显示添加对话框窗口
+        sys.exit(app.exec_())
+    else:
+        if sys.version_info[0] == 3:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+        else:  # in python2.x
+            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)

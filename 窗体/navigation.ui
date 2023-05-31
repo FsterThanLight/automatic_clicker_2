@@ -162,55 +162,66 @@
         </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="palette">
-          <palette>
-           <active>
-            <colorrole role="ButtonText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>0</green>
-               <blue>0</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </active>
-           <inactive>
-            <colorrole role="ButtonText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>255</red>
-               <green>0</green>
-               <blue>0</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </inactive>
-           <disabled>
-            <colorrole role="ButtonText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>120</red>
-               <green>120</green>
-               <blue>120</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </disabled>
-          </palette>
-         </property>
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>快捷截图</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>快捷截图</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_7">
+           <property name="text">
+            <string>删除该文件夹下图像</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
@@ -1532,79 +1543,79 @@ p, li { white-space: pre-wrap; }
       <layout class="QVBoxLayout" name="verticalLayout_18">
        <item>
         <layout class="QGridLayout" name="gridLayout_7">
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_38">
-           <property name="text">
-            <string>工作表名：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QComboBox" name="comboBox_13"/>
-         </item>
-         <item row="6" column="0">
+         <item row="8" column="0">
           <widget class="QCheckBox" name="checkBox_3">
            <property name="text">
             <string>单元格行号自动递增</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_12">
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QComboBox" name="comboBox_15"/>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_41">
-           <property name="text">
-            <string>图像名称：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_40">
-           <property name="text">
-            <string>图像文件夹路径：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QComboBox" name="comboBox_14">
-           <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToContents</enum>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="label_39">
-           <property name="text">
-            <string>单元格：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="lineEdit_4"/>
-         </item>
-         <item row="1" column="0">
           <widget class="QLabel" name="label_37">
            <property name="text">
             <string>Excel工作簿名称：</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_39">
+           <property name="text">
+            <string>单元格：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
           <widget class="QCheckBox" name="checkBox_4">
            <property name="text">
             <string>特殊控件输入</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0" colspan="2">
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_38">
+           <property name="text">
+            <string>工作表名：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_41">
+           <property name="text">
+            <string>图像名称：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="comboBox_12">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="label_40">
+           <property name="text">
+            <string>图像文件夹路径：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QComboBox" name="comboBox_14">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="lineEdit_4"/>
+         </item>
+         <item row="4" column="1">
+          <widget class="QComboBox" name="comboBox_13"/>
+         </item>
+         <item row="7" column="1">
+          <widget class="QComboBox" name="comboBox_15"/>
+         </item>
+         <item row="1" column="0" colspan="2">
           <widget class="QPushButton" name="pushButton_5">
            <property name="palette">
             <palette>
@@ -1652,6 +1663,13 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="text">
             <string>快捷截图</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QPushButton" name="pushButton_8">
+           <property name="text">
+            <string>删除该文件夹下所有图像</string>
            </property>
           </widget>
          </item>

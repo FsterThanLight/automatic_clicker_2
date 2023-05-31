@@ -649,7 +649,7 @@ class MainWork:
                     location = pyautogui.locateCenterOnScreen(img, confidence=self.settings.confidence)
                     image_match_click(skip, start_time)
         except OSError:
-            QMessageBox.critical(self.main_window, '错误', '目标图像文件夹、图片命名或路径暂不支持中文！')
+            QMessageBox.critical(self.main_window, '错误', '文件下未找到.png图像文件，请检查文件是否存在！')
 
     def mouse_moves(self, direction, distance):
         """鼠标移动事件"""
