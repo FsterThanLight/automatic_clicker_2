@@ -43,6 +43,8 @@ from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
 # 截图模块
 from screen_capture import ScreenCapture
+# 网页自动化模块
+import selenium
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -757,6 +759,8 @@ class Na(QWidget, Ui_navigation):
         # 信息录入页面的快捷截图功能
         self.pushButton_5.clicked.connect(lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15))
         self.pushButton_8.clicked.connect(lambda: self.delete_all_images(self.comboBox_14, self.comboBox_15))
+        # 网页测试
+        # self.pushButton_9.clicked.connect(self.web_functional_testing)
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -1282,6 +1286,16 @@ class Na(QWidget, Ui_navigation):
                                             parameter_3=parameter_3,
                                             parameter_4=parameter_4,
                                             image=image, remarks=remarks)
+        # 网页操作功能的参数获取
+        elif self.tabWidget.currentIndex() == 10:
+            instruction = "打开网址"
+            # 获取网页链接
+            web_page_link = self.lineEdit_6.text()
+            # 写入数据库
+            writes_commands_to_the_database(instruction=instruction,
+                                            repeat_number=repeat_number,
+                                            exception_handling=exception_handling,
+                                            image=web_page_link, remarks=remarks)
 
         # 关闭窗体
         self.close()
@@ -1451,31 +1465,31 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
-    # app = QApplication([])
-    # # 创建主窗体
-    # main_window = Main_window()
-    # # 显示窗体，并根据设置检查更新
-    # main_window.main_show()
-    # # 显示添加对话框窗口
-    # sys.exit(app.exec_())
+    app = QApplication([])
+    # 创建主窗体
+    main_window = Main_window()
+    # 显示窗体，并根据设置检查更新
+    main_window.main_show()
+    # 显示添加对话框窗口
+    sys.exit(app.exec_())
 
-    def is_admin():
-        try:
-            return ctypes.windll.shell32.IsUserAnAdmin()
-        except:
-            return False
-
-
-    if is_admin():
-        app = QApplication([])
-        # 创建主窗体
-        main_window = Main_window()
-        # 显示窗体，并根据设置检查更新
-        main_window.main_show()
-        # 显示添加对话框窗口
-        sys.exit(app.exec_())
-    else:
-        if sys.version_info[0] == 3:
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-        else:  # in python2.x
-            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+    # def is_admin():
+    #     try:
+    #         return ctypes.windll.shell32.IsUserAnAdmin()
+    #     except:
+    #         return False
+    #
+    #
+    # if is_admin():
+    #     app = QApplication([])
+    #     # 创建主窗体
+    #     main_window = Main_window()
+    #     # 显示窗体，并根据设置检查更新
+    #     main_window.main_show()
+    #     # 显示添加对话框窗口
+    #     sys.exit(app.exec_())
+    # else:
+    #     if sys.version_info[0] == 3:
+    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+    #     else:  # in python2.x
+    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)

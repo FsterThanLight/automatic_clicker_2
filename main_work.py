@@ -23,6 +23,7 @@ import openpyxl
 import pyautogui
 import pyperclip
 from PyQt5.QtWidgets import QMessageBox, QApplication
+import selenium
 
 event = threading.Event()
 
@@ -351,6 +352,12 @@ class MainWork:
                         # list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 网页操作
+                    elif cmd_type == '打开网址':
+                        url = dict(dic)['图像路径']
+                        list_ins = [url]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
                     # 跳转分支的指定指令
@@ -475,6 +482,10 @@ class MainWork:
                 self.text_input(cell_value, special_control_input)
                 self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
                 # print('已执行信息录入')
+            elif cmd_type == '打开网址':
+                url= list_ins[0]
+
+
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置

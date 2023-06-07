@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>398</width>
-    <height>517</height>
+    <height>548</height>
    </rect>
   </property>
   <property name="font">
@@ -26,18 +26,34 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_6">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,4">
-     <item>
-      <widget class="QLabel" name="label_43">
+    <layout class="QGridLayout" name="gridLayout_10">
+     <property name="verticalSpacing">
+      <number>0</number>
+     </property>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_23">
        <property name="text">
-        <string>功能选择：</string>
+        <string>网页功能：</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBox_20"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_43">
+       <property name="text">
+        <string>核心功能：</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
       <widget class="QComboBox" name="comboBox_16"/>
      </item>
     </layout>
@@ -1737,6 +1753,47 @@ p, li { white-space: pre-wrap; }
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_11">
+      <attribute name="title">
+       <string>打开网页</string>
+      </attribute>
+      <widget class="QLabel" name="label_49">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>54</width>
+         <height>12</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>网址：</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_6">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>20</y>
+         <width>221</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_9">
+       <property name="geometry">
+        <rect>
+         <x>290</x>
+         <y>20</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>测试连接</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
