@@ -43,8 +43,8 @@ from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
 # 截图模块
 from screen_capture import ScreenCapture
-# 网页自动化模块
-import selenium
+# 网页操作模块
+from web_page_operation import WebOption
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -69,7 +69,6 @@ def get_download_address(main_window, warning):
         res = requests.get(url, headers=headers, timeout=0.2)
         info = cryptocode.decrypt(res.text, '123456')
         list_1 = info.split('=')
-        # print(list_1)
         return list_1
     except requests.exceptions.ConnectionError:
         if warning == 1:
@@ -718,6 +717,7 @@ class Na(QWidget, Ui_navigation):
         super().__init__()
         # 使用全局变量窗体的一些方法
         self.global_window = global_window
+        self.web_option = WebOption(self)
         self.setupUi(self)
         self.setWindowModality(Qt.ApplicationModal)
         # 去除最大化最小化按钮
@@ -759,8 +759,9 @@ class Na(QWidget, Ui_navigation):
         # 信息录入页面的快捷截图功能
         self.pushButton_5.clicked.connect(lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15))
         self.pushButton_8.clicked.connect(lambda: self.delete_all_images(self.comboBox_14, self.comboBox_15))
+
         # 网页测试
-        # self.pushButton_9.clicked.connect(self.web_functional_testing)
+        self.pushButton_9.clicked.connect(self.web_functional_testing)
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -1046,6 +1047,11 @@ class Na(QWidget, Ui_navigation):
             self.find_images(combox, combox_2)
             # 弹出提示框
             QMessageBox.information(self, '提示', '已删除所有图像！', QMessageBox.Yes)
+
+    def web_functional_testing(self):
+        """网页连接测试"""
+        url = self.lineEdit_6.text()
+        self.web_option.web_open_test(url)
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
