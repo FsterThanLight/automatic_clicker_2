@@ -23,6 +23,10 @@ class WebOption:
         """打开网页"""
         if url == '':
             url = 'https://www.cn.bing.com/'
+        else:
+            if url[:7] != 'http://' and url[:8] != 'https://':
+                url = 'http://' + url
+
         self.driver = webdriver.Chrome()
         try:
             self.driver.get(url)
@@ -33,7 +37,7 @@ class WebOption:
         except Exception as e:
             # 弹出错误提示
             print(e)
-            QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。',
+            QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
                                 QMessageBox.Yes)
 
     @staticmethod

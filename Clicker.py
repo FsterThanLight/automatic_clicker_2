@@ -10,7 +10,6 @@
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
 
-import ctypes
 import datetime
 import json
 import os
@@ -32,19 +31,18 @@ from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 from openpyxl.utils.exceptions import InvalidFileException
-from pyscreeze import unicode
 
 from main_work import MainWork, exit_main_work
+# 截图模块
+from screen_capture import ScreenCapture
+# 网页操作模块
+from web_page_operation import WebOption
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.navigation import Ui_navigation
 from 窗体.setting import Ui_Setting
-# 截图模块
-from screen_capture import ScreenCapture
-# 网页操作模块
-from web_page_operation import WebOption
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -761,7 +759,9 @@ class Na(QWidget, Ui_navigation):
         self.pushButton_8.clicked.connect(lambda: self.delete_all_images(self.comboBox_14, self.comboBox_15))
 
         # 网页测试
-        self.pushButton_9.clicked.connect(self.web_functional_testing)
+        self.pushButton_9.clicked.connect(lambda: self.web_functional_testing('测试'))
+        self.pushButton_10.clicked.connect(lambda: self.web_functional_testing('安装浏览器'))
+        self.pushButton_11.clicked.connect(lambda: self.web_functional_testing('安装浏览器驱动'))
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -1048,10 +1048,23 @@ class Na(QWidget, Ui_navigation):
             # 弹出提示框
             QMessageBox.information(self, '提示', '已删除所有图像！', QMessageBox.Yes)
 
-    def web_functional_testing(self):
+    def web_functional_testing(self, judge):
         """网页连接测试"""
-        url = self.lineEdit_6.text()
-        self.web_option.web_open_test(url)
+        if judge == '测试':
+            url = self.lineEdit_6.text()
+            self.web_option.web_open_test(url)
+        elif judge == '安装浏览器':
+            url = 'https://google.cn/chrome/'
+            # 打开浏览器下载网页
+            QDesktopServices.openUrl(QUrl(url))
+        elif judge == '安装浏览器驱动':
+            # 弹出选择提示框
+            x = QMessageBox.information(self, '提示', '请选择浏览器驱动所在文件夹！', QMessageBox.Yes | QMessageBox.No)
+            if x == QMessageBox.Yes:
+                self.web_option.install_browser_driver()
+                QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
+            else:
+                pass
 
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
