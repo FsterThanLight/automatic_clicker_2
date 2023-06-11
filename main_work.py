@@ -23,7 +23,9 @@ import openpyxl
 import pyautogui
 import pyperclip
 from PyQt5.QtWidgets import QMessageBox, QApplication
-import selenium
+from selenium.common import TimeoutException
+
+from web_page_operation import WebOption
 
 event = threading.Event()
 
@@ -43,6 +45,8 @@ class MainWork:
         self.main_window = main_window
         # 导航窗体
         self.navigation = navigation
+        # 网页操作类
+        self.web_option = WebOption(self.main_window, self.navigation)
         # 读取配置文件
         self.settings = SettingsData()
         self.settings.init()
@@ -373,7 +377,7 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
                     current_index += 1
-                except pyautogui.ImageNotFoundException:
+                except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
                     if exception_handling == '自动跳过':
@@ -504,6 +508,12 @@ class MainWork:
                 text_input = dict(list_ins)['文本内容']
                 timeout_type = dict(list_ins)['超时类型']
                 # 执行网页操作
+                self.web_option.single_shot_operation(url=url,
+                                                      action=operation_type,
+                                                      element_value=element_value,
+                                                      element_type=element_type,
+                                                      text=text_input,
+                                                      timeout_type=timeout_type)
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置

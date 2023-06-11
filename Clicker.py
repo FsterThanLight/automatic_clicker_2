@@ -89,7 +89,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 全局设置窗口
         self.global_s = Global_s()
         # 实例化导航页窗口
-        self.navigation = Na(self.global_s)
+        self.navigation = Na(self, self.global_s)
         # 窗体的功能
         self.main_work = MainWork(self, self.navigation)
         # 实例化设置窗口
@@ -151,7 +151,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "按下键盘": 6,
             "中键激活": 7,
             "鼠标事件": 8,
-            "excel信息录入": 9
+            "excel信息录入": 9,
+            "网页操作": 10
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -711,11 +712,12 @@ class About(QWidget, Ui_Dialog):
 class Na(QWidget, Ui_navigation):
     """导航页窗体及其功能"""
 
-    def __init__(self, global_window):
+    def __init__(self, main_window, global_window):
         super().__init__()
         # 使用全局变量窗体的一些方法
         self.global_window = global_window
-        self.web_option = WebOption(self)
+        self.main_window = main_window
+        self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
         self.setWindowModality(Qt.ApplicationModal)
         # 去除最大化最小化按钮
@@ -1336,7 +1338,7 @@ class Na(QWidget, Ui_navigation):
                                             image=web_page_link, remarks=remarks,
                                             parameter_1=element_type,
                                             parameter_2=element,
-                                            parameter_3=operation_type+'-'+text_content,
+                                            parameter_3=operation_type + '-' + text_content,
                                             parameter_4=timeout_type)
 
         # 关闭窗体
