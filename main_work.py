@@ -145,40 +145,43 @@ class MainWork:
         # 读取数据库中的数据
         list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
-        if len(list_instructions) != 0:
-            keyboard.hook(self.abc)
-            # # 如果状态为True执行无限循环
-            if self.infinite_cycle:
-                self.number = 1
-                while True:
-                    self.execute_instructions(0, 0, list_instructions)
-                    if not self.start_state:
-                        self.main_window.plainTextEdit.appendPlainText('结束任务')
-                        break
-                    if self.suspended:
-                        event.clear()
-                        event.wait(86400)
-                    self.number += 1
-                    time.sleep(self.settings.time_sleep)
-            # 如果状态为有限次循环
-            elif not self.infinite_cycle and self.number_cycles > 0:
-                self.number = 1
-                repeat_number = self.number_cycles
-                while self.number <= repeat_number and self.start_state:
-                    self.execute_instructions(0, 0, list_instructions)
-                    if not self.start_state:
-                        self.main_window.plainTextEdit.appendPlainText('结束任务')
-                        break
-                    if self.suspended:
-                        event.clear()
-                        event.wait(86400)
-                    # print('第', self.number, '次循环')
-                    self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
-                    self.number += 1
-                    time.sleep(self.settings.time_sleep)
-                self.main_window.plainTextEdit.appendPlainText('结束任务')
-            elif not self.infinite_cycle and self.number_cycles <= 0:
-                print("请设置执行循环次数！")
+        try:
+            if len(list_instructions) != 0:
+                keyboard.hook(self.abc)
+                # # 如果状态为True执行无限循环
+                if self.infinite_cycle:
+                    self.number = 1
+                    while True:
+                        self.execute_instructions(0, 0, list_instructions)
+                        if not self.start_state:
+                            self.main_window.plainTextEdit.appendPlainText('结束任务')
+                            break
+                        if self.suspended:
+                            event.clear()
+                            event.wait(86400)
+                        self.number += 1
+                        time.sleep(self.settings.time_sleep)
+                # 如果状态为有限次循环
+                elif not self.infinite_cycle and self.number_cycles > 0:
+                    self.number = 1
+                    repeat_number = self.number_cycles
+                    while self.number <= repeat_number and self.start_state:
+                        self.execute_instructions(0, 0, list_instructions)
+                        if not self.start_state:
+                            self.main_window.plainTextEdit.appendPlainText('结束任务')
+                            break
+                        if self.suspended:
+                            event.clear()
+                            event.wait(86400)
+                        # print('第', self.number, '次循环')
+                        self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
+                        self.number += 1
+                        time.sleep(self.settings.time_sleep)
+                    self.main_window.plainTextEdit.appendPlainText('结束任务')
+                elif not self.infinite_cycle and self.number_cycles <= 0:
+                    print("请设置执行循环次数！")
+        finally:
+            self.web_option.close_browser()
 
     def execute_instructions(self, current_list_index, current_index, list_instructions):
         """执行接受到的操作指令"""

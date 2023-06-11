@@ -1,3 +1,4 @@
+import sys
 import time
 
 from PyQt5.QtWidgets import QMessageBox, QApplication
@@ -52,7 +53,10 @@ class WebOption:
     
     def close_browser(self):
         """关闭浏览器驱动"""
-        self.driver.quit()
+        print('关闭浏览器驱动。')
+        print('self.driver: ', self.driver)
+        if self.driver is not None:
+            self.driver.quit()
 
     def lookup_element(self, element_type, timeout_type):
         """查找元素"""
@@ -77,9 +81,9 @@ class WebOption:
                         lookup_element_x(element_type)
                         break
                     except NoSuchElementException:
-                        # print('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
-                        QApplication.processEvents()
-                        self.main_window.plainTextEdit.appendPlainText('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
+                        print('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
+                        # QApplication.processEvents()
+                        # self.main_window.plainTextEdit.appendPlainText('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
                         time.sleep(1)
                         time_wait -= 1
                 raise TimeoutException
@@ -91,8 +95,8 @@ class WebOption:
         self.lookup_element(element_type, timeout_type)
 
         if self.wait_for_action_element is not None:
-            # print('找到网页元素，执行鼠标操作。')
-            self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
+            print('找到网页元素，执行鼠标操作。')
+            # self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
             if action == '左键单击':
                 self.chains.click(self.wait_for_action_element).perform()
             elif action == '左键双击':
@@ -139,4 +143,5 @@ if __name__ == '__main__':
                               element_type='元素ID',
                               timeout_type='5')
 
-    time.sleep(50)
+    time.sleep(10)
+    web.close_browser()

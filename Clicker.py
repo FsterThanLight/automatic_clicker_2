@@ -98,6 +98,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.about = About()
         # 提示窗口
         self.info = Info()
+        # 网页操作模块
+        self.web_option = WebOption(self, self.navigation)
         # 设置表格列宽自动变化，并使第5列列宽固定
         self.format_table()
         # 显示导航页窗口
@@ -367,6 +369,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 退出终止后台进程并清空数据库
             event.accept()
             self.clear_database()
+            self.web_option.close_browser()
             exit_main_work()
         else:
             event.ignore()
