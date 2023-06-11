@@ -86,12 +86,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # 软件版本
         self.version = 'v0.21'
-        # 窗体的功能
-        self.main_work = MainWork(self)
         # 全局设置窗口
         self.global_s = Global_s()
         # 实例化导航页窗口
         self.navigation = Na(self.global_s)
+        # 窗体的功能
+        self.main_work = MainWork(self, self.navigation)
         # 实例化设置窗口
         self.setting = Setting()
         # 设置关于窗体
@@ -893,9 +893,10 @@ class Na(QWidget, Ui_navigation):
         #     "中键激活": 7,
         #     "鼠标事件": 8,
         #     "excel信息录入": 9
+        #     "网页控制": 10,
         # 禁用类
         discards = [1, 2, 4, 5, 6, 7, 8]
-        discards_not = [0, 3, 9]
+        discards_not = [0, 3, 9, 10]
         # 不禁用类
         if index in discards:
             self.comboBox_9.setEnabled(True)
@@ -1059,7 +1060,7 @@ class Na(QWidget, Ui_navigation):
             QDesktopServices.openUrl(QUrl(url))
         elif judge == '安装浏览器驱动':
             # 弹出选择提示框
-            x = QMessageBox.information(self, '提示', '请选择浏览器驱动所在文件夹！', QMessageBox.Yes | QMessageBox.No)
+            x = QMessageBox.information(self, '提示', '确认下载浏览器驱动？', QMessageBox.Yes | QMessageBox.No)
             if x == QMessageBox.Yes:
                 self.web_option.install_browser_driver()
                 QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
@@ -1307,14 +1308,36 @@ class Na(QWidget, Ui_navigation):
                                             image=image, remarks=remarks)
         # 网页操作功能的参数获取
         elif self.tabWidget.currentIndex() == 10:
-            instruction = "打开网址"
+            instruction = "网页操作"
+            web_page_link = None
+            timeout_type = None
             # 获取网页链接
-            web_page_link = self.lineEdit_6.text()
+            if self.radioButton_8.isChecked():
+                web_page_link = self.lineEdit_6.text()
+            elif self.radioButton_9.isChecked():
+                pass
+            # 获取元素类型
+            element_type = self.comboBox_21.currentText()
+            # 获取元素
+            element = self.lineEdit_7.text()
+            # 获取操作类型
+            operation_type = self.comboBox_22.currentText()
+            # 获取文本内容
+            text_content = self.lineEdit_8.text()
+            # 获取超时类型
+            if self.radioButton_6.isChecked():
+                timeout_type = '找不到元素自动跳过'
+            elif self.radioButton_7.isChecked():
+                timeout_type = self.spinBox_7.value()
             # 写入数据库
             writes_commands_to_the_database(instruction=instruction,
                                             repeat_number=repeat_number,
                                             exception_handling=exception_handling,
-                                            image=web_page_link, remarks=remarks)
+                                            image=web_page_link, remarks=remarks,
+                                            parameter_1=element_type,
+                                            parameter_2=element,
+                                            parameter_3=operation_type+'-'+text_content,
+                                            parameter_4=timeout_type)
 
         # 关闭窗体
         self.close()

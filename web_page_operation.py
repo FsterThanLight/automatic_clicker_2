@@ -2,6 +2,7 @@ import time
 
 from PyQt5.QtWidgets import QMessageBox
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -32,52 +33,77 @@ class WebOption:
             self.driver.get(url)
             time.sleep(1)
             self.driver.quit()
-            time.sleep(1)
-            QMessageBox.information(self.navigation, '提示', '成功打开网页。', QMessageBox.Yes)
+            QMessageBox.information(self.navigation, '提示', '连接成功。', QMessageBox.Yes)
         except Exception as e:
             # 弹出错误提示
             print(e)
             QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
                                 QMessageBox.Yes)
 
-    @staticmethod
-    def install_browser_driver():
+    def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
-        service = ChromeService(executable_path=ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service)
-        driver.quit()
+        try:
+            service = ChromeService(executable_path=ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service)
+            driver.quit()
+        except ConnectionError:
+            QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
 
-    def lookup_element(self, element_type):
+    def lookup_element(self, element_type, timeout_type):
         """查找元素"""
-        # 查找输入框，并输入内容
-        if element_type == 'id':
-            self.wait_for_action_element = self.driver.find_element(By.ID, self.element_id)
-        elif element_type == 'name':
-            self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_name)
+        def lookup_element_x(element_type_x):
+            """查找元素"""
+            if element_type_x == '元素ID':
+                self.wait_for_action_element = self.driver.find_element(By.ID, self.element_id)
+            elif element_type_x == '元素名称':
+                self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_name)
+        try:
+            lookup_element_x(element_type)
+        except NoSuchElementException:
+            if timeout_type == '找不到元素自动跳过':
+                pass
+            else:
+                time_wait = int(timeout_type)
+                # 继续查找元素，直到超时
+                while time_wait > 0:
+                    try:
+                        lookup_element_x(element_type)
+                        break
+                    except NoSuchElementException:
+                        print('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
+                        time.sleep(1)
+                        time_wait -= 1
 
-    def perform_mouse_action(self, action, element_type, text=None):
+    def perform_mouse_action(self, action, element_type, timeout_type, text=None):
         """鼠标操作"""
-        self.driver = webdriver.Chrome()
         self.chains = ActionChains(self.driver)
-        self.lookup_element(element_type)
-        if action == '左键单击':
-            self.chains.click(self.wait_for_action_element).perform()
-        elif action == '左键双击':
-            self.chains.double_click(self.wait_for_action_element).perform()
-        elif action == '右键单击':
-            self.chains.context_click(self.wait_for_action_element).perform()
-        elif action == '输入内容':
-            self.wait_for_action_element.send_keys(text)
+        # 查找元素(元素类型、超时错误)
+        self.lookup_element(element_type, timeout_type)
+
+        if self.wait_for_action_element is not None:
+            if action == '左键单击':
+                self.chains.click(self.wait_for_action_element).perform()
+            elif action == '左键双击':
+                self.chains.double_click(self.wait_for_action_element).perform()
+            elif action == '右键单击':
+                self.chains.context_click(self.wait_for_action_element).perform()
+            elif action == '输入内容':
+                self.wait_for_action_element.send_keys(text)
 
 
 if __name__ == '__main__':
     web = WebOption()
+
     web.driver = webdriver.Chrome()
     web.driver.get('https://www.baidu.com')
-    time.sleep(3)
-    web.element_id = 'kw'
-    web.perform_mouse_action('输入内容', 'id', 'python')
+    time.sleep(1)
+
+    web.element_id = 'ss'
+    web.perform_mouse_action('输入内容', '元素ID', '6', 'python')
+
     time.sleep(2)
+
     web.element_id = 'su'
-    web.perform_mouse_action('右键单击', 'id')
+    web.perform_mouse_action('右键单击', '元素ID', '找不到元素自动跳过')
+
     time.sleep(5)

@@ -35,12 +35,14 @@ COMMAND_TYPE_CUSTOM = "自定义"
 class MainWork:
     """主要工作类"""
 
-    def __init__(self, main_window):
+    def __init__(self, main_window, navigation):
         # 终止和暂停标志
         self.start_state = True
         self.suspended = False
         # 主窗体
         self.main_window = main_window
+        # 导航窗体
+        self.navigation = navigation
         # 读取配置文件
         self.settings = SettingsData()
         self.settings.init()
@@ -353,10 +355,22 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
                     # 网页操作
-                    elif cmd_type == '打开网址':
-                        url = dict(dic)['图像路径']
-                        list_ins = [url]
-                        self.execution_repeats(cmd_type, list_ins, re_try)
+                    elif cmd_type == '网页操作':
+                        url = dict(dic)['图像路径']  # 网址
+                        element_type = dict(dic)['参数1（键鼠指令）']  # 元素类型
+                        element_value = dict(dic)['参数2']  # 元素值
+                        operation_type = dict(dic)['参数3'].split('-')[0]  # 操作类型
+                        text_input = dict(dic)['参数3'].split('-')[1]  # 文本内容
+                        timeout_type = dict(dic)['参数4']  # 超时类型
+                        list_dic = {
+                            '网址': url,
+                            '元素类型': element_type,
+                            '元素值': element_value,
+                            '操作类型': operation_type,
+                            '文本内容': text_input,
+                            '超时类型': timeout_type
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
 
                     current_index += 1
                 except pyautogui.ImageNotFoundException:
@@ -482,10 +496,14 @@ class MainWork:
                 self.text_input(cell_value, special_control_input)
                 self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
                 # print('已执行信息录入')
-            elif cmd_type == '打开网址':
-                url= list_ins[0]
-
-
+            elif cmd_type == '网页操作':
+                url = dict(list_ins)['网址']
+                element_type = dict(list_ins)['元素类型']
+                element_value = dict(list_ins)['元素值']
+                operation_type = dict(list_ins)['操作类型']
+                text_input = dict(list_ins)['文本内容']
+                timeout_type = dict(list_ins)['超时类型']
+                # 执行网页操作
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
