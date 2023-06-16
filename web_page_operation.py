@@ -67,6 +67,8 @@ class WebOption:
                 self.wait_for_action_element = self.driver.find_element(By.ID, self.element_id)
             elif element_type_x == '元素名称':
                 self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_name)
+            elif element_type_x == '元素类名':
+                self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_name)
 
         try:
             lookup_element_x(element_type)
@@ -132,16 +134,10 @@ if __name__ == '__main__':
 
     web.single_shot_operation(url='www.baidu.com',
                               action='输入内容',
-                              element_value='wd',
-                              element_type='元素名称',
+                              element_value='/html/body/div[1]/div[2]/div[5]/div[1]/div/form/span[1]/input',
+                              element_type='元素类名',
                               text='python',
                               timeout_type='找不到元素自动跳过')
-
-    web.single_shot_operation(url='',
-                              action='左键单击',
-                              element_value='su',
-                              element_type='元素ID',
-                              timeout_type='5')
 
     time.sleep(10)
     web.close_browser()
