@@ -54,7 +54,6 @@ def load_json():
     with open(file_name, 'r', encoding='utf8') as f:
         data = json.load(f)
     url = cryptocode.decrypt(data['url_encrypt'], '123456')
-    # print(url)
     return url
 
 
@@ -103,16 +102,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 设置表格列宽自动变化，并使第5列列宽固定
         self.format_table()
         # 显示导航页窗口
-        self.pushButton.clicked.connect(self.show_navigation)
+        self.pushButton.clicked.connect(lambda: self.show_windows('导航'))
         # 显示全局参数窗口
-        self.pushButton_3.clicked.connect(self.show_global_s)
+        self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))
         # 获取数据，修改按钮
         self.toolButton_5.clicked.connect(self.get_data)
         # 获取数据，子窗体取消按钮
-        # self.dialog_1.pushButton_2.clicked.connect(self.get_data)
         self.navigation.pushButton_3.clicked.connect(self.get_data)
         # 获取数据，子窗体保存按钮
-        # self.dialog_1.pushButton.clicked.connect(self.get_data)
         self.navigation.pushButton_2.clicked.connect(self.get_data)
         # 删除数据，删除按钮
         self.pushButton_2.clicked.connect(self.delete_data)
@@ -129,7 +126,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
         # 打开设置
-        self.actions_2.triggered.connect(self.show_setting)
+        self.actions_2.triggered.connect(lambda: self.show_windows('设置'))
         # 结束任务按钮
         self.pushButton_6.clicked.connect(exit_main_work)
         # 导出日志按钮
@@ -139,9 +136,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 隐藏工具栏
         self.actiong.triggered.connect(self.hide_toolbar)
         # 打开关于窗体
-        self.actionabout.triggered.connect(self.show_about)
+        self.actionabout.triggered.connect(lambda: self.show_windows('关于'))
         # 打开使用说明
-        self.actionhelp.triggered.connect(self.open_readme)
+        self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))
         # 修改指令按钮
         self.tab_index = {
             "图像点击": 0,
@@ -166,7 +163,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.toolButton.clicked.connect(self.delete_branch)
         self.comboBox.currentIndexChanged.connect(self.get_data)
 
-    def sqlitedb(self):
+    @staticmethod
+    def sqlitedb():
         """建立与数据库的连接，返回游标"""
         try:
             con = sqlite3.connect('命令集.db')
@@ -176,7 +174,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             print("数据库连接失败")
             sys.exit()
 
-    def close_database(self, cursor, conn):
+    @staticmethod
+    def close_database(cursor, conn):
         """关闭数据库"""
         cursor.close()
         conn.close()
@@ -197,33 +196,28 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.setColumnWidth(6, 30)
         self.tableWidget.setColumnWidth(7, 30)
 
-    def show_setting(self):
-        self.setting.show()
-        self.setting.load_setting_data()
-        print('设置窗口打开')
+    def show_windows(self, judge):
+        """打开窗体"""
         resize = self.geometry()
-        self.setting.move(resize.x() + 90, resize.y())
-
-    def show_about(self):
-        """显示关于窗口"""
-        self.about.show()
-        print('关于窗体开启')
-        resize = self.geometry()
-        self.about.move(resize.x() + 90, resize.y())
-
-    def show_navigation(self):
-        self.navigation.show()
-        # 加载导航页数据
-        self.navigation.load_values_to_controls()
-        print("导航页窗口开启")
-        resize = self.geometry()
-        self.setting.move(resize.x() + 90, resize.y())
-
-    def show_global_s(self):
-        self.global_s.show()
-        print("全局参数窗口开启")
-        resize = self.geometry()
-        self.setting.move(resize.x() + 90, resize.y())
+        if judge == '设置':
+            self.setting.show()
+            self.setting.load_setting_data()
+            print('设置窗口打开')
+            self.setting.move(resize.x() + 90, resize.y())
+        elif judge == '全局':
+            self.global_s.show()
+            print("全局参数窗口开启")
+            self.global_s.move(resize.x() + 90, resize.y())
+        elif judge == '导航':
+            self.navigation.show()
+            self.navigation.load_values_to_controls()
+            print("导航页窗口开启")
+        elif judge == '关于':
+            self.about.show()
+            print('关于窗体开启')
+            self.about.move(resize.x() + 90, resize.y())
+        elif judge == '说明':
+            QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
 
     def get_data(self):
         """从数据库获取数据并存入表格"""
@@ -509,7 +503,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             xx = self.tableWidget.item(row, 7).text()
             yy = self.tableWidget.item(row, 1).text()
             # 将导航页的tabWidget设置为对应的页
-            self.show_navigation()
+            # self.show_navigation()
+            self.show_windows('导航')
             self.navigation.tabWidget.setCurrentIndex(dict(self.tab_index)[yy])
             # 修改数据中的参数
             self.navigation.modify_judgment = '修改'
@@ -517,10 +512,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
             pass
-
-    def open_readme(self):
-        """打开使用说明"""
-        QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
 
     def create_branch(self):
         """创建分支表并重命名"""
@@ -533,8 +524,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 查找是否有同名分支
                 cursor.execute('select 分支表名 from 全局参数 where 分支表名=?', (text,))
                 x = cursor.fetchall()
-                # print('x:' + str(x))
-                # print('x:' + str(len(x)))
                 if len(x) > 0:
                     QMessageBox.information(self, "提示", "分支已存在！")
                     return
@@ -715,11 +704,11 @@ class About(QWidget, Ui_Dialog):
 class Na(QWidget, Ui_navigation):
     """导航页窗体及其功能"""
 
-    def __init__(self, main_window, global_window):
+    def __init__(self, main_window_, global_window):
         super().__init__()
         # 使用全局变量窗体的一些方法
         self.global_window = global_window
-        self.main_window = main_window
+        self.main_window = main_window_
         self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
         self.setWindowModality(Qt.ApplicationModal)
@@ -922,7 +911,6 @@ class Na(QWidget, Ui_navigation):
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
-        exception_handling_text = None
 
         def remove_none(list_):
             """去除列表中的none"""
@@ -954,7 +942,6 @@ class Na(QWidget, Ui_navigation):
             branch_table_name_index = branch_table_name.index(self.comboBox_9.currentText())
             exception_handling_text = '分支-' + str(branch_table_name_index) + '-' + str(
                 int(self.comboBox_10.currentText()) - 1)
-        # print('异常处理方式：', exception_handling_text)
         return exception_handling_text
 
     def exception_handling_judgment_type(self):
@@ -1075,9 +1062,9 @@ class Na(QWidget, Ui_navigation):
     def save_data(self, judge='保存', xx=None):
         """获取4个参数命令，并保存至数据库"""
 
-        def writes_commands_to_the_database(instruction, repeat_number, exception_handling, image=None,
-                                            parameter_1=None,
-                                            parameter_2=None, parameter_3=None, parameter_4=None, remarks=None):
+        def writes_commands_to_the_database(instruction_, repeat_number_, exception_handling_, image_=None,
+                                            parameter_1_=None,
+                                            parameter_2_=None, parameter_3_=None, parameter_4_=None, remarks_=None):
             """向数据库写入命令"""
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
@@ -1086,13 +1073,13 @@ class Na(QWidget, Ui_navigation):
                 if judge == '保存':
                     cursor.execute(
                         'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                        (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
-                         exception_handling, remarks, branch_name))
+                        (image_, instruction_, parameter_1_, parameter_2_, parameter_3_, parameter_4_, repeat_number_,
+                         exception_handling_, remarks_, branch_name))
                 elif judge == '修改':
                     cursor.execute(
                         'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=? WHERE ID=?',
-                        (image, instruction, parameter_1, parameter_2, parameter_3, parameter_4, repeat_number,
-                         exception_handling, remarks, xx))
+                        (image_, instruction_, parameter_1_, parameter_2_, parameter_3_, parameter_4_, repeat_number_,
+                         exception_handling_, remarks_, xx))
                 con.commit()
                 con.close()
             except sqlite3.OperationalError:
@@ -1101,29 +1088,24 @@ class Na(QWidget, Ui_navigation):
         def time_judgment(target_time):
             """判断时间是否大于当前时间"""
             # 获取当前时间年月日和时分秒
-            # print(target_time)
             now_time = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 将now_time转换为时间格式
             now_time = datetime.datetime.strptime(now_time, '%Y/%m/%d %H:%M:%S')
             # 将字符参数转换为时间格式
             target_time = datetime.datetime.strptime(target_time, '%Y/%m/%d %H:%M:%S')
             # 判断是否重新输入
-            # print(now_time)
-            # print(target_time)
-            xx = 0
             if now_time < target_time:
                 print('目标时间大于当前时间，正确')
-                xx = 0
+                xx_ = 0
             else:
                 print('目标时间小于当前时间，错误')
-                xx = 1
-            return xx
+                xx_ = 1
+            return xx_
 
         # 判断当前tab页
-        # 读取功能区的参数：重复次数、异常处理、备注
-        repeat_number = self.spinBox.value()
-        exception_handling = self.exception_handling_judgment()
-        remarks = self.lineEdit_5.text()
+        repeat_number = self.spinBox.value()  # 重复次数
+        exception_handling = self.exception_handling_judgment()  # 异常处理
+        remarks = self.lineEdit_5.text()  # 备注
         # 图像点击事件的参数获取
         if self.tabWidget.currentIndex() == 0:
             # 获取5个参数命令，写入数据库
@@ -1137,22 +1119,22 @@ class Na(QWidget, Ui_navigation):
             elif self.radioButton_4.isChecked():
                 parameter_2 = self.spinBox_4.value()
             # 将命令写入数据库
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            image=image, parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            image_=image, parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
             print('已经保存图像识别点击的数据至数据库')
         # 鼠标点击事件的参数获取
         elif self.tabWidget.currentIndex() == 1:
             instruction = "坐标点击"
             parameter_1 = self.comboBox_3.currentText()
             parameter_2 = self.label_9.text() + "-" + self.label_10.text() + "-" + str(self.spinBox_2.value())
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
 
         elif self.tabWidget.currentIndex() == 2:
             # 获取5个参数命令
@@ -1166,11 +1148,11 @@ class Na(QWidget, Ui_navigation):
             except ValueError:
                 QMessageBox.critical(self, "错误", "移动距离请输入数字！")
                 return
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
             print('已经保存鼠标移动的数据至数据库')
         # 等待事件的参数获取
         elif self.tabWidget.currentIndex() == 3:
@@ -1207,13 +1189,13 @@ class Na(QWidget, Ui_navigation):
             elif self.checkBox.isChecked() and self.checkBox_5.isChecked():
                 QMessageBox.critical(self, "错误", "等待指定时间和等待指定图片不能同时勾选！")
                 return
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            image=image,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2,
-                                            parameter_3=parameter_3, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            image_=image,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            parameter_3_=parameter_3, remarks_=remarks)
 
         # 鼠标滚轮滑动事件的参数获取
         elif self.tabWidget.currentIndex() == 4:
@@ -1228,11 +1210,11 @@ class Na(QWidget, Ui_navigation):
             except ValueError:
                 QMessageBox.critical(self, "错误", "滑动距离请输入数字！")
                 return
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
             print('已经保存鼠标滚轮滑动的数据至数据库')
         # 文本输入事件的参数获取
         elif self.tabWidget.currentIndex() == 5:
@@ -1242,11 +1224,11 @@ class Na(QWidget, Ui_navigation):
             # 文本输入的内容
             parameter_1 = self.textEdit.toPlainText()
             parameter_2 = str(self.checkBox_2.isChecked())
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
             print('已经保存文本输入的数据至数据库')
         # 按下键盘事件的参数获取
         elif self.tabWidget.currentIndex() == 6:
@@ -1254,10 +1236,10 @@ class Na(QWidget, Ui_navigation):
             # 获取按下键盘的参数
             # 按下键盘的内容
             parameter_1 = self.label_31.text()
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1, remarks_=remarks)
             print('已经保存按键的数据至数据库')
         # 中键激活事件的参数获取
         elif self.tabWidget.currentIndex() == 7:
@@ -1271,20 +1253,20 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = self.spinBox_3.value()
             elif self.radioButton_2.isChecked():
                 parameter_1 = '自定义'
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
         # 鼠标当前位置事件的参数获取
         elif self.tabWidget.currentIndex() == 8:
             instruction = "鼠标事件"
             # 获取鼠标当前位置的参数
             parameter_1 = self.comboBox_7.currentText()
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1, remarks_=remarks)
         # excel信息录入功能的参数获取
         elif self.tabWidget.currentIndex() == 9:
             instruction = "excel信息录入"
@@ -1303,14 +1285,14 @@ class Na(QWidget, Ui_navigation):
             elif not self.radioButton_3.isChecked() and self.radioButton_5.isChecked():
                 parameter_4 = self.spinBox_5.value()
 
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            parameter_1=parameter_1,
-                                            parameter_2=parameter_2,
-                                            parameter_3=parameter_3,
-                                            parameter_4=parameter_4,
-                                            image=image, remarks=remarks)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            parameter_3_=parameter_3,
+                                            parameter_4_=parameter_4,
+                                            image_=image, remarks_=remarks)
         # 网页操作功能的参数获取
         elif self.tabWidget.currentIndex() == 10:
             instruction = "网页操作"
@@ -1335,14 +1317,14 @@ class Na(QWidget, Ui_navigation):
             elif self.radioButton_7.isChecked():
                 timeout_type = self.spinBox_7.value()
             # 写入数据库
-            writes_commands_to_the_database(instruction=instruction,
-                                            repeat_number=repeat_number,
-                                            exception_handling=exception_handling,
-                                            image=web_page_link, remarks=remarks,
-                                            parameter_1=element_type,
-                                            parameter_2=element,
-                                            parameter_3=operation_type + '-' + text_content,
-                                            parameter_4=timeout_type)
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            image_=web_page_link, remarks_=remarks,
+                                            parameter_1_=element_type,
+                                            parameter_2_=element,
+                                            parameter_3_=operation_type + '-' + text_content,
+                                            parameter_4_=timeout_type)
 
         # 关闭窗体
         self.close()
@@ -1418,7 +1400,8 @@ class Global_s(QDialog, Ui_Global):
         except IndexError:
             pass
 
-    def delete_data(self, value, judge):
+    @staticmethod
+    def delete_data(value, judge):
         """删除数据库中的数据"""
         # 连接数据库
         conn = sqlite3.connect('命令集.db')
@@ -1456,10 +1439,10 @@ class Global_s(QDialog, Ui_Global):
         add_listview(excel_folder_path, self.listView_2)
         add_listview(extenders, self.listView_5)
 
-    def sqlitedb(self):
+    @staticmethod
+    def sqlitedb():
         """建立与数据库的连接，返回游标"""
         try:
-            path = os.path.abspath('.')
             # 取得当前文件目录
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
@@ -1467,14 +1450,17 @@ class Global_s(QDialog, Ui_Global):
             return cursor, con
         except sqlite3.Error:
             x = input("未连接到数据库！！请检查数据库路径是否异常。")
+            print(x)
             sys.exit()
 
-    def close_database(self, cursor, conn):
+    @staticmethod
+    def close_database(cursor, conn):
         """关闭数据库"""
         cursor.close()
         conn.close()
 
-    def remove_none(self, list_):
+    @staticmethod
+    def remove_none(list_):
         """去除列表中的none"""
         list_x = []
         for i in list_:
@@ -1496,7 +1482,8 @@ class Global_s(QDialog, Ui_Global):
         self.close_database(cursor, conn)
         return image_folder_path, excel_folder_path, branch_table_name, extenders
 
-    def write_to_database(self, images_file, work_book_path, branch_table_name, extension_program):
+    @staticmethod
+    def write_to_database(images_file, work_book_path, branch_table_name, extension_program):
         """将全局参数写入数据库"""
         # 连接数据库
         conn = sqlite3.connect('命令集.db')
@@ -1530,9 +1517,9 @@ if __name__ == "__main__":
     # if is_admin():
     #     app = QApplication([])
     #     # 创建主窗体
-    #     main_window = Main_window()
+    #     main_window_ = Main_window()
     #     # 显示窗体，并根据设置检查更新
-    #     main_window.main_show()
+    #     main_window_.main_show()
     #     # 显示添加对话框窗口
     #     sys.exit(app.exec_())
     # else:

@@ -1,7 +1,6 @@
-import sys
 import time
 
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QMessageBox
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
@@ -85,7 +84,7 @@ class WebOption:
                     except NoSuchElementException:
                         print('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
                         # QApplication.processEvents()
-                        # self.main_window.plainTextEdit.appendPlainText('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
+                        # self.main_window_.plainTextEdit.appendPlainText('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
                         time.sleep(1)
                         time_wait -= 1
                 raise TimeoutException
@@ -98,7 +97,7 @@ class WebOption:
 
         if self.wait_for_action_element is not None:
             print('找到网页元素，执行鼠标操作。')
-            # self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
+            # self.main_window_.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
             if action == '左键单击':
                 self.chains.click(self.wait_for_action_element).perform()
             elif action == '左键双击':
