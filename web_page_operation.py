@@ -14,9 +14,8 @@ class WebOption:
         self.main_window = main_window
         self.navigation = navigation
         self.driver = None
-        # 元素id和名称
-        self.element_id = None
-        self.element_name = None
+        # 等待操作的元素
+        self.element_wait_for_action = None
         # 鼠标操作
         self.wait_for_action_element = None
         self.chains = None
@@ -63,11 +62,12 @@ class WebOption:
         def lookup_element_x(element_type_x):
             """查找元素"""
             if element_type_x == '元素ID':
-                self.wait_for_action_element = self.driver.find_element(By.ID, self.element_id)
+                self.wait_for_action_element = self.driver.find_element(By.ID, self.element_wait_for_action)
             elif element_type_x == '元素名称':
-                self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_name)
+                self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_wait_for_action)
             elif element_type_x == '元素类名':
-                self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_name)
+                print('查找元素类名')
+                self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_wait_for_action)
 
         try:
             lookup_element_x(element_type)
@@ -108,22 +108,30 @@ class WebOption:
                 self.wait_for_action_element.send_keys(text)
 
     def single_shot_operation(self, url, action, element_type, element_value, timeout_type, text=None):
-        """单步骤操作"""
-        if url == '' or url is None:
-            pass
-        else:
-            if url[:7] != 'http://' and url[:8] != 'https://':
-                url = 'http://' + url
-            # 初始化浏览器并打开网页
-            self.driver = webdriver.Chrome()
-            self.driver.get(url)
-            time.sleep(1)
+        """单步骤操作
+        :param url: 网址
+        :param action: 鼠标操作
+        :param element_type: 元素类型
+        :param element_value: 元素值
+        :param timeout_type: 超时错误
+        :param text: 输入内容"""
 
-        if element_type == '元素ID':
-            self.element_id = element_value
-        elif element_type == '元素名称':
-            self.element_name = element_value
+        def open_url(url_):
+            """打开网页或者直接跳过"""
+            if url_ == '' or url_ is None:
+                pass
+            else:
+                if url_[:7] != 'http://' and url_[:8] != 'https://':
+                    url_ = 'http://' + url_
+                # 初始化浏览器并打开网页
+                self.driver = webdriver.Chrome()
+                self.driver.get(url_)
+                time.sleep(1)
 
+        open_url(url)
+        # 确定等待操作的元素
+        self.element_wait_for_action = element_value
+        # 执行鼠标操作
         self.perform_mouse_action(action, element_type, timeout_type, text)
 
 
@@ -133,10 +141,12 @@ if __name__ == '__main__':
 
     web.single_shot_operation(url='www.baidu.com',
                               action='输入内容',
-                              element_value='/html/body/div[1]/div[2]/div[5]/div[1]/div/form/span[1]/input',
+                              # element_value='/html/body/div[1]/div[2]/div[5]/div[1]/div/form/span[1]/input',
+                              # element_value='/html/body/div[1]/div[1]/div/div[1]/div/form/span[1]/input',
+                              element_value='//*[@id="kw"]',
                               element_type='元素类名',
                               text='python',
-                              timeout_type='找不到元素自动跳过')
+                              timeout_type=3)
 
     time.sleep(10)
     web.close_browser()

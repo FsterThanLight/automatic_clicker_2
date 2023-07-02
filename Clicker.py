@@ -697,7 +697,8 @@ class About(QWidget, Ui_Dialog):
         QMessageBox.information(self, '提醒', '暂无信息')
         # QDesktopServices.openUrl(QUrl('https://github.com/FsterThanLight/Clicker'))
 
-    def show_gitee(self):
+    @staticmethod
+    def show_gitee():
         QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
 
 

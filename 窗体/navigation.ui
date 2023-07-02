@@ -39,7 +39,7 @@
         <string>功能选择：</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -1881,6 +1881,11 @@ p, li { white-space: pre-wrap; }
                 <string>元素名称</string>
                </property>
               </item>
+              <item>
+               <property name="text">
+                <string>xpath定位</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -1958,6 +1963,12 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout_12">
+            <property name="horizontalSpacing">
+             <number>6</number>
+            </property>
+            <property name="verticalSpacing">
+             <number>2</number>
+            </property>
             <item row="0" column="1">
              <widget class="QComboBox" name="comboBox_22">
               <property name="palette">
@@ -2627,6 +2638,261 @@ p, li { white-space: pre-wrap; }
         </layout>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab_12">
+      <attribute name="title">
+       <string>网页录入</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_28">
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>待录入信息</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_25">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_23">
+              <property name="text">
+               <string>Excel工作簿名称</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBox_20"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_49">
+              <property name="text">
+               <string>工作表名</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBox_23"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_55">
+              <property name="text">
+               <string>单元格</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="lineEdit_9"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="title">
+          <string>网页元素</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_26">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_15">
+            <item row="0" column="0">
+             <widget class="QComboBox" name="comboBox_24">
+              <item>
+               <property name="text">
+                <string>元素ID：</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>元素名称：</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>xpath定位：</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_10">
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>120</red>
+                    <green>120</green>
+                    <blue>120</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>120</red>
+                    <green>120</green>
+                    <blue>120</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="128">
+                    <red>0</red>
+                    <green>0</green>
+                    <blue>0</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="placeholderText">
+               <string>输入元素...</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>输入控制</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_27">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_16">
+            <item row="2" column="0">
+             <widget class="QRadioButton" name="radioButton_11">
+              <property name="text">
+               <string>找不到元素超时报错：</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QLabel" name="label_56">
+              <property name="text">
+               <string>秒数：</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QSpinBox" name="spinBox_8">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>9999</number>
+              </property>
+              <property name="value">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="QCheckBox" name="checkBox_6">
+              <property name="text">
+               <string>单元格行号自动递增</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="3">
+             <widget class="QRadioButton" name="radioButton_10">
+              <property name="text">
+               <string>找不到元素自动跳过</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_13">
+      <attribute name="title">
+       <string>网页等待</string>
+      </attribute>
      </widget>
     </widget>
    </item>
