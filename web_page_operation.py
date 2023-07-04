@@ -48,7 +48,7 @@ class WebOption:
             driver.quit()
         except ConnectionError:
             QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
-    
+
     def close_browser(self):
         """关闭浏览器驱动"""
         print('关闭浏览器驱动。')
@@ -57,7 +57,9 @@ class WebOption:
             self.driver.quit()
 
     def lookup_element(self, element_type, timeout_type):
-        """查找元素"""
+        """查找元素
+        :param element_type: 元素类型
+        :param timeout_type: 超时错误"""
 
         def lookup_element_x(element_type_x):
             """查找元素"""
@@ -66,7 +68,6 @@ class WebOption:
             elif element_type_x == '元素名称':
                 self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_wait_for_action)
             elif element_type_x == '元素类名':
-                print('查找元素类名')
                 self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_wait_for_action)
 
         try:
@@ -90,7 +91,11 @@ class WebOption:
                 raise TimeoutException
 
     def perform_mouse_action(self, action, element_type, timeout_type, text=None):
-        """鼠标操作"""
+        """鼠标操作
+        :param action: 鼠标操作
+        :param element_type: 元素类型
+        :param timeout_type: 超时错误
+        :param text: 输入内容"""
         self.chains = ActionChains(self.driver)
         # 查找元素(元素类型、超时错误)
         self.lookup_element(element_type, timeout_type)
@@ -135,14 +140,16 @@ class WebOption:
         self.perform_mouse_action(action, element_type, timeout_type, text)
 
 
+# WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
+# driver.switch_to.parent_frame()
+# waitElement.wait_element(driver, "XPATH", xpath, "ddd "):
+
 if __name__ == '__main__':
     # 初始化功能类
     web = WebOption()
 
     web.single_shot_operation(url='www.baidu.com',
                               action='输入内容',
-                              # element_value='/html/body/div[1]/div[2]/div[5]/div[1]/div/form/span[1]/input',
-                              # element_value='/html/body/div[1]/div[1]/div/div[1]/div/form/span[1]/input',
                               element_value='//*[@id="kw"]',
                               element_type='元素类名',
                               text='python',

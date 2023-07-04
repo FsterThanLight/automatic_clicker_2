@@ -57,7 +57,7 @@ def load_json():
     return url
 
 
-def get_download_address(main_window, warning):
+def get_download_address(main_window_, warning):
     """获取下载地址、版本信息、更新说明"""
     global headers
     url = load_json()
@@ -70,7 +70,7 @@ def get_download_address(main_window, warning):
     except requests.exceptions.ConnectionError:
         if warning == 1:
             # print("无法获取更新信息，请检查网络。")
-            QMessageBox.critical(main_window, "更新检查", "无法获取更新信息，请检查网络。")
+            QMessageBox.critical(main_window_, "更新检查", "无法获取更新信息，请检查网络。")
             time.sleep(1)
         else:
             pass
@@ -151,7 +151,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "中键激活": 7,
             "鼠标事件": 8,
             "excel信息录入": 9,
-            "网页操作": 10
+            "网页操作": 10,
+            "网页录入": 11,
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -268,11 +269,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         row = self.tableWidget.currentRow()
         column = self.tableWidget.currentColumn()
         try:
-            xx = self.tableWidget.item(row, 7).text()
+            # xx = self.tableWidget.item(row, 7).text()
             # 将选中行的数据在数据库中与上一行数据交换，如果是第一行则不交换
-            id = int(self.tableWidget.item(row, 7).text())
+            id_ = int(self.tableWidget.item(row, 7).text())
             # 初始化值
-            id_up_down = id
+            id_up_down = id_
             row_up_down = row
             # 判断是否执行数据库操作
             execute_sql = False
@@ -280,13 +281,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
             if judge == 'up':
                 if row != 0:
                     # 获取选中值的行号
-                    id_up_down = id - 1
+                    id_up_down = id_ - 1
                     row_up_down = row - 1
                     execute_sql = True
             elif judge == 'down':
                 if row != self.tableWidget.rowCount() - 1:
                     # 获取选中值的行号
-                    id_up_down = id + 1
+                    id_up_down = id_ + 1
                     row_up_down = row + 1
                     execute_sql = True
             if execute_sql:
@@ -298,7 +299,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 branch_name = self.comboBox.currentText()
                 cursor.execute(
                     'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
-                    (id, branch_name,))
+                    (id_, branch_name,))
                 list_id = cursor.fetchall()
                 cursor.execute(
                     'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
@@ -309,7 +310,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
                     '隶属分支=?',
                     (list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
-                     list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], list_id_up[0][8], list_id_up[0][9], id,
+                     list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], list_id_up[0][8], list_id_up[0][9], id_,
                      branch_name,))
                 cursor.execute(
                     'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
@@ -717,7 +718,7 @@ class Na(QWidget, Ui_navigation):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
         # 是否激活自定义点击次数
-        self.comboBox_3.currentTextChanged.connect(self.spinBox_2_enable)
+        self.comboBox_3.currentTextChanged.connect(lambda: self.merge_additional_functions('spinBox_2_enable'))
         # 添加保存按钮事件
         self.modify_judgment = '保存'
         self.modify_id = None
@@ -725,34 +726,38 @@ class Na(QWidget, Ui_navigation):
         # 获取鼠标位置参数
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
         # 设置当前日期和时间
-        self.checkBox.clicked.connect(self.get_now_date_time)
+        self.checkBox.clicked.connect(lambda: self.merge_additional_functions('get_now_date_time'))
         # 检查输入的数据是否合法
-        self.checkBox_2.clicked.connect(self.check_text_type)
+        self.checkBox_2.clicked.connect(lambda: self.merge_additional_functions('check_text_type'))
         # 当按钮按下时，获取按键的名称
         self.pushButton_6.clicked.connect(self.print_key_name)
         # 当combobox_8的值改变时，加载combobox的值
         self.comboBox_8.currentTextChanged.connect(lambda: self.find_images(self.comboBox_8, self.comboBox))
         self.comboBox_14.currentTextChanged.connect(lambda: self.find_images(self.comboBox_14, self.comboBox_15))
         self.comboBox_17.currentTextChanged.connect(lambda: self.find_images(self.comboBox_17, self.comboBox_18))
-        self.comboBox_12.currentTextChanged.connect(self.find_excel_sheet_name)
+        # 信息录入窗口的excel功能
+        self.comboBox_12.currentTextChanged.connect(lambda:
+                                                    self.find_excel_sheet_name(self.comboBox_12, self.comboBox_13))
+        # 网页信息录入的excel功能
+        self.comboBox_20.currentTextChanged.connect(lambda:
+                                                    self.find_excel_sheet_name(self.comboBox_20, self.comboBox_23))
         # 切换到导航页时，控制窗口控件的状态
         self.tabWidget.currentChanged.connect(self.tab_widget_change)
         # 调整异常处理选项时，控制窗口控件的状态
-        # self.comboBox_9.currentTextChanged.connect(self.exception_handling_judgment_type)
         self.comboBox_9.activated.connect(self.exception_handling_judgment_type)
         # 快捷选择导航页
         self.tab_title = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
         self.comboBox_16.addItems(self.tab_title)
-        self.comboBox_16.currentTextChanged.connect(self.quick_select_navigation_page)
+        self.comboBox_16.currentTextChanged.connect(lambda:
+                                                    self.merge_additional_functions('quick_select_navigation_page'))
         # 行号自动递增提示
-        self.checkBox_3.clicked.connect(self.line_number_increasing)
+        self.checkBox_3.clicked.connect(lambda: self.merge_additional_functions('line_number_increasing'))
         # 快捷截图功能
         self.pushButton.clicked.connect(lambda: self.quick_screenshot(self.comboBox_8, self.comboBox))
         self.pushButton_7.clicked.connect(lambda: self.delete_all_images(self.comboBox_8, self.comboBox))
         # 信息录入页面的快捷截图功能
         self.pushButton_5.clicked.connect(lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15))
         self.pushButton_8.clicked.connect(lambda: self.delete_all_images(self.comboBox_14, self.comboBox_15))
-
         # 网页测试
         self.pushButton_9.clicked.connect(lambda: self.web_functional_testing('测试'))
         self.pushButton_10.clicked.connect(lambda: self.web_functional_testing('安装浏览器'))
@@ -767,7 +772,9 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_8.clear()
         self.comboBox_9.clear()
         self.comboBox_12.clear()
+        self.comboBox_20.clear()
         self.comboBox_13.clear()
+        self.comboBox_23.clear()
         self.comboBox_14.clear()
         self.comboBox_11.clear()
         self.comboBox_17.clear()
@@ -781,15 +788,10 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_9.addItems(branch_table_name)
         # 从数据库加载的excel表名和图像名称
         self.comboBox_12.addItems(excel_folder_path)
+        self.comboBox_20.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
         # 清空备注
         self.lineEdit_5.clear()
-
-    def quick_select_navigation_page(self):
-        """快捷选择导航页"""
-        tab_a = self.comboBox_16.currentText()
-        tab_index = self.tab_title.index(tab_a)
-        self.tabWidget.setCurrentIndex(tab_index)
 
     def find_images(self, combox, combox_2):
         """选择文件夹并返回文件夹名称"""
@@ -809,9 +811,12 @@ class Na(QWidget, Ui_navigation):
         combox_2.addItems(images_name)
         self.label_3.setText(self.comboBox_8.currentText())
 
-    def find_excel_sheet_name(self):
-        """获取excel表格中的所有sheet名称"""
-        excel_path = self.comboBox_12.currentText()
+    @staticmethod
+    def find_excel_sheet_name(comboBox_before, comboBox_after):
+        """获取excel表格中的所有sheet名称
+        :param comboBox_before: 选择excel文件的下拉列表
+        :param comboBox_after: 选择sheet名称的下拉列表"""
+        excel_path = comboBox_before.currentText()
         try:
             # 用openpyxl获取excel表格中的所有sheet名称
             excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
@@ -820,9 +825,9 @@ class Na(QWidget, Ui_navigation):
         except InvalidFileException:
             excel_sheet_name = []
         # 清空combox_13中的所有元素
-        self.comboBox_13.clear()
+        comboBox_after.clear()
         # 将excel_sheet_name中的所有元素添加到combox_13中
-        self.comboBox_13.addItems(excel_sheet_name)
+        comboBox_after.addItems(excel_sheet_name)
 
     def print_key_name(self):
         pressed_keys = set()  # create an empty set to store pressed keys
@@ -847,28 +852,10 @@ class Na(QWidget, Ui_navigation):
             # # 激活当前按钮
             self.pushButton_6.setEnabled(True)
 
-    def spinBox_2_enable(self):
-        """激活自定义点击次数"""
-        if self.comboBox_3.currentText() == '左键（自定义次数）':
-            self.spinBox_2.setEnabled(True)
-            self.label_22.setEnabled(True)
-        else:
-            self.spinBox_2.setEnabled(False)
-            self.label_22.setEnabled(False)
-
     def get_mouse_position(self):
         x, y = pyautogui.position()
         self.label_9.setText(str(x))
         self.label_10.setText(str(y))
-
-    def get_now_date_time(self):
-        """获取当前日期和时间"""
-        now_date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        # 将当前的时间和日期加10分钟
-        now_date_time = (datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(
-            minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
-        # 将dateTimeEdit的日期和时间设置为当前日期和时间
-        self.dateTimeEdit.setDateTime(datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S'))
 
     def mouseMoveEvent(self, event):
         # self.setMouseTracking(True)
@@ -889,9 +876,10 @@ class Na(QWidget, Ui_navigation):
         #     "鼠标事件": 8,
         #     "excel信息录入": 9
         #     "网页控制": 10,
+        #     "网页录入": 11
         # 禁用类
         discards = [1, 2, 4, 5, 6, 7, 8]
-        discards_not = [0, 3, 9, 10]
+        discards_not = [0, 3, 9, 10, 11]
         # 不禁用类
         if index in discards:
             self.comboBox_9.setEnabled(True)
@@ -903,12 +891,44 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_9.setEnabled(True)
             self.comboBox_11.setEnabled(True)
 
-    def line_number_increasing(self):
-        """行号递增功能被选中后弹出提示框"""
-        if self.checkBox_3.isChecked():
-            QMessageBox.information(self, '提示',
-                                    '启用该功能后，请在主页面中设置循环次数大于1，执行全部指令后，循环执行时，单元格行号会自动递增。',
-                                    QMessageBox.Ok)
+    def merge_additional_functions(self, function_name):
+        """将一次性和冗余的功能合并
+        :param function_name: 功能名称
+        """
+        if function_name == 'line_number_increasing':
+            # 行号递增功能被选中后弹出提示框
+            if self.checkBox_3.isChecked():
+                QMessageBox.information(self, '提示',
+                                        '启用该功能后，请在主页面中设置循环次数大于1，执行全部指令后，循环执行时，单元格行号会自动递增。',
+                                        QMessageBox.Ok)
+        elif function_name == 'get_now_date_time':
+            # 获取当前日期和时间
+            now_date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # 将当前的时间和日期加10分钟
+            now_date_time = (datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(
+                minutes=10)).strftime('%Y-%m-%d %H:%M:%S')
+            # 将dateTimeEdit的日期和时间设置为当前日期和时间
+            self.dateTimeEdit.setDateTime(datetime.datetime.strptime(now_date_time, '%Y-%m-%d %H:%M:%S'))
+        elif function_name == 'quick_select_navigation_page':
+            # 快捷选择导航页
+            tab_a = self.comboBox_16.currentText()
+            tab_index = self.tab_title.index(tab_a)
+            self.tabWidget.setCurrentIndex(tab_index)
+        elif function_name == 'check_text_type':
+            # 检查文本输入类型
+            text = self.textEdit.toPlainText()
+            # 检查text中是否为英文大小写字母和数字
+            if re.search('[a-zA-Z0-9]', text) is None:
+                self.checkBox_2.setChecked(False)
+                QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
+        elif function_name == 'spinBox_2_enable':
+            # 激活自定义点击次数
+            if self.comboBox_3.currentText() == '左键（自定义次数）':
+                self.spinBox_2.setEnabled(True)
+                self.label_22.setEnabled(True)
+            else:
+                self.spinBox_2.setEnabled(False)
+                self.label_22.setEnabled(False)
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -993,14 +1013,6 @@ class Na(QWidget, Ui_navigation):
                 self.comboBox_11.addItems(extenders)
         except sqlite3.OperationalError:
             pass
-
-    def check_text_type(self):
-        """检查文本输入类型"""
-        text = self.textEdit.toPlainText()
-        # 检查text中是否为英文大小写字母和数字
-        if re.search('[a-zA-Z0-9]', text) is None:
-            self.checkBox_2.setChecked(False)
-            QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
 
     def quick_screenshot(self, combox, combox_2):
         """截图功能"""
@@ -1326,6 +1338,32 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2_=element,
                                             parameter_3_=operation_type + '-' + text_content,
                                             parameter_4_=timeout_type)
+
+        elif self.tabWidget.currentIndex() == 11:
+            instruction = "网页录入"
+            parameter_4 = None
+            # 获取excel工作簿路径和工作表名称
+            parameter_1 = self.comboBox_20.currentText() + "-" + self.comboBox_23.currentText()
+            # 获取元素类型和元素
+            image = self.comboBox_24.currentText() + '-' + self.lineEdit_10.text()
+            # 获取单元格值
+            parameter_2 = self.lineEdit_9.text()
+            # 判断是否递增行号和特殊控件输入
+            parameter_3 = str(self.checkBox_6.isChecked())
+            # 判断其他参数
+            if self.radioButton_10.isChecked() and not self.radioButton_11.isChecked():
+                parameter_4 = '自动跳过'
+            elif not self.radioButton_10.isChecked() and self.radioButton_11.isChecked():
+                parameter_4 = self.spinBox_8.value()
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            parameter_3_=parameter_3,
+                                            parameter_4_=parameter_4,
+                                            image_=image, remarks_=remarks)
 
         # 关闭窗体
         self.close()
