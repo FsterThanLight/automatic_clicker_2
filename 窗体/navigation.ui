@@ -2064,6 +2064,11 @@ p, li { white-space: pre-wrap; }
               </property>
               <item>
                <property name="text">
+                <string>仅打开网址，不需要其他操作</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>左键单击</string>
                </property>
               </item>

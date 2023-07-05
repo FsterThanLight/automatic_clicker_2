@@ -114,26 +114,27 @@ class MainWork:
             QMessageBox.critical(self.main_window, "警告", "找不到分支！请检查分支表名是否正确！", QMessageBox.Yes)
 
     # 编写一个函数用于去除列表中的none
-    @staticmethod
-    def remove_none(list_):
-        """去除列表中的none"""
-        list_x = []
-        for i in list_:
-            if i[0] is not None:
-                list_x.append(i[0].replace('"', ''))
-        return list_x
 
     def extracted_data_global_parameter(self):
         """从全局参数表中提取数据"""
+
+        def remove_none(list_):
+            """去除列表中的none"""
+            list_x = []
+            for i in list_:
+                if i[0] is not None:
+                    list_x.append(i[0].replace('"', ''))
+            return list_x
+
         cursor, conn = self.sqlitedb()
         cursor.execute("select 图像文件夹路径 from 全局参数")
-        image_folder_path = self.remove_none(cursor.fetchall())
+        image_folder_path = remove_none(cursor.fetchall())
         cursor.execute("select 工作簿路径 from 全局参数")
-        excel_folder_path = self.remove_none(cursor.fetchall())
+        excel_folder_path = remove_none(cursor.fetchall())
         cursor.execute("select 分支表名 from 全局参数")
-        branch_table_name = self.remove_none(cursor.fetchall())
+        branch_table_name = remove_none(cursor.fetchall())
         cursor.execute("select 扩展程序 from 全局参数")
-        extenders = self.remove_none(cursor.fetchall())
+        extenders = remove_none(cursor.fetchall())
         self.close_database(cursor, conn)
         print("全局参数读取成功！")
         return image_folder_path, excel_folder_path, branch_table_name, extenders
@@ -379,6 +380,26 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 网页录入
+                    elif cmd_type == '网页录入':
+                        excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
+                        sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
+                        element_type = dict(dic)['图像路径'].split('-')[0]
+                        element_value = dict(dic)['图像路径'].split('-')[1]
+                        cell_position = dict(dic)['参数2']
+                        line_number_increment = dict(dic)['参数3']
+                        timeout_type = dict(dic)['参数4']
+                        list_dic = {
+                            '工作簿路径': excel_path,
+                            '工作表名称': sheet_name,
+                            '元素类型': element_type,
+                            '元素值': element_value,
+                            '单元格位置': cell_position,
+                            '行号递增': line_number_increment,
+                            '超时类型': timeout_type
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
@@ -438,7 +459,6 @@ class MainWork:
                 img = list_ins_[2]
                 skip = list_ins_[3]
                 self.execute_click(click_times, lOrR, img, skip)
-            # 坐标点击的操作事件
             elif cmd_type_ == '坐标点击':
                 x = list_ins_[2]
                 y = list_ins_[3]
@@ -448,7 +468,6 @@ class MainWork:
                                 button=lOrR)
                 # print('执行坐标%s:%s点击' % (x, y) + str(self.number))
                 self.main_window.plainTextEdit.appendPlainText('执行坐标%s:%s点击' % (x, y) + str(self.number))
-
             elif cmd_type_ == '鼠标移动':
                 direction = list_ins_[0]
                 distance = list_ins_[1]
@@ -513,10 +532,32 @@ class MainWork:
                 # 执行网页操作
                 self.web_option.single_shot_operation(url=url,
                                                       action=operation_type,
-                                                      element_value=element_value,
-                                                      element_type=element_type,
+                                                      element_value_=element_value,
+                                                      element_type_=element_type,
                                                       text=text_input,
-                                                      timeout_type=timeout_type)
+                                                      timeout_type_=timeout_type)
+            elif cmd_type_ == '网页录入':
+                excel_path = dict(list_ins_)['工作簿路径']
+                sheet_name = dict(list_ins_)['工作表名称']
+                cell_position = dict(list_ins_)['单元格位置']
+                element_type = dict(list_ins_)['元素类型']
+                element_value = dict(list_ins_)['元素值']
+                timeout_type = dict(list_ins_)['超时类型']
+                line_number_increment = dict(list_ins_)['行号递增']
+                # 获取excel表格中的值
+                cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position, line_number_increment)
+                # 执行网页操作
+                print('正在执行网页录入')
+                # print('element_type_:%s' % element_type)
+                # print('element_value_:%s' % element_value)
+                # print('cell_value:%s' % cell_value)
+                # print('timeout_type_:%s' % timeout_type)
+                self.web_option.single_shot_operation(url='',
+                                                      action='输入内容',
+                                                      element_value_=element_value,
+                                                      element_type_=element_type,
+                                                      text=cell_value,
+                                                      timeout_type_=timeout_type)
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置

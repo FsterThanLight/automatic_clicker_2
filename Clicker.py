@@ -852,14 +852,8 @@ class Na(QWidget, Ui_navigation):
             # # 激活当前按钮
             self.pushButton_6.setEnabled(True)
 
-    def get_mouse_position(self):
-        x, y = pyautogui.position()
-        self.label_9.setText(str(x))
-        self.label_10.setText(str(y))
-
     def mouseMoveEvent(self, event):
-        # self.setMouseTracking(True)
-        self.get_mouse_position()
+        self.merge_additional_functions('get_mouse_position')
 
     def tab_widget_change(self):
         """切换导航页功能"""
@@ -929,6 +923,11 @@ class Na(QWidget, Ui_navigation):
             else:
                 self.spinBox_2.setEnabled(False)
                 self.label_22.setEnabled(False)
+        elif function_name == 'get_mouse_position':
+            # 获取鼠标位置
+            x, y = pyautogui.position()
+            self.label_9.setText(str(x))
+            self.label_10.setText(str(y))
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -1322,6 +1321,8 @@ class Na(QWidget, Ui_navigation):
             element = self.lineEdit_7.text()
             # 获取操作类型
             operation_type = self.comboBox_22.currentText()
+            if operation_type == '仅打开网址，不需要其他操作':
+                operation_type = ''
             # 获取文本内容
             text_content = self.lineEdit_8.text()
             # 获取超时类型
@@ -1345,7 +1346,7 @@ class Na(QWidget, Ui_navigation):
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_20.currentText() + "-" + self.comboBox_23.currentText()
             # 获取元素类型和元素
-            image = self.comboBox_24.currentText() + '-' + self.lineEdit_10.text()
+            image = self.comboBox_24.currentText().replace('：', '') + '-' + self.lineEdit_10.text()
             # 获取单元格值
             parameter_2 = self.lineEdit_9.text()
             # 判断是否递增行号和特殊控件输入

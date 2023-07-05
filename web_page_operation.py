@@ -52,35 +52,40 @@ class WebOption:
     def close_browser(self):
         """关闭浏览器驱动"""
         print('关闭浏览器驱动。')
-        print('self.driver: ', self.driver)
+        # print('self.driver: ', self.driver)
         if self.driver is not None:
             self.driver.quit()
 
-    def lookup_element(self, element_type, timeout_type):
+    def lookup_element(self, element_type_, timeout_type_):
         """查找元素
-        :param element_type: 元素类型
-        :param timeout_type: 超时错误"""
+        :param element_type_: 元素类型
+        :param timeout_type_: 超时错误"""
 
-        def lookup_element_x(element_type_x):
+        def lookup_element_x(element_type__):
             """查找元素"""
-            if element_type_x == '元素ID':
+            print('查找元素。')
+            print(element_type__)
+            if element_type__ == '元素ID':
                 self.wait_for_action_element = self.driver.find_element(By.ID, self.element_wait_for_action)
-            elif element_type_x == '元素名称':
+                print('self.wait_for_action_element: ', self.wait_for_action_element)
+            elif element_type__ == '元素名称':
                 self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_wait_for_action)
-            elif element_type_x == '元素类名':
+                print('self.wait_for_action_element: ', self.wait_for_action_element)
+            elif element_type__ == 'xpath定位':
                 self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_wait_for_action)
+                print('self.wait_for_action_element: ', self.wait_for_action_element)
 
         try:
-            lookup_element_x(element_type)
+            lookup_element_x(element_type_)
         except NoSuchElementException:
-            if timeout_type == '找不到元素自动跳过':
+            if timeout_type_ == '找不到元素自动跳过':
                 pass
             else:
-                time_wait = int(timeout_type)
+                time_wait = int(timeout_type_)
                 # 继续查找元素，直到超时
                 while time_wait > 0:
                     try:
-                        lookup_element_x(element_type)
+                        lookup_element_x(element_type_)
                         break
                     except NoSuchElementException:
                         print('查找元素失败，正在重试。剩余' + str(time_wait) + '秒。')
@@ -90,15 +95,15 @@ class WebOption:
                         time_wait -= 1
                 raise TimeoutException
 
-    def perform_mouse_action(self, action, element_type, timeout_type, text=None):
+    def perform_mouse_action(self, element_type_, timeout_type_, action, text=None):
         """鼠标操作
         :param action: 鼠标操作
-        :param element_type: 元素类型
-        :param timeout_type: 超时错误
+        :param element_type_: 元素类型
+        :param timeout_type_: 超时错误
         :param text: 输入内容"""
         self.chains = ActionChains(self.driver)
         # 查找元素(元素类型、超时错误)
-        self.lookup_element(element_type, timeout_type)
+        self.lookup_element(element_type_, timeout_type_)
 
         if self.wait_for_action_element is not None:
             print('找到网页元素，执行鼠标操作。')
@@ -112,13 +117,13 @@ class WebOption:
             elif action == '输入内容':
                 self.wait_for_action_element.send_keys(text)
 
-    def single_shot_operation(self, url, action, element_type, element_value, timeout_type, text=None):
+    def single_shot_operation(self, url, action, element_type_, element_value_, timeout_type_, text=None):
         """单步骤操作
         :param url: 网址
         :param action: 鼠标操作
-        :param element_type: 元素类型
-        :param element_value: 元素值
-        :param timeout_type: 超时错误
+        :param element_type_: 元素类型
+        :param element_value_: 元素值
+        :param timeout_type_: 超时错误
         :param text: 输入内容"""
 
         def open_url(url_):
@@ -134,10 +139,18 @@ class WebOption:
                 time.sleep(1)
 
         open_url(url)
-        # 确定等待操作的元素
-        self.element_wait_for_action = element_value
-        # 执行鼠标操作
-        self.perform_mouse_action(action, element_type, timeout_type, text)
+        if action == '' or action is None:
+            print('没有鼠标操作。')
+            pass
+        else:
+            print('执行鼠标操作。')
+            # 确定等待操作的元素
+            self.element_wait_for_action = element_value_
+            # 执行鼠标操作
+            self.perform_mouse_action(action=action,
+                                      element_type_=element_type_,
+                                      timeout_type_=timeout_type_,
+                                      text=text)
 
 
 # WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
@@ -149,11 +162,29 @@ if __name__ == '__main__':
     web = WebOption()
 
     web.single_shot_operation(url='www.baidu.com',
-                              action='输入内容',
-                              element_value='//*[@id="kw"]',
-                              element_type='元素类名',
-                              text='python',
-                              timeout_type=3)
+                              action='',
+                              element_value_='',
+                              element_type_='',
+                              text='',
+                              timeout_type_=3)
+    #
+    # web.single_shot_operation(url='',
+    #                           action='输入内容',
+    #                           element_value_='kw',
+    #                           element_type_='元素ID',
+    #                           text='python',
+    #                           timeout_type_=3)
+    element_value = 'kw'
+    element_type = '元素ID'
+    timeout_type = 3
+    cell_value = '德国'
 
-    time.sleep(10)
+    web.single_shot_operation(url='',
+                              action='输入内容',
+                              element_value_=element_value,
+                              element_type_=element_type,
+                              text=cell_value,
+                              timeout_type_=timeout_type)
+
+    time.sleep(5)
     web.close_browser()
