@@ -400,6 +400,17 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 鼠标拖拽
+                    elif cmd_type == '鼠标拖拽':
+                        x_start = int(dict(dic)['参数1（键鼠指令）'].split(',')[0])
+                        y_start = int(dict(dic)['参数1（键鼠指令）'].split(',')[1])
+                        x_end = int(dict(dic)['参数2'].split(',')[0])
+                        y_end = int(dict(dic)['参数2'].split(',')[1])
+                        start_position = (x_start, y_start)
+                        end_position = (x_end, y_end)
+                        list_ins = [start_position, end_position]
+                        self.execution_repeats(cmd_type, list_ins, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
@@ -547,17 +558,18 @@ class MainWork:
                 # 获取excel表格中的值
                 cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position, line_number_increment)
                 # 执行网页操作
-                print('正在执行网页录入')
-                # print('element_type_:%s' % element_type)
-                # print('element_value_:%s' % element_value)
-                # print('cell_value:%s' % cell_value)
-                # print('timeout_type_:%s' % timeout_type)
                 self.web_option.single_shot_operation(url='',
                                                       action='输入内容',
                                                       element_value_=element_value,
                                                       element_type_=element_type,
                                                       text=cell_value,
                                                       timeout_type_=timeout_type)
+
+            elif cmd_type_ == '鼠标拖拽':
+                start_position = list_ins_[0]
+                end_position = list_ins_[1]
+                # 执行鼠标拖拽
+                self.mouse_drag(start_position, end_position)
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
@@ -757,6 +769,12 @@ class MainWork:
         pyautogui.scroll(scroll_distance)
         self.main_window.plainTextEdit.appendPlainText(
             '滚轮滑动' + str(scroll_direction) + str(abs(scroll_distance)) + '距离')
+
+    def mouse_drag(self, start_position, end_position):
+        """鼠标拖拽事件"""
+        pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
+        pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
+        self.main_window.plainTextEdit.appendPlainText('鼠标拖拽' + str(start_position) + '到' + str(end_position))
 
     def text_input(self, input_value, special_control_judgment):
         """文本输入事件"""

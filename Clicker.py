@@ -13,6 +13,7 @@ from __future__ import print_function
 import datetime
 import json
 import os
+import random
 import re
 import shutil
 import sqlite3
@@ -150,9 +151,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "按下键盘": 6,
             "中键激活": 7,
             "鼠标事件": 8,
-            "excel信息录入": 9,
-            "网页操作": 10,
-            "网页录入": 11,
+            "鼠标拖拽": 9,
+            "excel信息录入": 10,
+            "网页操作": 11,
+            "网页录入": 12,
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -724,7 +726,20 @@ class Na(QWidget, Ui_navigation):
         self.modify_id = None
         self.pushButton_2.clicked.connect(lambda: self.save_data(self.modify_judgment, self.modify_id))
         # 获取鼠标位置参数
+        self.mouse_position_function = None
+        # 坐标点击
+        self.pushButton_4.pressed.connect(
+            lambda: self.merge_additional_functions('change_get_mouse_position_function', '坐标点击'))
         self.pushButton_4.clicked.connect(self.mouseMoveEvent)
+        # 鼠标拖拽
+        self.pushButton_12.pressed.connect(
+            lambda: self.merge_additional_functions('change_get_mouse_position_function', '开始拖拽'))
+        self.pushButton_12.clicked.connect(self.mouseMoveEvent)
+        self.pushButton_13.pressed.connect(
+            lambda: self.merge_additional_functions('change_get_mouse_position_function', '结束拖拽'))
+        self.pushButton_13.clicked.connect(self.mouseMoveEvent)
+        # 拖拽测试按钮
+        self.pushButton_14.clicked.connect(lambda: self.merge_additional_functions('drag_test'))
         # 设置当前日期和时间
         self.checkBox.clicked.connect(lambda: self.merge_additional_functions('get_now_date_time'))
         # 检查输入的数据是否合法
@@ -868,12 +883,13 @@ class Na(QWidget, Ui_navigation):
         #     "按下键盘": 6,
         #     "中键激活": 7,
         #     "鼠标事件": 8,
-        #     "excel信息录入": 9
-        #     "网页控制": 10,
-        #     "网页录入": 11
+        #     "鼠标拖拽": 9
+        #     "excel信息录入": 10
+        #     "网页控制": 11,
+        #     "网页录入": 12
         # 禁用类
-        discards = [1, 2, 4, 5, 6, 7, 8]
-        discards_not = [0, 3, 9, 10, 11]
+        discards = [1, 2, 4, 5, 6, 7, 8, 9]
+        discards_not = [0, 3, 10, 11, 12]
         # 不禁用类
         if index in discards:
             self.comboBox_9.setEnabled(True)
@@ -885,8 +901,9 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_9.setEnabled(True)
             self.comboBox_11.setEnabled(True)
 
-    def merge_additional_functions(self, function_name):
+    def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并
+        :param pars_1:参数1
         :param function_name: 功能名称
         """
         if function_name == 'line_number_increasing':
@@ -926,8 +943,34 @@ class Na(QWidget, Ui_navigation):
         elif function_name == 'get_mouse_position':
             # 获取鼠标位置
             x, y = pyautogui.position()
-            self.label_9.setText(str(x))
-            self.label_10.setText(str(y))
+            if self.mouse_position_function == '坐标点击':
+                self.label_9.setText(str(x))
+                self.label_10.setText(str(y))
+            elif self.mouse_position_function == '开始拖拽':
+                self.label_59.setText(str(x))
+                self.label_61.setText(str(y))
+            elif self.mouse_position_function == '结束拖拽':
+                self.label_65.setText(str(x))
+                self.label_66.setText(str(y))
+        elif function_name == 'change_get_mouse_position_function':
+            # 改变获取鼠标位置功能
+            if pars_1 == '开始拖拽':
+                self.mouse_position_function = '开始拖拽'
+            elif pars_1 == '结束拖拽':
+                self.mouse_position_function = '结束拖拽'
+            elif pars_1 == '坐标点击':
+                self.mouse_position_function = '坐标点击'
+        elif function_name == 'drag_test':
+            # 鼠标拖拽测试
+            start_position = (int(self.label_59.text()), int(self.label_61.text()))
+            if not self.checkBox_7.isChecked():
+                end_position = (int(self.label_65.text()), int(self.label_66.text()))
+            else:
+                x_random = random.randint(-200, 200)
+                y_random = random.randint(-200, 200)
+                end_position = (int(self.label_65.text())+x_random, int(self.label_66.text())+y_random)
+            pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
+            pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -1279,8 +1322,37 @@ class Na(QWidget, Ui_navigation):
                                             repeat_number_=repeat_number,
                                             exception_handling_=exception_handling,
                                             parameter_1_=parameter_1, remarks_=remarks)
-        # excel信息录入功能的参数获取
+
+        # 鼠标拖拽的参数获取
         elif self.tabWidget.currentIndex() == 9:
+            instruction = "鼠标拖拽"
+            # 获取开始位置
+            x_start = int(self.label_59.text())
+            y_start = int(self.label_61.text())
+            # 获取结束位置
+            if not self.checkBox_7.isChecked():
+                x_end = int(self.label_65.text())
+                y_end = int(self.label_66.text())
+            else:
+                # 在-200到200之间随机生成两个数
+                x_random = random.randint(-200, 200)
+                y_random = random.randint(-200, 200)
+                x_end = int(self.label_65.text())+x_random
+                y_end = int(self.label_66.text())+y_random
+            # 保存位置
+            parameter_1 = str(x_start) + ',' + str(y_start)
+            parameter_2 = str(x_end) + ',' + str(y_end)
+            # # 附加功能
+            # parameter_3 = self.checkBox_7.isChecked()
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            remarks_=remarks)
+        # excel信息录入功能的参数获取
+        elif self.tabWidget.currentIndex() == 10:
             instruction = "excel信息录入"
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
@@ -1306,7 +1378,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_4_=parameter_4,
                                             image_=image, remarks_=remarks)
         # 网页操作功能的参数获取
-        elif self.tabWidget.currentIndex() == 10:
+        elif self.tabWidget.currentIndex() == 11:
             instruction = "网页操作"
             web_page_link = None
             timeout_type = None
@@ -1340,7 +1412,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_3_=operation_type + '-' + text_content,
                                             parameter_4_=timeout_type)
 
-        elif self.tabWidget.currentIndex() == 11:
+        elif self.tabWidget.currentIndex() == 12:
             instruction = "网页录入"
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
