@@ -152,6 +152,21 @@ class WebOption:
                                       timeout_type_=timeout_type_,
                                       text=text)
 
+    def switch_to_frame(self, iframe_type, iframe_value, switch_type):
+        """切换frame
+        :param iframe_type: iframe类型（id或名称、xpath定位）
+        :param iframe_value: iframe值
+        :param switch_type: 切换类型（切换到指定frame，切换到上一级或切换到主文档）"""
+        if switch_type == '切换到指定frame':
+            if iframe_type == 'frame名称或ID：':
+                self.driver.switch_to.frame(iframe_value)
+            elif iframe_type == 'Xpath定位：':
+                self.driver.switch_to.frame(self.driver.find_element(By.XPATH, iframe_value))
+        elif switch_type == '切换到上一级文档':
+            self.driver.switch_to.parent_frame()
+        elif switch_type == '切换回主文档':
+            self.driver.switch_to.default_content()
+
 
 # WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
 # driver.switch_to.parent_frame()

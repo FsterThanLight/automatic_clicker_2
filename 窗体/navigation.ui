@@ -1654,7 +1654,7 @@ p, li { white-space: pre-wrap; }
           </palette>
          </property>
          <property name="text">
-          <string>操作说明：按下获取坐标按钮并拖动鼠标，即可显示鼠标当前的位置。</string>
+          <string>操作说明：按下获取坐标按钮并拖动鼠标，即可显示鼠标当前的位置。注意：该指令的持续时间不应低于0.25秒。</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -3231,8 +3231,141 @@ p, li { white-space: pre-wrap; }
      </widget>
      <widget class="QWidget" name="tab_13">
       <attribute name="title">
-       <string>导出数据</string>
+       <string>切换frame</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_30">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_19">
+         <item row="1" column="0">
+          <widget class="QComboBox" name="comboBox_27">
+           <item>
+            <property name="text">
+             <string>frame名称或ID：</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Xpath定位：</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineEdit_11">
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="128">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="128">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="128">
+                 <red>0</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="placeholderText">
+            <string>请输入内容......</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_70">
+           <property name="text">
+            <string>切换指令：</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBox_26">
+           <item>
+            <property name="text">
+             <string>切换到指定frame</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>切换到上一级文档</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>切换回主文档</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_11">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

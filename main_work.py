@@ -411,6 +411,18 @@ class MainWork:
                         list_ins = [start_position, end_position]
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
+                    # 切换frame
+                    elif cmd_type == '切换frame':
+                        switch_type = dict(dic)['参数1（键鼠指令）']
+                        frame_type = dict(dic)['参数2']
+                        frame_value = dict(dic)['参数3']
+                        list_dic = {
+                            '切换类型': switch_type,
+                            'frame类型': frame_type,
+                            'frame值': frame_value
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
@@ -570,6 +582,15 @@ class MainWork:
                 end_position = list_ins_[1]
                 # 执行鼠标拖拽
                 self.mouse_drag(start_position, end_position)
+
+            elif cmd_type_ == '切换frame':
+                switch_type = dict(list_ins_)['切换类型']
+                element_type = dict(list_ins_)['frame类型']
+                element_value = dict(list_ins_)['frame值']
+                # 执行切换frame
+                self.web_option.switch_to_frame(switch_type=switch_type,
+                                                iframe_type=element_type,
+                                                iframe_value=element_value)
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置

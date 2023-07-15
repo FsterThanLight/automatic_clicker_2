@@ -155,6 +155,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "excel信息录入": 10,
             "网页操作": 11,
             "网页录入": 12,
+            "切换frame":13
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -777,6 +778,8 @@ class Na(QWidget, Ui_navigation):
         self.pushButton_9.clicked.connect(lambda: self.web_functional_testing('测试'))
         self.pushButton_10.clicked.connect(lambda: self.web_functional_testing('安装浏览器'))
         self.pushButton_11.clicked.connect(lambda: self.web_functional_testing('安装浏览器驱动'))
+        # 切换frame
+        self.comboBox_26.currentTextChanged.connect(lambda: self.merge_additional_functions('switch_frame'))
 
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
@@ -886,9 +889,10 @@ class Na(QWidget, Ui_navigation):
         #     "鼠标拖拽": 9
         #     "excel信息录入": 10
         #     "网页控制": 11,
-        #     "网页录入": 12
+        #     "网页录入": 12,
+        #     "切换frame": 13,
         # 禁用类
-        discards = [1, 2, 4, 5, 6, 7, 8, 9]
+        discards = [1, 2, 4, 5, 6, 7, 8, 9, 13]
         discards_not = [0, 3, 10, 11, 12]
         # 不禁用类
         if index in discards:
@@ -971,6 +975,16 @@ class Na(QWidget, Ui_navigation):
                 end_position = (int(self.label_65.text())+x_random, int(self.label_66.text())+y_random)
             pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
             pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
+        elif function_name == 'switch_frame':
+            # 切换frame时控件的状态
+            if self.comboBox_26.currentText() == '切换到指定frame':
+                self.comboBox_27.setEnabled(True)
+                self.lineEdit_11.clear()
+                self.lineEdit_11.setEnabled(True)
+            else:
+                self.comboBox_27.setEnabled(False)
+                self.lineEdit_11.clear()
+                self.lineEdit_11.setEnabled(False)
 
     def exception_handling_judgment(self):
         """判断异常处理方式"""
@@ -1411,7 +1425,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2_=element,
                                             parameter_3_=operation_type + '-' + text_content,
                                             parameter_4_=timeout_type)
-
+        # 网页录入功能的参数获取
         elif self.tabWidget.currentIndex() == 12:
             instruction = "网页录入"
             parameter_4 = None
@@ -1437,6 +1451,26 @@ class Na(QWidget, Ui_navigation):
                                             parameter_3_=parameter_3,
                                             parameter_4_=parameter_4,
                                             image_=image, remarks_=remarks)
+        # 切换frame的参数获取
+        elif self.tabWidget.currentIndex() == 13:
+            instruction = "切换frame"
+            # 切换类型
+            parameter_1 = self.comboBox_26.currentText()
+            # 获取frame类型
+            parameter_2 = self.comboBox_27.currentText()
+            # 获取frame
+            parameter_3 = self.lineEdit_11.text()
+            if parameter_1 == '切换回主文档' or parameter_1 == '切换到上一级文档':
+                parameter_2 = None
+                parameter_3 = None
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            parameter_3_=parameter_3, remarks_=remarks)
+
 
         # 关闭窗体
         self.close()
