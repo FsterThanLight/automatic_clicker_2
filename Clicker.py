@@ -155,7 +155,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "excel信息录入": 10,
             "网页操作": 11,
             "网页录入": 12,
-            "切换frame":13
+            "切换frame": 13
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -966,13 +966,18 @@ class Na(QWidget, Ui_navigation):
                 self.mouse_position_function = '坐标点击'
         elif function_name == 'drag_test':
             # 鼠标拖拽测试
-            start_position = (int(self.label_59.text()), int(self.label_61.text()))
+            # 开始拖拽，是否使用随机位置
+            if not self.checkBox_8.isChecked():
+                start_position = (int(self.label_59.text()), int(self.label_61.text()))
+            else:
+                x_random = random.randint(-100, 100)
+                start_position = (int(self.label_59.text()) + x_random, int(self.label_61.text()))
             if not self.checkBox_7.isChecked():
                 end_position = (int(self.label_65.text()), int(self.label_66.text()))
             else:
                 x_random = random.randint(-200, 200)
                 y_random = random.randint(-200, 200)
-                end_position = (int(self.label_65.text())+x_random, int(self.label_66.text())+y_random)
+                end_position = (int(self.label_65.text()) + x_random, int(self.label_66.text()) + y_random)
             pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
             pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
         elif function_name == 'switch_frame':
@@ -1341,8 +1346,14 @@ class Na(QWidget, Ui_navigation):
         elif self.tabWidget.currentIndex() == 9:
             instruction = "鼠标拖拽"
             # 获取开始位置
-            x_start = int(self.label_59.text())
-            y_start = int(self.label_61.text())
+            if not self.checkBox_8.isChecked():
+                x_start = int(self.label_59.text())
+                y_start = int(self.label_61.text())
+            else:
+                # 在-200到200之间随机生成两个数
+                x_random = random.randint(-100, 100)
+                x_start = int(self.label_59.text()) + x_random
+                y_start = int(self.label_61.text())
             # 获取结束位置
             if not self.checkBox_7.isChecked():
                 x_end = int(self.label_65.text())
@@ -1351,13 +1362,11 @@ class Na(QWidget, Ui_navigation):
                 # 在-200到200之间随机生成两个数
                 x_random = random.randint(-200, 200)
                 y_random = random.randint(-200, 200)
-                x_end = int(self.label_65.text())+x_random
-                y_end = int(self.label_66.text())+y_random
+                x_end = int(self.label_65.text()) + x_random
+                y_end = int(self.label_66.text()) + y_random
             # 保存位置
             parameter_1 = str(x_start) + ',' + str(y_start)
             parameter_2 = str(x_end) + ',' + str(y_end)
-            # # 附加功能
-            # parameter_3 = self.checkBox_7.isChecked()
             # 写入数据库
             writes_commands_to_the_database(instruction_=instruction,
                                             repeat_number_=repeat_number,
@@ -1470,7 +1479,6 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2,
                                             parameter_3_=parameter_3, remarks_=remarks)
-
 
         # 关闭窗体
         self.close()

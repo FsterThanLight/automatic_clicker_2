@@ -1809,6 +1809,13 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="checkBox_8">
+           <property name="text">
+            <string>开始使用随机位置</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
