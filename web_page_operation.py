@@ -7,6 +7,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 
 
 class WebOption:
@@ -19,6 +20,9 @@ class WebOption:
         # 鼠标操作
         self.wait_for_action_element = None
         self.chains = None
+        # 保存的表格数据
+        self.excel_path = None
+        self.sheet_name = None
 
     def web_open_test(self, url):
         """打开网页"""
@@ -67,13 +71,10 @@ class WebOption:
             print(element_type__)
             if element_type__ == '元素ID':
                 self.wait_for_action_element = self.driver.find_element(By.ID, self.element_wait_for_action)
-                print('self.wait_for_action_element: ', self.wait_for_action_element)
             elif element_type__ == '元素名称':
                 self.wait_for_action_element = self.driver.find_element(By.NAME, self.element_wait_for_action)
-                print('self.wait_for_action_element: ', self.wait_for_action_element)
             elif element_type__ == 'xpath定位':
                 self.wait_for_action_element = self.driver.find_element(By.XPATH, self.element_wait_for_action)
-                print('self.wait_for_action_element: ', self.wait_for_action_element)
 
         try:
             lookup_element_x(element_type_)
@@ -104,7 +105,6 @@ class WebOption:
         self.chains = ActionChains(self.driver)
         # 查找元素(元素类型、超时错误)
         self.lookup_element(element_type_, timeout_type_)
-
         if self.wait_for_action_element is not None:
             print('找到网页元素，执行鼠标操作。')
             # self.main_window_.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
@@ -116,14 +116,27 @@ class WebOption:
                 self.chains.context_click(self.wait_for_action_element).perform()
             elif action == '输入内容':
                 self.wait_for_action_element.send_keys(text)
+            elif action == '读取网页表格':
+                table_html = self.wait_for_action_element.get_attribute('outerHTML')
+                df = pd.read_html(table_html)
+                # 将表格数据写入指定路径的Excel表格的指定工作表
+                writer = pd.ExcelWriter(self.excel_path)
+                df[0].to_excel(writer,
+                               sheet_name=self.sheet_name,
+                               index=False,
+                               header=False,
+                               startrow=0,
+                               startcol=0)
+                writer.save()
+                print('写入到Excel表格成功。')
 
     def single_shot_operation(self, url, action, element_type_, element_value_, timeout_type_, text=None):
         """单步骤操作
         :param url: 网址
-        :param action: 鼠标操作
-        :param element_type_: 元素类型
+        :param action: 鼠标操作（左键单击、左键双击、右键单击、输入内容、读取网页表格）
+        :param element_type_: 元素类型（元素ID、元素名称、xpath定位）
         :param element_value_: 元素值
-        :param timeout_type_: 超时错误
+        :param timeout_type_: 超时错误（找不到元素自动跳过、秒数）
         :param text: 输入内容"""
 
         def open_url(url_):
@@ -176,30 +189,39 @@ if __name__ == '__main__':
     # 初始化功能类
     web = WebOption()
 
-    web.single_shot_operation(url='www.baidu.com',
-                              action='',
-                              element_value_='',
-                              element_type_='',
-                              text='',
-                              timeout_type_=3)
+    # web.single_shot_operation(url='www.baidu.com',
+    #                           action='',
+    #                           element_value_='',
+    #                           element_type_='',
+    #                           text='',
+    #                           timeout_type_=3)
+    # #
+    # # web.single_shot_operation(url='',
+    # #                           action='输入内容',
+    # #                           element_value_='kw',
+    # #                           element_type_='元素ID',
+    # #                           text='python',
+    # #                           timeout_type_=3)
+    # element_value = 'kw'
+    # element_type = '元素ID'
+    # timeout_type = 3
+    # cell_value = '德国'
     #
     # web.single_shot_operation(url='',
     #                           action='输入内容',
-    #                           element_value_='kw',
-    #                           element_type_='元素ID',
-    #                           text='python',
-    #                           timeout_type_=3)
-    element_value = 'kw'
-    element_type = '元素ID'
-    timeout_type = 3
-    cell_value = '德国'
+    #                           element_value_=element_value,
+    #                           element_type_=element_type,
+    #                           text=cell_value,
+    #                           timeout_type_=timeout_type)
 
-    web.single_shot_operation(url='',
-                              action='输入内容',
-                              element_value_=element_value,
-                              element_type_=element_type,
-                              text=cell_value,
-                              timeout_type_=timeout_type)
+    web.excel_path = r'C:\Users\federalsadler\Desktop\1.xlsx'
+    web.sheet_name = '俄国'
+    web.single_shot_operation(url='http://www.tianqihoubao.com/weather/top/chengdu.html',
+                              action='读取网页表格',
+                              element_value_='//*[@id="content"]/table',
+                              element_type_='xpath定位',
+                              text='',
+                              timeout_type_=3)
 
     time.sleep(5)
     web.close_browser()
