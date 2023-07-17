@@ -1,5 +1,6 @@
 import time
 
+import openpyxl
 from PyQt5.QtWidgets import QMessageBox
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
@@ -119,16 +120,8 @@ class WebOption:
             elif action == '读取网页表格':
                 table_html = self.wait_for_action_element.get_attribute('outerHTML')
                 df = pd.read_html(table_html)
-                # 将表格数据写入指定路径的Excel表格的指定工作表
-                writer = pd.ExcelWriter(self.excel_path)
-                df[0].to_excel(writer,
-                               sheet_name=self.sheet_name,
-                               index=False,
-                               header=False,
-                               startrow=0,
-                               startcol=0)
-                writer.save()
-                print('写入到Excel表格成功。')
+                with pd.ExcelWriter(self.excel_path, engine='openpyxl', mode='a') as writer:
+                    df[0].to_excel(writer, index=False, sheet_name=self.sheet_name)
 
     def single_shot_operation(self, url, action, element_type_, element_value_, timeout_type_, text=None):
         """单步骤操作
@@ -215,7 +208,7 @@ if __name__ == '__main__':
     #                           timeout_type_=timeout_type)
 
     web.excel_path = r'C:\Users\federalsadler\Desktop\1.xlsx'
-    web.sheet_name = '俄国'
+    web.sheet_name = 'su'
     web.single_shot_operation(url='http://www.tianqihoubao.com/weather/top/chengdu.html',
                               action='读取网页表格',
                               element_value_='//*[@id="content"]/table',

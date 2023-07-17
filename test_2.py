@@ -1,17 +1,17 @@
+import openpyxl
 import pandas as pd
-from selenium import webdriver
 
-driver = webdriver.Chrome()
-driver.get("网页URL")
+# 创建一个ExcelWriter对象
+writer = pd.ExcelWriter('output.xlsx', engine='openpyxl')
 
-# 定位到表格
-table = driver.find_element_by_id("table-id")
+# 读取已有的Excel文件
+book = openpyxl.load_workbook('output.xlsx')
 
-# 获取表格的HTML代码
-html = table.get_attribute("outerHTML")
+# 将已有的sheet页添加到ExcelWriter对象中
+writer.book = book
 
-# 用pandas读取解析表格
-df = pd.read_html(html)[0]
+# 将DataFrame写入新的sheet页中
+df.to_excel(writer, sheet_name='new_sheet', index=False)
 
-# 查看结果
-print(df)
+# 保存Excel文件
+writer.save()
