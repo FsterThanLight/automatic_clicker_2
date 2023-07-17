@@ -155,7 +155,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "excel信息录入": 10,
             "网页操作": 11,
             "网页录入": 12,
-            "切换frame": 13
+            "切换frame": 13,
+            "保存数据": 14,
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -791,6 +792,7 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_9.clear()
         self.comboBox_12.clear()
         self.comboBox_20.clear()
+        self.comboBox_29.clear()
         self.comboBox_13.clear()
         self.comboBox_23.clear()
         self.comboBox_14.clear()
@@ -807,6 +809,7 @@ class Na(QWidget, Ui_navigation):
         # 从数据库加载的excel表名和图像名称
         self.comboBox_12.addItems(excel_folder_path)
         self.comboBox_20.addItems(excel_folder_path)
+        self.comboBox_29.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
         # 清空备注
         self.lineEdit_5.clear()
@@ -891,9 +894,10 @@ class Na(QWidget, Ui_navigation):
         #     "网页控制": 11,
         #     "网页录入": 12,
         #     "切换frame": 13,
+        #     "保存数据": 14,
         # 禁用类
         discards = [1, 2, 4, 5, 6, 7, 8, 9, 13]
-        discards_not = [0, 3, 10, 11, 12]
+        discards_not = [0, 3, 10, 11, 12, 14]
         # 不禁用类
         if index in discards:
             self.comboBox_9.setEnabled(True)
@@ -1479,6 +1483,27 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2,
                                             parameter_3_=parameter_3, remarks_=remarks)
+
+        # 读取网页数据到Excel表格的参数获取
+        elif self.tabWidget.currentIndex() == 14:
+            instruction = "读取网页数据到Excel表格"
+            parameter_2 = None
+            # 获取元素类型和元素
+            image = self.comboBox_28.currentText().replace('：', '') + '-' + self.lineEdit_12.text()
+            # 获取Excel工作簿路径和工作表名称
+            parameter_1 = self.comboBox_29.currentText() + "-" + self.lineEdit_13.text()
+            # 判断其他参数
+            if self.radioButton_13.isChecked() and not self.radioButton_12.isChecked():
+                parameter_2 = '自动跳过'
+            elif not self.radioButton_13.isChecked() and self.radioButton_12.isChecked():
+                parameter_2 = self.spinBox_9.value()
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2,
+                                            image_=image, remarks_=remarks)
 
         # 关闭窗体
         self.close()

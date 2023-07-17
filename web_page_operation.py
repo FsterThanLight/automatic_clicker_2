@@ -174,20 +174,16 @@ class WebOption:
             self.driver.switch_to.default_content()
 
 
-# WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
-# driver.switch_to.parent_frame()
-# waitElement.wait_element(driver, "XPATH", xpath, "ddd "):
-
 if __name__ == '__main__':
     # 初始化功能类
     web = WebOption()
 
-    # web.single_shot_operation(url='www.baidu.com',
-    #                           action='',
-    #                           element_value_='',
-    #                           element_type_='',
-    #                           text='',
-    #                           timeout_type_=3)
+    web.single_shot_operation(url='http://www.tianqihoubao.com/weather/top/chengdu.html',
+                              action='',
+                              element_value_='',
+                              element_type_='',
+                              text='',
+                              timeout_type_=3)
     # #
     # # web.single_shot_operation(url='',
     # #                           action='输入内容',
@@ -209,7 +205,7 @@ if __name__ == '__main__':
 
     web.excel_path = r'C:\Users\federalsadler\Desktop\1.xlsx'
     web.sheet_name = 'su'
-    web.single_shot_operation(url='http://www.tianqihoubao.com/weather/top/chengdu.html',
+    web.single_shot_operation(url='',
                               action='读取网页表格',
                               element_value_='//*[@id="content"]/table',
                               element_type_='xpath定位',

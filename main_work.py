@@ -423,6 +423,22 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 读取网页数据到excel
+                    elif cmd_type == '读取网页数据到Excel表格':
+                        element_type = dict(dic)['图像路径'].split('-')[0]
+                        element_value = dict(dic)['图像路径'].split('-')[1]
+                        excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
+                        sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
+                        timeout_type = dict(dic)['参数2']
+                        list_dic = {
+                            '元素类型': element_type,
+                            '元素值': element_value,
+                            '工作簿路径': excel_path,
+                            '工作表名称': sheet_name,
+                            '超时类型': timeout_type
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
@@ -591,6 +607,21 @@ class MainWork:
                 self.web_option.switch_to_frame(switch_type=switch_type,
                                                 iframe_type=element_type,
                                                 iframe_value=element_value)
+
+            elif cmd_type_ == '读取网页数据到Excel表格':
+                element_type = dict(list_ins_)['元素类型']
+                element_value = dict(list_ins_)['元素值']
+                excel_path = dict(list_ins_)['工作簿路径']
+                sheet_name = dict(list_ins_)['工作表名称']
+                timeout_type = dict(list_ins_)['超时类型']
+                # 执行读取网页数据到Excel表格
+                self.web_option.excel_path = excel_path
+                self.web_option.sheet_name = sheet_name
+                self.web_option.single_shot_operation(url='',
+                                                      action='读取网页表格',
+                                                      element_value_=element_value,
+                                                      element_type_=element_type,
+                                                      timeout_type_=timeout_type)
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
