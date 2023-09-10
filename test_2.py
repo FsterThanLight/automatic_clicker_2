@@ -1,17 +1,35 @@
-import openpyxl
-import pandas as pd
+import time
 
-# 创建一个ExcelWriter对象
-writer = pd.ExcelWriter('output.xlsx', engine='openpyxl')
+from selenium import webdriver
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
 
-# 读取已有的Excel文件
-book = openpyxl.load_workbook('output.xlsx')
+driver = webdriver.Chrome()
+driver.get('https://www.baidu.com/')
+driver.maximize_window()
+driver.implicitly_wait(5)
+# # 定位设置元素
+# set_ele = driver.find_element(By.XPATH, '//*[@id="su"]')
+# # 第一步：创建一个鼠标操作的对象
+# # ActionChains(driver).move_to_element_with_offset(to_element=set_ele, xoffset=random.randint(30, 35),
+# #                                                  yoffset=random.randint(30, 32)).perform()
+# ActionChains(driver).context_click(on_element=set_ele).perform()
+# time.sleep(5)
 
-# 将已有的sheet页添加到ExcelWriter对象中
-writer.book = book
 
-# 将DataFrame写入新的sheet页中
-df.to_excel(writer, sheet_name='new_sheet', index=False)
+# 获取当前窗口信息及当前url
+current_window = driver.current_window_handle
+print("当前窗口信息:", current_window)
 
-# 保存Excel文件
-writer.save()
+current_url = driver.current_url
+print("当前窗口url:", current_url)
+# 获取浏览器全部窗口句柄
+handles = driver.window_handles
+
+print("获取浏览器全部窗口句柄:", handles)
+# 切换到新的窗口
+
+driver.switch_to.window(handles[1])
+
+current_url = driver.current_url
+print("当前窗口url:", current_url)

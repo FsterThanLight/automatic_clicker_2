@@ -21,6 +21,7 @@ import mouse
 import openpyxl
 import pyautogui
 import pyperclip
+import winsound
 from PyQt5.QtWidgets import QMessageBox, QApplication
 from selenium.common import TimeoutException
 
@@ -259,8 +260,8 @@ class MainWork:
                         wait_type = dict(dic)['参数1（键鼠指令）']
                         if wait_type == '等待':
                             wait_time = dict(dic)['参数2']
-                            QApplication.processEvents()
                             self.main_window.plainTextEdit.appendPlainText('等待时长' + str(wait_time) + '秒')
+                            QApplication.processEvents()
                             self.stop_time(int(wait_time))
                         elif wait_type == '等待到指定时间':
                             target_time = dict(dic)['参数2'].split('+')[0].replace('-', '/')
@@ -359,7 +360,6 @@ class MainWork:
                             '超时报错': time_out_error,
                             '异常处理': exception_type
                         }
-                        # list_ins = [3, 'left', img, excel_path, sheet_name, cell_position, exception_type]
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
                     # 网页操作
@@ -423,6 +423,16 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 切换窗口
+                    elif cmd_type == '切换窗口':
+                        switch_type = dict(dic)['参数1（键鼠指令）']
+                        window_value = dict(dic)['参数2']
+                        list_dic = {
+                            '切换类型': switch_type,
+                            '窗口值': window_value
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     # 读取网页数据到excel
                     elif cmd_type == '读取网页数据到Excel表格':
                         element_type = dict(dic)['图像路径'].split('-')[0]
@@ -439,6 +449,22 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 拖动网页元素
+                    elif cmd_type == '拖动元素':
+                        element_type = dict(dic)['图像路径'].split('-')[0]
+                        element_value = dict(dic)['图像路径'].split('-')[1]
+                        x = int(dict(dic)['参数1（键鼠指令）'].split('-')[0])
+                        y = int(dict(dic)['参数1（键鼠指令）'].split('-')[1])
+                        timeout_type = dict(dic)['参数2']
+                        list_dic = {
+                            '元素类型': element_type,
+                            '元素值': element_value,
+                            'x': x,
+                            'y': y,
+                            '超时类型': timeout_type
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     current_index += 1
                 except pyautogui.ImageNotFoundException or TimeoutException:
                     # 跳转分支的指定指令
@@ -446,6 +472,7 @@ class MainWork:
                     if exception_handling == '自动跳过':
                         current_index += 1
                     elif exception_handling == '抛出异常并暂停':
+                        winsound.Beep(1000, 1000)
                         # 弹出提示框
                         reply = QMessageBox.question(self.main_window, '提示',
                                                      'ID为{}的指令抛出异常！\n是否继续执行？'.format(dict(dic)['ID']),
@@ -458,6 +485,7 @@ class MainWork:
                             current_index += 1
                             break
                     elif exception_handling == '抛出异常并停止':
+                        winsound.Beep(1000, 1000)
                         # 弹出提示框
                         QMessageBox.warning(self.main_window, '提示',
                                             'ID为{}的指令抛出异常！\n已停止执行！'.format(dict(dic)['ID']))
@@ -569,11 +597,11 @@ class MainWork:
                 text_input = dict(list_ins_)['文本内容']
                 timeout_type = dict(list_ins_)['超时类型']
                 # 执行网页操作
+                self.web_option.text = text_input
                 self.web_option.single_shot_operation(url=url,
                                                       action=operation_type,
                                                       element_value_=element_value,
                                                       element_type_=element_type,
-                                                      text=text_input,
                                                       timeout_type_=timeout_type)
             elif cmd_type_ == '网页录入':
                 excel_path = dict(list_ins_)['工作簿路径']
@@ -586,11 +614,11 @@ class MainWork:
                 # 获取excel表格中的值
                 cell_value = self.extra_excel_cell_value(excel_path, sheet_name, cell_position, line_number_increment)
                 # 执行网页操作
+                self.web_option.text = cell_value
                 self.web_option.single_shot_operation(url='',
                                                       action='输入内容',
                                                       element_value_=element_value,
                                                       element_type_=element_type,
-                                                      text=cell_value,
                                                       timeout_type_=timeout_type)
 
             elif cmd_type_ == '鼠标拖拽':
@@ -608,6 +636,13 @@ class MainWork:
                                                 iframe_type=element_type,
                                                 iframe_value=element_value)
 
+            elif cmd_type_ == '切换窗口':
+                switch_type = dict(list_ins_)['切换类型']
+                window_value = dict(list_ins_)['窗口值']
+                # 执行切换窗口
+                self.web_option.switch_to_window(window_type=switch_type,
+                                                 window_value=window_value)
+
             elif cmd_type_ == '读取网页数据到Excel表格':
                 element_type = dict(list_ins_)['元素类型']
                 element_value = dict(list_ins_)['元素值']
@@ -622,6 +657,20 @@ class MainWork:
                                                       element_value_=element_value,
                                                       element_type_=element_type,
                                                       timeout_type_=timeout_type)
+
+            elif cmd_type_ == '拖动元素':
+                element_type = dict(list_ins_)['元素类型']
+                element_value = dict(list_ins_)['元素值']
+                self.web_option.distance_x = int(dict(list_ins_)['x'])
+                self.web_option.distance_y = int(dict(list_ins_)['y'])
+                timeout_type = dict(list_ins_)['超时类型']
+                # 执行拖动元素
+                self.web_option.single_shot_operation(url='',
+                                                      action='拖动元素',
+                                                      element_value_=element_value,
+                                                      element_type_=element_type,
+                                                      timeout_type_=timeout_type)
+            QApplication.processEvents()
 
         if reTry == 1:
             # 参数：图片和查找精度，返回目标图像在屏幕的位置
@@ -671,24 +720,35 @@ class MainWork:
             print(x)
             exit_main_work()
 
-    def check_time(self, year_target, month_target, day_target, hour_target, minute_target, second_target, interval):
-        """检查时间，指定时间则执行操作"""
+    def check_time(self, year_target, month_target, day_target, hour_target,
+                   minute_target, second_target, interval):
+        """检查时间，指定时间则执行操作
+        :param year_target: 目标年份
+        :param month_target: 目标月份
+        :param day_target: 目标日期
+        :param hour_target: 目标小时
+        :param minute_target: 目标分钟
+        :param second_target: 目标秒钟
+        :param interval: 时间间隔"""
         show_times = 1
         sleep_time = int(interval) / 1000
         while True:
             now = time.localtime()
             if show_times == 1:
-                QApplication.processEvents()
                 self.main_window.plainTextEdit.appendPlainText(
                     "当前时间为：%s/%s/%s %s:%s:%s" % (
-                        now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec))
-                # print("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
+                        now.tm_year, now.tm_mon, now.tm_mday,
+                        now.tm_hour, now.tm_min, now.tm_sec))
+                QApplication.processEvents()
+                print("当前时间为：%s/%s/%s %s:%s:%s" % (now.tm_year, now.tm_mon,
+                                                        now.tm_mday, now.tm_hour,
+                                                        now.tm_min, now.tm_sec))
                 show_times = sleep_time
             if now.tm_year == year_target and now.tm_mon == month_target and \
                     now.tm_mday == day_target and now.tm_hour == hour_target and \
                     now.tm_min == minute_target and now.tm_sec == second_target:
                 self.main_window.plainTextEdit.appendPlainText("退出等待")
-                # print("退出等待")
+                print("退出等待")
                 break
             # 时间暂停
             time.sleep(sleep_time)
@@ -701,27 +761,27 @@ class MainWork:
 
         def event_in_waiting(text, start_time, timeout_period_):
             """等待中的事件"""
-            QApplication.processEvents()
             difference_time = int(time.time() - start_time)
             if difference_time > int(timeout_period_):
                 self.main_window.plainTextEdit.appendPlainText('等待超时，已等待' + str(difference_time) + '秒')
                 raise pyautogui.ImageNotFoundException
             self.main_window.plainTextEdit.appendPlainText(
                 '等待至图像' + text + ',已等待' + str(difference_time) + '秒')
+            QApplication.processEvents()
 
         while repeat and self.start_state:
             location = pyautogui.locateCenterOnScreen(image, confidence=self.settings.confidence)
             if wait_instruction_type == '等待到指定图像出现':
                 if location is not None:
-                    QApplication.processEvents()
                     self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+                    QApplication.processEvents()
                     repeat = False
                 else:
                     event_in_waiting('出现', stat_time, timeout_period)
             elif wait_instruction_type == '等待到指定图像消失':
                 if location is None:
-                    QApplication.processEvents()
                     self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+                    QApplication.processEvents()
                     repeat = False
                 else:
                     event_in_waiting('消失', stat_time, timeout_period)
@@ -729,8 +789,8 @@ class MainWork:
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""
-        QApplication.processEvents()
         self.main_window.plainTextEdit.appendPlainText('等待按下鼠标中键中...按下esc键退出')
+        QApplication.processEvents()
         # print('等待按下鼠标中键中...按下esc键退出')
         # 如果按下esc键则退出
         mouse.wait(button='middle')
@@ -772,12 +832,12 @@ class MainWork:
                     end_time = time.time()
                     time_difference = end_time - start_time_
                     # 显示剩余等待时间
-                    QApplication.processEvents()
                     self.main_window.plainTextEdit.appendPlainText(
                         '未找到匹配图片' + str(self.number) + '正在重试第' + str(number_1) + '次')
                     self.main_window.plainTextEdit.appendPlainText(
                         '剩余等待' + str(round(int(skip_) - time_difference, 0)) + '秒')
                     number_1 += 1
+                    QApplication.processEvents()
                     # 终止条件
                     if time_difference > int(skip_):
                         repeat = False
@@ -847,9 +907,9 @@ class MainWork:
         for i in range(seconds):
             keyboard.hook(self.abc)
             # 显示剩下等待时间
-            QApplication.processEvents()
             self.main_window.plainTextEdit.appendPlainText('等待中...剩余' + str(seconds - i) + '秒')
             # print('等待中...剩余' + str(seconds - i) + '秒')
+            QApplication.processEvents()
             if self.start_state is False:
                 break
             time.sleep(1)
