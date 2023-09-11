@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, \
 from openpyxl.utils.exceptions import InvalidFileException
 
 from screen_capture import ScreenCapture
-from web_page_operation import WebOption
+from main_work import WebOption
 from 窗体.navigation import Ui_navigation
 
 

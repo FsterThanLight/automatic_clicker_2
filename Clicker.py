@@ -27,11 +27,9 @@ from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
-from main_work import MainWork, exit_main_work
+from main_work import MainWork, exit_main_work,WebOption
 from navigation import Na
 # 截图模块
-# 网页操作模块
-from web_page_operation import WebOption
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
@@ -41,8 +39,10 @@ from 窗体.setting import Ui_Setting
 # todo: 向上移动和向下移动表格崩溃
 # todo: 重写所有功能类
 # todo: 重写导航页功能类
-# todo: 浏览器去除头部
+# done: 浏览器去除头部
 # todo: 图片路径改用相对路径
+# todo: 快捷键失效
+# done: 错误日志
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}

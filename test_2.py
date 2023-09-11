@@ -15,21 +15,3 @@ driver.implicitly_wait(5)
 # #                                                  yoffset=random.randint(30, 32)).perform()
 # ActionChains(driver).context_click(on_element=set_ele).perform()
 # time.sleep(5)
-
-
-# 获取当前窗口信息及当前url
-current_window = driver.current_window_handle
-print("当前窗口信息:", current_window)
-
-current_url = driver.current_url
-print("当前窗口url:", current_url)
-# 获取浏览器全部窗口句柄
-handles = driver.window_handles
-
-print("获取浏览器全部窗口句柄:", handles)
-# 切换到新的窗口
-
-driver.switch_to.window(handles[1])
-
-current_url = driver.current_url
-print("当前窗口url:", current_url)
