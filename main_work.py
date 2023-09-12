@@ -168,7 +168,7 @@ class MainWork:
                 # # 如果状态为True执行无限循环
                 if self.infinite_cycle:
                     self.number = 1
-                    while True:
+                    while self.start_state:
                         self.execute_instructions(0, 0, list_instructions)
                         if not self.start_state:
                             self.main_window.plainTextEdit.appendPlainText('结束任务')
@@ -478,6 +478,14 @@ class MainWork:
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
+                    # 全屏截图
+                    elif cmd_type == '全屏截图':
+                        image_path = dict(dic)['图像路径']
+                        list_dic = {
+                            '图像路径': image_path
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
                     current_index += 1
                 except Exception as e:
                     # 打印错误堆栈信息
@@ -686,6 +694,18 @@ class MainWork:
                                                       element_value_=element_value,
                                                       element_type_=element_type,
                                                       timeout_type_=timeout_type)
+
+            elif cmd_type_ == '全屏截图':
+                image_path = dict(list_ins_)['图像路径']
+                # 如果image_path，没有后缀名，则添加后缀名
+                if '.' not in image_path:
+                    image_path = image_path + '.png'
+                # 执行截图
+                screenshot = pyautogui.screenshot()
+                # 将图片保存到指定文件夹
+                screenshot.save(image_path)
+                self.main_window.plainTextEdit.appendPlainText('已执行全屏截图')
+                
             QApplication.processEvents()
 
         if reTry == 1:
@@ -961,7 +981,6 @@ class SettingsData:
     def init(self):
         """设置初始化"""
         # 从数据库加载设置
-        """建立与数据库的连接，返回游标"""
         # 取得当前文件目录
         cursor, conn = self.sqlitedb()
         # 从数据库中取出全部数据
@@ -970,7 +989,6 @@ class SettingsData:
         list_setting_data = cursor.fetchall()
         # 关闭连接
         self.close_database(cursor, conn)
-        # print(list_setting_data)
 
         for i in range(len(list_setting_data)):
             if list_setting_data[i][0] == '图像匹配精度':
@@ -986,7 +1004,6 @@ class SettingsData:
     def sqlitedb():
         """建立与数据库的连接，返回游标"""
         try:
-            # path = os.path.abspath('.')
             # # 取得当前文件目录
             con = sqlite3.connect('命令集.db')
             cursor = con.cursor()
@@ -1050,7 +1067,6 @@ class WebOption:
     def close_browser(self):
         """关闭浏览器驱动"""
         print('关闭浏览器驱动。')
-        # print('self.driver: ', self.driver)
         if self.driver is not None:
             self.driver.quit()
 

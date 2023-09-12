@@ -111,6 +111,7 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_11.clear()
         self.comboBox_17.clear()
         self.comboBox_18.clear()
+        self.comboBox_31.clear()
         # 加载下拉列表数据
         self.comboBox_8.addItems(image_folder_path)
         self.comboBox_17.addItems(image_folder_path)
@@ -123,6 +124,7 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_20.addItems(excel_folder_path)
         self.comboBox_29.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
+        self.comboBox_31.addItems(image_folder_path)
         # 清空备注
         self.lineEdit_5.clear()
 
@@ -208,8 +210,9 @@ class Na(QWidget, Ui_navigation):
         #     "网页切换": 13,
         #     "保存数据": 14,
         #     "拖动元素": 15,
+        #     "全屏截图":16
         # 禁用类
-        discards = [1, 2, 4, 5, 6, 7, 8, 9, 13]
+        discards = [1, 2, 4, 5, 6, 7, 8, 9, 13, 16]
         discards_not = [0, 3, 10, 11, 12, 14, 15]
         # 不禁用类
         if index in discards:
@@ -853,6 +856,21 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2,
                                             image_=image, remarks_=remarks)
+
+        # 全屏截图的参数获取
+        elif self.tabWidget.currentIndex() == 16:
+            instruction = "全屏截图"
+            folder_path = self.comboBox_31.currentText()
+            image_name = self.lineEdit_16.text()
+            if image_name == '':
+                QMessageBox.critical(self, "错误", "图像名称未填！")
+                return
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            image_=folder_path + '/' + image_name,
+                                            remarks_=remarks)
 
         # 关闭窗体
         self.close()

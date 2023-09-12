@@ -27,7 +27,7 @@ from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
-from main_work import MainWork, exit_main_work,WebOption
+from main_work import MainWork, exit_main_work, WebOption
 from navigation import Na
 # 截图模块
 from 窗体.about import Ui_Dialog
@@ -36,7 +36,7 @@ from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.setting import Ui_Setting
 
-# todo: 向上移动和向下移动表格崩溃
+# done: 向上移动和向下移动表格崩溃
 # todo: 重写所有功能类
 # todo: 重写导航页功能类
 # done: 浏览器去除头部
@@ -157,6 +157,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "网页切换": 13,
             "保存数据": 14,
             "拖动元素": 15,
+            "全屏截图": 16
         }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
@@ -198,8 +199,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
         self.tableWidget.horizontalHeader().setSectionResizeMode(7, QHeaderView.Fixed)
         # 设置列宽为50像素
-        self.tableWidget.setColumnWidth(6, 30)
-        self.tableWidget.setColumnWidth(7, 30)
+        self.tableWidget.setColumnWidth(6, 60)
+        self.tableWidget.setColumnWidth(7, 60)
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -269,64 +270,43 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def go_up_down(self, judge):
         """向上或向下移动选中的行"""
-        # 获取选中值的行号和id
-        row = self.tableWidget.currentRow()
-        column = self.tableWidget.currentColumn()
+
+        def database_exchanges_two_rows(id_1: int, id_2: int) -> None:
+            """交换数据库中的两行数据
+            :param id_1: 要交换的第一行的id
+            :param id_2: 要交换的第二行的id"""
+            con = sqlite3.connect('命令集.db')
+            cursor = con.cursor()
+            # 交换两行的id
+            cursor.execute('update 命令 set ID=? where ID=?', (999999, id_1,))
+            cursor.execute('update 命令 set ID=? where ID=?', (id_1, id_2,))
+            cursor.execute('update 命令 set ID=? where ID=?', (id_2, 999999,))
+            con.commit()
+            # 刷新数据库
+            con.close()
+
         try:
-            # xx = self.tableWidget.item(row, 7).text()
-            # 将选中行的数据在数据库中与上一行数据交换，如果是第一行则不交换
+            # 获取选中值的行号和id
+            row = self.tableWidget.currentRow()
             id_ = int(self.tableWidget.item(row, 7).text())
-            # 初始化值
-            id_up_down = id_
-            row_up_down = row
-            # 判断是否执行数据库操作
-            execute_sql = False
-            # 判断是向上还是向下移动
             if judge == 'up':
                 if row != 0:
-                    # 获取选中值的行号
-                    id_up_down = id_ - 1
-                    row_up_down = row - 1
-                    execute_sql = True
+                    # 查询上一行的id
+                    id_row_up = int(self.tableWidget.item(row - 1, 7).text())
+                    # 交换两行的id
+                    database_exchanges_two_rows(id_, id_row_up)
+                    self.get_data()
+                    # 将焦点移动到交换后的行
+                    self.tableWidget.setCurrentCell(row - 1, 0)
             elif judge == 'down':
                 if row != self.tableWidget.rowCount() - 1:
-                    # 获取选中值的行号
-                    id_up_down = id_ + 1
-                    row_up_down = row + 1
-                    execute_sql = True
-            if execute_sql:
-                # 连接数据库
-                print("执行数据库操作")
-                con = sqlite3.connect('命令集.db')
-                cursor = con.cursor()
-                # 获取选中行和上一行的数据
-                branch_name = self.comboBox.currentText()
-                cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
-                    (id_, branch_name,))
-                list_id = cursor.fetchall()
-                cursor.execute(
-                    'select 图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支,ID from 命令 where ID=? and 隶属分支=?',
-                    (id_up_down, branch_name,))
-                list_id_up = cursor.fetchall()
-                # 交换选中行和上一行的数据
-                cursor.execute(
-                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
-                    '隶属分支=?',
-                    (list_id_up[0][0], list_id_up[0][1], list_id_up[0][2], list_id_up[0][3], list_id_up[0][4],
-                     list_id_up[0][5], list_id_up[0][6], list_id_up[0][7], list_id_up[0][8], list_id_up[0][9], id_,
-                     branch_name,))
-                cursor.execute(
-                    'update 命令 set 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? where ID=? and '
-                    '隶属分支=?',
-                    (list_id[0][0], list_id[0][1], list_id[0][2], list_id[0][3], list_id[0][4], list_id[0][5],
-                     list_id[0][6], list_id[0][7], list_id[0][8], list_id[0][9], id_up_down, branch_name,))
-                con.commit()
-                con.close()
-            # 调用get_data()函数，刷新表格
-            self.get_data()
-            # 将焦点移动到交换后的行
-            self.tableWidget.setCurrentCell(row_up_down, column)
+                    # 查询下一行的id
+                    id_row_down = int(self.tableWidget.item(row + 1, 7).text())
+                    # 交换两行的id
+                    database_exchanges_two_rows(id_, id_row_down)
+                    self.get_data()
+                    # 将焦点移动到交换后的行
+                    self.tableWidget.setCurrentCell(row + 1, 0)
         except AttributeError:
             pass
 

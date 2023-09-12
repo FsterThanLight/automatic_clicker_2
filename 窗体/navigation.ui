@@ -4142,6 +4142,65 @@ p, li { white-space: pre-wrap; }
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_17">
+      <attribute name="title">
+       <string>全屏截图</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_38">
+       <item>
+        <widget class="QGroupBox" name="groupBox_14">
+         <property name="title">
+          <string>保存路径</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_37">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_27" columnstretch="1,2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_76">
+              <property name="text">
+               <string>文件夹名称:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBox_31"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_77">
+              <property name="text">
+               <string>图像名称：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="lineEdit_16"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
