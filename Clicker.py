@@ -21,13 +21,14 @@ import webbrowser
 
 import cryptocode
 import requests
+import openpyxl
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
-from main_work import MainWork, exit_main_work, WebOption
+from main_work import MainWork, exit_main_work, WebOption, sqlitedb, close_database
 from navigation import Na
 # 截图模块
 from 窗体.about import Ui_Dialog
@@ -43,6 +44,11 @@ from 窗体.setting import Ui_Setting
 # todo: 图片路径改用相对路径
 # todo: 快捷键失效
 # done: 错误日志
+# todo: 表格当前行插入指令
+# todo: 导入指令可最近打开
+# todo: 保存指令如果不是新建文件，则直接保存，增加另存为功能
+# todo: 重新修改指令功能
+
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
@@ -118,6 +124,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))
         # 导出数据，导出按钮
         self.actionb.triggered.connect(self.save_data_to_current)
+        self.actiona.triggered.connect(self.save_as_excel)
         # 清空指令按钮
         self.toolButton_6.clicked.connect(self.clear_table)
         # 导入数据按钮
@@ -334,6 +341,49 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     shutil.copy(db_file, target_path + '/' + file_name + '.db')
                     QMessageBox.information(self, "提示", "指令数据保存成功！")
 
+    def save_as_excel(self):
+        """保存配置文件为Excel"""
+
+        def get_instructions() -> list:
+            """获取所有指令"""
+            cursor, con = sqlitedb()
+            cursor.execute('select * from 命令')
+            list_instructions = cursor.fetchall()
+            close_database(cursor, con)
+            return list_instructions
+
+        target_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
+        file_name, ok = QInputDialog.getText(self, "保存文件", "请输入保存指令的Excel文件名：")
+        if ok and file_name != '':
+            all_list_instructions = get_instructions()
+            if '.xlsx' in file_name:
+                excel_path = target_path + '/' + file_name
+            else:
+                excel_path = target_path + '/' + file_name + '.xlsx'
+            # 使用openpyxl模块创建Excel文件
+            wb = openpyxl.Workbook()
+            # 获取当前活动的sheet
+            sheet = wb.active
+            # 设置表头
+            sheet['A1'] = 'ID'
+            sheet['B1'] = '图像名称'
+            sheet['C1'] = '指令类型'
+            sheet['D1'] = '参数1'
+            sheet['E1'] = '参数2'
+            sheet['F1'] = '参数3'
+            sheet['G1'] = '参数4'
+            sheet['H1'] = '重复次数'
+            sheet['I1'] = '异常处理'
+            sheet['J1'] = '备注'
+            sheet['K1'] = '隶属分支'
+            # 写入数据
+            for ins in range(len(all_list_instructions)):
+                for i in range(len(all_list_instructions[ins])):
+                    sheet.cell(row=ins + 2, column=i + 1, value=all_list_instructions[ins][i])
+            # 保存Excel文件
+            wb.save(excel_path)
+            QMessageBox.information(self, "提示", "指令数据保存成功！")
+
     def clear_database(self):
         """清空数据库"""
         cursor, con = self.sqlitedb()
@@ -365,17 +415,49 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def data_import(self):
         """导入数据功能"""
         # 打开选择文件对话框
-        target_path = QFileDialog.getOpenFileName(self, "请选择指令备份文件", '', "(*.db)")
-        # 判断是否选择了文件
+        target_path = QFileDialog.getOpenFileName(self, "请选择指令备份文件", '', "(*.db *.xlsx)")
         if target_path[0] == '':
             pass
         else:
-            # 获取当前文件夹路径
-            cwd = os.getcwd()
-            # 复制数据库文件到当前文件夹下，并将其重命名为'命令集.db'取代原有数据库文件
-            shutil.copy(target_path[0], cwd + '/命令集.db')
-            QMessageBox.information(self, "提示", "指令数据导入成功！")
-            self.load_branch()
+            suffix = os.path.splitext(target_path[0])[1]
+            # 如果为.db文件
+            if suffix == '.db':
+                # 获取当前文件夹路径
+                cwd = os.getcwd()
+                # 复制数据库文件到当前文件夹下，并将其重命名为'命令集.db'取代原有数据库文件
+                shutil.copy(target_path[0], cwd + '/命令集.db')
+                QMessageBox.information(self, "提示", "指令数据导入成功！")
+                self.load_branch()
+            # 如果为.xlsx文件
+            elif suffix == '.xlsx':
+                # 读取数据
+                wb = openpyxl.load_workbook(target_path[0])
+                sheet = wb.worksheets[0]
+                max_row = sheet.max_row
+                max_column = sheet.max_column
+                # 连接数据库
+                cursor, con = sqlitedb()
+                try:
+                    for row in range(2, max_row + 1):
+                        # 获取第一列数据
+                        instructions = []
+                        for column in range(1, max_column + 1):
+                            # 获取单元格数据
+                            data = sheet.cell(row, column).value
+                            instructions.append(data)
+                            cursor.execute(
+                                "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
+                                "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                                instructions[0:11])
+                            con.commit()
+                except Exception as e:
+                    print(e)
+                    QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
+                    close_database(cursor, con)
+                    return
+                close_database(cursor, con)
+                QMessageBox.information(self, "提示", "指令数据导入成功！")
+                self.load_branch()
 
     def start(self, only_current_instructions=False):
         """主窗体开始按钮"""

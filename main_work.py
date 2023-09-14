@@ -16,7 +16,6 @@ import subprocess
 import sys
 import threading
 import time
-import traceback
 
 import keyboard
 import mouse
@@ -24,7 +23,6 @@ import openpyxl
 import pandas as pd
 import pyautogui
 import pyperclip
-import selenium
 import winsound
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMessageBox
@@ -33,9 +31,9 @@ from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support import expected_conditions as EC
 
 event = threading.Event()
 
@@ -45,6 +43,29 @@ COMMAND_TYPE_CUSTOM = "自定义"
 
 def exit_main_work():
     sys.exit()
+
+
+def sqlitedb():
+    """建立与数据库的连接，返回游标"""
+    try:
+        # 取得当前文件目录
+        con = sqlite3.connect('命令集.db')
+        cursor = con.cursor()
+        # self.main_window_.plainTextEdit.appendPlainText('成功连接数据库！')
+        print('成功连接数据库！')
+        return cursor, con
+    except sqlite3.Error:
+        x = input("未连接到数据库！！请检查数据库路径是否异常。")
+        print(x)
+        sys.exit()
+
+
+def close_database(cursor, conn):
+    """关闭数据库
+    :param cursor: 游标
+    :param conn: 数据库连接"""
+    cursor.close()
+    conn.close()
 
 
 class MainWork:
@@ -72,32 +93,11 @@ class MainWork:
         self.image_folder_path, self.excel_folder_path, \
             self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
 
-    @staticmethod
-    def sqlitedb():
-        """建立与数据库的连接，返回游标"""
-        try:
-            # 取得当前文件目录
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
-            # self.main_window_.plainTextEdit.appendPlainText('成功连接数据库！')
-            print('成功连接数据库！')
-            return cursor, con
-        except sqlite3.Error:
-            x = input("未连接到数据库！！请检查数据库路径是否异常。")
-            print(x)
-            sys.exit()
-
     def reset_loop_count_and_infinite_loop_judgment(self):
         """重置循环次数和无限循环标志"""
         self.number = 1
         self.infinite_cycle = self.main_window.radioButton.isChecked()
         self.number_cycles = self.main_window.spinBox.value()
-
-    @staticmethod
-    def close_database(cursor, conn):
-        """关闭数据库"""
-        cursor.close()
-        conn.close()
 
     def test(self):
         print('test')
@@ -105,11 +105,12 @@ class MainWork:
         print(all_list_instructions)
         print(len(all_list_instructions))
 
-    def extracted_data_all_list(self, only_current_instructions=False):
-        """提取指令集中的数据,返回主表和分支表的汇总数据"""
+    def extracted_data_all_list(self, only_current_instructions=False) -> list:
+        """提取指令集中的数据,返回主表和分支表的汇总数据
+        :param only_current_instructions: 是否只提取当前分支的指令"""
         all_list_instructions = []
         # 从主表中提取数据
-        cursor, conn = self.sqlitedb()
+        cursor, conn = sqlitedb()
         # 从分支表中提取数据
         try:
             if not only_current_instructions:
@@ -122,14 +123,15 @@ class MainWork:
                 cursor.execute("select * from 命令 where 隶属分支 = ?", (self.main_window.comboBox.currentText(),))
                 branch_list_instructions = cursor.fetchall()
                 all_list_instructions.append(branch_list_instructions)
-            self.close_database(cursor, conn)
+            close_database(cursor, conn)
             return all_list_instructions
         except sqlite3.OperationalError:
             QMessageBox.critical(self.main_window, "警告", "找不到分支！请检查分支表名是否正确！", QMessageBox.Yes)
 
     # 编写一个函数用于去除列表中的none
 
-    def extracted_data_global_parameter(self):
+    @staticmethod
+    def extracted_data_global_parameter():
         """从全局参数表中提取数据"""
 
         def remove_none(list_):
@@ -140,7 +142,7 @@ class MainWork:
                     list_x.append(i[0].replace('"', ''))
             return list_x
 
-        cursor, conn = self.sqlitedb()
+        cursor, conn = sqlitedb()
         cursor.execute("select 图像文件夹路径 from 全局参数")
         image_folder_path = remove_none(cursor.fetchall())
         cursor.execute("select 工作簿路径 from 全局参数")
@@ -149,7 +151,7 @@ class MainWork:
         branch_table_name = remove_none(cursor.fetchall())
         cursor.execute("select 扩展程序 from 全局参数")
         extenders = remove_none(cursor.fetchall())
-        self.close_database(cursor, conn)
+        close_database(cursor, conn)
         print("全局参数读取成功！")
         return image_folder_path, excel_folder_path, branch_table_name, extenders
 
@@ -705,7 +707,7 @@ class MainWork:
                 # 将图片保存到指定文件夹
                 screenshot.save(image_path)
                 self.main_window.plainTextEdit.appendPlainText('已执行全屏截图')
-                
+
             QApplication.processEvents()
 
         if reTry == 1:

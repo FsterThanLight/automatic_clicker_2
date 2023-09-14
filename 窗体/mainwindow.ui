@@ -172,7 +172,7 @@
           <bool>false</bool>
          </attribute>
          <attribute name="verticalHeaderDefaultSectionSize">
-          <number>23</number>
+          <number>24</number>
          </attribute>
          <column>
           <property name="text">
@@ -1360,6 +1360,7 @@ color: rgb(255, 255, 255);</string>
      <string>文件</string>
     </property>
     <addaction name="actionb"/>
+    <addaction name="actiona"/>
     <addaction name="actionf"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -1438,7 +1439,7 @@ color: rgb(255, 255, 255);</string>
      <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
    </property>
    <property name="text">
-    <string>保存</string>
+    <string>保存为数据库</string>
    </property>
   </action>
   <action name="setting">
@@ -1477,6 +1478,15 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>工具栏</string>
+   </property>
+  </action>
+  <action name="actiona">
+   <property name="icon">
+    <iconset resource="../images.qrc">
+     <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
+   </property>
+   <property name="text">
+    <string>保存为Excel</string>
    </property>
   </action>
  </widget>
