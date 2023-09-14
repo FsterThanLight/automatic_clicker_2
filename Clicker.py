@@ -445,11 +445,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
                             # 获取单元格数据
                             data = sheet.cell(row, column).value
                             instructions.append(data)
-                            cursor.execute(
-                                "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
-                                "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                                instructions[0:11])
-                            con.commit()
+                        cursor.execute(
+                            "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
+                            "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                            instructions[0:11])
+                        con.commit()
                 except Exception as e:
                     print(e)
                     QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
