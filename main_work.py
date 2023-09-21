@@ -16,6 +16,8 @@ import subprocess
 import sys
 import threading
 import time
+import logging
+import traceback
 
 import keyboard
 import mouse
@@ -39,6 +41,7 @@ event = threading.Event()
 
 COMMAND_TYPE_SIMULATE_CLICK = "模拟点击"
 COMMAND_TYPE_CUSTOM = "自定义"
+logging.basicConfig(filename='错误日志.log', level=logging.INFO)
 
 
 def exit_main_work():
@@ -52,7 +55,7 @@ def sqlitedb():
         con = sqlite3.connect('命令集.db')
         cursor = con.cursor()
         # self.main_window_.plainTextEdit.appendPlainText('成功连接数据库！')
-        print('成功连接数据库！')
+        # print('成功连接数据库！')
         return cursor, con
     except sqlite3.Error:
         x = input("未连接到数据库！！请检查数据库路径是否异常。")
@@ -491,8 +494,11 @@ class MainWork:
                     current_index += 1
                 except Exception as e:
                     # 打印错误堆栈信息
-                    # traceback.print_exc()
+                    traceback.print_exc()
                     print(e)
+                    # 获取当前时间
+                    now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    logging.info(now_time + '  指令' + str(dict(dic)['ID']) + '执行异常！')
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
                     if exception_handling == '自动跳过':
@@ -808,7 +814,7 @@ class MainWork:
             QApplication.processEvents()
 
         while repeat and self.start_state:
-            location = pyautogui.locateCenterOnScreen(image, confidence=self.settings.confidence)
+            location = pyautogui.locateCenterOnScreen(image=image, confidence=self.settings.confidence)
             if wait_instruction_type == '等待到指定图像出现':
                 if location is not None:
                     self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
@@ -1143,7 +1149,13 @@ class WebOption:
             elif action == '右键单击':
                 ActionChains(self.driver).context_click(target_ele).perform()
             elif action == '输入内容':
-                target_ele.send_keys(self.text)
+                # 检查元素是否为可读属性
+                read_only = target_ele.get_attribute('readonly')
+                if not read_only:
+                    target_ele.send_keys(self.text)
+                else:
+                    self.driver.execute_script("arguments[0].removeAttribute('readonly');", target_ele)
+                    target_ele.send_keys(self.text)
             elif action == '读取网页表格':
                 table_html = target_ele.get_attribute('outerHTML')
                 df = pd.read_html(table_html)

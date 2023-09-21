@@ -24,7 +24,7 @@ import requests
 import openpyxl
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem, QKeySequence
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
@@ -36,6 +36,7 @@ from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.setting import Ui_Setting
+from 窗体.login import Ui_Login
 
 # done: 向上移动和向下移动表格崩溃
 # todo: 重写所有功能类
@@ -48,6 +49,7 @@ from 窗体.setting import Ui_Setting
 # todo: 导入指令可最近打开
 # todo: 保存指令如果不是新建文件，则直接保存，增加另存为功能
 # todo: 重新修改指令功能
+# done: 登录窗口
 
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -769,6 +771,73 @@ class About(QWidget, Ui_Dialog):
         QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
 
 
+class Login(QWidget, Ui_Login):
+    """登录窗体"""
+
+    def __init__(self):
+        super(Login, self).__init__()
+        self.setupUi(self)
+        # 登录按钮
+        self.pushButton.clicked.connect(self.login_main_window)
+        self.lineEdit_2.returnPressed.connect(self.login_main_window)
+        self.lineEdit.returnPressed.connect(self.lineEdit_2.setFocus)
+
+    def login_main_window(self):
+        """登录进主窗口"""
+        # 连接数据库
+        cursor, con = sqlitedb()
+        # 获取数据库中的用户名和密码
+        cursor.execute('select 账号,密码 from 账户')
+        list_account = cursor.fetchall()
+        close_database(cursor, con)
+        # 判断登录
+        ac = (self.lineEdit.text(), self.lineEdit_2.text())
+        if ac in list_account:
+            self.close()
+            # 如果选中记住密码则保存账户id
+            if self.checkBox.isChecked():
+                cursor, con = sqlitedb()
+                # 根据账号和密码获取id
+                cursor.execute('select ID from 账户 where 账号=? and 密码=?', (ac[0], ac[1]))
+                account_id = cursor.fetchall()[0][0]
+                cursor.execute('update 设置 set 值 = ? where 设置类型=?', (str(account_id), '账户ID'))
+                cursor.execute('update 设置 set 值 = ? where 设置类型=?', (1, '记住密码'))
+                con.commit()
+                close_database(cursor, con)
+            elif not self.checkBox.isChecked():
+                cursor, con = sqlitedb()
+                cursor.execute('update 设置 set 值 = ? where 设置类型=?', (0, '记住密码'))
+                con.commit()
+                close_database(cursor, con)
+            # 创建主窗体
+            main_window = Main_window()
+            # # 显示窗体，并根据设置检查更新
+            main_window.main_show()
+        else:
+            QMessageBox.information(self, '提示', '密码错误。')
+
+    def login_show(self):
+        """显示登录窗体"""
+        cursor, con = sqlitedb()
+        cursor.execute('select 值 from 设置 where 设置类型=?', ('记住密码',))
+        remember_password = cursor.fetchall()[0][0]
+        cursor.execute('select 值 from 设置 where 设置类型=?', ('账户ID',))
+        account_id = cursor.fetchall()[0][0]
+        close_database(cursor, con)
+        self.show()
+        if remember_password == 1:
+            self.checkBox.setChecked(True)
+            cursor, con = sqlitedb()
+            cursor.execute('select 账号,密码 from 账户 where ID=?', (account_id,))
+            account = cursor.fetchall()[0]
+            close_database(cursor, con)
+            self.lineEdit.setText(account[0])
+            self.lineEdit_2.setText(account[1])
+            self.lineEdit_2.setFocus()
+        else:
+            self.lineEdit.setFocus()
+
+
 class Info(QDialog, Ui_Form):
     def __init__(self, parent=None):
         super(Info, self).__init__(parent)
@@ -937,10 +1006,13 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     app = QApplication([])
+    # 登录界面
+    login = Login()
+    login.login_show()
     # 创建主窗体
-    main_window = Main_window()
-    # 显示窗体，并根据设置检查更新
-    main_window.main_show()
+    # main_window = Main_window()
+    # # 显示窗体，并根据设置检查更新
+    # main_window.main_show()
     # 显示添加对话框窗口
     sys.exit(app.exec_())
 
@@ -949,7 +1021,6 @@ if __name__ == "__main__":
     #         return ctypes.windll.shell32.IsUserAnAdmin()
     #     except:
     #         return False
-    #
     #
     # if is_admin():
     #     app = QApplication([])
