@@ -20,11 +20,11 @@ import time
 import webbrowser
 
 import cryptocode
-import requests
 import openpyxl
+import requests
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem, QKeySequence
+from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
@@ -34,9 +34,9 @@ from navigation import Na
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
+from 窗体.login import Ui_Login
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.setting import Ui_Setting
-from 窗体.login import Ui_Login
 
 # done: 向上移动和向下移动表格崩溃
 # todo: 重写所有功能类
@@ -47,7 +47,7 @@ from 窗体.login import Ui_Login
 # done: 错误日志
 # todo: 表格当前行插入指令
 # todo: 导入指令可最近打开
-# todo: 保存指令如果不是新建文件，则直接保存，增加另存为功能
+# done: 另存为功能
 # todo: 重新修改指令功能
 # done: 登录窗口
 
@@ -69,7 +69,6 @@ def get_download_address(main_window_, warning):
     """获取下载地址、版本信息、更新说明"""
     global headers
     url = load_json()
-    # print(url)
     try:
         res = requests.get(url, headers=headers, timeout=0.2)
         info = cryptocode.decrypt(res.text, '123456')
@@ -125,8 +124,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))
         self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))
         # 导出数据，导出按钮
-        self.actionb.triggered.connect(self.save_data_to_current)
-        self.actiona.triggered.connect(self.save_as_excel)
+        self.actionb.triggered.connect(lambda: self.save_data_to_current('db'))
+        self.actiona.triggered.connect(lambda: self.save_data_to_current('excel'))
         # 清空指令按钮
         self.toolButton_6.clicked.connect(self.clear_table)
         # 导入数据按钮
@@ -148,26 +147,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionabout.triggered.connect(lambda: self.show_windows('关于'))
         # 打开使用说明
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))
-        # 修改指令按钮
-        self.tab_index = {
-            "图像点击": 0,
-            "坐标点击": 1,
-            "鼠标移动": 2,
-            "等待": 3,
-            "滚轮滑动": 4,
-            "文本输入": 5,
-            "按下键盘": 6,
-            "中键激活": 7,
-            "鼠标事件": 8,
-            "鼠标拖拽": 9,
-            "excel信息录入": 10,
-            "网页操作": 11,
-            "网页录入": 12,
-            "网页切换": 13,
-            "保存数据": 14,
-            "拖动元素": 15,
-            "全屏截图": 16
-        }
         self.pushButton_8.clicked.connect(self.modify_parameters)
 
         # 分支表名
@@ -246,7 +225,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             cursor.execute(
                 'select 图像名称,指令类型,异常处理,备注,参数1,参数2,重复次数,ID from 命令 where 隶属分支=?',
                 (branch_name,))
-            # cursor.execute('select 图像名称,指令类型,异常处理,参数1,参数2,参数3,参数4,重复次数,ID from 命令')
             list_order = cursor.fetchall()
             self.close_database(cursor, con)
             # 在表格中写入数据
@@ -319,71 +297,67 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             pass
 
-    def save_data_to_current(self):
-        """保存配置文件到当前文件夹下"""
-        # 打开选择文件夹对话框
-        target_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
-        # 弹出输入框，获取文件名
-        file_name, ok = QInputDialog.getText(self, "保存文件", "请输入保存指令的文件名：")
-        if ok:
-            # 连接数据库
-            con = sqlite3.connect('命令集.db')
-            # 获取数据库文件路径
-            db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
-            con.close()
-            # 判断是否输入文件名
-            if file_name == '':
-                QMessageBox.warning(self, "警告", "请输入文件名！")
-            else:
-                # 判断是否选择了文件夹
-                if target_path == '':
-                    QMessageBox.warning(self, "警告", "请选择保存路径！")
-                else:
-                    # 将数据库文件复制到指定文件夹下
-                    shutil.copy(db_file, target_path + '/' + file_name + '.db')
-                    QMessageBox.information(self, "提示", "指令数据保存成功！")
-
-    def save_as_excel(self):
-        """保存配置文件为Excel"""
+    def save_data_to_current(self, judge):
+        """保存配置文件到当前文件夹下
+        :param judge: 保存的文件类型（db、excel）"""
 
         def get_instructions() -> list:
             """获取所有指令"""
-            cursor, con = sqlitedb()
+            cursor, con_ = sqlitedb()
             cursor.execute('select * from 命令')
             list_instructions = cursor.fetchall()
-            close_database(cursor, con)
+            close_database(cursor, con_)
             return list_instructions
 
-        target_path = QFileDialog.getExistingDirectory(self, "选择保存路径。")
-        file_name, ok = QInputDialog.getText(self, "保存文件", "请输入保存指令的Excel文件名：")
-        if ok and file_name != '':
-            all_list_instructions = get_instructions()
-            if '.xlsx' in file_name:
-                excel_path = target_path + '/' + file_name
+        def get_file_and_folder() -> tuple:
+            """获取文件名和文件夹路径"""
+            file_path = None
+            if judge == 'db':
+                file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.db)")
+            elif judge == 'excel':
+                file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.xlsx)")
+            if file_path[0] != '':
+                # 获取文件名称
+                file_name_ = os.path.split(file_path[0])[1]  # 保存文件的名称
+                folder_path_ = os.path.split(file_path[0])[0]  # 保存的文件夹的路径
+                return file_name_, folder_path_
             else:
-                excel_path = target_path + '/' + file_name + '.xlsx'
-            # 使用openpyxl模块创建Excel文件
-            wb = openpyxl.Workbook()
-            # 获取当前活动的sheet
-            sheet = wb.active
-            # 设置表头
-            sheet['A1'] = 'ID'
-            sheet['B1'] = '图像名称'
-            sheet['C1'] = '指令类型'
-            sheet['D1'] = '参数1'
-            sheet['E1'] = '参数2'
-            sheet['F1'] = '参数3'
-            sheet['G1'] = '参数4'
-            sheet['H1'] = '重复次数'
-            sheet['I1'] = '异常处理'
-            sheet['J1'] = '备注'
-            sheet['K1'] = '隶属分支'
-            # 写入数据
-            for ins in range(len(all_list_instructions)):
-                for i in range(len(all_list_instructions[ins])):
-                    sheet.cell(row=ins + 2, column=i + 1, value=all_list_instructions[ins][i])
-            # 保存Excel文件
-            wb.save(excel_path)
+                return None, None
+
+        file_name, folder_path = get_file_and_folder()  # 获取文件名和文件夹路径
+        if file_name is not None and folder_path is not None:
+            if judge == 'db':
+                # 连接数据库
+                con = sqlite3.connect('命令集.db')
+                # 获取数据库文件路径
+                db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
+                con.close()
+                # 将数据库文件复制到指定文件夹下
+                shutil.copy(db_file, folder_path + '/' + file_name)
+            elif judge == 'excel':
+                all_list_instructions = get_instructions()
+                # 使用openpyxl模块创建Excel文件
+                wb = openpyxl.Workbook()
+                # 获取当前活动的sheet
+                sheet = wb.active
+                # 设置表头
+                sheet['A1'] = 'ID'
+                sheet['B1'] = '图像名称'
+                sheet['C1'] = '指令类型'
+                sheet['D1'] = '参数1'
+                sheet['E1'] = '参数2'
+                sheet['F1'] = '参数3'
+                sheet['G1'] = '参数4'
+                sheet['H1'] = '重复次数'
+                sheet['I1'] = '异常处理'
+                sheet['J1'] = '备注'
+                sheet['K1'] = '隶属分支'
+                # 写入数据
+                for ins in range(len(all_list_instructions)):
+                    for i in range(len(all_list_instructions[ins])):
+                        sheet.cell(row=ins + 2, column=i + 1, value=all_list_instructions[ins][i])
+                # 保存Excel文件
+                wb.save(folder_path + '/' + file_name)
             QMessageBox.information(self, "提示", "指令数据保存成功！")
 
     def clear_database(self):
@@ -425,10 +399,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 如果为.db文件
             if suffix == '.db':
                 # 获取当前文件夹路径
-                cwd = os.getcwd()
-                # 复制数据库文件到当前文件夹下，并将其重命名为'命令集.db'取代原有数据库文件
-                shutil.copy(target_path[0], cwd + '/命令集.db')
-                QMessageBox.information(self, "提示", "指令数据导入成功！")
+                # 将目标数据库中的数据导入到当前数据库中
+                cursor, con = sqlitedb()
+                # 获取目标数据库中的数据
+                con_target = sqlite3.connect(target_path[0])
+                cursor_target = con_target.cursor()
+                cursor_target.execute('select * from 命令')
+                list_instructions = cursor_target.fetchall()
+                # 将数据导入到当前数据库中
+                try:
+                    for ins in list_instructions:
+                        cursor.execute('insert into 命令 values (?,?,?,?,?,?,?,?,?,?,?)', ins)
+                        con.commit()
+                except sqlite3.IntegrityError:
+                    QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
+                    close_database(cursor, con)
+                    return
+                close_database(cursor, con)
                 self.load_branch()
             # 如果为.xlsx文件
             elif suffix == '.xlsx':
@@ -569,16 +556,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             # 获取当前行行号列号
             row = self.tableWidget.currentRow()
-            # 获取当前行的ID
-            xx = self.tableWidget.item(row, 7).text()
-            yy = self.tableWidget.item(row, 1).text()
+            id_ = self.tableWidget.item(row, 7).text()  # 指令ID
+            ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
             # 将导航页的tabWidget设置为对应的页
-            # self.show_navigation()
             self.show_windows('导航')
-            self.navigation.tabWidget.setCurrentIndex(dict(self.tab_index)[yy])
+            self.navigation.switch_navigation_page(ins_type)
             # 修改数据中的参数
             self.navigation.modify_judgment = '修改'
-            self.navigation.modify_id = xx
+            self.navigation.modify_id = id_
         except AttributeError:
             QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
             pass
@@ -1007,12 +992,12 @@ if __name__ == "__main__":
 
     app = QApplication([])
     # 登录界面
-    login = Login()
-    login.login_show()
+    # login = Login()
+    # login.login_show()
     # 创建主窗体
-    # main_window = Main_window()
-    # # 显示窗体，并根据设置检查更新
-    # main_window.main_show()
+    main_window = Main_window()
+    # 显示窗体，并根据设置检查更新
+    main_window.main_show()
     # 显示添加对话框窗口
     sys.exit(app.exec_())
 

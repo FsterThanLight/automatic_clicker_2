@@ -80,7 +80,7 @@
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>图像识别</string>
+       <string>图像点击</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_12">
        <item>
@@ -919,7 +919,7 @@
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>滚轮</string>
+       <string>滚轮滑动</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_11">
        <item>
@@ -1118,7 +1118,7 @@ p, li { white-space: pre-wrap; }
      </widget>
      <widget class="QWidget" name="tab_7">
       <attribute name="title">
-       <string>键盘指令</string>
+       <string>按下键盘</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
@@ -3462,7 +3462,7 @@ p, li { white-space: pre-wrap; }
      </widget>
      <widget class="QWidget" name="tab_15">
       <attribute name="title">
-       <string>保存数据</string>
+       <string>保存表格</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_35">
        <item>

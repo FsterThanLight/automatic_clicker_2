@@ -94,6 +94,12 @@ class Na(QWidget, Ui_navigation):
         # 切换frame
         self.comboBox_26.currentTextChanged.connect(lambda: self.merge_additional_functions('switch_frame'))
 
+    def switch_navigation_page(self, name):
+        """弹出窗口自动选择对应功能页
+        :param name: 功能页名称"""
+        tab_index = self.tab_title.index(name)
+        self.tabWidget.setCurrentIndex(tab_index)
+
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
         print('加载导航页下拉列表数据')
@@ -532,7 +538,7 @@ class Na(QWidget, Ui_navigation):
 
         elif self.tabWidget.currentIndex() == 2:
             # 获取5个参数命令
-            instruction = "鼠标移动"
+            instruction = "移动鼠标"
             # 获取鼠标移动的参数
             # 鼠标移动的方向
             parameter_1 = self.comboBox_4.currentText()
@@ -654,7 +660,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2_=parameter_2, remarks_=remarks)
         # 鼠标当前位置事件的参数获取
         elif self.tabWidget.currentIndex() == 8:
-            instruction = "鼠标事件"
+            instruction = "鼠标点击"
             # 获取鼠标当前位置的参数
             parameter_1 = self.comboBox_7.currentText()
             writes_commands_to_the_database(instruction_=instruction,
@@ -696,7 +702,7 @@ class Na(QWidget, Ui_navigation):
                                             remarks_=remarks)
         # excel信息录入功能的参数获取
         elif self.tabWidget.currentIndex() == 10:
-            instruction = "excel信息录入"
+            instruction = "信息录入"
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
@@ -722,7 +728,7 @@ class Na(QWidget, Ui_navigation):
                                             image_=image, remarks_=remarks)
         # 网页操作功能的参数获取
         elif self.tabWidget.currentIndex() == 11:
-            instruction = "网页操作"
+            instruction = "网页控制"
             web_page_link = None
             timeout_type = None
             # 获取网页链接
@@ -782,12 +788,13 @@ class Na(QWidget, Ui_navigation):
                                             image_=image, remarks_=remarks)
         # 切换frame的参数获取
         elif self.tabWidget.currentIndex() == 13:
-            instruction = None
+            instruction = "网页切换"
+            image = None
             parameter_1 = None
             parameter_2 = None
             parameter_3 = None
             if self.lineEdit_11.text() != '' and self.lineEdit_15.text() == '':
-                instruction = "切换frame"
+                image = "切换frame"
                 # 切换类型
                 parameter_1 = self.comboBox_26.currentText()
                 # 获取frame类型
@@ -798,7 +805,7 @@ class Na(QWidget, Ui_navigation):
                     parameter_2 = None
                     parameter_3 = None
             elif self.lineEdit_11.text() == '' and self.lineEdit_15.text() != '':
-                instruction = "切换窗口"
+                image = "切换窗口"
                 # 获取窗口类型
                 parameter_1 = self.comboBox_32.currentText()
                 # 获取窗口
@@ -811,13 +818,14 @@ class Na(QWidget, Ui_navigation):
             writes_commands_to_the_database(instruction_=instruction,
                                             repeat_number_=repeat_number,
                                             exception_handling_=exception_handling,
+                                            image_=image,
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2,
                                             parameter_3_=parameter_3, remarks_=remarks)
 
         # 读取网页数据到Excel表格的参数获取
         elif self.tabWidget.currentIndex() == 14:
-            instruction = "读取网页数据到Excel表格"
+            instruction = "保存表格"
             parameter_2 = None
             # 获取元素类型和元素
             image = self.comboBox_28.currentText().replace('：', '') + '-' + self.lineEdit_12.text()

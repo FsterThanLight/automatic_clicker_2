@@ -9,6 +9,7 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 import datetime
+import logging
 import random
 import re
 import sqlite3
@@ -16,8 +17,6 @@ import subprocess
 import sys
 import threading
 import time
-import logging
-import traceback
 
 import keyboard
 import mouse
@@ -49,7 +48,8 @@ def exit_main_work():
 
 
 def sqlitedb():
-    """建立与数据库的连接，返回游标"""
+    """建立与数据库的连接，返回游标
+    :return: 游标，数据库连接"""
     try:
         # 取得当前文件目录
         con = sqlite3.connect('命令集.db')
@@ -58,8 +58,7 @@ def sqlitedb():
         # print('成功连接数据库！')
         return cursor, con
     except sqlite3.Error:
-        x = input("未连接到数据库！！请检查数据库路径是否异常。")
-        print(x)
+        print("未连接到数据库！！请检查数据库路径是否异常。")
         sys.exit()
 
 
@@ -101,12 +100,6 @@ class MainWork:
         self.number = 1
         self.infinite_cycle = self.main_window.radioButton.isChecked()
         self.number_cycles = self.main_window.spinBox.value()
-
-    def test(self):
-        print('test')
-        all_list_instructions = self.extracted_data_all_list()
-        print(all_list_instructions)
-        print(len(all_list_instructions))
 
     def extracted_data_all_list(self, only_current_instructions=False) -> list:
         """提取指令集中的数据,返回主表和分支表的汇总数据
@@ -323,7 +316,7 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
                     # 鼠标移动的事件
-                    elif cmd_type == '鼠标移动':
+                    elif cmd_type == '移动鼠标':
                         try:
                             direction = dict(dic)['参数1（键鼠指令）']
                             distance = dict(dic)['参数2']
@@ -345,7 +338,7 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
                     # 鼠标事件
-                    elif cmd_type == '鼠标事件':
+                    elif cmd_type == '鼠标点击':
                         if dict(dic)['参数1（键鼠指令）'] == '左键单击':
                             list_ins = [1, 'left']
                         elif dict(dic)['参数1（键鼠指令）'] == '左键双击':
@@ -357,7 +350,7 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
                     # 图片信息录取
-                    elif cmd_type == 'excel信息录入':
+                    elif cmd_type == '信息录入':
                         excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
                         sheet_name = dict(dic)['参数1（键鼠指令）'].split('-')[1]
                         img = dict(dic)['图像路径']
@@ -381,7 +374,7 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
                     # 网页操作
-                    elif cmd_type == '网页操作':
+                    elif cmd_type == '网页控制':
                         url = dict(dic)['图像路径']  # 网址
                         element_type = dict(dic)['参数1（键鼠指令）']  # 元素类型
                         element_value = dict(dic)['参数2']  # 元素值
@@ -430,29 +423,30 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
                     # 切换frame
-                    elif cmd_type == '切换frame':
-                        switch_type = dict(dic)['参数1（键鼠指令）']
-                        frame_type = dict(dic)['参数2']
-                        frame_value = dict(dic)['参数3']
-                        list_dic = {
-                            '切换类型': switch_type,
-                            'frame类型': frame_type,
-                            'frame值': frame_value
-                        }
-                        self.execution_repeats(cmd_type, list_dic, re_try)
-
-                    # 切换窗口
-                    elif cmd_type == '切换窗口':
-                        switch_type = dict(dic)['参数1（键鼠指令）']
-                        window_value = dict(dic)['参数2']
-                        list_dic = {
-                            '切换类型': switch_type,
-                            '窗口值': window_value
-                        }
-                        self.execution_repeats(cmd_type, list_dic, re_try)
+                    elif cmd_type == '网页控制':
+                        img = dict(dic)['图像路径']
+                        if img == '切换frame':
+                            switch_type = dict(dic)['参数1（键鼠指令）']
+                            frame_type = dict(dic)['参数2']
+                            frame_value = dict(dic)['参数3']
+                            list_dic = {
+                                '切换类型': switch_type,
+                                'frame类型': frame_type,
+                                'frame值': frame_value
+                            }
+                            self.execution_repeats(img, list_dic, re_try)
+                        # 切换窗口
+                        elif img == '切换窗口':
+                            switch_type = dict(dic)['参数1（键鼠指令）']
+                            window_value = dict(dic)['参数2']
+                            list_dic = {
+                                '切换类型': switch_type,
+                                '窗口值': window_value
+                            }
+                            self.execution_repeats(img, list_dic, re_try)
 
                     # 读取网页数据到excel
-                    elif cmd_type == '读取网页数据到Excel表格':
+                    elif cmd_type == '保存表格':
                         element_type = dict(dic)['图像路径'].split('-')[0]
                         element_value = dict(dic)['图像路径'].split('-')[1]
                         excel_path = dict(dic)['参数1（键鼠指令）'].split('-')[0]
@@ -494,11 +488,11 @@ class MainWork:
                     current_index += 1
                 except Exception as e:
                     # 打印错误堆栈信息
-                    traceback.print_exc()
+                    # traceback.print_exc()
                     print(e)
-                    # 获取当前时间
-                    now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    logging.info(now_time + '  指令' + str(dict(dic)['ID']) + '执行异常！')
+                    # # 获取当前时间
+                    # now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    # logging.info(now_time + '  指令' + str(dict(dic)['ID']) + '执行异常！')
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
                     if exception_handling == '自动跳过':
@@ -567,7 +561,7 @@ class MainWork:
                                 button=lOrR)
                 # print('执行坐标%s:%s点击' % (x, y) + str(self.number))
                 self.main_window.plainTextEdit.appendPlainText('执行坐标%s:%s点击' % (x, y) + str(self.number))
-            elif cmd_type_ == '鼠标移动':
+            elif cmd_type_ == '移动鼠标':
                 direction = list_ins_[0]
                 distance = list_ins_[1]
                 self.mouse_moves(direction, distance)
@@ -596,7 +590,7 @@ class MainWork:
                 command_type = list_ins_[0]
                 click_count = list_ins_[1]
                 self.middle_mouse_button(command_type, click_count)
-            elif cmd_type_ == '鼠标事件':
+            elif cmd_type_ == '鼠标点击':
                 click_times = list_ins_[0]
                 lOrR = list_ins_[1]
                 position = pyautogui.position()
@@ -605,7 +599,7 @@ class MainWork:
                                 button=lOrR)
                 self.main_window.plainTextEdit.appendPlainText('执行鼠标事件')
                 # print('执行鼠标事件')
-            elif cmd_type_ == 'excel信息录入':
+            elif cmd_type_ == '信息录入':
                 excel_path = dict(list_ins_)['工作簿路径']
                 sheet_name = dict(list_ins_)['工作表名称']
                 cell_position = dict(list_ins_)['单元格位置']
@@ -621,7 +615,7 @@ class MainWork:
                 self.text_input(cell_value, special_control_input)
                 self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
                 # print('已执行信息录入')
-            elif cmd_type_ == '网页操作':
+            elif cmd_type_ == '网页控制':
                 url = dict(list_ins_)['网址']
                 element_type = dict(list_ins_)['元素类型']
                 element_value = dict(list_ins_)['元素值']
@@ -675,7 +669,7 @@ class MainWork:
                 self.web_option.switch_to_window(window_type=switch_type,
                                                  window_value=window_value)
 
-            elif cmd_type_ == '读取网页数据到Excel表格':
+            elif cmd_type_ == '保存表格':
                 element_type = dict(list_ins_)['元素类型']
                 element_value = dict(list_ins_)['元素值']
                 excel_path = dict(list_ins_)['工作簿路径']
@@ -726,8 +720,6 @@ class MainWork:
                 determine_execution_type(cmd_type, list_ins)
                 i += 1
                 time.sleep(self.settings.time_sleep)
-        else:
-            pass
 
     def extra_excel_cell_value(self, excel_path, sheet_name, cell_position, line_number_increment):
         """获取excel表格中的值"""
@@ -990,13 +982,13 @@ class SettingsData:
         """设置初始化"""
         # 从数据库加载设置
         # 取得当前文件目录
-        cursor, conn = self.sqlitedb()
+        cursor, conn = sqlitedb()
         # 从数据库中取出全部数据
         cursor.execute('select * from 设置')
         # 读取全部数据
         list_setting_data = cursor.fetchall()
         # 关闭连接
-        self.close_database(cursor, conn)
+        close_database(cursor, conn)
 
         for i in range(len(list_setting_data)):
             if list_setting_data[i][0] == '图像匹配精度':
@@ -1007,27 +999,6 @@ class SettingsData:
                 self.duration = list_setting_data[i][1]
             elif list_setting_data[i][0] == '暂停时间':
                 self.time_sleep = list_setting_data[i][1]
-
-    @staticmethod
-    def sqlitedb():
-        """建立与数据库的连接，返回游标"""
-        try:
-            # # 取得当前文件目录
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
-            print('成功连接数据库！')
-            return cursor, con
-        except sqlite3.Error:
-            x = input("未连接到数据库！！请检查数据库路径是否异常。")
-            print(x)
-            sys.exit()
-
-    @staticmethod
-    def close_database(cursor, conn):
-        """关闭数据库"""
-        cursor.close()
-        conn.close()
-
 
 class WebOption:
     def __init__(self, main_window=None, navigation=None):
