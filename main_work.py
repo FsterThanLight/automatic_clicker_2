@@ -9,7 +9,6 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 import datetime
-import logging
 import random
 import re
 import sqlite3
@@ -40,7 +39,9 @@ event = threading.Event()
 
 COMMAND_TYPE_SIMULATE_CLICK = "模拟点击"
 COMMAND_TYPE_CUSTOM = "自定义"
-logging.basicConfig(filename='错误日志.log', level=logging.INFO)
+
+
+# logging.basicConfig(filename='错误日志.log', level=logging.INFO)
 
 
 def exit_main_work():
@@ -54,8 +55,6 @@ def sqlitedb():
         # 取得当前文件目录
         con = sqlite3.connect('命令集.db')
         cursor = con.cursor()
-        # self.main_window_.plainTextEdit.appendPlainText('成功连接数据库！')
-        # print('成功连接数据库！')
         return cursor, con
     except sqlite3.Error:
         print("未连接到数据库！！请检查数据库路径是否异常。")
@@ -204,7 +203,7 @@ class MainWork:
         while current_index < len(list_instructions[current_list_index]):
             try:
                 elem = list_instructions[current_list_index][current_index]
-                # print(elem)
+                print('elem:', elem)
                 # 【指令集合【指令分支（指令元素[元素索引]）】】
                 # print('执行当前指令：', elem)
                 dic = {
@@ -423,27 +422,16 @@ class MainWork:
                         self.execution_repeats(cmd_type, list_ins, re_try)
 
                     # 切换frame
-                    elif cmd_type == '网页控制':
-                        img = dict(dic)['图像路径']
-                        if img == '切换frame':
-                            switch_type = dict(dic)['参数1（键鼠指令）']
-                            frame_type = dict(dic)['参数2']
-                            frame_value = dict(dic)['参数3']
-                            list_dic = {
-                                '切换类型': switch_type,
-                                'frame类型': frame_type,
-                                'frame值': frame_value
-                            }
-                            self.execution_repeats(img, list_dic, re_try)
-                        # 切换窗口
-                        elif img == '切换窗口':
-                            switch_type = dict(dic)['参数1（键鼠指令）']
-                            window_value = dict(dic)['参数2']
-                            list_dic = {
-                                '切换类型': switch_type,
-                                '窗口值': window_value
-                            }
-                            self.execution_repeats(img, list_dic, re_try)
+                    elif cmd_type == '切换frame':
+                        switch_type = dict(dic)['参数1（键鼠指令）']
+                        frame_type = dict(dic)['参数2']
+                        frame_value = dict(dic)['参数3']
+                        list_dic = {
+                            '切换类型': switch_type,
+                            'frame类型': frame_type,
+                            'frame值': frame_value
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
 
                     # 读取网页数据到excel
                     elif cmd_type == '保存表格':
@@ -482,6 +470,17 @@ class MainWork:
                         image_path = dict(dic)['图像路径']
                         list_dic = {
                             '图像路径': image_path
+                        }
+                        self.execution_repeats(cmd_type, list_dic, re_try)
+
+                    # 窗口切换
+                    elif cmd_type == '切换窗口':
+                        # 切换窗口
+                        switch_type = dict(dic)['参数1（键鼠指令）']
+                        window_value = dict(dic)['参数2']
+                        list_dic = {
+                            '切换类型': switch_type,
+                            '窗口值': window_value
                         }
                         self.execution_repeats(cmd_type, list_dic, re_try)
 
@@ -999,6 +998,7 @@ class SettingsData:
                 self.duration = list_setting_data[i][1]
             elif list_setting_data[i][0] == '暂停时间':
                 self.time_sleep = list_setting_data[i][1]
+
 
 class WebOption:
     def __init__(self, main_window=None, navigation=None):

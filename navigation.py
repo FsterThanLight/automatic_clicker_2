@@ -506,10 +506,12 @@ class Na(QWidget, Ui_navigation):
         repeat_number = self.spinBox.value()  # 重复次数
         exception_handling = self.exception_handling_judgment()  # 异常处理
         remarks = self.lineEdit_5.text()  # 备注
+        # 当前页的index
+        tab_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
+        instruction = tab_title  # 指令类型，等于窗口标题
         # 图像点击事件的参数获取
-        if self.tabWidget.currentIndex() == 0:
+        if tab_title == '图像点击':
             # 获取5个参数命令，写入数据库
-            instruction = "图像点击"
             image = self.comboBox_8.currentText() + '/' + self.comboBox.currentText()
             parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
@@ -524,10 +526,8 @@ class Na(QWidget, Ui_navigation):
                                             exception_handling_=exception_handling,
                                             image_=image, parameter_1_=parameter_1,
                                             parameter_2_=parameter_2, remarks_=remarks)
-            print('已经保存图像识别点击的数据至数据库')
         # 鼠标点击事件的参数获取
-        elif self.tabWidget.currentIndex() == 1:
-            instruction = "坐标点击"
+        elif tab_title == '坐标点击':
             parameter_1 = self.comboBox_3.currentText()
             parameter_2 = self.label_9.text() + "-" + self.label_10.text() + "-" + str(self.spinBox_2.value())
             writes_commands_to_the_database(instruction_=instruction,
@@ -536,10 +536,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2, remarks_=remarks)
 
-        elif self.tabWidget.currentIndex() == 2:
-            # 获取5个参数命令
-            instruction = "移动鼠标"
-            # 获取鼠标移动的参数
+        elif tab_title == '移动鼠标':
             # 鼠标移动的方向
             parameter_1 = self.comboBox_4.currentText()
             # 鼠标移动的距离
@@ -555,9 +552,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2_=parameter_2, remarks_=remarks)
             print('已经保存鼠标移动的数据至数据库')
         # 等待事件的参数获取
-        elif self.tabWidget.currentIndex() == 3:
-            instruction = "等待"
-            # 获取等待的参数
+        elif tab_title == '等待':
             # 如果checkBox没有被选中，则第一个参数为等待时间
             image = None
             parameter_1 = None
@@ -598,10 +593,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_3_=parameter_3, remarks_=remarks)
 
         # 鼠标滚轮滑动事件的参数获取
-        elif self.tabWidget.currentIndex() == 4:
-            # 获取5个参数命令
-            instruction = "滚轮滑动"
-            # 获取鼠标滚轮滑动的参数
+        elif tab_title == '滚轮滑动':
             # 鼠标滚轮滑动的方向
             parameter_1 = self.comboBox_5.currentText()
             # 鼠标滚轮滑动的距离
@@ -615,12 +607,8 @@ class Na(QWidget, Ui_navigation):
                                             exception_handling_=exception_handling,
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2, remarks_=remarks)
-            print('已经保存鼠标滚轮滑动的数据至数据库')
         # 文本输入事件的参数获取
-        elif self.tabWidget.currentIndex() == 5:
-            # 获取5个参数命令
-            instruction = "文本输入"
-            # 获取文本输入的参数
+        elif tab_title == '文本输入':
             # 文本输入的内容
             parameter_1 = self.textEdit.toPlainText()
             parameter_2 = str(self.checkBox_2.isChecked())
@@ -629,22 +617,16 @@ class Na(QWidget, Ui_navigation):
                                             exception_handling_=exception_handling,
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2, remarks_=remarks)
-            print('已经保存文本输入的数据至数据库')
         # 按下键盘事件的参数获取
-        elif self.tabWidget.currentIndex() == 6:
-            instruction = "按下键盘"
-            # 获取按下键盘的参数
+        elif tab_title == '按下键盘':
             # 按下键盘的内容
             parameter_1 = self.label_31.text()
             writes_commands_to_the_database(instruction_=instruction,
                                             repeat_number_=repeat_number,
                                             exception_handling_=exception_handling,
                                             parameter_1_=parameter_1, remarks_=remarks)
-            print('已经保存按键的数据至数据库')
         # 中键激活事件的参数获取
-        elif self.tabWidget.currentIndex() == 7:
-            instruction = "中键激活"
-            # 获取中键激活的参数
+        elif tab_title == '中键激活':
             # 中键激活的内容
             parameter_1 = None
             parameter_2 = None
@@ -659,8 +641,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2, remarks_=remarks)
         # 鼠标当前位置事件的参数获取
-        elif self.tabWidget.currentIndex() == 8:
-            instruction = "鼠标点击"
+        elif tab_title == '鼠标点击':
             # 获取鼠标当前位置的参数
             parameter_1 = self.comboBox_7.currentText()
             writes_commands_to_the_database(instruction_=instruction,
@@ -669,8 +650,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_1_=parameter_1, remarks_=remarks)
 
         # 鼠标拖拽的参数获取
-        elif self.tabWidget.currentIndex() == 9:
-            instruction = "鼠标拖拽"
+        elif tab_title == '鼠标拖拽':
             # 获取开始位置
             if not self.checkBox_8.isChecked():
                 x_start = int(self.label_59.text())
@@ -701,8 +681,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_2_=parameter_2,
                                             remarks_=remarks)
         # excel信息录入功能的参数获取
-        elif self.tabWidget.currentIndex() == 10:
-            instruction = "信息录入"
+        elif tab_title == '信息录入':
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
@@ -727,8 +706,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_4_=parameter_4,
                                             image_=image, remarks_=remarks)
         # 网页操作功能的参数获取
-        elif self.tabWidget.currentIndex() == 11:
-            instruction = "网页控制"
+        elif tab_title == '网页控制':
             web_page_link = None
             timeout_type = None
             # 获取网页链接
@@ -761,8 +739,7 @@ class Na(QWidget, Ui_navigation):
                                             parameter_3_=operation_type + '-' + text_content,
                                             parameter_4_=timeout_type)
         # 网页录入功能的参数获取
-        elif self.tabWidget.currentIndex() == 12:
-            instruction = "网页录入"
+        elif tab_title == '网页录入':
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_20.currentText() + "-" + self.comboBox_23.currentText()
@@ -787,45 +764,26 @@ class Na(QWidget, Ui_navigation):
                                             parameter_4_=parameter_4,
                                             image_=image, remarks_=remarks)
         # 切换frame的参数获取
-        elif self.tabWidget.currentIndex() == 13:
-            instruction = "网页切换"
-            image = None
-            parameter_1 = None
-            parameter_2 = None
-            parameter_3 = None
-            if self.lineEdit_11.text() != '' and self.lineEdit_15.text() == '':
-                image = "切换frame"
-                # 切换类型
-                parameter_1 = self.comboBox_26.currentText()
-                # 获取frame类型
-                parameter_2 = self.comboBox_27.currentText()
-                # 获取frame
-                parameter_3 = self.lineEdit_11.text()
-                if parameter_1 == '切换回主文档' or parameter_1 == '切换到上一级文档':
-                    parameter_2 = None
-                    parameter_3 = None
-            elif self.lineEdit_11.text() == '' and self.lineEdit_15.text() != '':
-                image = "切换窗口"
-                # 获取窗口类型
-                parameter_1 = self.comboBox_32.currentText()
-                # 获取窗口
-                parameter_2 = self.lineEdit_15.text()
+        elif tab_title == '切换frame':
+            # 切换类型
+            parameter_1 = self.comboBox_26.currentText()
+            # 获取frame类型
+            parameter_2 = self.comboBox_27.currentText().replace('：', '')
+            # 获取frame
+            parameter_3 = self.lineEdit_11.text()
+            if parameter_1 == '切换回主文档' or parameter_1 == '切换到上一级文档':
+                parameter_2 = None
                 parameter_3 = None
-            elif self.lineEdit_11.text() != '' and self.lineEdit_15.text() != '':
-                QMessageBox.critical(self, "错误", "切换frame和切换窗口不能同时选择！")
-                return
             # 写入数据库
             writes_commands_to_the_database(instruction_=instruction,
                                             repeat_number_=repeat_number,
                                             exception_handling_=exception_handling,
-                                            image_=image,
                                             parameter_1_=parameter_1,
                                             parameter_2_=parameter_2,
                                             parameter_3_=parameter_3, remarks_=remarks)
 
         # 读取网页数据到Excel表格的参数获取
-        elif self.tabWidget.currentIndex() == 14:
-            instruction = "保存表格"
+        elif tab_title == '保存表格':
             parameter_2 = None
             # 获取元素类型和元素
             image = self.comboBox_28.currentText().replace('：', '') + '-' + self.lineEdit_12.text()
@@ -845,8 +803,7 @@ class Na(QWidget, Ui_navigation):
                                             image_=image, remarks_=remarks)
 
         # 拖动网页元素的参数获取
-        elif self.tabWidget.currentIndex() == 15:
-            instruction = "拖动元素"
+        elif tab_title == '拖动元素':
             parameter_2 = None
             # 获取元素类型和元素
             image = self.comboBox_30.currentText().replace('：', '') + '-' + self.lineEdit_14.text()
@@ -866,8 +823,7 @@ class Na(QWidget, Ui_navigation):
                                             image_=image, remarks_=remarks)
 
         # 全屏截图的参数获取
-        elif self.tabWidget.currentIndex() == 16:
-            instruction = "全屏截图"
+        elif tab_title == '全屏截图':
             folder_path = self.comboBox_31.currentText()
             image_name = self.lineEdit_16.text()
             if image_name == '':
@@ -879,6 +835,19 @@ class Na(QWidget, Ui_navigation):
                                             exception_handling_=exception_handling,
                                             image_=folder_path + '/' + image_name,
                                             remarks_=remarks)
+
+        # 切换窗口的参数获取
+        elif tab_title == '切换窗口':
+            # 获取窗口类型
+            parameter_1 = self.comboBox_32.currentText().replace('：', '')
+            # 获取窗口
+            parameter_2 = self.lineEdit_15.text()
+            # 写入数据库
+            writes_commands_to_the_database(instruction_=instruction,
+                                            repeat_number_=repeat_number,
+                                            exception_handling_=exception_handling,
+                                            parameter_1_=parameter_1,
+                                            parameter_2_=parameter_2, remarks_=remarks)
 
         # 关闭窗体
         self.close()
