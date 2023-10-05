@@ -1,6 +1,8 @@
 import time
+from datetime import datetime
 
 import pyautogui
+import pyperclip
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from main_work import sqlitedb, close_database
@@ -136,7 +138,7 @@ class ImageClick:
                                  '错误', '文件下未找到.png图像文件，请检查文件是否存在！')
 
 
-class Coordinate_Click:
+class CoordinateClick:
     def __init__(self, main_window, ins_dic):
         # 设置参数
         (self.duration,
@@ -174,7 +176,8 @@ class Coordinate_Click:
         reTry, click_times, lOrR, x__, y__ = self.parsing_ins_dic()
         # 执行坐标点击
         if reTry == 1:
-            pyautogui.click(x__, y__, click_times,
+            pyautogui.click(x=x__, y=y__,
+                            clicks=click_times,
                             interval=self.interval,
                             duration=self.duration,
                             button=lOrR)
@@ -183,7 +186,8 @@ class Coordinate_Click:
         elif reTry > 1:
             i = 1
             while i < reTry + 1:
-                pyautogui.click(x__, y__, click_times,
+                pyautogui.click(x=x__, y=y__,
+                                clicks=click_times,
                                 interval=self.interval,
                                 duration=self.duration,
                                 button=lOrR)
@@ -193,7 +197,282 @@ class Coordinate_Click:
                 time.sleep(self.time_sleep)
 
 
+class Waiting:
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (self.duration,
+         self.interval,
+         self.confidence,
+         self.time_sleep) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def start_execute(self):
+        """从指令字典中解析出指令参数"""
+        wait_type = self.ins_dic.get('参数1（键鼠指令）')
+        if wait_type == '等待':
+            wait_time = self.ins_dic.get('参数2')
+            self.main_window.plainTextEdit.appendPlainText('等待时长%d秒' % wait_time)
+            # print('等待时长' + str(wait_time) + '秒')
+            QApplication.processEvents()
+            self.stop_time(int(wait_time))
+        elif wait_type == '等待到指定时间':
+            target_time, interval_time = self.ins_dic.get('参数2').split('+')
+            now_time = datetime.now()
+            # 检查目标时间是否大于当前时间
+            if datetime.strptime(target_time.replace('-', '/'), '%Y/%m/%d %H:%M:%S') > now_time:
+                self.check_time(target_time, interval_time)
+        elif wait_type == '等待到指定图片':
+            wait_img = self.ins_dic.get('图像路径')
+            wait_instruction_type = self.ins_dic.get('参数2')
+            timeout_period = self.ins_dic.get('参数3')
+            self.wait_to_the_specified_image(wait_img, wait_instruction_type, timeout_period)
+
+    def wait_to_the_specified_image(self, image, wait_instruction_type, timeout_period):
+        """执行图片等待"""
+        repeat = True
+        stat_time = time.time()
+
+        def event_in_waiting(text, start_time, timeout_period_):
+            """等待中的事件"""
+            difference_time = int(time.time() - start_time)
+            if difference_time > int(timeout_period_):
+                self.main_window.plainTextEdit.appendPlainText('等待超时，已等待%d秒' % difference_time)
+                raise pyautogui.ImageNotFoundException
+            self.main_window.plainTextEdit.appendPlainText(
+                '等待至图像%s,已等待%d秒', text, difference_time)
+            QApplication.processEvents()
+
+        while repeat:
+            location = pyautogui.locateCenterOnScreen(image=image, confidence=self.confidence)
+            if wait_instruction_type == '等待到指定图像出现':
+                if location is not None:
+                    self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+                    QApplication.processEvents()
+                    repeat = False
+                else:
+                    event_in_waiting('出现', stat_time, timeout_period)
+            elif wait_instruction_type == '等待到指定图像消失':
+                if location is None:
+                    self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+                    QApplication.processEvents()
+                    repeat = False
+                else:
+                    event_in_waiting('消失', stat_time, timeout_period)
+            time.sleep(0.1)
+
+    def check_time(self, target_time, interval):
+        """检查时间，指定时间则执行操作
+        :param target_time: 目标时间
+        :param interval: 时间间隔"""
+        sleep_time = int(interval) / 1000
+        show_times = 1  # 显示时间的间隔
+        # 将target_time转换为时间格式
+        t_time = datetime.strptime(target_time.replace('-', '/'), '%Y/%m/%d %H:%M:%S')
+
+        while True:
+            now = datetime.now()
+            if show_times == 1:
+                self.main_window.plainTextEdit.appendPlainText(
+                    "当前时间为：%s" % now.strftime('%Y/%m/%d %H:%M:%S'))
+                # print("当前时间为：%s" % now.strftime('%Y/%m/%d %H:%M:%S'))
+                QApplication.processEvents()
+                show_times = sleep_time
+            if now >= t_time:
+                self.main_window.plainTextEdit.appendPlainText("退出等待")
+                # print("退出等待")
+                break
+            # 时间暂停
+            time.sleep(sleep_time)
+            show_times += sleep_time
+
+    def stop_time(self, seconds):
+        """暂停时间"""
+        for i in range(seconds):
+            # keyboard.hook(self.abc)
+            # 显示剩下等待时间
+            self.main_window.plainTextEdit.appendPlainText('等待中...剩余%d秒' % seconds - i)
+            # print('等待中...剩余' + str(seconds - i) + '秒')
+            QApplication.processEvents()
+            # if self.start_state is False:
+            #     break
+            time.sleep(1)
+
+
+class RollerSlide:
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (self.duration,
+         self.interval,
+         self.confidence,
+         self.time_sleep) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        scroll_direction = self.ins_dic.get('参数1（键鼠指令）')
+        scroll_distance = self.ins_dic.get('参数2')
+        re_try = self.ins_dic.get('重复次数')
+        if scroll_direction == '↑':
+            scroll_distance = scroll_distance
+        elif scroll_direction == '↓':
+            scroll_distance = -scroll_distance
+        return scroll_direction, scroll_distance, re_try
+
+    def start_execute(self):
+        """执行重复次数"""
+        scroll_direction, scroll_distance, re_try = self.parsing_ins_dic()
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.wheel_slip(scroll_direction, scroll_distance)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.wheel_slip(scroll_direction, scroll_distance)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def wheel_slip(self, scroll_direction, scroll_distance):
+        """滚轮滑动事件"""
+        pyautogui.scroll(scroll_distance)
+        self.main_window.plainTextEdit.appendPlainText(
+            '滚轮滑动%s%d距离' % (scroll_direction, abs(scroll_distance)))
+
+
+class TextInput:
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (self.duration,
+         self.interval,
+         self.confidence,
+         self.time_sleep) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def start_execute(self):
+        """解析指令字典"""
+        input_value = self.ins_dic.get('参数1（键鼠指令）')
+        special_control_judgment = bool(self.ins_dic.get('参数2'))
+        # 执行文本输入
+        if not special_control_judgment:
+            pyperclip.copy(input_value)
+            pyautogui.hotkey('ctrl', 'v')
+            time.sleep(self.time_sleep)
+            self.main_window.plainTextEdit.appendPlainText('执行文本输入')
+        elif special_control_judgment:
+            pyautogui.typewrite(input_value, interval=self.interval)
+            self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入')
+            time.sleep(self.time_sleep)
+
+
+class MoveMouse:
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (self.duration,
+         self.interval,
+         self.confidence,
+         self.time_sleep) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        re_try = self.ins_dic.get('重复次数')
+        direction = self.ins_dic.get('参数1（键鼠指令）')
+        distance = self.ins_dic.get('参数2')
+        return re_try, direction, distance
+
+    def start_execute(self):
+        """执行重复次数"""
+        re_try, direction, distance = self.parsing_ins_dic()
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.mouse_moves(direction, distance)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.mouse_moves(direction, distance)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def mouse_moves(self, direction, distance):
+        """鼠标移动事件"""
+        # 相对于当前位置移动鼠标
+        directions = {'↑': (0, -1), '↓': (0, 1), '←': (-1, 0), '→': (1, 0)}
+        if direction in directions:
+            x, y = directions.get(direction)
+            pyautogui.moveRel(x * int(distance), y * int(distance), duration=self.duration)
+        self.main_window.plainTextEdit.appendPlainText(
+            '移动鼠标%s%s像素距离' % (direction, distance))
+
+
+class PressKeyboard:
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (self.duration,
+         self.interval,
+         self.confidence,
+         self.time_sleep) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        re_try = self.ins_dic.get('重复次数')
+        key = self.ins_dic.get('参数1（键鼠指令）')
+        return re_try, key
+
+    def start_execute(self):
+        """执行重复次数"""
+        re_try, key = self.parsing_ins_dic()
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.press_keyboard(key)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.press_keyboard(key)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def press_keyboard(self, key):
+        """鼠标移动事件
+        :param key: 按键列表"""
+        keys = key.split('+')
+        # 按下键盘
+        if len(keys) == 1:
+            pyautogui.press(keys[0])  # 如果只有一个键,直接按下
+        else:
+            # 否则,组合多个键为热键
+            hotkey = '+'.join(keys)
+            pyautogui.hotkey(hotkey)
+        time.sleep(self.time_sleep)
+        self.main_window.plainTextEdit.appendPlainText('已经按下按键%s' % key)
+
+
 if __name__ == '__main__':
     pass
-    x, y, z, w = get_setting_data_from_db()
-    print(x, y, z, w)
+    elem = (1, None, '等待', '等待到指定时间', '2023/10/5 22:46:24+1000', None, None, 1, '抛出异常并暂停', '', '主流程')
+    dic = {
+        'ID': elem[0],
+        '图像路径': elem[1],
+        '指令类型': elem[2],
+        '参数1（键鼠指令）': elem[3],
+        '参数2': elem[4],
+        '参数3': elem[5],
+        '参数4': elem[6],
+        '重复次数': elem[7],
+        '异常处理': elem[8]
+    }
+    main_window_ = None

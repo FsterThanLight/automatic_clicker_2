@@ -897,9 +897,6 @@ class MainWork:
 
     def mouse_moves(self, direction, distance):
         """鼠标移动事件"""
-        # 显示鼠标当前位置
-        x, y = pyautogui.position()
-        print('x:' + str(x) + ',y:' + str(y))
         # 相对于当前位置移动鼠标
         if direction == '↑':
             pyautogui.moveRel(0, -abs(int(distance)), duration=self.settings.duration)
@@ -1126,6 +1123,7 @@ class WebOption:
                     target_ele.send_keys(self.text)
                 else:
                     self.driver.execute_script("arguments[0].removeAttribute('readonly');", target_ele)
+                    target_ele.clear()
                     target_ele.send_keys(self.text)
             elif action == '读取网页表格':
                 table_html = target_ele.get_attribute('outerHTML')
