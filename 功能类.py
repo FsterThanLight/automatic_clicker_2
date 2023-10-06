@@ -1,11 +1,20 @@
+import re
+import sys
 import time
 from datetime import datetime
 
+import mouse
+import openpyxl
 import pyautogui
 import pyperclip
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from main_work import sqlitedb, close_database
+from 网页操作 import WebOption
+
+
+def exit_main_work():
+    sys.exit()
 
 
 def timer(func):
@@ -41,10 +50,12 @@ class ImageClick:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -139,12 +150,16 @@ class ImageClick:
 
 
 class CoordinateClick:
+    """坐标点击"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -198,12 +213,16 @@ class CoordinateClick:
 
 
 class Waiting:
+    """等待"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -302,12 +321,16 @@ class Waiting:
 
 
 class RollerSlide:
+    """滑动鼠标滚轮"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -345,12 +368,16 @@ class RollerSlide:
 
 
 class TextInput:
+    """输入文本"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -361,24 +388,34 @@ class TextInput:
         input_value = self.ins_dic.get('参数1（键鼠指令）')
         special_control_judgment = bool(self.ins_dic.get('参数2'))
         # 执行文本输入
-        if not special_control_judgment:
+        self.text_input(input_value, special_control_judgment)
+
+    def text_input(self, input_value, special_control_judgment):
+        """文本输入事件
+        :param input_value: 输入的文本
+        :param special_control_judgment: 是否为特殊控件"""
+        if special_control_judgment == 'False':
             pyperclip.copy(input_value)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(self.time_sleep)
-            self.main_window.plainTextEdit.appendPlainText('执行文本输入')
-        elif special_control_judgment:
+            self.main_window.plainTextEdit.appendPlainText('执行文本输入%s' % input_value)
+        elif special_control_judgment == 'True':
             pyautogui.typewrite(input_value, interval=self.interval)
-            self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入')
+            self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入%s' % input_value)
             time.sleep(self.time_sleep)
 
 
 class MoveMouse:
+    """移动鼠标"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -416,12 +453,16 @@ class MoveMouse:
 
 
 class PressKeyboard:
+    """模拟按下键盘"""
+
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (self.duration,
-         self.interval,
-         self.confidence,
-         self.time_sleep) = get_setting_data_from_db()
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -459,6 +500,322 @@ class PressKeyboard:
             pyautogui.hotkey(hotkey)
         time.sleep(self.time_sleep)
         self.main_window.plainTextEdit.appendPlainText('已经按下按键%s' % key)
+
+
+class MiddleActivation:
+    """鼠标中键激活"""
+
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def start_execute(self):
+        """执行重复次数"""
+        command_type = self.ins_dic.get('参数1（键鼠指令）')
+        click_count = self.ins_dic.get('参数2')
+        re_try = self.ins_dic.get('重复次数')
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.middle_mouse_button(command_type, click_count)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.middle_mouse_button(command_type, click_count)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def middle_mouse_button(self, command_type, click_times):
+        """中键点击事件"""
+        self.main_window.plainTextEdit.appendPlainText('等待按下鼠标中键中...按下esc键退出')
+        QApplication.processEvents()
+        # print('等待按下鼠标中键中...按下esc键退出')
+        mouse.wait(button='middle')
+        try:
+            if command_type == "模拟点击":
+                pyautogui.click(clicks=int(click_times), button='left')
+                self.main_window.plainTextEdit.appendPlainText('执行鼠标点击%d次' % click_times)
+                # print('执行鼠标点击' + click_times + '次')
+            elif command_type == "自定义":
+                pass
+        except OSError:
+            # 弹出提示框。提示检查鼠标是否连接
+            self.main_window.plainTextEdit.appendPlainText('连接失败，请检查鼠标是否连接正确。')
+            # print('连接失败，请检查鼠标是否连接正确。')
+            pass
+
+
+class MouseClick:
+    """鼠标在当前位置点击"""
+
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        key_dict = {
+            '左键单击': [1, 'left'],
+            '左键双击': [2, 'left'],
+            '右键单击': [1, 'right'],
+            '右键双击': [2, 'right']
+        }
+        list_ins = key_dict.get(self.ins_dic.get('参数1（键鼠指令）'))
+        return list_ins[0], list_ins[1]
+
+    def start_execute(self):
+        """执行重复次数"""
+        click_times, lOrR = self.parsing_ins_dic()
+        re_try = self.ins_dic.get('重复次数')
+        # 执行
+        if re_try == 1:
+            self.mouse_click(click_times, lOrR)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.mouse_click(click_times, lOrR)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def mouse_click(self, click_times, lOrR):
+        """鼠标点击事件
+        :param click_times: 点击次数
+        :param lOrR: 左键右键（left,right）"""
+        position = pyautogui.position()
+        pyautogui.click(
+            x=position[0],
+            y=position[1],
+            clicks=click_times,
+            interval=self.interval,
+            duration=self.duration,
+            button=lOrR
+        )
+        self.main_window.plainTextEdit.appendPlainText('执行鼠标事件')
+
+
+class InformationEntry:
+    """从Excel中录入信息到窗口"""
+
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 图像点击、文本输入的部分功能
+        self.image_click = ImageClick(self.main_window, self.ins_dic)
+        self.text_input = TextInput(self.main_window, self.ins_dic)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '点击次数': 3,
+            '按钮类型': 'left',
+            '工作簿路径': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
+            '工作表名称': self.ins_dic.get('参数1（键鼠指令）').split('-')[1],
+            '图像路径': self.ins_dic.get('图像路径'),
+            '单元格位置': self.ins_dic.get('参数2'),
+            '行号递增': self.ins_dic.get('参数3').split('-')[0],
+            '特殊控件输入': self.ins_dic.get('参数3').split('-')[1],
+            '超时报错': self.ins_dic.get('参数4'),
+            '异常处理': self.ins_dic.get('异常处理')
+        }
+        return list_dic
+
+    def start_execute(self, number):
+        """执行重复次数"""
+        re_try = self.ins_dic.get('重复次数')
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.information_entry(number)
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.information_entry(number)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    def information_entry(self, number):
+        """信息录入"""
+        list_dic = self.parsing_ins_dic()
+        # 获取excel表格中的值
+        cell_value = self.extra_excel_cell_value(
+            list_dic.get('工作簿路径'),
+            list_dic.get('工作表名称'),
+            list_dic.get('单元格位置'),
+            bool(list_dic.get('行号递增')),
+            number
+        )
+        self.image_click.execute_click(
+            list_dic.get('点击次数'),
+            list_dic.get('按钮类型'),
+            list_dic.get('图像路径'),
+            list_dic.get('超时报错'),
+            number
+        )
+        self.text_input.text_input(cell_value, list_dic.get('特殊控件输入'))
+        self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
+
+    def extra_excel_cell_value(self, excel_path, sheet_name,
+                               cell_position, line_number_increment, number):
+        """获取excel表格中的值
+        :param excel_path: excel表格路径
+        :param sheet_name: 表格名称
+        :param cell_position: 单元格位置
+        :param line_number_increment: 行号递增
+        :param number: 循环次数"""
+        print('正在获取单元格值')
+        cell_value = None
+        try:
+            # 打开excel表格
+            wb = openpyxl.load_workbook(excel_path)
+            # 选择表格
+            sheet = wb[str(sheet_name)]
+            if not line_number_increment:
+                # 获取单元格的值
+                cell_value = sheet[cell_position].value
+                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+            elif line_number_increment:
+                # 获取行号递增的单元格的值
+                column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
+                line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
+                new_cell_position = column_number + str(line_number)
+                cell_value = sheet[new_cell_position].value
+                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+            return cell_value
+        except FileNotFoundError:
+            print('没有找到工作簿')
+            exit_main_work()
+        except KeyError:
+            print('没有找到工作表')
+            exit_main_work()
+        except AttributeError:
+            print('没有找到单元格')
+            exit_main_work()
+
+
+class WebControl:
+    """网页控制"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 导航
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '网址': self.ins_dic.get('图像路径'),
+            '元素类型': self.ins_dic.get('参数1（键鼠指令）'),
+            '元素值': self.ins_dic.get('参数2'),
+            '操作类型': self.ins_dic.get('参数3').split('-')[0],
+            '文本内容': self.ins_dic.get('参数3').split('-')[1],
+            '超时类型': self.ins_dic.get('参数4')
+        }
+        return list_dic
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 执行网页操作
+        self.web_option.text = list_ins_.get('文本内容')
+        self.web_option.single_shot_operation(
+            url=list_ins_.get('网址'),
+            action=list_ins_.get('操作类型'),
+            element_value_=list_ins_.get('元素值'),
+            element_type_=list_ins_.get('元素类型'),
+            timeout_type_=list_ins_.get('超时类型')
+        )
+
+
+class WebEntry:
+    """将Excel中的值录入网页"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        self.InformationEntry = InformationEntry(self.main_window, self.ins_dic)
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '工作簿路径': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
+            '工作表名称': self.ins_dic.get('参数1（键鼠指令）').split('-')[1],
+            '元素类型': self.ins_dic.get('图像路径').split('-')[0],
+            '元素值': self.ins_dic.get('图像路径').split('-')[1],
+            '单元格位置': self.ins_dic.get('参数2'),
+            '行号递增': self.ins_dic.get('参数3'),
+            '超时类型': self.ins_dic.get('参数4')
+        }
+        return list_dic
+
+    def start_execute(self, number):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 获取excel表格中的值
+        cell_value = self.InformationEntry.extra_excel_cell_value(
+            list_ins_.get('工作簿路径'),
+            list_ins_.get('工作表名称'),
+            list_ins_.get('单元格位置'),
+            bool(list_ins_.get('行号递增')),
+            number
+        )
+        # 执行网页操作
+        self.web_option.text = cell_value
+        self.web_option.single_shot_operation(
+            url='',
+            action='输入内容',
+            element_value_=list_ins_.get('元素值'),
+            element_type_=list_ins_.get('元素类型'),
+            timeout_type_=list_ins_.get('超时类型')
+        )
 
 
 if __name__ == '__main__':
