@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
 
 from main_work import MainWork, exit_main_work, WebOption, sqlitedb, close_database
 from navigation import Na
+
 # 截图模块
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
