@@ -11,17 +11,12 @@
 from __future__ import print_function
 
 import datetime
-import json
 import os
 import shutil
 import sqlite3
 import sys
-import time
-import webbrowser
 
-import cryptocode
 import openpyxl
-import requests
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
@@ -30,7 +25,6 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
 
 from main_work import MainWork, exit_main_work, WebOption, sqlitedb, close_database
 from navigation import Na
-
 # 截图模块
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
@@ -38,6 +32,7 @@ from 窗体.info import Ui_Form
 from 窗体.login import Ui_Login
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.setting import Ui_Setting
+
 
 # done: 向上移动和向下移动表格崩溃
 # todo: 重写所有功能类
@@ -52,36 +47,7 @@ from 窗体.setting import Ui_Setting
 # todo: 重新修改指令功能
 # done: 登录窗口
 
-
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                         'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36'}
-
-
-def load_json():
-    """从json文件中加载更新网址和保留文件名"""
-    file_name = 'update_data.json'
-    with open(file_name, 'r', encoding='utf8') as f:
-        data = json.load(f)
-    url = cryptocode.decrypt(data['url_encrypt'], '123456')
-    return url
-
-
-def get_download_address(main_window_, warning):
-    """获取下载地址、版本信息、更新说明"""
-    global headers
-    url = load_json()
-    try:
-        res = requests.get(url, headers=headers, timeout=0.2)
-        info = cryptocode.decrypt(res.text, '123456')
-        list_1 = info.split('=')
-        return list_1
-    except requests.exceptions.ConnectionError:
-        if warning == 1:
-            # print("无法获取更新信息，请检查网络。")
-            QMessageBox.critical(main_window_, "更新检查", "无法获取更新信息，请检查网络。")
-            time.sleep(1)
-        else:
-            pass
+# activate clicker
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
@@ -141,7 +107,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 导出日志按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)
         # 检查更新按钮（菜单栏）
-        self.actionj.triggered.connect(lambda: self.check_update(1))
+        # self.actionj.triggered.connect(lambda: self.check_update(1))
         # 隐藏工具栏
         self.actiong.triggered.connect(self.hide_toolbar)
         # 打开关于窗体
@@ -480,52 +446,22 @@ class Main_window(QMainWindow, Ui_MainWindow):
         else:
             self.plainTextEdit.clear()
 
-    def check_update(self, warning):
-        """检查更新功能"""
-        pass
-        # 获取下载地址、版本号、更新信息
-        list_1 = get_download_address(self, warning)
-        # print(list_1)
-        try:
-            address = list_1[0]
-            version = list_1[1]
-            information = list_1[2]
-            # 判断是否有更新
-            print(version)
-            if version != self.version:
-                x = QMessageBox.information(self, "更新检查",
-                                            "已发现最新版" + version + "\n是否手动下载最新安装包？" + '\n' + information,
-                                            QMessageBox.Yes | QMessageBox.No,
-                                            QMessageBox.Yes)
-                if x == QMessageBox.Yes:
-                    # 打开下载地址
-                    webbrowser.open(address)
-                    # os.popen('update.exe')
-                    sys.exit()
-            else:
-                if warning == 1:
-                    QMessageBox.information(self, "更新检查", "当前" + self.version + "已是最新版本。")
-                else:
-                    pass
-        except TypeError:
-            pass
-
     def main_show(self):
         """显示窗体，并根据设置检查更新"""
         self.show()
         # import sqlite3
         # 连接数据库获取是否检查更新选项
-        con = sqlite3.connect('命令集.db')
-        cursor = con.cursor()
-        cursor.execute('select 值 from 设置 where 设置类型=?', ('启动检查更新',))
-        x = cursor.fetchall()[0][0]
-        cursor.close()
-        print('启动检查更新')
-        print(x)
-        if x == 1:
-            self.check_update(0)
-        else:
-            pass
+        # con = sqlite3.connect('命令集.db')
+        # cursor = con.cursor()
+        # cursor.execute('select 值 from 设置 where 设置类型=?', ('启动检查更新',))
+        # x = cursor.fetchall()[0][0]
+        # cursor.close()
+        # print('启动检查更新')
+        # print(x)
+        # if x == 1:
+        #     self.check_update(0)
+        # else:
+        #     pass
 
     def hide_toolbar(self):
         """隐藏工具栏"""
@@ -796,9 +732,9 @@ class Login(QWidget, Ui_Login):
                 con.commit()
                 close_database(cursor, con)
             # 创建主窗体
-            main_window = Main_window()
+            main_window_ = Main_window()
             # # 显示窗体，并根据设置检查更新
-            main_window.main_show()
+            main_window_.main_show()
         else:
             QMessageBox.information(self, '提示', '密码错误。')
 
