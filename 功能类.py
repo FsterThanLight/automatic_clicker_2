@@ -9,7 +9,7 @@ import pyautogui
 import pyperclip
 from PyQt5.QtWidgets import QApplication, QMessageBox
 
-from main_work import sqlitedb, close_database
+from 数据库操作 import get_setting_data_from_db
 from 网页操作 import WebOption
 
 
@@ -28,21 +28,6 @@ def timer(func):
         return result
 
     return func_wrapper
-
-
-def get_setting_data_from_db() -> tuple:
-    """从数据库中获取设置参数
-    :return: 设置参数"""
-    cursor, conn = sqlitedb()
-    cursor.execute('select * from 设置')
-    list_setting_data = cursor.fetchall()
-    close_database(cursor, conn)
-    # 使用字典来存储设置参数
-    setting_dict = {i[0]: i[1] for i in list_setting_data}
-    return (setting_dict.get('持续时间'),
-            setting_dict.get('时间间隔'),
-            setting_dict.get('图像匹配精度'),
-            setting_dict.get('暂停时间'))
 
 
 class ImageClick:
@@ -550,7 +535,6 @@ class MiddleActivation:
             # 弹出提示框。提示检查鼠标是否连接
             self.main_window.plainTextEdit.appendPlainText('连接失败，请检查鼠标是否连接正确。')
             # print('连接失败，请检查鼠标是否连接正确。')
-            pass
 
 
 class MouseClick:
@@ -721,13 +705,6 @@ class WebControl:
     """网页控制"""
 
     def __init__(self, main_window, navigation, ins_dic):
-        # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 导航
@@ -816,6 +793,219 @@ class WebEntry:
             element_type_=list_ins_.get('元素类型'),
             timeout_type_=list_ins_.get('超时类型')
         )
+
+
+class MouseDrag:
+    """鼠标拖拽"""
+
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        start_position = tuple(list(map(int, dict(self.ins_dic)['参数1（键鼠指令）'].split(','))))
+        end_position = tuple(list(map(int, dict(self.ins_dic)['参数2'].split(','))))
+        return {'起始位置': start_position, '结束位置': end_position}
+
+    def mouse_drag(self, start_position, end_position):
+        """鼠标拖拽事件"""
+        pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
+        pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
+        self.main_window.plainTextEdit.appendPlainText(
+            '鼠标拖拽' + str(start_position) + '到' + str(end_position)
+        )
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        re_try = self.ins_dic.get('重复次数')
+        # 执行滚轮滑动
+        if re_try == 1:
+            self.mouse_drag(list_ins_.get('起始位置'), list_ins_.get('结束位置'))
+        elif re_try > 1:
+            i = 1
+            while i < re_try + 1:
+                self.mouse_drag(list_ins_.get('起始位置'), list_ins_.get('结束位置'))
+                time.sleep(self.time_sleep)
+
+
+class SaveForm:
+    """保存网页表格"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 主窗口
+        self.main_window = main_window
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        image_path_parts = dict(self.ins_dic)['图像路径'].split('-')
+        element_type, element_value = image_path_parts[0], image_path_parts[1]
+        keyboard_mouse_parts = dict(self.ins_dic)['参数1（键鼠指令）'].split('-')
+        excel_path, sheet_name = keyboard_mouse_parts[0], keyboard_mouse_parts[1]
+        timeout_type = dict(self.ins_dic)['参数2']
+        return {
+            '元素类型': element_type,
+            '元素值': element_value,
+            '工作簿路径': excel_path,
+            '工作表名称': sheet_name,
+            '超时类型': timeout_type
+        }
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 执行网页操作
+        self.web_option.single_shot_operation(
+            url='',
+            action='保存表格',
+            element_value_=list_ins_.get('元素值'),
+            element_type_=list_ins_.get('元素类型'),
+            timeout_type_=list_ins_.get('超时类型')
+        )
+
+
+class ToggleFrame:
+    """切换frame"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 主窗口
+        self.main_window = main_window
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '切换类型': self.ins_dic.get('参数1（键鼠指令）'),
+            'frame类型': self.ins_dic.get('参数2'),
+            'frame值': self.ins_dic.get('参数3'),
+        }
+        return list_dic
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 执行网页操作
+        self.web_option.switch_to_frame(
+            iframe_type=list_ins_.get('frame类型'),
+            iframe_value=list_ins_.get('frame值'),
+            switch_type=list_ins_.get('切换类型')
+        )
+
+
+class SwitchWindow:
+    """切换网页窗口"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 主窗口
+        self.main_window = main_window
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '切换类型': self.ins_dic.get('参数1（键鼠指令）'),
+            '窗口值': self.ins_dic.get('参数2'),
+        }
+        return list_dic
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 执行网页操作
+        self.web_option.switch_to_window(
+            window_type=list_ins_.get('切换类型'),
+            window_value=list_ins_.get('窗口值')
+        )
+
+
+class DragWebElements:
+    """拖拽网页元素"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        # 主窗口
+        self.main_window = main_window
+        self.navigation = navigation
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        image_path_parts = dict(self.ins_dic)['图像路径'].split('-')
+        element_type, element_value = image_path_parts[0], image_path_parts[1]
+        x, y = map(int, dict(self.ins_dic)['参数1（键鼠指令）'].split('-'))
+        timeout_type = dict(self.ins_dic)['参数2']
+        return {
+            '元素类型': element_type,
+            '元素值': element_value,
+            'x': x,
+            'y': y,
+            '超时类型': timeout_type
+        }
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_ins_ = self.parsing_ins_dic()
+        # 执行网页操作
+        self.web_option.distance_x = int(dict(list_ins_)['x'])
+        self.web_option.distance_y = int(dict(list_ins_)['y'])
+        self.web_option.single_shot_operation(
+            url='',
+            action='拖动元素',
+            element_value_=list_ins_.get('元素值'),
+            element_type_=list_ins_.get('元素类型'),
+            timeout_type_=list_ins_.get('超时类型')
+        )
+
+
+class FullScreenCapture:
+    """全屏截图"""
+
+    def __init__(self, main_window, ins_dic):
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        return {
+            '图像路径': dict(self.ins_dic)['图像路径']
+        }
+
+    def start_execute(self):
+        """执行重复次数"""
+        image_path = self.parsing_ins_dic().get('图像路径', '') + '.png'
+        # 执行截图
+        screenshot = pyautogui.screenshot()
+        # 将图片保存到指定文件夹
+        screenshot.save(image_path)
+        self.main_window.plainTextEdit.appendPlainText('已执行全屏截图')
 
 
 if __name__ == '__main__':

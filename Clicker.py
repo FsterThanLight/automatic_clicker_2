@@ -23,7 +23,9 @@ from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
     QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
 
-from main_work import MainWork, exit_main_work, WebOption, sqlitedb, close_database
+from main_work import MainWork
+from 功能类 import exit_main_work
+from 数据库操作 import sqlitedb, close_database
 from navigation import Na
 # 截图模块
 from 窗体.about import Ui_Dialog
@@ -32,6 +34,7 @@ from 窗体.info import Ui_Form
 from 窗体.login import Ui_Login
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.setting import Ui_Setting
+from 网页操作 import WebOption
 
 
 # done: 向上移动和向下移动表格崩溃
