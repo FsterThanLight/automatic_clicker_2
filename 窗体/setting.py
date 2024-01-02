@@ -203,11 +203,11 @@ class Ui_Setting(object):
         self.gridLayout_3.addWidget(self.checkBox, 2, 0, 1, 3)
 
         self.retranslateUi(Setting)
-        self.horizontalSlider.valueChanged['int'].connect(self.label_4.setNum) # type: ignore
-        self.horizontalSlider_2.valueChanged['int'].connect(self.label_6.setNum) # type: ignore
-        self.horizontalSlider_3.valueChanged['int'].connect(self.label_8.setNum) # type: ignore
-        self.horizontalSlider_4.valueChanged['int'].connect(self.label_10.setNum) # type: ignore
-        self.pushButton_2.clicked.connect(Setting.close) # type: ignore
+        self.horizontalSlider.valueChanged['int'].connect(self.label_4.setNum) # type_: ignore
+        self.horizontalSlider_2.valueChanged['int'].connect(self.label_6.setNum) # type_: ignore
+        self.horizontalSlider_3.valueChanged['int'].connect(self.label_8.setNum) # type_: ignore
+        self.horizontalSlider_4.valueChanged['int'].connect(self.label_10.setNum) # type_: ignore
+        self.pushButton_2.clicked.connect(Setting.close) # type_: ignore
         QtCore.QMetaObject.connectSlotsByName(Setting)
 
     def retranslateUi(self, Setting):
