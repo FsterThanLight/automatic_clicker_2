@@ -297,14 +297,11 @@ class MainWork:
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
                 except Exception as e:
-                    # 打印错误堆栈信息
-                    # traceback.print_exc()
                     print(e)
-                    # # 获取当前时间
-                    # now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    # logging.info(now_time + '  指令' + str(dict(dic_)['ID']) + '执行异常！')
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
+
+                    # 自动跳过功能
                     if exception_handling == '自动跳过':
                         current_index += 1
                     elif exception_handling == '抛出异常并暂停':
@@ -320,6 +317,8 @@ class MainWork:
                             self.start_state = False
                             current_index += 1
                             break
+
+                    # 抛出异常并停止
                     elif exception_handling == '抛出异常并停止':
                         winsound.Beep(1000, 1000)
                         # 弹出提示框
@@ -328,6 +327,8 @@ class MainWork:
                         current_index += 1
                         self.start_state = False
                         break
+
+                    # 使用扩展程序
                     elif exception_handling.endswith('.py') or exception_handling.endswith('.exe'):
                         self.start_state = False
                         self.main_window.plainTextEdit.appendPlainText('执行扩展程序')
@@ -336,6 +337,8 @@ class MainWork:
                         elif '.py' in exception_handling:
                             subprocess.run('python {}'.format(exception_handling))
                         break
+
+                    # 跳转分支指令
                     elif '分支' in exception_handling:  # 跳转分支
                         self.main_window.plainTextEdit.appendPlainText('转到分支')
                         branch_name_index = exception_handling.split('-')[1]
@@ -345,6 +348,7 @@ class MainWork:
                         print('x:', x, 'y:', y)
                         self.execute_instructions(x, y, list_instructions)
                         break
+
             except IndexError:
                 self.main_window.plainTextEdit.appendPlainText('分支执行异常！')
                 QMessageBox.warning(self.main_window, '提示', '分支执行异常！')
