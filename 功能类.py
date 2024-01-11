@@ -1,3 +1,4 @@
+import random
 import re
 import sys
 import time
@@ -8,10 +9,23 @@ import openpyxl
 import pyautogui
 import pyperclip
 from PyQt5.QtWidgets import QApplication, QMessageBox
+from dateutil.parser import parse
 
 from 数据库操作 import get_setting_data_from_db
 from 网页操作 import WebOption
 
+
+# dic_ = {
+#                     'ID': elem_[0],
+#                     '图像路径': elem_[1],
+#                     '指令类型': elem_[2],
+#                     '参数1（键鼠指令）': elem_[3],
+#                     '参数2': elem_[4],
+#                     '参数3': elem_[5],
+#                     '参数4': elem_[6],
+#                     '重复次数': elem_[7],
+#                     '异常处理': elem_[8]
+#                 }
 
 def exit_main_work():
     sys.exit()
@@ -82,56 +96,37 @@ class ImageClick:
 
     def execute_click(self, click_times, lOrR, img, skip, number):
         """执行鼠标点击事件"""
-        # 4个参数：鼠标点击时间，按钮类型（左键右键中键），图片名称，重复次数
-        repeat = True
-        number_1 = 1
 
-        def image_match_click(skip_, start_time_=None):
-            nonlocal repeat, number_1
+        # 4个参数：鼠标点击时间，按钮类型（左键右键中键），图片名称，重复次数
+        def image_match_click(location):
+            # nonlocal repeat, number_1
             if location is not None:
                 # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
-                self.main_window.plainTextEdit.appendPlainText('找到匹配图片' + str(number))
+                self.main_window.plainTextEdit.appendPlainText('找到匹配图片%s' % str(number))
                 pyautogui.click(location.x, location.y,
                                 clicks=click_times,
                                 interval=self.interval,
                                 duration=self.duration,
                                 button=lOrR)
-                repeat = False
-            else:
-                if skip_ != "自动略过":
-                    # 计算如果时间差的秒数大于skip则退出
-                    # 获取当前时间，计算时间差
-                    end_time = time.time()
-                    time_difference = end_time - start_time_
-                    # 显示剩余等待时间
-                    self.main_window.plainTextEdit.appendPlainText(
-                        '未找到匹配图片' + str(number) + '正在重试第' + str(number_1) + '次')
-                    self.main_window.plainTextEdit.appendPlainText(
-                        '剩余等待' + str(round(int(skip_) - time_difference, 0)) + '秒')
-                    number_1 += 1
-                    QApplication.processEvents()
-                    # 终止条件
-                    if time_difference > int(skip_):
-                        repeat = False
-                        raise pyautogui.ImageNotFoundException
-                    time.sleep(0.1)
-                elif skip_ == "自动略过":
-                    self.main_window.plainTextEdit.appendPlainText('未找到匹配图片' + str(number))
 
         try:
-            start_time = time.time()
-            if skip == "自动略过":
-                location = pyautogui.locateCenterOnScreen(
-                    image=img, confidence=self.confidence)
-                image_match_click(skip)
-            else:
-                while repeat:
-                    location = pyautogui.locateCenterOnScreen(
-                        image=img, confidence=self.confidence)
-                    image_match_click(skip, start_time)
+            min_search_time = 1 if skip == "自动略过" else float(skip)
+            self.main_window.plainTextEdit.appendPlainText('正在查找匹配图像...')
+            QApplication.processEvents()
+            location_ = pyautogui.locateCenterOnScreen(
+                image=img,
+                confidence=self.confidence,
+                minSearchTime=min_search_time
+            )
+            if location_:  # 如果找到图像
+                image_match_click(location_)
+            elif not location_:  # 如果未找到图像
+                self.main_window.plainTextEdit.appendPlainText('未找到匹配图像')
+            QApplication.processEvents()
         except OSError:
-            QMessageBox.critical(self.main_window,
-                                 '错误', '文件下未找到.png图像文件，请检查文件是否存在！')
+            QMessageBox.critical(
+                self.main_window, '错误', '文件下未找到.png图像文件，请检查文件是否存在！'
+            )
 
 
 class CoordinateClick:
@@ -197,7 +192,7 @@ class CoordinateClick:
                 time.sleep(self.time_sleep)
 
 
-class Waiting:
+class TimeWaiting:
     """等待"""
 
     def __init__(self, main_window, ins_dic):
@@ -216,75 +211,75 @@ class Waiting:
     def start_execute(self):
         """从指令字典中解析出指令参数"""
         wait_type = self.ins_dic.get('参数1（键鼠指令）')
-        if wait_type == '等待':
-            wait_time = self.ins_dic.get('参数2')
+        if wait_type == '时间等待':
+            wait_time = int(self.ins_dic.get('参数2'))
             self.main_window.plainTextEdit.appendPlainText('等待时长%d秒' % wait_time)
-            # print('等待时长' + str(wait_time) + '秒')
             QApplication.processEvents()
-            self.stop_time(int(wait_time))
-        elif wait_type == '等待到指定时间':
+            self.stop_time(wait_time)
+        elif wait_type == '定时等待':
             target_time, interval_time = self.ins_dic.get('参数2').split('+')
-            now_time = datetime.now()
             # 检查目标时间是否大于当前时间
-            if datetime.strptime(target_time.replace('-', '/'), '%Y/%m/%d %H:%M:%S') > now_time:
-                self.check_time(target_time, interval_time)
-        elif wait_type == '等待到指定图片':
-            wait_img = self.ins_dic.get('图像路径')
-            wait_instruction_type = self.ins_dic.get('参数2')
-            timeout_period = self.ins_dic.get('参数3')
-            self.wait_to_the_specified_image(wait_img, wait_instruction_type, timeout_period)
-
-    def wait_to_the_specified_image(self, image, wait_instruction_type, timeout_period):
-        """执行图片等待"""
-        repeat = True
-        stat_time = time.time()
-
-        def event_in_waiting(text, start_time, timeout_period_):
-            """等待中的事件"""
-            difference_time = int(time.time() - start_time)
-            if difference_time > int(timeout_period_):
-                self.main_window.plainTextEdit.appendPlainText('等待超时，已等待%d秒' % difference_time)
-                raise pyautogui.ImageNotFoundException
-            self.main_window.plainTextEdit.appendPlainText(
-                '等待至图像%s,已等待%d秒', text, difference_time)
+            if parse(target_time) > datetime.now():
+                self.wait_to_time(target_time, interval_time)
+        elif wait_type == '随机等待':
+            min_time, max_time = self.ins_dic.get('参数2').split('-')
+            wait_time = random.randint(int(min_time), int(max_time))
+            self.main_window.plainTextEdit.appendPlainText('随机等待时长%d秒' % wait_time)
             QApplication.processEvents()
+            self.stop_time(wait_time)
 
-        while repeat:
-            location = pyautogui.locateCenterOnScreen(image=image, confidence=self.confidence)
-            if wait_instruction_type == '等待到指定图像出现':
-                if location is not None:
-                    self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
-                    QApplication.processEvents()
-                    repeat = False
-                else:
-                    event_in_waiting('出现', stat_time, timeout_period)
-            elif wait_instruction_type == '等待到指定图像消失':
-                if location is None:
-                    self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
-                    QApplication.processEvents()
-                    repeat = False
-                else:
-                    event_in_waiting('消失', stat_time, timeout_period)
-            time.sleep(0.1)
+    # def wait_to_the_specified_image(self, image, wait_instruction_type, timeout_period):
+    #     """执行图片等待"""
+    #     repeat = True
+    #     stat_time = time.time()
+    #
+    #     def event_in_waiting(text, start_time, timeout_period_):
+    #         """等待中的事件"""
+    #         difference_time = int(time.time() - start_time)
+    #         if difference_time > int(timeout_period_):
+    #             self.main_window.plainTextEdit.appendPlainText('等待超时，已等待%d秒' % difference_time)
+    #             raise pyautogui.ImageNotFoundException
+    #         self.main_window.plainTextEdit.appendPlainText(
+    #             '等待至图像%s,已等待%d秒', text, difference_time)
+    #         QApplication.processEvents()
+    #
+    #     while repeat:
+    #         location = pyautogui.locateCenterOnScreen(image=image, confidence=self.confidence)
+    #         if wait_instruction_type == '等待到指定图像出现':
+    #             if location is not None:
+    #                 self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+    #                 QApplication.processEvents()
+    #                 repeat = False
+    #             else:
+    #                 event_in_waiting('出现', stat_time, timeout_period)
+    #         elif wait_instruction_type == '等待到指定图像消失':
+    #             if location is None:
+    #                 self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+    #                 QApplication.processEvents()
+    #                 repeat = False
+    #             else:
+    #                 event_in_waiting('消失', stat_time, timeout_period)
+    #         time.sleep(0.1)
 
-    def check_time(self, target_time, interval):
+    def wait_to_time(self, target_time, interval):
         """检查时间，指定时间则执行操作
         :param target_time: 目标时间
         :param interval: 时间间隔"""
         sleep_time = int(interval) / 1000
         show_times = 1  # 显示时间的间隔
-        # 将target_time转换为时间格式
-        t_time = datetime.strptime(target_time.replace('-', '/'), '%Y/%m/%d %H:%M:%S')
 
         while True:
             now = datetime.now()
             if show_times == 1:
                 self.main_window.plainTextEdit.appendPlainText(
-                    "当前时间为：%s" % now.strftime('%Y/%m/%d %H:%M:%S'))
-                # print("当前时间为：%s" % now.strftime('%Y/%m/%d %H:%M:%S'))
+                    "当前为：%s" % now.strftime('%Y/%m/%d %H:%M:%S')
+                )
+                self.main_window.plainTextEdit.appendPlainText(
+                    "等待至：%s" % target_time
+                )
                 QApplication.processEvents()
                 show_times = sleep_time
-            if now >= t_time:
+            if now >= parse(target_time):
                 self.main_window.plainTextEdit.appendPlainText("退出等待")
                 # print("退出等待")
                 break
@@ -295,14 +290,64 @@ class Waiting:
     def stop_time(self, seconds):
         """暂停时间"""
         for i in range(seconds):
-            # keyboard.hook(self.abc)
             # 显示剩下等待时间
-            self.main_window.plainTextEdit.appendPlainText('等待中...剩余%d秒' % seconds - i)
-            # print('等待中...剩余' + str(seconds - i) + '秒')
+            self.main_window.plainTextEdit.appendPlainText('等待中...剩余%d秒' % (seconds - i))
             QApplication.processEvents()
-            # if self.start_state is False:
-            #     break
             time.sleep(1)
+
+
+class ImageWaiting:
+    """图片等待"""
+
+    def __init__(self, main_window, ins_dic):
+        # 设置参数
+        (
+            self.duration,
+            self.interval,
+            self.confidence,
+            self.time_sleep
+        ) = get_setting_data_from_db()
+        # 主窗口
+        self.main_window = main_window
+        # 指令字典
+        self.ins_dic = ins_dic
+
+    def wait_to_image(self, image, wait_instruction_type, timeout_period):
+        """执行图片等待"""
+        if wait_instruction_type == '等待到指定图像出现':
+            self.main_window.plainTextEdit.appendPlainText('正在等待指定图像出现中...')
+            QApplication.processEvents()
+            location = pyautogui.locateCenterOnScreen(
+                image=image,
+                confidence=0.8,
+                minSearchTime=timeout_period
+            )
+            if location:
+                self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+                QApplication.processEvents()
+        elif wait_instruction_type == '等待到指定图像消失':
+            vanish = True
+            while vanish:
+                try:
+                    location = pyautogui.locateCenterOnScreen(
+                        image=image,
+                        confidence=0.8,
+                        minSearchTime=1
+                    )
+                    print('location', location)
+                except pyautogui.ImageNotFoundException:
+                    self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+                    QApplication.processEvents()
+                    vanish = False
+                else:
+                    time.sleep(0.5)
+
+    def start_execute(self):
+        """执行图片等待"""
+        image_path = self.ins_dic.get('图像路径')
+        wait_instruction_type = self.ins_dic.get('参数1（键鼠指令）')
+        timeout_period = float(self.ins_dic.get('参数2'))
+        self.wait_to_image(image_path, wait_instruction_type, timeout_period)
 
 
 class RollerSlide:
@@ -324,7 +369,7 @@ class RollerSlide:
     def parsing_ins_dic(self):
         """解析指令字典"""
         scroll_direction = self.ins_dic.get('参数1（键鼠指令）')
-        scroll_distance = self.ins_dic.get('参数2')
+        scroll_distance = int(self.ins_dic.get('参数2'))
         re_try = self.ins_dic.get('重复次数')
         if scroll_direction == '↑':
             scroll_distance = scroll_distance

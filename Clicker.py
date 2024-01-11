@@ -21,12 +21,12 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
-    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog
+    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog, QMenu
 
 from main_work import MainWork
+from navigation import Na
 from 功能类 import exit_main_work
 from 数据库操作 import sqlitedb, close_database
-from navigation import Na
 # 截图模块
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
@@ -37,20 +37,21 @@ from 窗体.setting import Ui_Setting
 from 网页操作 import WebOption
 
 
-# done: 向上移动和向下移动表格崩溃
-# todo: 重写所有功能类
 # todo: 重写导航页功能类
-# done: 浏览器去除头部
 # todo: 图片路径改用相对路径
 # todo: 快捷键失效
-# done: 错误日志
 # todo: 表格当前行插入指令
 # todo: 导入指令可最近打开
-# done: 另存为功能
 # todo: 重新修改指令功能
-# done: 登录窗口
+# todo: 新增提示音功能
+# todo: 新增倒计时窗口功能
+# todo: 截图指令重新设计
+# todo: 指令表格右键菜单
+# todo: 指令执行使用多线程
 
 # activate clicker
+# pyinstaller -F -w -i clicker.ico Clicker.py
+# pyinstaller -D -w -i clicker.ico Clicker.py
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
@@ -60,65 +61,42 @@ class Main_window(QMainWindow, Ui_MainWindow):
         super().__init__()
         # 初始化窗体
         self.setupUi(self)
-        # 软件版本
-        self.version = 'v0.21'
-        # 全局设置窗口
-        self.global_s = Global_s()
-        # 实例化导航页窗口
-        self.navigation = Na(self, self.global_s)
-        # 窗体的功能
-        self.main_work = MainWork(self, self.navigation)
-        # 实例化设置窗口
-        self.setting = Setting()
-        # 设置关于窗体
-        self.about = About()
-        # 提示窗口
-        self.info = Info()
-        # 网页操作模块
-        self.web_option = WebOption(self, self.navigation)
         # 设置表格列宽自动变化，并使第5列列宽固定
         self.format_table()
-        # 显示导航页窗口
-        self.pushButton.clicked.connect(lambda: self.show_windows('导航'))
-        # 显示全局参数窗口
-        self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))
-        # 获取数据，修改按钮
-        self.toolButton_5.clicked.connect(self.get_data)
-        # 获取数据，子窗体取消按钮
-        self.navigation.pushButton_3.clicked.connect(self.get_data)
-        # 获取数据，子窗体保存按钮
-        self.navigation.pushButton_2.clicked.connect(self.get_data)
-        # 删除数据，删除按钮
-        self.pushButton_2.clicked.connect(self.delete_data)
-        # 交换数据，上移按钮
-        self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))
-        self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))
-        # 导出数据，导出按钮
-        self.actionb.triggered.connect(lambda: self.save_data_to_current('db'))
+        # 窗口和信息
+        self.version = 'v0.21'  # 软件版本
+        self.global_s = Global_s()  # 全局设置窗口
+        self.navigation = Na(self, self.global_s)  # 实例化导航页窗口
+        self.main_work = MainWork(self, self.navigation)  # 窗体的功能
+        self.setting = Setting()  # 实例化设置窗口
+        self.about = About()  # 设置关于窗体
+        self.info = Info()  # 运行提示窗口
+        self.web_option = WebOption(self, self.navigation)  # 网页操作模块
+        # 显示导不同的窗口
+        self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
+        self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
+        self.actions_2.triggered.connect(lambda: self.show_windows('设置'))  # 打开设置
+        self.actionabout.triggered.connect(lambda: self.show_windows('关于'))  # 打开关于窗体
+        self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
+        # 主窗体表格功能
+        self.toolButton_5.clicked.connect(self.get_data)  # 获取数据，主窗体刷新按钮
+        self.navigation.pushButton_3.clicked.connect(self.get_data)  # 获取数据，子窗体取消按钮
+        self.navigation.pushButton_2.clicked.connect(self.get_data)  # 获取数据，子窗体保存按钮
+        self.pushButton_2.clicked.connect(self.delete_data)  # 删除数据，删除按钮
+        self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))  # 交换数据，上移按钮
+        self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))  # 交换数据，下移按钮
+        self.actionb.triggered.connect(lambda: self.save_data_to_current('db'))  # 导出数据，导出按钮
         self.actiona.triggered.connect(lambda: self.save_data_to_current('excel'))
-        # 清空指令按钮
-        self.toolButton_6.clicked.connect(self.clear_table)
-        # 导入数据按钮
-        self.actionf.triggered.connect(self.data_import)
+        self.toolButton_6.clicked.connect(self.clear_table)  # 清空指令
+        self.actionf.triggered.connect(self.data_import)  # 导入数据
+        self.pushButton_8.clicked.connect(self.modify_parameters)  # 修改参数按钮
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
-        # 打开设置
-        self.actions_2.triggered.connect(lambda: self.show_windows('设置'))
-        # 结束任务按钮
-        self.pushButton_6.clicked.connect(exit_main_work)
-        # 导出日志按钮
-        self.toolButton_8.clicked.connect(self.exporting_operation_logs)
-        # 检查更新按钮（菜单栏）
-        # self.actionj.triggered.connect(lambda: self.check_update(1))
-        # 隐藏工具栏
-        self.actiong.triggered.connect(self.hide_toolbar)
-        # 打开关于窗体
-        self.actionabout.triggered.connect(lambda: self.show_windows('关于'))
-        # 打开使用说明
-        self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))
-        self.pushButton_8.clicked.connect(self.modify_parameters)
-
+        self.pushButton_6.clicked.connect(exit_main_work)  # 结束任务按钮
+        self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
+        # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
+        self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
         # 分支表名
         self.branch_name = []
         self.load_branch()
@@ -126,23 +104,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.toolButton_2.clicked.connect(self.create_branch)
         self.toolButton.clicked.connect(self.delete_branch)
         self.comboBox.currentIndexChanged.connect(self.get_data)
-
-    @staticmethod
-    def sqlitedb():
-        """建立与数据库的连接，返回游标"""
-        try:
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
-            return cursor, con
-        except sqlite3.Error:
-            print("数据库连接失败")
-            sys.exit()
-
-    @staticmethod
-    def close_database(cursor, conn):
-        """关闭数据库"""
-        cursor.close()
-        conn.close()
+        # 右键菜单
+        self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
 
     def format_table(self):
         """设置主窗口表格格式"""
@@ -159,6 +123,34 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 设置列宽为50像素
         self.tableWidget.setColumnWidth(6, 60)
         self.tableWidget.setColumnWidth(7, 60)
+
+    def generateMenu(self, pos):
+        # 获取点击行号
+        row_num = -1
+        for i in self.tableWidget.selectionModel().selection().indexes():
+            row_num = i.row()
+        if row_num != -1:  # 未选中数据不弹出右键菜单
+            menu = QMenu()  # 实例化菜单
+            up_ins = menu.addAction("上移")
+            down_ins = menu.addAction("下移")
+            menu.addSeparator()
+            copy_ins = menu.addAction("复制指令")
+            modify_ins = menu.addAction("修改指令")
+            del_ins = menu.addAction("删除指令")
+            action = menu.exec_(self.tableWidget.mapToGlobal(pos))
+        else:
+            return
+        # 各项操作
+        if action == copy_ins:
+            print("清除表格内容")
+        elif action == del_ins:
+            self.delete_data()
+        elif action == up_ins:
+            self.go_up_down('up')
+        elif action == down_ins:
+            self.go_up_down('down')
+        elif action == modify_ins:
+            self.modify_parameters()
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -181,7 +173,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             print('关于窗体开启')
             self.about.move(resize.x() + 90, resize.y())
         elif judge == '说明':
-            QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
+            QDesktopServices.openUrl(QUrl('https://gitee.com/automatic_clicker/automatic_clicker_2'))
 
     def get_data(self):
         """从数据库获取数据并存入表格"""
@@ -190,13 +182,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.tableWidget.clearContents()
             self.tableWidget.setRowCount(0)
             # 获取数据库数据
-            cursor, con = self.sqlitedb()
+            cursor, con = sqlitedb()
             branch_name = self.comboBox.currentText()
             cursor.execute(
                 'select 图像名称,指令类型,异常处理,备注,参数1,参数2,重复次数,ID from 命令 where 隶属分支=?',
                 (branch_name,))
             list_order = cursor.fetchall()
-            self.close_database(cursor, con)
+            close_database(cursor, con)
             # 在表格中写入数据
             for i in range(len(list_order)):
                 self.tableWidget.insertRow(i)
@@ -330,24 +322,26 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 wb.save(folder_path + '/' + file_name)
             QMessageBox.information(self, "提示", "指令数据保存成功！")
 
-    def clear_database(self):
+    @staticmethod
+    def clear_database():
         """清空数据库"""
-        cursor, con = self.sqlitedb()
+        cursor, con = sqlitedb()
         # 清空分支列表中所有的数据
         cursor.execute('delete from 命令 where ID<>-1')
         con.commit()
-        self.close_database(cursor, con)
+        close_database(cursor, con)
 
     def closeEvent(self, event):
-        choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
-        if choice == QMessageBox.Yes:
-            # 退出终止后台进程并清空数据库
-            event.accept()
-            self.clear_database()
-            self.web_option.close_browser()
-            exit_main_work()
-        else:
-            event.ignore()
+        pass
+        # choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
+        # if choice == QMessageBox.Yes:
+        #     # 退出终止后台进程并清空数据库
+        #     event.accept()
+        #     self.clear_database()
+        #     self.web_option.close_browser()
+        #     exit_main_work()
+        # else:
+        #     event.ignore()
 
     def clear_table(self):
         """清空表格和数据库"""
@@ -440,19 +434,18 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.main_work.start_work(only_current_instructions)
         self.info.close()
 
-    def clear_plaintext(self, judge):
-        """清空处理框中的信息"""
-        if judge == 200:
-            lines = self.plainTextEdit.blockCount()
-            if lines > 200:
-                self.plainTextEdit.clear()
-        else:
-            self.plainTextEdit.clear()
+    # def clear_plaintext(self, judge):
+    #     """清空处理框中的信息"""
+    #     if judge == 200:
+    #         lines = self.plainTextEdit.blockCount()
+    #         if lines > 200:
+    #             self.plainTextEdit.clear()
+    #     else:
+    #         self.plainTextEdit.clear()
 
     def main_show(self):
         """显示窗体，并根据设置检查更新"""
         self.show()
-        # import sqlite3
         # 连接数据库获取是否检查更新选项
         # con = sqlite3.connect('命令集.db')
         # cursor = con.cursor()
@@ -515,7 +508,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if ok:
             try:
                 # 连接数据库
-                cursor, con = self.sqlitedb()
+                cursor, con = sqlitedb()
                 # 查找是否有同名分支
                 cursor.execute('select 分支表名 from 全局参数 where 分支表名=?', (text,))
                 x = cursor.fetchall()
@@ -531,7 +524,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     # 弹出提示框，提示创建成功
                     QMessageBox.information(self, "提示", "分支创建成功！")
                 # 关闭数据库连接
-                self.close_database(cursor, con)
+                close_database(cursor, con)
                 # 加载分支
                 self.load_branch()
             except sqlite3.OperationalError:
@@ -542,7 +535,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """删除分支"""
         # 弹出输入对话框，提示输入分支名称
         print('删除分支')
-        cursor, con = self.sqlitedb()
+        cursor, con = sqlitedb()
         text = self.comboBox.currentText()
         if text == '主流程':
             QMessageBox.information(self, "提示", "无法删除主分支！")
@@ -553,7 +546,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             cursor.execute('delete from 全局参数 where 分支表名=?', (text,))
             # 关闭数据库连接
             con.commit()
-            self.close_database(cursor, con)
+            close_database(cursor, con)
             # 将分支名从分支列表中删除
             self.branch_name.remove(text)
             # 弹出提示框
@@ -565,12 +558,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """加载分支"""
         # 初始化功能
         print('加载分支')
-        cursor, con = self.sqlitedb()
+        cursor, con = sqlitedb()
         # 获取所有分支名
         cursor.execute("select 分支表名 from 全局参数")
         self.branch_name = [x[0] for x in cursor.fetchall() if x[0] is not None]
         # 关闭数据库连接
-        self.close_database(cursor, con)
+        close_database(cursor, con)
         self.comboBox.clear()
         self.comboBox.addItems(self.branch_name)
 

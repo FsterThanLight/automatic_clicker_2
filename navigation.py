@@ -11,7 +11,7 @@ import pyautogui
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QInputDialog
+    QMessageBox, QInputDialog, QButtonGroup
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
@@ -54,7 +54,8 @@ class Na(QWidget, Ui_navigation):
             '图像点击': lambda x: self.image_click_function(x),
             '坐标点击': lambda x: self.coordinate_click_function(x),
             '移动鼠标': lambda x: self.move_mouse_function(x),
-            '等待': lambda x: self.waiting_function(x),
+            '时间等待': lambda x: self.time_waiting_function(x),
+            '图像等待': lambda x: self.image_waiting_function(x),
             '滚轮滑动': lambda x: self.scroll_wheel_function(x),
             '文本输入': lambda x: self.text_input_function(x),
             '按下键盘': lambda x: self.press_keyboard_function(x),
@@ -244,21 +245,18 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
-    def waiting_function(self, type_):
+    def time_waiting_function(self, type_):
         """等待识别窗口的功能
         :param type_: 功能名称（加载按钮、主要功能）"""
 
         def time_judgment(target_time):
             """判断时间是否大于当前时间"""
             now_time = datetime.datetime.now()
-            target_time = datetime.datetime.strptime(target_time, '%Y/%m/%d %H:%M:%S')
-            xx_ = 0 if now_time < target_time else 1
-            print('目标时间大于当前时间，正确') if xx_ == 0 else print('目标时间小于当前时间，错误')
-            return xx_
+            return True if now_time < parse(target_time) else False
 
         def get_now_date_time():
-            """获取当前日期和时间"""
-            if self.checkBox.isChecked():
+            """将当前的时间和日期设置为dateTimeEdit的日期和时间"""
+            if self.radioButton_17.isChecked():
                 # 获取当前日期和时间
                 now_date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 # 将当前的时间和日期加10分钟
@@ -267,42 +265,36 @@ class Na(QWidget, Ui_navigation):
                 self.dateTimeEdit.setDateTime(new_date_time)
 
         if type_ == '按钮功能':
+            # 将不同的单选按钮添加到同一个按钮组
+            buttonGroup = QButtonGroup(self)
+            buttonGroup.addButton(self.radioButton_16)
+            buttonGroup.addButton(self.radioButton_18)
+            buttonGroup.addButton(self.radioButton_17)
             # 设置当前日期和时间
-            self.checkBox.clicked.connect(get_now_date_time)
-            # 加载下拉列表数据
-            self.comboBox_17.currentTextChanged.connect(lambda: self.find_images(self.comboBox_17, self.comboBox_18))
+            self.radioButton_17.clicked.connect(get_now_date_time)
         elif type_ == '写入参数':
             # 如果checkBox没有被选中，则第一个参数为等待时间
             image = None
             parameter_1 = None
             parameter_2 = None
-            parameter_3 = None
-            if not self.checkBox.isChecked() and not self.checkBox_5.isChecked():
-                parameter_1 = "等待"
-                try:
-                    parameter_2 = int(self.lineEdit_2.text())
-                except ValueError:
-                    QMessageBox.critical(self, "错误", "等待时间请输入数字！")
-                    return
-            elif self.checkBox.isChecked() and not self.checkBox_5.isChecked():
-                parameter_1 = "等待到指定时间"
+            # 时间等待
+            if self.radioButton_16.isChecked():
+                parameter_1 = "时间等待"
+                parameter_2 = self.spinBox_13.value()
+            # 等待到指定时间
+            elif self.radioButton_17.isChecked():
+                parameter_1 = "定时等待"
                 # 判断时间是否大于当前时间
                 parameter_2 = self.dateTimeEdit.text() + "+" + self.comboBox_6.currentText()
-                try:
-                    xx = time_judgment(parameter_2.split('+')[0])
-                    if xx == 1:
-                        raise TimeoutError("Invalid number!")
-                except TimeoutError:
-                    QMessageBox.critical(self, "错误", "启动时间小于当前系统时间，无效的指令。")
+                if not time_judgment(self.dateTimeEdit.text()):
+                    QMessageBox.critical(self, "错误", "定时时间小于当前系统时间，无效指令。")
                     return
-            elif not self.checkBox.isChecked() and self.checkBox_5.isChecked():
-                parameter_1 = "等待到指定图片"
-                image = self.comboBox_17.currentText() + '/' + self.comboBox_18.currentText()
-                parameter_2 = self.comboBox_19.currentText()
-                parameter_3 = self.spinBox_6.value()
-            elif self.checkBox.isChecked() and self.checkBox_5.isChecked():
-                QMessageBox.critical(self, "错误", "等待指定时间和等待指定图片不能同时勾选！")
-                return
+            # 随机等待
+            elif self.radioButton_18.isChecked():
+                parameter_1 = "随机等待"
+                min_time = self.spinBox_14.value()
+                max_time = self.spinBox_15.value()
+                parameter_2 = str(min_time) + "-" + str(max_time)
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -311,8 +303,30 @@ class Na(QWidget, Ui_navigation):
                                                  image_=image,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
-                                                 parameter_3_=parameter_3,
                                                  remarks_=func_info_dic.get('备注'))
+
+    def image_waiting_function(self, type_):
+        """图像等待识别窗口的功能"""
+        if type_ == '按钮功能':
+            # 下拉列表数据
+            self.comboBox_17.currentTextChanged.connect(
+                lambda: self.find_images(self.comboBox_17, self.comboBox_18)
+            )
+        elif type_ == '写入参数':
+            image=os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
+            parameter_1 = self.comboBox_19.currentText()
+            parameter_2 = self.spinBox_6.value()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(
+                instruction_=func_info_dic.get('指令类型'),
+                repeat_number_=func_info_dic.get('重复次数'),
+                exception_handling_=func_info_dic.get('异常处理'),
+                remarks_=func_info_dic.get('备注'),
+                image_=image,
+                parameter_1_=parameter_1,
+                parameter_2_=parameter_2
+            )
 
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""

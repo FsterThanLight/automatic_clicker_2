@@ -123,7 +123,7 @@ class MainWork:
         # 开始执行主要操作
         try:
             if len(list_instructions) != 0:
-                keyboard.hook(self.abc)
+                # keyboard.hook(self.abc)
                 # # 如果状态为True执行无限循环
                 if self.infinite_cycle:
                     self.number = 1
@@ -194,9 +194,14 @@ class MainWork:
                         coordinate_click.start_execute(self.number)
 
                     # 等待的事件
-                    elif cmd_type == '等待':
-                        waiting = Waiting(main_window=self.main_window, ins_dic=dic_)
+                    elif cmd_type == '时间等待':
+                        waiting = TimeWaiting(main_window=self.main_window, ins_dic=dic_)
                         waiting.start_execute()
+
+                    # 图像等待事件
+                    elif cmd_type == '图像等待':
+                        image_waiting = ImageWaiting(main_window=self.main_window, ins_dic=dic_)
+                        image_waiting.start_execute()
 
                     # 滚轮滑动的事件
                     elif cmd_type == '滚轮滑动':
@@ -296,8 +301,9 @@ class MainWork:
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
-                except Exception as e:
-                    print(e)
+                # except Exception as e:
+                except AttributeError:
+                    # print(e)
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
 
