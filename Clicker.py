@@ -53,6 +53,12 @@ from 网页操作 import WebOption
 # pyinstaller -F -w -i clicker.ico Clicker.py
 # pyinstaller -D -w -i clicker.ico Clicker.py
 
+# 添加指令的步骤：
+# 1. 在导航页的页面中添加指令的控件
+# 2. 在导航页的页面中添加指令的处理函数
+# 3. 在导航页的treeWidget中添加指令的名称
+# 4. 在功能类中添加运行功能
+
 
 class Main_window(QMainWindow, Ui_MainWindow):
     """主窗口"""
@@ -62,7 +68,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 初始化窗体
         self.setupUi(self)
         # 设置表格列宽自动变化，并使第5列列宽固定
-        self.format_table()
+        # self.format_table()
         # 窗口和信息
         self.version = 'v0.21'  # 软件版本
         self.global_s = Global_s()  # 全局设置窗口

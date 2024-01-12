@@ -9,7 +9,7 @@ import keyboard
 import openpyxl
 import pyautogui
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, \
     QMessageBox, QInputDialog, QButtonGroup
 from dateutil.parser import parse
@@ -46,9 +46,9 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_9.activated.connect(self.exception_handling_judgment_type)
         # 快捷选择导航页
         self.tab_title = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
-        self.comboBox_16.addItems(self.tab_title)
-        self.comboBox_16.currentTextChanged.connect(lambda:
-                                                    self.merge_additional_functions('quick_select_navigation_page'))
+        self.treeWidget.itemClicked.connect(
+            lambda: self.switch_navigation_page(self.treeWidget.currentItem().text(0))
+        )
         # 映射标签标题和对应的函数
         self.function_mapping = {
             '图像点击': lambda x: self.image_click_function(x),
@@ -78,8 +78,11 @@ class Na(QWidget, Ui_navigation):
     def switch_navigation_page(self, name):
         """弹出窗口自动选择对应功能页
         :param name: 功能页名称"""
-        tab_index = self.tab_title.index(name)
-        self.tabWidget.setCurrentIndex(tab_index)
+        try:
+            tab_index = self.tab_title.index(name)
+            self.tabWidget.setCurrentIndex(tab_index)
+        except ValueError:  # 如果没有找到对应的功能页，则跳过
+            pass
 
     def get_func_info(self) -> dict:
         """返回功能区的参数"""
@@ -141,6 +144,10 @@ class Na(QWidget, Ui_navigation):
             # 加载下拉列表数据
             self.comboBox_8.currentTextChanged.connect(
                 lambda: self.find_images(self.comboBox_8, self.comboBox)
+            )
+            # 元素预览
+            self.comboBox.currentTextChanged.connect(
+                lambda: self.show_image_to_label(self.comboBox_8, self.comboBox)
             )
         elif type_ == '写入参数':
             # 获取5个参数命令，写入数据库
@@ -312,8 +319,12 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_17.currentTextChanged.connect(
                 lambda: self.find_images(self.comboBox_17, self.comboBox_18)
             )
+            # 元素预览
+            self.comboBox_18.currentTextChanged.connect(
+                lambda: self.show_image_to_label(self.comboBox_17, self.comboBox_18)
+            )
         elif type_ == '写入参数':
-            image=os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
+            image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
             parameter_1 = self.comboBox_19.currentText()
             parameter_2 = self.spinBox_6.value()
             # 将命令写入数据库
@@ -843,23 +854,6 @@ class Na(QWidget, Ui_navigation):
         """切换导航页功能"""
         # 获取当前导航页索引
         index = self.tabWidget.currentIndex()
-        #     "图像点击": 0,
-        #     "坐标点击": 1,
-        #     "鼠标移动": 2,
-        #     "等待": 3,
-        #     "滚轮滑动": 4,
-        #     "文本输入": 5,
-        #     "按下键盘": 6,
-        #     "中键激活": 7,
-        #     "鼠标事件": 8,
-        #     "鼠标拖拽": 9
-        #     "excel信息录入": 10
-        #     "网页控制": 11,
-        #     "网页录入": 12,
-        #     "网页切换": 13,
-        #     "保存数据": 14,
-        #     "拖动元素": 15,
-        #     "全屏截图":16
         # 禁用类
         discards = [1, 2, 4, 5, 6, 7, 8, 9, 13, 16]
         discards_not = [0, 3, 10, 11, 12, 14, 15]
@@ -879,12 +873,7 @@ class Na(QWidget, Ui_navigation):
         :param pars_1:参数1
         :param function_name: 功能名称
         """
-        if function_name == 'quick_select_navigation_page':
-            # 快捷选择导航页
-            tab_a = self.comboBox_16.currentText()
-            tab_index = self.tab_title.index(tab_a)
-            self.tabWidget.setCurrentIndex(tab_index)
-        elif function_name == 'get_mouse_position':
+        if function_name == 'get_mouse_position':
             # 获取鼠标位置
             x, y = pyautogui.position()
             if self.mouse_position_function == '坐标点击':
@@ -1049,3 +1038,15 @@ class Na(QWidget, Ui_navigation):
         # 修改打开的判断
         self.modify_judgment = '保存'
         self.modify_id = None
+
+    def show_image_to_label(self, comboBox_folder, comboBox_image):
+        """将图像显示到label中
+        :param comboBox_folder: 图像文件夹下拉列表
+        :param comboBox_image: 图像名称下拉列表"""
+        image_path = os.path.normpath(
+            comboBox_folder.currentText() + '/' + comboBox_image.currentText()
+        )
+        # 将图像转换为QImage对象
+        image = QImage(image_path)
+        image = image.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
+        self.label_43.setPixmap(QPixmap.fromImage(image))
