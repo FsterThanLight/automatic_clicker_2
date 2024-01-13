@@ -17,6 +17,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 
 from main_work import WebOption
 from screen_capture import ScreenCapture
+from 功能类 import SendWeChat
 from 窗体.navigation import Ui_navigation
 
 
@@ -70,6 +71,7 @@ class Na(QWidget, Ui_navigation):
             '拖动元素': lambda x: self.drag_element_function(x),
             '全屏截图': lambda x: self.full_screen_capture_function(x),
             '切换窗口': lambda x: self.switch_window_function(x),
+            '发送消息': lambda x: self.wechat_function(x),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -775,11 +777,72 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
+    def wechat_function(self, type_):
+        """微信发送消息的功能"""
+
+        def Lock_control():
+            """锁定控件"""
+            if self.comboBox_33.currentText() == '自定义联系人':
+                self.lineEdit_17.setEnabled(True)
+            else:
+                self.lineEdit_17.setEnabled(False)
+                self.lineEdit_17.clear()
+            if self.comboBox_34.currentText() == '自定义消息内容':
+                self.textEdit_2.setEnabled(True)
+            else:
+                self.textEdit_2.setEnabled(False)
+                self.textEdit_2.clear()
+
+        def test():
+            """测试"""
+            # 获取联系人
+            if self.comboBox_33.currentText() == '自定义联系人':
+                parameter_1_ = self.lineEdit_17.text()
+            else:
+                parameter_1_ = self.comboBox_33.currentText()
+            # 获取消息内容
+            if self.comboBox_34.currentText() == '自定义消息内容':
+                parameter_2_ = self.textEdit_2.toPlainText()
+            else:
+                parameter_2_ = self.comboBox_34.currentText()
+            # 测试
+            ins_dic = {
+                '参数1（键鼠指令）': parameter_1_,
+                '参数2': parameter_2_,
+            }
+            wechat_option = SendWeChat(self.main_window, self, ins_dic)
+            wechat_option.is_test = True
+            wechat_option.send_message_to_wechat(parameter_1_, parameter_2_)
+
+        if type_ == '按钮功能':
+            Lock_control()
+            self.comboBox_33.currentTextChanged.connect(Lock_control)
+            self.comboBox_34.currentTextChanged.connect(Lock_control)
+            self.pushButton_15.clicked.connect(test)
+        elif type_ == '写入参数':
+            parameter_1 = self.comboBox_33.currentText() \
+                if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
+            parameter_2 = self.comboBox_34.currentText() \
+                if self.comboBox_34.currentText() != '自定义消息内容' else self.textEdit_2.toPlainText()
+            if parameter_1 == '' or parameter_2 == '':
+                QMessageBox.critical(self, "错误", "联系人或消息内容不能为空！")
+                return
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
         print('加载导航页下拉列表数据')
         image_folder_path, excel_folder_path, \
             branch_table_name, extenders = self.global_window.extracted_data_global_parameter()
+        # 清空测试输出
+        self.textBrowser.clear()
         # 清空下拉列表
         self.comboBox_8.clear()
         self.comboBox_9.clear()

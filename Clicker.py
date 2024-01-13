@@ -48,6 +48,9 @@ from 网页操作 import WebOption
 # todo: 截图指令重新设计
 # todo: 指令表格右键菜单
 # todo: 指令执行使用多线程
+# todo: 加载导航页窗口控件重新设计
+# todo: 功能区功能重新设计
+# done: 微信发送消息功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py

@@ -121,6 +121,7 @@ class MainWork:
         # 读取数据库中的数据
         list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
+        self.main_window.plainTextEdit.clear()
         try:
             if len(list_instructions) != 0:
                 # keyboard.hook(self.abc)
@@ -298,6 +299,15 @@ class MainWork:
                             navigation=self.navigation
                         )
                         switch_window.start_execute()
+
+                    # 发送消息到微信
+                    elif cmd_type == '发送消息':
+                        sendwechat = SendWeChat(
+                            main_window=self.main_window,
+                            ins_dic=dic_,
+                            navigation=self.navigation
+                        )
+                        sendwechat.start_execute()
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
