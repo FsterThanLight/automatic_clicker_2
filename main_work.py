@@ -10,21 +10,16 @@
 # See the Mulan PSL v2 for more details.
 import sqlite3
 import subprocess
-import threading
 
-import keyboard
+#
 import winsound
 
 from 功能类 import *
 from 数据库操作 import sqlitedb, close_database
-
-event = threading.Event()
+from 网页操作 import WebOption
 
 COMMAND_TYPE_SIMULATE_CLICK = "模拟点击"
 COMMAND_TYPE_CUSTOM = "自定义"
-
-
-# logging.basicConfig(filename='错误日志.log', level=logging.INFO)
 
 
 def exit_main_work():
@@ -122,6 +117,7 @@ class MainWork:
         list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
         self.main_window.plainTextEdit.clear()
+        self.main_window.tabWidget.setCurrentIndex(0)
         try:
             if len(list_instructions) != 0:
                 # keyboard.hook(self.abc)
@@ -134,8 +130,9 @@ class MainWork:
                             self.main_window.plainTextEdit.appendPlainText('结束任务')
                             break
                         if self.suspended:
-                            event.clear()
-                            event.wait(86400)
+                            pass
+                            # event.clear()
+                            # event.wait(86400)
                         self.number += 1
                         time.sleep(self.settings.time_sleep)
                 # 如果状态为有限次循环
@@ -148,8 +145,9 @@ class MainWork:
                             self.main_window.plainTextEdit.appendPlainText('结束任务')
                             break
                         if self.suspended:
-                            event.clear()
-                            event.wait(86400)
+                            pass
+                            # event.clear()
+                            # event.wait(86400)
                         # print('第', self.number, '次循环')
                         self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
                         self.number += 1
@@ -311,9 +309,9 @@ class MainWork:
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
-                # except Exception as e:
-                except AttributeError:
-                    # print(e)
+                except Exception as e:
+                    # except AttributeError:
+                    print(e)
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
 

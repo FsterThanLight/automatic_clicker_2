@@ -2,12 +2,13 @@ import sqlite3
 import sys
 
 
-def sqlitedb():
+def sqlitedb(db_name='命令集.db'):
     """建立与数据库的连接，返回游标
+    :param db_name: 数据库名称
     :return: 游标，数据库连接"""
     try:
         # 取得当前文件目录
-        con = sqlite3.connect('命令集.db')
+        con = sqlite3.connect(db_name)
         cursor = con.cursor()
         return cursor, con
     except sqlite3.Error:

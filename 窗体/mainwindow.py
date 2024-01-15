@@ -596,7 +596,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
-        self.toolButton_7.clicked.connect(self.plainTextEdit.clear) # type: ignore
+        self.toolButton_7.clicked.connect(self.plainTextEdit.clear) # type_: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

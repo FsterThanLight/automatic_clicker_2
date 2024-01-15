@@ -2115,7 +2115,7 @@ class Ui_navigation(object):
         self.tabWidget.setCurrentIndex(0)
         self.comboBox_2.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
-        self.pushButton_3.clicked.connect(navigation.close) # type: ignore
+        self.pushButton_3.clicked.connect(navigation.close) # type_: ignore
         QtCore.QMetaObject.connectSlotsByName(navigation)
 
     def retranslateUi(self, navigation):
@@ -2229,10 +2229,10 @@ class Ui_navigation(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("navigation", "滚轮滑动"))
         self.label_18.setText(_translate("navigation", "文本内容："))
         self.textEdit.setHtml(_translate("navigation", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type_=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'微软雅黑\',\'微软雅黑\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'黑体\',\'黑体\';\"><br /></p></body></html>"))
+"<p style=\"-qt-paragraph-type_:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'黑体\',\'黑体\';\"><br /></p></body></html>"))
         self.textEdit.setPlaceholderText(_translate("navigation", "请输入文本....."))
         self.checkBox_2.setText(_translate("navigation", "特殊控件输入"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("navigation", "文本输入"))

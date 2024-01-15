@@ -16,18 +16,19 @@ import shutil
 import sqlite3
 import sys
 
-import openpyxl
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, \
-    QFileDialog, QTableWidgetItem, QMessageBox, QHeaderView, QDialog, QInputDialog, QMenu
-
 from main_work import MainWork
 from navigation import Na
 from 功能类 import exit_main_work
 from 数据库操作 import sqlitedb, close_database
-# 截图模块
+
+import openpyxl
+from PyQt5 import QtCore
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget,
+                             QTableWidgetItem, QMessageBox, QHeaderView,
+                             QDialog, QInputDialog, QMenu, QFileDialog)
+
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
@@ -50,11 +51,14 @@ from 网页操作 import WebOption
 # todo: 指令执行使用多线程
 # todo: 加载导航页窗口控件重新设计
 # todo: 功能区功能重新设计
+# todo: 终止循环功能
+# todo: 执行指令改为多线程
 # done: 微信发送消息功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
 # pyinstaller -D -w -i clicker.ico Clicker.py
+# pyinstaller -D -i clicker.ico Clicker.py
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
@@ -102,7 +106,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
-        self.pushButton_6.clicked.connect(exit_main_work)  # 结束任务按钮
+        # self.pushButton_6.clicked.connect(exit_main_work)  # 结束任务按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
         # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
         self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
@@ -286,7 +290,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
             if judge == 'db':
                 file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.db)")
             elif judge == 'excel':
+                print('保存excel')
+                print(os.getcwd())
                 file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.xlsx)")
+                # file_path = os.getcwd()+ '/指令集.xlsx'
+                print('保存excel', file_path)
             if file_path[0] != '':
                 # 获取文件名称
                 file_name_ = os.path.split(file_path[0])[1]  # 保存文件的名称
@@ -342,15 +350,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         pass
-        # choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
-        # if choice == QMessageBox.Yes:
-        #     # 退出终止后台进程并清空数据库
-        #     event.accept()
-        #     self.clear_database()
-        #     self.web_option.close_browser()
-        #     exit_main_work()
-        # else:
-        #     event.ignore()
+        choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
+        if choice == QMessageBox.Yes:
+            # 退出终止后台进程并清空数据库
+            event.accept()
+            self.clear_database()
+            self.web_option.close_browser()
+            exit_main_work()
+        else:
+            event.ignore()
 
     def clear_table(self):
         """清空表格和数据库"""
@@ -364,7 +372,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def data_import(self):
         """导入数据功能"""
         # 打开选择文件对话框
-        target_path = QFileDialog.getOpenFileName(self, "请选择指令备份文件", '', "(*.db *.xlsx)")
+        print('导入数据')
+        target_path = QFileDialog.getOpenFileName(None, "请选择指令备份文件", '', "(*.db *.xlsx)")
         if target_path[0] == '':
             pass
         else:
@@ -919,19 +928,17 @@ class Global_s(QDialog, Ui_Global):
     def write_to_database(images_file, work_book_path, branch_table_name, extension_program):
         """将全局参数写入数据库"""
         # 连接数据库
-        conn = sqlite3.connect('命令集.db')
-        c = conn.cursor()
+        cursor, conn = sqlitedb()
         # 向数据库中的“图像文件夹路径”字段添加文件夹路径
-        c.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) VALUES (?,?,?,?)',
-                  (images_file, work_book_path, branch_table_name, extension_program))
+        cursor.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) VALUES (?,?,?,?)',
+                       (images_file, work_book_path, branch_table_name, extension_program))
         conn.commit()
-        conn.close()
+        close_database(cursor, conn)
 
 
 if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
     app = QApplication([])
     # 登录界面
     # login = Login()

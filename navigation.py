@@ -15,10 +15,10 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from main_work import WebOption
-from screen_capture import ScreenCapture
+from 截图模块 import ScreenCapture
 from 功能类 import SendWeChat
 from 窗体.navigation import Ui_navigation
+from 网页操作 import WebOption
 
 
 class Na(QWidget, Ui_navigation):
@@ -504,7 +504,7 @@ class Na(QWidget, Ui_navigation):
             """网页连接测试"""
             if judge == '测试':
                 url = self.lineEdit_6.text()
-                self.web_option.web_open_test(url)
+                # self.web_option.web_open_test(url)
             elif judge == '安装浏览器':
                 url = 'https://google.cn/chrome/'
                 QDesktopServices.openUrl(QUrl(url))
@@ -514,8 +514,9 @@ class Na(QWidget, Ui_navigation):
                     self, '提示', '确认下载浏览器驱动？', QMessageBox.Yes | QMessageBox.No
                 )
                 if x == QMessageBox.Yes:
-                    self.web_option.install_browser_driver()
-                    QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
+                    pass
+                    # self.web_option.install_browser_driver()
+                    # QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
 
         if type_ == '按钮功能':
             # 网页测试
@@ -916,20 +917,21 @@ class Na(QWidget, Ui_navigation):
     def tab_widget_change(self):
         """切换导航页功能"""
         # 获取当前导航页索引
-        index = self.tabWidget.currentIndex()
-        # 禁用类
-        discards = [1, 2, 4, 5, 6, 7, 8, 9, 13, 16]
-        discards_not = [0, 3, 10, 11, 12, 14, 15]
-        # 不禁用类
-        if index in discards:
-            self.comboBox_9.setEnabled(True)
-            self.comboBox_9.setCurrentIndex(0)
-            self.comboBox_9.setEnabled(False)
-            self.comboBox_11.setEnabled(True)
-            self.comboBox_11.setEnabled(False)
-        elif index in discards_not:
-            self.comboBox_9.setEnabled(True)
-            self.comboBox_11.setEnabled(True)
+        pass
+        # index = self.tabWidget.currentIndex()
+        # # 禁用类
+        # discards = [1, 2, 4, 5, 6, 7, 8, 9, 13, 16]
+        # discards_not = [0, 3, 10, 11, 12, 14, 15]
+        # # 不禁用类
+        # if index in discards:
+        #     self.comboBox_9.setEnabled(True)
+        #     self.comboBox_9.setCurrentIndex(0)
+        #     self.comboBox_9.setEnabled(False)
+        #     self.comboBox_11.setEnabled(True)
+        #     self.comboBox_11.setEnabled(False)
+        # elif index in discards_not:
+        #     self.comboBox_9.setEnabled(True)
+        #     self.comboBox_11.setEnabled(True)
 
     def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并

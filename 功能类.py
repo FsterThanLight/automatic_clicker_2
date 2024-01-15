@@ -13,11 +13,12 @@ import win32gui
 import win32process
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from dateutil.parser import parse
-from pywinauto import Application
-from pywinauto.findwindows import ElementNotFoundError
-
 from 数据库操作 import get_setting_data_from_db
 from 网页操作 import WebOption
+
+sys.coinit_flags = 2  # STA
+from pywinauto import Application
+from pywinauto.findwindows import ElementNotFoundError
 
 
 # dic_ = {
@@ -1140,11 +1141,11 @@ class SendWeChat:
             else:
                 self.main_window.plainTextEdit.appendPlainText(output_message)
 
+        pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
         hwnd = self.check_course('微信')
         new_message = get_correct_message()
         try:
             if hwnd:
-                pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
                 process_id = get_process_id(hwnd)  # 获取微信进程id
                 # 连接到wx
                 wx_app = Application(backend='uia').connect(process=process_id)
@@ -1159,10 +1160,10 @@ class SendWeChat:
                 win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
                 output_info('成功', new_message)  # 向主窗口输出提示信息
             else:
-                output_info('失败', new_message,'未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
+                output_info('失败', new_message, '未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
         except ElementNotFoundError:
             win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
-            output_info('失败', new_message,'未找到联系人，发送失败。')  # 向主窗口输出提示信息
+            output_info('失败', new_message, '未找到联系人，发送失败。')  # 向主窗口输出提示信息
 
     def start_execute(self):
         """执行重复次数"""

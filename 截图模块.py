@@ -1,5 +1,12 @@
+import os
+import sys
 import tkinter as tk
+
 import pyautogui
+from PIL import ImageGrab
+from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtGui import QPixmap, QPen
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsView, QVBoxLayout, QWidget
 
 
 class ScreenCapture:
@@ -24,7 +31,7 @@ class ScreenCapture:
         # 鼠标左键按下事件
         def on_press(event):
             self.x_1, self.y_1 = event.x, event.y
-            # print('鼠标开始点击位置为：', self.x_1, self.y_1)
+            print('鼠标开始点击位置为：', self.x_1, self.y_1)
             self.rect = canvas.create_rectangle(self.x_1, self.y_1, 0, 0, outline='red', width=2, fill='black')
 
         def on_drag(event):
@@ -35,7 +42,7 @@ class ScreenCapture:
 
         def on_release(event):
             self.x_3, self.y_3 = event.x, event.y
-            # print('鼠标释放位置为：', self.x_3, self.y_3)
+            print('鼠标释放位置为：', self.x_3, self.y_3)
             canvas.delete(self.rect)
             canvas.destroy()
             root.destroy()
@@ -51,18 +58,15 @@ class ScreenCapture:
         root.mainloop()
 
     def screen_shot(self, f_path, f_name):
-        """根据位置进行截图"""
-        # 截图
-        self.screen = pyautogui.screenshot(region=(self.x_1, self.y_1, self.x_3 - self.x_1, self.y_3 - self.y_1))
-        # 保存截图
-        self.screen.save(f_path + '/' + f_name + '.png')
+        pic = ImageGrab.grab(bbox=(self.x_1, self.y_1, self.x_3, self.y_3))
+        pic.save(os.path.normpath(f_path + '/' + f_name + '.png'))
+
+    def preview_image(self):
+        pic = pyautogui.screenshot(region=(self.x_1, self.y_1, self.x_3 - self.x_1, self.y_3 - self.y_1))
+        pic.show()
 
 
-# if __name__ == '__main__':
-#     screen_capture = ScreenCapture()
-#     screen_capture.screenshot_area()
-#     # 打开文件夹选择对话框
-#     # folder_path = filedialog.askdirectory()
-#     # 打开messagebox输入文件名
-#     file_name = 'test'
-#     # screen_capture.screen_shot(folder_path, file_name)
+if __name__ == '__main__':
+    screen_capture = ScreenCapture()
+    screen_capture.screenshot_area()
+    screen_capture.preview_image()
