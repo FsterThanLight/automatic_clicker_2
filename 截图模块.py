@@ -1,25 +1,17 @@
-import os
-import sys
 import tkinter as tk
-
 import pyautogui
-from PIL import ImageGrab
-from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtGui import QPixmap, QPen
-from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsScene, QGraphicsView, QVBoxLayout, QWidget
 
 
 class ScreenCapture:
     def __init__(self):
-        self.screen = None
-        # 截图的矩形区域
-        self.rect = None
+        self.rect = None  # 截图的矩形区域
         # 鼠标左键按下的位置
         self.x_1 = 0
         self.y_1 = 0
         # 鼠标左键抬起的位置
         self.x_3 = 0
         self.y_3 = 0
+        self.pic = None
 
     def screenshot_area(self):
         """截取屏幕矩形区域"""
@@ -56,17 +48,9 @@ class ScreenCapture:
         canvas.bind('<ButtonRelease-1>', on_release)
         # 开始事件循环
         root.mainloop()
-
-    def screen_shot(self, f_path, f_name):
-        pic = ImageGrab.grab(bbox=(self.x_1, self.y_1, self.x_3, self.y_3))
-        pic.save(os.path.normpath(f_path + '/' + f_name + '.png'))
-
-    def preview_image(self):
-        pic = pyautogui.screenshot(region=(self.x_1, self.y_1, self.x_3 - self.x_1, self.y_3 - self.y_1))
-        pic.show()
+        self.pic = pyautogui.screenshot(region=(self.x_1, self.y_1, self.x_3 - self.x_1, self.y_3 - self.y_1))
 
 
 if __name__ == '__main__':
     screen_capture = ScreenCapture()
     screen_capture.screenshot_area()
-    screen_capture.preview_image()

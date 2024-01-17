@@ -15,7 +15,7 @@ import subprocess
 import winsound
 
 from 功能类 import *
-from 数据库操作 import sqlitedb, close_database
+from 数据库操作 import sqlitedb, close_database, extract_global_parameter
 from 网页操作 import WebOption
 
 COMMAND_TYPE_SIMULATE_CLICK = "模拟点击"
@@ -48,8 +48,8 @@ class MainWork:
         self.infinite_cycle = self.main_window.radioButton.isChecked()
         self.number_cycles = self.main_window.spinBox.value()
         # 从数据库中读取全局参数
-        self.image_folder_path, self.excel_folder_path, \
-            self.branch_table_name, self.extenders = self.extracted_data_global_parameter()
+        self.image_folder_path = extract_global_parameter('资源文件夹路径')
+        self.branch_table_name = extract_global_parameter('分支表名')
 
     def reset_loop_count_and_infinite_loop_judgment(self):
         """重置循环次数和无限循环标志"""
@@ -79,33 +79,6 @@ class MainWork:
             return all_list_instructions
         except sqlite3.OperationalError:
             QMessageBox.critical(self.main_window, "警告", "找不到分支！请检查分支表名是否正确！", QMessageBox.Yes)
-
-    # 编写一个函数用于去除列表中的none
-
-    @staticmethod
-    def extracted_data_global_parameter():
-        """从全局参数表中提取数据"""
-
-        def remove_none(list_):
-            """去除列表中的none"""
-            list_x = []
-            for i in list_:
-                if i[0] is not None:
-                    list_x.append(i[0].replace('"', ''))
-            return list_x
-
-        cursor, conn = sqlitedb()
-        cursor.execute("select 图像文件夹路径 from 全局参数")
-        image_folder_path = remove_none(cursor.fetchall())
-        cursor.execute("select 工作簿路径 from 全局参数")
-        excel_folder_path = remove_none(cursor.fetchall())
-        cursor.execute("select 分支表名 from 全局参数")
-        branch_table_name = remove_none(cursor.fetchall())
-        cursor.execute("select 扩展程序 from 全局参数")
-        extenders = remove_none(cursor.fetchall())
-        close_database(cursor, conn)
-        print("全局参数读取成功！")
-        return image_folder_path, excel_folder_path, branch_table_name, extenders
 
     def start_work(self, only_current_instructions=False):
         """主要工作"""

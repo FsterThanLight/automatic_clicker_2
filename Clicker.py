@@ -13,13 +13,6 @@ from __future__ import print_function
 import datetime
 import os
 import shutil
-import sqlite3
-import sys
-
-from main_work import MainWork
-from navigation import Na
-from 功能类 import exit_main_work
-from 数据库操作 import sqlitedb, close_database
 
 import openpyxl
 from PyQt5 import QtCore
@@ -29,6 +22,10 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget,
                              QTableWidgetItem, QMessageBox, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog)
 
+from main_work import MainWork
+from navigation import Na
+from 功能类 import exit_main_work
+from 数据库操作 import *
 from 窗体.about import Ui_Dialog
 from 窗体.global_s import Ui_Global
 from 窗体.info import Ui_Form
@@ -53,7 +50,6 @@ from 网页操作 import WebOption
 # todo: 功能区功能重新设计
 # todo: 终止循环功能
 # todo: 执行指令改为多线程
-# done: 微信发送消息功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -79,7 +75,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 窗口和信息
         self.version = 'v0.21'  # 软件版本
         self.global_s = Global_s()  # 全局设置窗口
-        self.navigation = Na(self, self.global_s)  # 实例化导航页窗口
+        self.navigation = Na(self)  # 实例化导航页窗口
         self.main_work = MainWork(self, self.navigation)  # 窗体的功能
         self.setting = Setting()  # 实例化设置窗口
         self.about = About()  # 设置关于窗体
@@ -286,25 +282,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def get_file_and_folder() -> tuple:
             """获取文件名和文件夹路径"""
-            file_path = None
-            if judge == 'db':
-                file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.db)")
-            elif judge == 'excel':
-                print('保存excel')
-                print(os.getcwd())
-                file_path = QFileDialog.getSaveFileName(self, "保存文件", '', "(*.xlsx)")
-                # file_path = os.getcwd()+ '/指令集.xlsx'
-                print('保存excel', file_path)
-            if file_path[0] != '':
-                # 获取文件名称
-                file_name_ = os.path.split(file_path[0])[1]  # 保存文件的名称
-                folder_path_ = os.path.split(file_path[0])[0]  # 保存的文件夹的路径
-                return file_name_, folder_path_
+            file_path = QFileDialog.getSaveFileName(
+                self, "保存文件", '', "(*.db)" if judge == 'db' else "(*.xlsx)"
+            )
+            if file_path[0] != '':  # 获取文件名称
+                return os.path.split(file_path[0])[1], os.path.split(file_path[0])[0]
             else:
                 return None, None
 
         file_name, folder_path = get_file_and_folder()  # 获取文件名和文件夹路径
-        if file_name is not None and folder_path is not None:
+        if (file_name is not None) and (folder_path is not None):
             if judge == 'db':
                 # 连接数据库
                 con = sqlite3.connect('命令集.db')
@@ -536,8 +523,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 else:
                     # 向全局参数表中添加分支表名
                     print('添加分支')
-                    cursor.execute('insert into 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) values(?,?,?,?)',
-                                   (None, None, text, None))
+                    cursor.execute('insert into 全局参数(资源文件夹路径,分支表名) values(?,?)', (None, text))
                     con.commit()
                     # 弹出提示框，提示创建成功
                     QMessageBox.information(self, "提示", "分支创建成功！")
@@ -794,160 +780,59 @@ class Global_s(QDialog, Ui_Global):
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
-        # 刷新listview
-        self.refresh_listview()
-        # 添加图像文件夹路径
-        self.pushButton.clicked.connect(lambda: self.select_file("图像文件夹路径"))
-        # 添加工作簿路径
-        self.pushButton_3.clicked.connect(lambda: self.select_file("工作簿路径"))
-        # 添加扩展程序
-        self.pushButton_9.clicked.connect(lambda: self.select_file("扩展程序"))
-        # 删除listview中的项
-        self.pushButton_2.clicked.connect(lambda: self.delete_listview(self.listView, "图像文件夹路径"))
-        self.pushButton_4.clicked.connect(lambda: self.delete_listview(self.listView_2, "工作簿路径"))
-        self.pushButton_10.clicked.connect(lambda: self.delete_listview(self.listView_5, "扩展程序"))
+        self.refresh_listview()  # 刷新listview
+        self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径
+        self.pushButton_2.clicked.connect(self.delete_listview)  # 删除listview中的项
 
-    def select_file(self, judge):
-        """选择文件"""
-        if judge == "图像文件夹路径":
-            fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
-            if fil_path != '':
-                self.write_to_database(fil_path, None, None, None)
-        elif judge == "工作簿路径":
-            fil_path, _ = QFileDialog.getOpenFileName(self, "选择工作簿", filter="Excel 工作簿(*.xlsx)")
-            if fil_path != '':
-                self.write_to_database(None, fil_path, None, None)
-        elif judge == "扩展程序":
-            # 打开文件对话框，选择一个py或exe文件
-            fil_path, _ = QFileDialog.getOpenFileName(self, "选择扩展程序",
-                                                      filter="Python文件(*.py);;可执行文件(*.exe)")
-            if fil_path != '':
-                self.write_to_database(None, None, None, fil_path)
+    def select_file(self):
+        """打开选择文件窗口,并将路径写入数据库"""
+        fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
+        if fil_path != '':
+            global_write_to_database(os.path.normpath(fil_path))
         self.refresh_listview()
 
-    def delete_listview(self, list_view, judge):
+    def delete_listview(self):
         """删除listview中选中的那行数据"""
-        # 获取选中的行的值
-        try:
-            indexes = list_view.selectedIndexes()
-            item = list_view.model().itemFromIndex(indexes[0])
-            value = item.text()
-            print("删除的值为：", value)
-            # 删除数据库中的数据
-            self.delete_data(value, judge)
-            # 刷新listview
-            self.refresh_listview()
-        except AttributeError:
-            pass
-        except IndexError:
-            pass
 
-    @staticmethod
-    def delete_data(value, judge):
-        """删除数据库中的数据"""
-        # 连接数据库
-        conn = sqlite3.connect('命令集.db')
-        c = conn.cursor()
-        # 删除数据
-        if judge == '图像文件夹路径':
-            c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 = ?", (value,))
-        elif judge == '工作簿路径':
-            c.execute("DELETE FROM 全局参数 WHERE 工作簿路径 = ?", (value,))
-        elif judge == '扩展程序':
-            c.execute("DELETE FROM 全局参数 WHERE 扩展程序 = ?", (value,))
-        # 删除无用数据
-        c.execute("DELETE FROM 全局参数 WHERE 图像文件夹路径 is NULL and "
-                  "工作簿路径 is NULL and 分支表名 is NULL and 扩展程序 is NULL")
-        conn.commit()
-        conn.close()
+        # 获取选中的行的值
+        def delete_data(value_):
+            """删除数据库中的数据"""
+            # 连接数据库
+            cursor, conn = sqlitedb()
+            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 = ?", (value_,))  # 删除数据
+            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 is NULL and 分支表名 is Null")  # 删除无用数据条
+            conn.commit()
+            close_database(cursor, conn)
+
+        try:
+            indexes = self.listView.selectedIndexes()
+            value = self.listView.model().itemFromIndex(indexes[0]).text()
+            # print("删除的值为：", value)
+            delete_data(value)  # 删除数据库中的数据
+            self.refresh_listview()  # 刷新listview
+        except Exception as e:
+            print(e)
 
     def refresh_listview(self):
         """刷新listview"""
-        # 获取数据库中的数据
-        image_folder_path, excel_folder_path, \
-            branch_table_name, extenders = self.extracted_data_global_parameter()
-
-        print('扩展程序：', extenders)
 
         def add_listview(list_, listview):
             """添加listview"""
-            listview.setModel(QStandardItemModel())
-            if len(list_) != 0:
-                model_2 = listview.model()
-                for i in list_:
-                    model_2.appendRow(QStandardItem(i))
+            model = QStandardItemModel()
+            listview.setModel(model)
+            for item in list_:
+                model.appendRow(QStandardItem(item))
 
-        add_listview(image_folder_path, self.listView)
-        add_listview(excel_folder_path, self.listView_2)
-        add_listview(extenders, self.listView_5)
-
-    @staticmethod
-    def sqlitedb():
-        """建立与数据库的连接，返回游标"""
-        try:
-            # 取得当前文件目录
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
-            print('成功连接数据库！')
-            return cursor, con
-        except sqlite3.Error:
-            x = input("未连接到数据库！！请检查数据库路径是否异常。")
-            print(x)
-            sys.exit()
-
-    @staticmethod
-    def close_database(cursor, conn):
-        """关闭数据库"""
-        cursor.close()
-        conn.close()
-
-    @staticmethod
-    def remove_none(list_):
-        """去除列表中的none"""
-        list_x = []
-        for i in list_:
-            if i[0] is not None:
-                list_x.append(i[0].replace('"', ''))
-        return list_x
-
-    def extracted_data_global_parameter(self):
-        """从全局参数表中提取数据"""
-        cursor, conn = self.sqlitedb()
-        cursor.execute("select 图像文件夹路径 from 全局参数")
-        image_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select 工作簿路径 from 全局参数")
-        excel_folder_path = self.remove_none(cursor.fetchall())
-        cursor.execute("select 分支表名 from 全局参数")
-        branch_table_name = self.remove_none(cursor.fetchall())
-        cursor.execute("select 扩展程序 from 全局参数")
-        extenders = self.remove_none(cursor.fetchall())
-        self.close_database(cursor, conn)
-        return image_folder_path, excel_folder_path, branch_table_name, extenders
-
-    @staticmethod
-    def write_to_database(images_file, work_book_path, branch_table_name, extension_program):
-        """将全局参数写入数据库"""
-        # 连接数据库
-        cursor, conn = sqlitedb()
-        # 向数据库中的“图像文件夹路径”字段添加文件夹路径
-        cursor.execute('INSERT INTO 全局参数(图像文件夹路径,工作簿路径,分支表名,扩展程序) VALUES (?,?,?,?)',
-                       (images_file, work_book_path, branch_table_name, extension_program))
-        conn.commit()
-        close_database(cursor, conn)
+        res_folder_path = extract_global_parameter('资源文件夹路径')  # 获取数据库中的数据
+        add_listview(res_folder_path, self.listView)
 
 
 if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication([])
-    # 登录界面
-    # login = Login()
-    # login.login_show()
-    # 创建主窗体
-    main_window = Main_window()
-    # 显示窗体，并根据设置检查更新
-    main_window.main_show()
-    # 显示添加对话框窗口
+    main_window = Main_window()  # 创建主窗体
+    main_window.main_show()  # 显示窗体，并根据设置检查更新
     sys.exit(app.exec_())
 
     # def is_admin():

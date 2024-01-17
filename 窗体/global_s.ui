@@ -26,7 +26,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>图像文件夹路径：</string>
+      <string>资源文件夹路径：</string>
      </property>
     </widget>
    </item>
@@ -47,61 +47,9 @@
       </widget>
      </item>
      <item row="1" column="0" colspan="4">
-      <widget class="QListView" name="listView"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>工作簿路径：</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="2" column="2">
-      <widget class="QPushButton" name="pushButton_4">
-       <property name="text">
-        <string>删除</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_3">
-       <property name="text">
-        <string>选择工作簿</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="4">
-      <widget class="QListView" name="listView_2"/>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="2">
-      <widget class="QPushButton" name="pushButton_10">
-       <property name="text">
-        <string>删除</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_9">
-       <property name="text">
-        <string>选择文件</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="4">
-      <widget class="QListView" name="listView_5"/>
-     </item>
-     <item row="0" column="0" colspan="4">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>扩展程序：</string>
+      <widget class="QListView" name="listView">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
        </property>
       </widget>
      </item>

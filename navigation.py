@@ -11,12 +11,13 @@ import pyautogui
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QInputDialog, QButtonGroup
+    QMessageBox, QInputDialog, QButtonGroup, QApplication
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
 from 截图模块 import ScreenCapture
 from 功能类 import SendWeChat
+from 数据库操作 import extract_global_parameter
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 
@@ -24,10 +25,9 @@ from 网页操作 import WebOption
 class Na(QWidget, Ui_navigation):
     """导航页窗体及其功能"""
 
-    def __init__(self, main_window_, global_window):
+    def __init__(self, main_window_):
         super().__init__()
         # 使用全局变量窗体的一些方法
-        self.global_window = global_window
         self.main_window = main_window_
         self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
@@ -840,8 +840,8 @@ class Na(QWidget, Ui_navigation):
     def load_values_to_controls(self):
         """将值加入到下拉列表中"""
         print('加载导航页下拉列表数据')
-        image_folder_path, excel_folder_path, \
-            branch_table_name, extenders = self.global_window.extracted_data_global_parameter()
+        image_folder_path = extract_global_parameter('资源文件夹路径')
+        branch_table_name = extract_global_parameter('分支表名')
         # 清空测试输出
         self.textBrowser.clear()
         # 清空下拉列表
@@ -865,9 +865,9 @@ class Na(QWidget, Ui_navigation):
         self.comboBox_9.addItems(system_command)
         self.comboBox_9.addItems(branch_table_name)
         # 从数据库加载的excel表名和图像名称
-        self.comboBox_12.addItems(excel_folder_path)
-        self.comboBox_20.addItems(excel_folder_path)
-        self.comboBox_29.addItems(excel_folder_path)
+        # self.comboBox_12.addItems(excel_folder_path)
+        # self.comboBox_20.addItems(excel_folder_path)
+        # self.comboBox_29.addItems(excel_folder_path)
         self.comboBox_14.addItems(image_folder_path)
         self.comboBox_31.addItems(image_folder_path)
         # 清空备注
@@ -1001,10 +1001,10 @@ class Na(QWidget, Ui_navigation):
                 self.comboBox_10.setEnabled(False)
                 # 扩展程序
                 self.comboBox_11.setEnabled(True)
-                image_folder_path, excel_folder_path, \
-                    branch_table_name, extenders = self.global_window.extracted_data_global_parameter()
-                self.comboBox_11.clear()
-                self.comboBox_11.addItems(extenders)
+                # image_folder_path = extract_global_parameter('资源文件夹路径')
+                # branch_table_name = extract_global_parameter('分支表名')
+                # self.comboBox_11.clear()
+                # self.comboBox_11.addItems(extenders)
         except sqlite3.OperationalError:
             pass
 
@@ -1026,19 +1026,21 @@ class Na(QWidget, Ui_navigation):
                 # 显示主窗口
                 self.show()
                 self.main_window.show()
-                # 文件夹路径和文件名
-                image_folder_path = combox.currentText()
-                image_name, ok = QInputDialog.getText(self, "截图", "请输入图像名称：")
-                if ok:
-                    # 检查image_name是否包含中文字符
-                    if re.search('[\u4e00-\u9fa5]', image_name) is not None:
-                        QMessageBox.warning(self, '警告', '图像名称暂不支持中文字符！保存失败。', QMessageBox.Yes)
-                    else:
-                        screen_capture.screen_shot(image_folder_path, image_name)
+                # # 文件夹路径和文件名
+                # image_folder_path = combox.currentText()
+                # image_name, ok = QInputDialog.getText(self, "截图", "请输入图像名称：")
+                # if ok:
+                #     # 检查image_name是否包含中文字符
+                #     if re.search('[\u4e00-\u9fa5]', image_name) is not None:
+                #         QMessageBox.warning(self, '警告', '图像名称暂不支持中文字符！保存失败。', QMessageBox.Yes)
+                #     else:
+                #         screen_capture.screen_shot(image_folder_path, image_name)
                 # 刷新图像文件夹
+                QApplication.processEvents()
+                screen_capture.pic.show()
                 self.find_images(combox, combox_2)
-                self.main_window.plainTextEdit.appendPlainText('已快捷截图：' + image_name)
-                combox_2.setCurrentText(image_name)
+                # self.main_window.plainTextEdit.appendPlainText('已快捷截图：' + image_name)
+                # combox_2.setCurrentText(image_name)
 
         elif judge == '删除图像':
             if combox.currentText() == '':

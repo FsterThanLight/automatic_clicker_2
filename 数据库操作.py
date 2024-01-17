@@ -37,3 +37,26 @@ def get_setting_data_from_db() -> tuple:
             setting_dict.get('时间间隔'),
             setting_dict.get('图像匹配精度'),
             setting_dict.get('暂停时间'))
+
+
+# 全局参数的数据库操作
+def global_write_to_database(resource_folder_path):
+    """将全局参数写入数据库
+    :param resource_folder_path: 资源文件夹路径"""
+    # 连接数据库
+    cursor, conn = sqlitedb()
+    cursor.execute('INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)',
+                   (resource_folder_path, None))
+    conn.commit()
+    close_database(cursor, conn)
+
+
+def extract_global_parameter(column_name: str) -> list:
+    """从全局参数表中提取指定列的数据
+    :param column_name: 列名（资源文件夹路径、分支表明）"""
+    cursor, conn = sqlitedb()
+    cursor.execute(f"select {column_name} from 全局参数")
+    # 去除None并转换为列表
+    result_list = [item[0] for item in cursor.fetchall() if item[0] is not None]
+    close_database(cursor, conn)
+    return result_list
