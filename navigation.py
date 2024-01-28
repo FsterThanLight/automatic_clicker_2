@@ -1,22 +1,24 @@
 import datetime
+import io
 import os
 import random
 import re
 import shutil
 import sqlite3
 
+import ddddocr
 import keyboard
 import openpyxl
 import pyautogui
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QInputDialog, QButtonGroup, QApplication
+    QMessageBox, QButtonGroup, QApplication
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 截图模块 import ScreenCapture
 from 功能类 import SendWeChat
+from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
@@ -72,6 +74,7 @@ class Na(QWidget, Ui_navigation):
             '全屏截图': lambda x: self.full_screen_capture_function(x),
             '切换窗口': lambda x: self.switch_window_function(x),
             '发送消息': lambda x: self.wechat_function(x),
+            '数字验证码': lambda x: self.verification_code_function(x),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -796,6 +799,8 @@ class Na(QWidget, Ui_navigation):
 
         def test():
             """测试"""
+            # 设置到功能页面的测试页
+            self.tabWidget_2.setCurrentIndex(3)
             # 获取联系人
             if self.comboBox_33.currentText() == '自定义联系人':
                 parameter_1_ = self.lineEdit_17.text()
@@ -833,6 +838,52 @@ class Na(QWidget, Ui_navigation):
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def verification_code_function(self, type_):
+        """数字验证码功能"""
+
+        def test():
+            """测试"""
+            # 设置到功能页面的测试页
+            self.tabWidget_2.setCurrentIndex(3)
+            region = eval(self.label_85.text())
+            if region == (0, 0, 0, 0):
+                self.textBrowser.append('请先设置区域！')
+            else:
+                im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
+                im_bytes = io.BytesIO()
+                im.save(im_bytes, format='PNG')
+                im_b = im_bytes.getvalue()
+                ocr = ddddocr.DdddOcr()
+                res = ocr.classification(im_b)
+                self.textBrowser.append('识别出的验证码为：' + res)
+                # 释放资源
+                del im
+                del im_bytes
+
+        def set_region():
+            """设置区域"""
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()
+            self.label_85.setText(str(screen_capture.region))
+
+        if type_ == '按钮功能':
+            self.pushButton_16.clicked.connect(set_region)
+            # 测试按钮
+            self.pushButton_17.clicked.connect(test)
+        elif type_ == '写入参数':
+            image = self.lineEdit_18.text()
+            parameter_1 = self.label_85.text()
+            parameter_2 = self.comboBox_25.currentText().replace('：', '')
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
@@ -1023,6 +1074,7 @@ class Na(QWidget, Ui_navigation):
                 # 截图
                 screen_capture = ScreenCapture()
                 screen_capture.screenshot_area()
+                screen_capture.screenshot_region()
                 # 显示主窗口
                 self.show()
                 self.main_window.show()

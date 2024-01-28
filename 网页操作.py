@@ -1,7 +1,7 @@
 import random
 import time
+
 import pandas as pd
-from PyQt5.QtWidgets import QMessageBox
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
@@ -28,23 +28,20 @@ class WebOption:
 
     def web_open_test(self, url):
         """打开网页"""
-        if url == '':
-            url = 'https://www.cn.bing.com/'
-        else:
-            if url[:7] != 'http://' and url[:8] != 'https://':
-                url = 'http://' + url
+        url = 'https://www.cn.bing.com/' if url == '' else \
+            ('http://' + url) if not url.startswith(('http://', 'https://')) else url
 
         self.driver = webdriver.Chrome()
         try:
             self.driver.get(url)
             time.sleep(1)
             self.driver.quit()
-            QMessageBox.information(self.navigation, '提示', '连接成功。', QMessageBox.Yes)
+            # QMessageBox.information(self.navigation, '提示', '连接成功。', QMessageBox.Yes)
         except Exception as e:
             # 弹出错误提示
             print(e)
-            QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
-                                QMessageBox.Yes)
+            # QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
+            #                     QMessageBox.Yes)
 
     def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
@@ -53,7 +50,8 @@ class WebOption:
             driver_ = webdriver.Chrome(service=service)
             driver_.quit()
         except ConnectionError:
-            QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
+            # QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
+            pass
 
     def close_browser(self):
         """关闭浏览器驱动"""
@@ -185,6 +183,7 @@ class WebOption:
                 chrome_options.add_argument('--start-maximized')
                 # 初始化浏览器并打开网页
                 self.driver = webdriver.Chrome(options=chrome_options)
+                self.driver.maximize_window()
                 self.driver.get(url_)
                 # 窗口最大化
                 # self.driver.maximize_window()
@@ -202,3 +201,17 @@ class WebOption:
                                       element_type_=element_type_,
                                       timeout_type_=timeout_type_,
                                       element_value_=element_value_)
+
+
+if __name__ == '__main__':
+    web_option = WebOption()
+
+    # web_option.web_open_test(url='https://zk.sceea.cn/')
+
+    # web_option.web_open_test(url='https://www.baidu.com/')
+
+    web_option.single_shot_operation(url='https://zk.sceea.cn/',
+                                     action='输入内容',
+                                     element_type_='xpath定位',
+                                     element_value_='//*[@id="login"]',
+                                     timeout_type_=15)

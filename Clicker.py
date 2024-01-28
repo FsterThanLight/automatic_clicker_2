@@ -50,6 +50,7 @@ from 网页操作 import WebOption
 # todo: 功能区功能重新设计
 # todo: 终止循环功能
 # todo: 执行指令改为多线程
+# todo: OCR识别功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -807,7 +808,6 @@ class Global_s(QDialog, Ui_Global):
         try:
             indexes = self.listView.selectedIndexes()
             value = self.listView.model().itemFromIndex(indexes[0]).text()
-            # print("删除的值为：", value)
             delete_data(value)  # 删除数据库中的数据
             self.refresh_listview()  # 刷新listview
         except Exception as e:

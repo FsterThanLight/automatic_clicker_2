@@ -280,11 +280,20 @@ class MainWork:
                         )
                         sendwechat.start_execute()
 
+                    # 数字验证码
+                    elif cmd_type == '数字验证码':
+                        digital_verification_code = VerificationCode(
+                            main_window=self.main_window,
+                            ins_dic=dic_,
+                            navigation=self.navigation
+                        )
+                        digital_verification_code.start_execute()
+
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
-                except Exception as e:
-                    # except AttributeError:
-                    print(e)
+                # except Exception as e:
+                # print(e)
+                except IndexError:
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
 
