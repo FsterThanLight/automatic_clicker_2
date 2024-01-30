@@ -66,7 +66,8 @@ class Na(QWidget, Ui_navigation):
             '鼠标点击': lambda x: self.mouse_click_function(x),
             '鼠标拖拽': lambda x: self.mouse_drag_function(x),
             '信息录入': lambda x: self.information_entry_function(x),
-            '网页控制': lambda x: self.web_control_function(x),
+            '打开网址': lambda x: self.open_web_page_function(x),
+            '元素控制': lambda x: self.ele_control_function(x),
             '网页录入': lambda x: self.web_entry_function(x),
             '切换frame': lambda x: self.toggle_frame_function(x),
             '保存表格': lambda x: self.save_form_function(x),
@@ -500,14 +501,14 @@ class Na(QWidget, Ui_navigation):
                                                  image_=image,
                                                  remarks_=func_info_dic.get('备注'))
 
-    def web_control_function(self, type_):
-        """网页控制的窗口功能"""
+    def open_web_page_function(self, type_):
+        """打开网址的窗口功能"""
 
         def web_functional_testing(judge):
             """网页连接测试"""
             if judge == '测试':
-                url = self.lineEdit_6.text()
-                # self.web_option.web_open_test(url)
+                url = self.lineEdit_19.text()
+                self.web_option.web_open_test(url)
             elif judge == '安装浏览器':
                 url = 'https://google.cn/chrome/'
                 QDesktopServices.openUrl(QUrl(url))
@@ -517,50 +518,57 @@ class Na(QWidget, Ui_navigation):
                     self, '提示', '确认下载浏览器驱动？', QMessageBox.Yes | QMessageBox.No
                 )
                 if x == QMessageBox.Yes:
-                    pass
-                    # self.web_option.install_browser_driver()
-                    # QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
+                    print('下载浏览器驱动')
+                    self.web_option.install_browser_driver()
+                    QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
 
         if type_ == '按钮功能':
-            # 网页测试
-            self.pushButton_9.clicked.connect(lambda: web_functional_testing('测试'))
-            self.pushButton_10.clicked.connect(lambda: web_functional_testing('安装浏览器'))
-            self.pushButton_11.clicked.connect(lambda: web_functional_testing('安装浏览器驱动'))
-            pass
+            self.pushButton_18.clicked.connect(lambda: web_functional_testing('测试'))
+            self.pushButton_19.clicked.connect(lambda: web_functional_testing('安装浏览器'))
+            self.pushButton_20.clicked.connect(lambda: web_functional_testing('安装浏览器驱动'))
         elif type_ == '写入参数':
-            web_page_link = None
-            timeout_type = None
-            # 获取网页链接
-            if self.radioButton_8.isChecked():
-                web_page_link = self.lineEdit_6.text()
-            elif self.radioButton_9.isChecked():
-                pass
-            # 获取元素类型
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 remarks_=func_info_dic.get('备注'),
+                                                 image_=self.lineEdit_19.text())
+
+    def ele_control_function(self, type_):
+        """网页控制的窗口功能"""
+
+        def Lock_control():
+            """锁定控件"""
+            if self.comboBox_22.currentText() == '输入内容':
+                self.textEdit_3.setEnabled(True)
+            else:
+                self.textEdit_3.clear()
+                self.textEdit_3.setEnabled(False)
+
+        if type_ == '按钮功能':
+            Lock_control()
+            self.comboBox_22.currentTextChanged.connect(Lock_control)
+        elif type_ == '写入参数':
             element_type = self.comboBox_21.currentText()
-            # 获取元素
-            element = self.lineEdit_7.text()
-            # 获取操作类型
-            operation_type = self.comboBox_22.currentText()
-            if operation_type == '仅打开网址，不需要其他操作':
-                operation_type = ''
-            # 获取文本内容
-            text_content = self.lineEdit_8.text()
-            # 获取超时类型
-            if self.radioButton_6.isChecked():
-                timeout_type = '找不到元素自动跳过'
-            elif self.radioButton_7.isChecked():
+            element_value = self.lineEdit_7.text()
+            text = self.textEdit_3.toPlainText()
+            action = self.comboBox_22.currentText()
+            # 判断其他参数
+            timeout_type = None
+            if self.radioButton_6.isChecked() and not self.radioButton_7.isChecked():
+                timeout_type = '自动跳过'
+            elif not self.radioButton_6.isChecked() and self.radioButton_7.isChecked():
                 timeout_type = self.spinBox_7.value()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 image_=web_page_link,
                                                  remarks_=func_info_dic.get('备注'),
-                                                 parameter_1_=element_type,
-                                                 parameter_2_=element,
-                                                 parameter_3_=operation_type + '-' + text_content,
-                                                 parameter_4_=timeout_type)
+                                                 image_=element_type + '-' + element_value,
+                                                 parameter_1_=action,
+                                                 parameter_2_=text,
+                                                 parameter_3_=timeout_type)
 
     def web_entry_function(self, type_):
         """网页录入的窗口功能"""
@@ -791,6 +799,7 @@ class Na(QWidget, Ui_navigation):
             else:
                 self.lineEdit_17.setEnabled(False)
                 self.lineEdit_17.clear()
+
             if self.comboBox_34.currentText() == '自定义消息内容':
                 self.textEdit_2.setEnabled(True)
             else:

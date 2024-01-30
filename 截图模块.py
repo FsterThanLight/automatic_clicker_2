@@ -48,7 +48,7 @@ class ScreenCapture:
         # 鼠标左键按下事件
         def on_press(event):
             self.x_1, self.y_1 = event.x, event.y
-            print('鼠标开始点击位置为：', self.x_1, self.y_1)
+            # print('鼠标开始点击位置为：', self.x_1, self.y_1)
             self.rect = canvas.create_rectangle(self.x_1, self.y_1, 0, 0, outline='red', width=2, fill='black')
 
         def on_drag(event):
@@ -59,7 +59,7 @@ class ScreenCapture:
 
         def on_release(event):
             self.x_3, self.y_3 = event.x, event.y
-            print('鼠标释放位置为：', self.x_3, self.y_3)
+            # print('鼠标释放位置为：', self.x_3, self.y_3)
             canvas.delete(self.rect)
             canvas.destroy()
             root.destroy()

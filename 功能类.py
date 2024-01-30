@@ -23,7 +23,6 @@ sys.coinit_flags = 2  # STA
 from pywinauto import Application
 from pywinauto.findwindows import ElementNotFoundError
 
-
 # dic_ = {
 #                     'ID': elem_[0],
 #                     '图像路径': elem_[1],
@@ -35,6 +34,9 @@ from pywinauto.findwindows import ElementNotFoundError
 #                     '重复次数': elem_[7],
 #                     '异常处理': elem_[8]
 #                 }
+
+DRIVER = None  # 浏览器驱动
+
 
 def exit_main_work():
     sys.exit()
@@ -755,28 +757,41 @@ class InformationEntry:
             exit_main_work()
 
 
-class WebControl:
+class OpenWeb:
+    """打开网页"""
+
+    def __init__(self, main_window, navigation, ins_dic):
+        self.main_window = main_window  # 主窗口
+        self.navigation = navigation  # 导航
+        self.ins_dic = ins_dic  # 指令字典
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.main_window, self.navigation)
+
+    def start_execute(self):
+        """执行重复次数"""
+        url = self.ins_dic.get('图像路径')
+        global DRIVER
+        DRIVER = self.web_option.open_driver(url, True)
+
+
+class EleControl:
     """网页控制"""
 
     def __init__(self, main_window, navigation, ins_dic):
-        # 主窗口
-        self.main_window = main_window
-        # 导航
-        self.navigation = navigation
-        # 指令字典
-        self.ins_dic = ins_dic
+        self.main_window = main_window  # 主窗口
+        self.navigation = navigation  # 导航
+        self.ins_dic = ins_dic  # 指令字典
         # 网页控制的部分功能
         self.web_option = WebOption(self.main_window, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
         list_dic = {
-            '网址': self.ins_dic.get('图像路径'),
-            '元素类型': self.ins_dic.get('参数1（键鼠指令）'),
-            '元素值': self.ins_dic.get('参数2'),
-            '操作类型': self.ins_dic.get('参数3').split('-')[0],
-            '文本内容': self.ins_dic.get('参数3').split('-')[1],
-            '超时类型': self.ins_dic.get('参数4')
+            '元素类型': self.ins_dic.get('图像路径').split('-')[0],
+            '元素值': self.ins_dic.get('图像路径').split('-')[1],
+            '操作类型': self.ins_dic.get('参数1（键鼠指令）'),
+            '文本内容': self.ins_dic.get('参数2'),
+            '超时类型': self.ins_dic.get('参数3')
         }
         return list_dic
 
@@ -784,14 +799,13 @@ class WebControl:
         """执行重复次数"""
         list_ins_ = self.parsing_ins_dic()
         # 执行网页操作
+        global DRIVER
+        self.web_option.driver = DRIVER
         self.web_option.text = list_ins_.get('文本内容')
-        self.web_option.single_shot_operation(
-            url=list_ins_.get('网址'),
-            action=list_ins_.get('操作类型'),
-            element_value_=list_ins_.get('元素值'),
-            element_type_=list_ins_.get('元素类型'),
-            timeout_type_=list_ins_.get('超时类型')
-        )
+        self.web_option.single_shot_operation(action=list_ins_.get('操作类型'),
+                                              element_value_=list_ins_.get('元素值'),
+                                              element_type_=list_ins_.get('元素类型'),
+                                              timeout_type_=list_ins_.get('超时类型'))
 
 
 class WebEntry:
@@ -839,14 +853,14 @@ class WebEntry:
             number
         )
         # 执行网页操作
+        global DRIVER
+        self.web_option.driver = DRIVER
         self.web_option.text = cell_value
-        self.web_option.single_shot_operation(
-            url='',
-            action='输入内容',
-            element_value_=list_ins_.get('元素值'),
-            element_type_=list_ins_.get('元素类型'),
-            timeout_type_=list_ins_.get('超时类型')
-        )
+        self.web_option.single_shot_operation(action='输入内容',
+                                              element_value_=list_ins_.get('元素值'),
+                                              element_type_=list_ins_.get('元素类型'),
+                                              timeout_type_=list_ins_.get('超时类型')
+                                              )
 
 
 class MouseDrag:
@@ -925,13 +939,13 @@ class SaveForm:
         """执行重复次数"""
         list_ins_ = self.parsing_ins_dic()
         # 执行网页操作
-        self.web_option.single_shot_operation(
-            url='',
-            action='保存表格',
-            element_value_=list_ins_.get('元素值'),
-            element_type_=list_ins_.get('元素类型'),
-            timeout_type_=list_ins_.get('超时类型')
-        )
+        global DRIVER
+        self.web_option.driver = DRIVER
+        self.web_option.single_shot_operation(action='保存表格',
+                                              element_value_=list_ins_.get('元素值'),
+                                              element_type_=list_ins_.get('元素类型'),
+                                              timeout_type_=list_ins_.get('超时类型')
+                                              )
 
 
 class ToggleFrame:
@@ -1026,15 +1040,15 @@ class DragWebElements:
         """执行重复次数"""
         list_ins_ = self.parsing_ins_dic()
         # 执行网页操作
+        global DRIVER
+        self.web_option.driver = DRIVER
         self.web_option.distance_x = int(dict(list_ins_)['x'])
         self.web_option.distance_y = int(dict(list_ins_)['y'])
-        self.web_option.single_shot_operation(
-            url='',
-            action='拖动元素',
-            element_value_=list_ins_.get('元素值'),
-            element_type_=list_ins_.get('元素类型'),
-            timeout_type_=list_ins_.get('超时类型')
-        )
+        self.web_option.single_shot_operation(action='拖动元素',
+                                              element_value_=list_ins_.get('元素值'),
+                                              element_type_=list_ins_.get('元素类型'),
+                                              timeout_type_=list_ins_.get('超时类型')
+                                              )
 
 
 class FullScreenCapture:
@@ -1223,14 +1237,13 @@ class VerificationCode:
         del im
         del im_bytes
         # 执行网页操作
+        global DRIVER
+        self.web_option.driver = DRIVER
         self.web_option.text = res
-        self.web_option.single_shot_operation(
-            url='',
-            action='输入内容',
-            element_value_=element_value,
-            element_type_=element_type,
-            timeout_type_=6
-        )
+        self.web_option.single_shot_operation(action='输入内容',
+                                              element_value_=element_value,
+                                              element_type_=element_type,
+                                              timeout_type_=10)
 
     def start_execute(self):
         """执行重复次数"""

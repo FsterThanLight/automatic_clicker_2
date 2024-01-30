@@ -211,9 +211,14 @@ class MainWork:
                         information_entry.start_execute(self.number)
 
                     # 网页操作
-                    elif cmd_type == '网页控制':
-                        web_control = WebControl(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
+                    elif cmd_type == '打开网址':
+                        web_control = OpenWeb(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
                         web_control.start_execute()
+
+                    # 网页元素操作
+                    elif cmd_type == '元素控制':
+                        web_element = EleControl(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
+                        web_element.start_execute()
 
                     # 网页录入
                     elif cmd_type == '网页录入':

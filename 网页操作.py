@@ -64,24 +64,31 @@ class WebOption:
         :param element_value_: 未开始查找的元素值
         :param element_type_: 元素类型
         :param timeout_type_: 超时错误"""
+
         # 查找元素(元素类型、超时错误)
         # 等待到指定元素出现
+        def get_locator(element_type):
+            """根据元素类型获取对应的定位器"""
+            locators = {
+                'xpath定位': By.XPATH,
+                '元素名称': By.NAME,
+                '元素ID': By.ID,
+                # 添加其他可能的定位方式
+            }
+            return locators.get(element_type, By.XPATH)
+
         try:
             print('正在查找元素' + element_value_)
-            target_ele = None
-            if element_type_ == 'xpath定位':
-                target_ele = WebDriverWait(self.driver, timeout_type_).until(
-                    EC.presence_of_element_located((By.XPATH, element_value_)))
-            elif element_type_ == '元素名称':
-                target_ele = WebDriverWait(self.driver, timeout_type_).until(
-                    EC.presence_of_element_located((By.NAME, element_value_)))
-            elif element_type_ == '元素ID':
-                target_ele = WebDriverWait(self.driver, timeout_type_).until(
-                    EC.presence_of_element_located((By.ID, element_value_)))
+            locator = get_locator(element_type_)  # 获取定位器
+            target_ele = WebDriverWait(self.driver, timeout_type_).until(
+                EC.presence_of_element_located((locator, element_value_))
+            )
             return target_ele
         except TimeoutException:
             return None
         except NoSuchElementException:
+            return None
+        except AttributeError:
             return None
 
     def switch_to_frame(self, iframe_type, iframe_value, switch_type):
@@ -155,63 +162,72 @@ class WebOption:
         elif target_ele is None:
             raise TimeoutException
 
-    def single_shot_operation(self, url, action, element_type_, element_value_, timeout_type_):
+    def single_shot_operation(self, action, element_type_, element_value_, timeout_type_):
         """单步骤操作
-        :param url: 网址
         :param action: 鼠标操作（左键单击、左键双击、右键单击、输入内容、读取网页表格、拖动元素）
         :param element_type_: 元素类型（元素ID、元素名称、xpath定位）
         :param element_value_: 元素值
         :param timeout_type_: 超时错误（找不到元素自动跳过、秒数）"""
 
-        def open_url(url_):
-            """打开网页或者直接跳过"""
-            if url_ == '' or url_ is None:
-                pass
-            else:
-                if url_[:7] != 'http://' and url_[:8] != 'https://':
-                    url_ = 'http://' + url_
+        # def open_url(url_):
+        #     """打开网页或者直接跳过"""
+        #     if url_ == '' or url_ is None:
+        #         pass
+        #     else:
+        #         if (url_[:7] != 'http://') and (url_[:8] != 'https://'):
+        #             url_ = 'http://' + url_
+        #
+        #         chrome_options = webdriver.ChromeOptions()
+        #         # 添加选项配置：  # 但是用程序打开的网页的window.navigator.webdriver仍然是true。
+        #         chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        #         chrome_options.add_experimental_option("detach", True)
+        #         chrome_options.add_argument('--start-maximized')
+        #         # 初始化浏览器并打开网页
+        #         self.driver = webdriver.Chrome(options=chrome_options)
+        #         self.driver.maximize_window()
+        #         self.driver.get(url_)
+        #         # 窗口最大化
+        #         # self.driver.maximize_window()
+        #
+        #         time.sleep(1)
 
-                chrome_options = webdriver.ChromeOptions()
-                # 添加选项配置：  # 但是用程序打开的网页的window.navigator.webdriver仍然是true。
-                chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-                chrome_options.add_experimental_option("detach", True)
-                # # 去掉window.navigator.webdriver的特性
-                # chrome_options.add_argument("disable-blink-features=AutomationControlled")
-                # 设置为无头浏览器：不会显示出操作浏览器的过程
-                # chrome_options.add_argument('--headless')
-                # chrome_options.add_experimental_option("excludeSwitches", ['enable-automation'])
-                chrome_options.add_argument('--start-maximized')
-                # 初始化浏览器并打开网页
-                self.driver = webdriver.Chrome(options=chrome_options)
-                self.driver.maximize_window()
-                self.driver.get(url_)
-                # 窗口最大化
-                # self.driver.maximize_window()
-
-                time.sleep(1)
-
-        open_url(url)
-        if action == '' or action is None:
+        # open_url(url)
+        # if driver is None:
+        #     self.driver = self.open_driver(url)
+        if not action:
             print('没有鼠标操作。')
-            pass
-        else:
-            print('执行鼠标操作。')
-            # 执行鼠标操作
-            self.perform_mouse_action(action=action,
-                                      element_type_=element_type_,
-                                      timeout_type_=timeout_type_,
-                                      element_value_=element_value_)
+            return
+        print('执行鼠标操作。')
+        # 执行鼠标操作
+        self.perform_mouse_action(action=action,
+                                  element_type_=element_type_,
+                                  timeout_type_=timeout_type_,
+                                  element_value_=element_value_)
+
+    def open_driver(self, url: str, judge: bool = True):
+        """打开浏览器，返回浏览器驱动
+        :param judge: 是否返回浏览器驱动
+        :param url: 网址"""
+        chrome_options = webdriver.ChromeOptions()
+        # 添加选项配置：  # 但是用程序打开的网页的window.navigator.webdriver仍然是true。
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+        chrome_options.add_experimental_option("detach", True)
+        chrome_options.add_argument('--start-maximized')
+        self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver.maximize_window()
+        self.driver.get(url if not url or url.startswith(('http://', 'https://')) else 'http://' + url)
+        time.sleep(1)
+        return self.driver if judge else None
 
 
 if __name__ == '__main__':
     web_option = WebOption()
+    XXX = web_option.open_driver('https://www.baidu.com/', True)
 
-    # web_option.web_open_test(url='https://zk.sceea.cn/')
-
-    # web_option.web_open_test(url='https://www.baidu.com/')
-
-    web_option.single_shot_operation(url='https://zk.sceea.cn/',
-                                     action='输入内容',
+    xxx_option = WebOption()
+    xxx_option.driver = XXX
+    xxx_option.text = '百度'
+    xxx_option.single_shot_operation(action='输入内容',
                                      element_type_='xpath定位',
-                                     element_value_='//*[@id="login"]',
+                                     element_value_='//*[@id="kw"]',
                                      timeout_type_=15)
