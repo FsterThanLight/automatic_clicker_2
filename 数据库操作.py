@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import sys
 
@@ -60,3 +61,36 @@ def extract_global_parameter(column_name: str) -> list:
     result_list = [item[0] for item in cursor.fetchall() if item[0] is not None]
     close_database(cursor, conn)
     return result_list
+
+
+def extract_excel_from_global_parameter():
+    """从所有资源文件夹路径中提取所有的Excel文件
+    :return: Excel文件列表"""
+    # 从全局参数表中提取所有的资源文件夹路径
+    resource_folder_path_list = extract_global_parameter('资源文件夹路径')
+    excel_files = []
+    for folder_path in resource_folder_path_list:
+        if os.path.exists(folder_path) and os.path.isdir(folder_path):
+            for root, dirs, files in os.walk(folder_path):
+                for file in files:
+                    if file.endswith('.xlsx') or file.endswith('.xls'):
+                        excel_files.append(os.path.normpath(os.path.join(root, file)))
+    return excel_files
+
+
+def get_count_from_branch_name(branch_name: str) -> int:
+    """获取分支表的数量
+    :param branch_name: 分支表名
+    :return: 目标分支表名中的指令数量"""
+    # 连接数据库
+    cursor, con = sqlitedb()
+    # 获取表中数据记录的个数
+    cursor.execute('SELECT count(*) FROM 命令 where 隶属分支=?', (branch_name,))
+    count_record = cursor.fetchone()[0]
+    # 关闭连接
+    close_database(cursor, con)
+    return count_record
+
+
+if __name__ == '__main__':
+    print(extract_excel_from_global_parameter())

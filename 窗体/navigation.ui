@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>652</width>
-    <height>673</height>
+    <width>686</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="font">
@@ -54,7 +54,7 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>10000</width>
+        <width>1000</width>
         <height>16777215</height>
        </size>
       </property>
@@ -205,7 +205,7 @@
         <widget class="QTabWidget" name="tabWidget">
          <property name="minimumSize">
           <size>
-           <width>450</width>
+           <width>500</width>
            <height>0</height>
           </size>
          </property>
@@ -869,6 +869,9 @@
                <property name="text">
                 <string>鼠标在当前位置执行：</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item>
@@ -994,6 +997,9 @@
                    <string>时间等待</string>
                   </property>
                   <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="checked">
                    <bool>true</bool>
                   </property>
                   <property name="autoRepeat">
@@ -2381,7 +2387,11 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QLineEdit" name="lineEdit_4"/>
+              <widget class="QLineEdit" name="lineEdit_4">
+               <property name="placeholderText">
+                <string>如：A1、B2...</string>
+               </property>
+              </widget>
              </item>
              <item row="4" column="1">
               <widget class="QComboBox" name="comboBox_13"/>
@@ -3396,7 +3406,11 @@ p, li { white-space: pre-wrap; }
                  </widget>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QLineEdit" name="lineEdit_9"/>
+                 <widget class="QLineEdit" name="lineEdit_9">
+                  <property name="placeholderText">
+                   <string>如：A1、B2...</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -5545,7 +5559,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_20">
           <attribute name="title">
@@ -5557,10 +5571,41 @@ p, li { white-space: pre-wrap; }
              <property name="spacing">
               <number>2</number>
              </property>
+             <item row="0" column="3">
+              <widget class="QComboBox" name="comboBox_9">
+               <item>
+                <property name="text">
+                 <string>提示异常并暂停</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>自动跳过</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>提示异常并停止</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>跳转分支</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboBox_10">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_34">
                <property name="text">
-                <string>开始位置：</string>
+                <string>分支名称：</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -5590,26 +5635,6 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="2" column="1" colspan="3">
-              <widget class="QComboBox" name="comboBox_11">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="frame">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_35">
-               <property name="text">
-                <string>扩展程序：</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="2">
               <widget class="QLabel" name="label_33">
                <property name="text">
@@ -5620,94 +5645,101 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="1" column="2" colspan="2">
-              <widget class="QLineEdit" name="lineEdit_5">
-               <property name="palette">
-                <palette>
-                 <active>
-                  <colorrole role="Text">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="255">
-                     <red>0</red>
-                     <green>0</green>
-                     <blue>255</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                  <colorrole role="PlaceholderText">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="128">
-                     <red>0</red>
-                     <green>0</green>
-                     <blue>255</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                 </active>
-                 <inactive>
-                  <colorrole role="Text">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="255">
-                     <red>0</red>
-                     <green>0</green>
-                     <blue>255</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                  <colorrole role="PlaceholderText">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="128">
-                     <red>0</red>
-                     <green>0</green>
-                     <blue>255</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                 </inactive>
-                 <disabled>
-                  <colorrole role="Text">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="255">
-                     <red>120</red>
-                     <green>120</green>
-                     <blue>120</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                  <colorrole role="PlaceholderText">
-                   <brush brushstyle="SolidPattern">
-                    <color alpha="128">
-                     <red>0</red>
-                     <green>0</green>
-                     <blue>0</blue>
-                    </color>
-                   </brush>
-                  </colorrole>
-                 </disabled>
-                </palette>
-               </property>
-               <property name="inputMask">
-                <string/>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_35">
+               <property name="text">
+                <string>开始位置：</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
                </property>
-               <property name="placeholderText">
-                <string>输入备注......</string>
-               </property>
               </widget>
              </item>
-             <item row="0" column="3">
-              <widget class="QComboBox" name="comboBox_9"/>
-             </item>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="comboBox_10">
+             <item row="1" column="3">
+              <widget class="QComboBox" name="comboBox_11">
                <property name="enabled">
                 <bool>false</bool>
                </property>
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_5">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>255</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>255</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>255</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>255</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="inputMask">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+             <property name="placeholderText">
+              <string>输入指令备注......</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

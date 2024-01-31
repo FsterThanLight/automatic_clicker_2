@@ -176,7 +176,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.global_s.move(resize.x() + 90, resize.y())
         elif judge == '导航':
             self.navigation.show()
-            self.navigation.load_values_to_controls()
+            # self.navigation.load_values_to_controls()
             print("导航页窗口开启")
         elif judge == '关于':
             self.about.show()
@@ -439,15 +439,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 info_show()
                 self.main_work.start_work(only_current_instructions)
         self.info.close()
-
-    # def clear_plaintext(self, judge):
-    #     """清空处理框中的信息"""
-    #     if judge == 200:
-    #         lines = self.plainTextEdit.blockCount()
-    #         if lines > 200:
-    #             self.plainTextEdit.clear()
-    #     else:
-    #         self.plainTextEdit.clear()
 
     def main_show(self):
         """显示窗体，并根据设置检查更新"""
