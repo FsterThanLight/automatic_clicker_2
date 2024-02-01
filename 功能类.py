@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 import ddddocr
+import keyboard
 import mouse
 import openpyxl
 import pyautogui
@@ -531,15 +532,7 @@ class PressKeyboard:
     def press_keyboard(self, key):
         """鼠标移动事件
         :param key: 按键列表"""
-        keys = key.split('+')
-        # 按下键盘
-        if len(keys) == 1:
-            pyautogui.press(keys[0])  # 如果只有一个键,直接按下
-        else:
-            # 否则,组合多个键为热键
-            hotkey = '+'.join(keys)
-            pyautogui.hotkey(hotkey)
-        time.sleep(self.time_sleep)
+        keyboard.press_and_release(key)
         self.main_window.plainTextEdit.appendPlainText('已经按下按键%s' % key)
 
 

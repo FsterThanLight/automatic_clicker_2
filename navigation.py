@@ -7,11 +7,10 @@ import shutil
 import sqlite3
 
 import ddddocr
-import keyboard
 import openpyxl
 import pyautogui
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QImage, QPixmap
+from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QWidget, \
     QMessageBox, QButtonGroup, QApplication
 from dateutil.parser import parse
@@ -44,7 +43,8 @@ class Na(QWidget, Ui_navigation):
         # 获取鼠标位置参数
         self.mouse_position_function = None
         # 调整异常处理选项时，控制窗口控件的状态
-        self.comboBox_9.activated.connect(self.exception_handling_judgment_type)
+        self.comboBox_9.activated.connect(lambda: self.exception_handling_judgment_type('报错处理'))
+        self.comboBox_10.activated.connect(lambda: self.exception_handling_judgment_type('分支名称'))
         # 快捷选择导航页
         self.tab_title_list = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
         self.treeWidget.itemClicked.connect(
@@ -53,33 +53,33 @@ class Na(QWidget, Ui_navigation):
         self.tabWidget.currentChanged.connect(self.tab_widget_change)
         # 映射标签标题和对应的函数
         self.function_mapping = {
-            '图像点击': lambda x: self.image_click_function(x),
-            '坐标点击': lambda x: self.coordinate_click_function(x),
-            '移动鼠标': lambda x: self.move_mouse_function(x),
-            '时间等待': lambda x: self.time_waiting_function(x),
-            '图像等待': lambda x: self.image_waiting_function(x),
-            '滚轮滑动': lambda x: self.scroll_wheel_function(x),
-            '文本输入': lambda x: self.text_input_function(x),
-            '按下键盘': lambda x: self.press_keyboard_function(x),
-            '中键激活': lambda x: self.middle_activation_function(x),
-            '鼠标点击': lambda x: self.mouse_click_function(x),
-            '鼠标拖拽': lambda x: self.mouse_drag_function(x),
-            '信息录入': lambda x: self.information_entry_function(x),
-            '打开网址': lambda x: self.open_web_page_function(x),
-            '元素控制': lambda x: self.ele_control_function(x),
-            '网页录入': lambda x: self.web_entry_function(x),
-            '切换frame': lambda x: self.toggle_frame_function(x),
-            '保存表格': lambda x: self.save_form_function(x),
-            '拖动元素': lambda x: self.drag_element_function(x),
-            '全屏截图': lambda x: self.full_screen_capture_function(x),
-            '切换窗口': lambda x: self.switch_window_function(x),
-            '发送消息': lambda x: self.wechat_function(x),
-            '数字验证码': lambda x: self.verification_code_function(x),
+            '图像点击': (lambda x: self.image_click_function(x), True),
+            '坐标点击': (lambda x: self.coordinate_click_function(x), False),
+            '移动鼠标': (lambda x: self.move_mouse_function(x), False),
+            '时间等待': (lambda x: self.time_waiting_function(x), False),
+            '图像等待': (lambda x: self.image_waiting_function(x), True),
+            '滚轮滑动': (lambda x: self.scroll_wheel_function(x), False),
+            '文本输入': (lambda x: self.text_input_function(x), False),
+            '按下键盘': (lambda x: self.press_keyboard_function(x), False),
+            '中键激活': (lambda x: self.middle_activation_function(x), False),
+            '鼠标点击': (lambda x: self.mouse_click_function(x), False),
+            '鼠标拖拽': (lambda x: self.mouse_drag_function(x), False),
+            '信息录入': (lambda x: self.information_entry_function(x), True),
+            '打开网址': (lambda x: self.open_web_page_function(x), False),
+            '元素控制': (lambda x: self.ele_control_function(x), True),
+            '网页录入': (lambda x: self.web_entry_function(x), True),
+            '切换frame': (lambda x: self.toggle_frame_function(x), False),
+            '保存表格': (lambda x: self.save_form_function(x), True),
+            '拖动元素': (lambda x: self.drag_element_function(x), True),
+            '全屏截图': (lambda x: self.full_screen_capture_function(x), False),
+            '切换窗口': (lambda x: self.switch_window_function(x), False),
+            '发送消息': (lambda x: self.wechat_function(x), False),
+            '数字验证码': (lambda x: self.verification_code_function(x), True)
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
-            self.function_mapping[func_name]('按钮功能')
-            self.function_mapping[func_name]('加载信息')
+            self.function_mapping[func_name][0]('按钮功能')
+            self.function_mapping[func_name][0]('加载信息')
 
     def showEvent(self, a0) -> None:
         """显示窗口时，加载功能窗口的主要功能"""
@@ -112,7 +112,7 @@ class Na(QWidget, Ui_navigation):
                 branch_table_name_index = branch_table_name.index(self.comboBox_10.currentText())
                 if self.comboBox_11.currentText() == '':
                     QMessageBox.critical(self, "错误", "分支表下无指令，请检查分支表名是否正确！")
-                    return
+                    raise ValueError
                 exception_handling_text = f'分支-{branch_table_name_index}-{int(self.comboBox_11.currentText()) - 1}'
             return exception_handling_text
 
@@ -146,7 +146,7 @@ class Na(QWidget, Ui_navigation):
             )
         elif type_ == '写入参数':
             # 获取5个参数命令，写入数据库
-            image = self.comboBox_8.currentText() + '/' + self.comboBox.currentText()
+            image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
             parameter_1 = self.comboBox_2.currentText()
             # 如果复选框被选中，则获取第二个参数
             parameter_2 = None
@@ -154,6 +154,10 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = '自动略过'
             elif self.radioButton_4.isChecked():
                 parameter_2 = self.spinBox_4.value()
+            # 检查参数是否有异常
+            if not os.path.exists(image):
+                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
+                raise FileNotFoundError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -168,85 +172,21 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_8.clear()
             self.comboBox_8.addItems(extract_global_parameter('资源文件夹路径'))
 
-    # class ImageClickFunctionality:
-    #     def __init__(self, main_window_):
-    #         pass
-    #
-    #     # 在这里初始化你的类成员变量
-    #
-    #     def image_click_function(self, type_):
-    #         """图像点击识别窗口的功能
-    #         :param type_: 功能名称（按钮功能、主要功能）"""
-    #         if type_ == '按钮功能':
-    #             self.setup_button_functionality()
-    #         elif type_ == '写入参数':
-    #             self.setup_write_parameters()
-    #         elif type_ == '加载信息':
-    #             self.setup_load_information()
-    #
-    #     def setup_button_functionality(self):
-    #         # 快捷截图功能
-    #         self.pushButton.clicked.connect(
-    #             lambda: self.quick_screenshot(self.comboBox_8, self.comboBox, '快捷截图')
-    #         )
-    #         self.pushButton_7.clicked.connect(
-    #             lambda: self.quick_screenshot(self.comboBox_8, self.comboBox, '删除图像')
-    #         )
-    #         # 加载下拉列表数据
-    #         self.comboBox_8.currentTextChanged.connect(
-    #             lambda: self.find_images(self.comboBox_8, self.comboBox)
-    #         )
-    #         # 元素预览
-    #         self.comboBox.currentTextChanged.connect(
-    #             lambda: self.show_image_to_label(self.comboBox_8, self.comboBox)
-    #         )
-    #
-    #     def setup_write_parameters(self):
-    #         # 获取5个参数命令，写入数据库
-    #         image = self.comboBox_8.currentText() + '/' + self.comboBox.currentText()
-    #         parameter_1 = self.comboBox_2.currentText()
-    #         # 如果复选框被选中，则获取第二个参数
-    #         parameter_2 = None
-    #         if self.radioButton_2.isChecked():
-    #             parameter_2 = '自动略过'
-    #         elif self.radioButton_4.isChecked():
-    #             parameter_2 = self.spinBox_4.value()
-    #         # 将命令写入数据库
-    #         func_info_dic = self.get_func_info()  # 获取功能区的参数
-    #         self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
-    #                                              repeat_number_=func_info_dic.get('重复次数'),
-    #                                              exception_handling_=func_info_dic.get('异常处理'),
-    #                                              image_=image,
-    #                                              parameter_1_=parameter_1,
-    #                                              parameter_2_=parameter_2,
-    #                                              remarks_=func_info_dic.get('备注'))
-    #
-    #     def setup_load_information(self):
-    #         # 加载图像文件夹路径
-    #         self.comboBox_8.clear()
-    #         self.comboBox_8.addItems(extract_global_parameter('资源文件夹路径'))
-
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""
         if type_ == '按钮功能':
-            pass
+            self.lineEdit_3.setValidator(QIntValidator())
         elif type_ == '写入参数':
-            # 鼠标滚轮滑动的方向
-            parameter_1 = self.comboBox_5.currentText()
-            # 鼠标滚轮滑动的距离
-            try:
-                parameter_2 = self.lineEdit_3.text()
-            except ValueError:
-                QMessageBox.critical(self, "错误", "滑动距离请输入数字！")
-                return
+            parameter_1 = self.comboBox_5.currentText()  # 鼠标滚轮滑动的方向
+            parameter_2 = self.lineEdit_3.text()  # 鼠标滚轮滑动的距离
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
+                                                 remarks_=func_info_dic.get('备注'),
                                                  parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
-                                                 remarks_=func_info_dic.get('备注'))
+                                                 parameter_2_=parameter_2)
 
     def text_input_function(self, type_):
         """文本输入窗口的功能"""
@@ -259,6 +199,7 @@ class Na(QWidget, Ui_navigation):
                 self.checkBox_2.setChecked(False)
                 print('文本输入仅支持输入英文大小写字母和数字！')
                 QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
+                raise ValueError
 
         if type_ == '按钮功能':
             # 检查输入的数据是否合法
@@ -293,7 +234,10 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 坐标点击
             self.pushButton_4.pressed.connect(
-                lambda: self.merge_additional_functions('change_get_mouse_position_function', '坐标点击'))
+                lambda: self.merge_additional_functions(
+                    'change_get_mouse_position_function', '坐标点击'
+                )
+            )
             self.pushButton_4.clicked.connect(self.mouseMoveEvent)
             # 是否激活自定义点击次数
             self.comboBox_3.currentTextChanged.connect(spinBox_2_enable)
@@ -338,7 +282,6 @@ class Na(QWidget, Ui_navigation):
             self.radioButton_17.clicked.connect(get_now_date_time)
         elif type_ == '写入参数':
             # 如果checkBox没有被选中，则第一个参数为等待时间
-            image = None
             parameter_1 = None
             parameter_2 = None
             # 时间等待
@@ -352,7 +295,7 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = self.dateTimeEdit.text() + "+" + self.comboBox_6.currentText()
                 if not time_judgment(self.dateTimeEdit.text()):
                     QMessageBox.critical(self, "错误", "定时时间小于当前系统时间，无效指令。")
-                    return
+                    raise ValueError
             # 随机等待
             elif self.radioButton_18.isChecked():
                 parameter_1 = "随机等待"
@@ -364,7 +307,6 @@ class Na(QWidget, Ui_navigation):
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 image_=image,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
@@ -381,6 +323,7 @@ class Na(QWidget, Ui_navigation):
                 lambda: self.show_image_to_label(self.comboBox_17, self.comboBox_18)
             )
         elif type_ == '写入参数':
+            # 获取参数
             image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
             parameter_1 = self.comboBox_19.currentText()
             parameter_2 = self.spinBox_6.value()
@@ -404,16 +347,10 @@ class Na(QWidget, Ui_navigation):
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
         if type_ == '按钮功能':
-            pass
+            self.lineEdit.setValidator(QIntValidator())
         elif type_ == '写入参数':
-            # 鼠标移动的方向
-            parameter_1 = self.comboBox_4.currentText()
-            # 鼠标移动的距离
-            try:
-                parameter_2 = int(self.lineEdit.text())
-            except ValueError:
-                QMessageBox.critical(self, "错误", "移动距离请输入数字！")
-                return
+            parameter_1 = self.comboBox_4.currentText()  # 鼠标移动的方向
+            parameter_2 = int(self.lineEdit.text())  # 鼠标移动的距离
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -426,42 +363,19 @@ class Na(QWidget, Ui_navigation):
     def press_keyboard_function(self, type_):
         """按下键盘识别窗口的功能"""
 
-        def print_key_name():
-            pressed_keys = set()
-            # # 禁用当前按钮
-            self.pushButton_6.setEnabled(False)
-            while True:
-                event = keyboard.read_event()
-                if event.event_type == "down":
-                    pressed_keys.add(event.name)
-                    # 将pressed_keys中的所有元素转换为一行字符串
-                    pressed_keys_str = list(pressed_keys)
-                    # pressed_keys_str倒过来
-                    pressed_keys_str.reverse()
-                    # 将pressed_keys_str中的所有元素转换为一行字符串
-                    pressed_keys_str = '+'.join(pressed_keys_str)
-                    self.label_31.setText(pressed_keys_str)
-                    # print(event.name)
-                elif event.event_type == "up":
-                    pressed_keys.discard(event.name)
-                if not pressed_keys:
-                    break
-                # # 激活当前按钮
-                self.pushButton_6.setEnabled(True)
-
         if type_ == '按钮功能':
             # 当按钮按下时，获取按键的名称
-            self.pushButton_6.clicked.connect(print_key_name)
+            pass
         elif type_ == '写入参数':
             # 按下键盘的内容
-            parameter_1 = self.label_31.text()
+            parameter_1 = self.keySequenceEdit.keySequence().toString()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 remarks_=func_info_dic.get('备注'))
+                                                 remarks_=func_info_dic.get('备注'),
+                                                 parameter_1_=parameter_1)
 
     def middle_activation_function(self, type_):
         """中键激活的窗口功能"""
@@ -971,42 +885,6 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
-    # def load_values_to_controls(self):
-    #     """将值加入到下拉列表中"""
-    #     print('加载导航页下拉列表数据')
-    #     image_folder_path = extract_global_parameter('资源文件夹路径')
-    #     branch_table_name = extract_global_parameter('分支表名')
-    #     # 清空测试输出
-    #     self.textBrowser.clear()
-    #     # 清空下拉列表
-    #     # self.comboBox_8.clear()
-    #     # self.comboBox_9.clear()
-    #     # self.comboBox_12.clear()
-    #     # self.comboBox_20.clear()
-    #     # self.comboBox_29.clear()
-    #     # self.comboBox_13.clear()
-    #     self.comboBox_23.clear()
-    #     # self.comboBox_14.clear()
-    #     self.comboBox_11.clear()
-    #     # self.comboBox_17.clear()
-    #     # self.comboBox_18.clear()
-    #     # self.comboBox_31.clear()
-    #     # 加载下拉列表数据
-    #     # self.comboBox_8.addItems(image_folder_path)
-    #     # self.comboBox_17.addItems(image_folder_path)
-    #     # 从数据库加载的分支表名
-    #     # system_command = ['抛出异常并暂停', '自动跳过', '抛出异常并停止', '扩展程序']
-    #     # self.comboBox_9.addItems(system_command)
-    #     # self.comboBox_9.addItems(branch_table_name)
-    #     # 从数据库加载的excel表名和图像名称
-    #     # self.comboBox_12.addItems(excel_folder_path)
-    #     # self.comboBox_20.addItems(excel_folder_path)
-    #     # self.comboBox_29.addItems(excel_folder_path)
-    #     # self.comboBox_14.addItems(image_folder_path)
-    #     # self.comboBox_31.addItems(image_folder_path)
-    #     # 清空备注
-    #     self.lineEdit_5.clear()
-
     def find_images(self, combox, combox_2):
         """选择图像文件夹并返回文件夹名称
         :param combox: 选择图像文件夹的下拉列表
@@ -1051,15 +929,21 @@ class Na(QWidget, Ui_navigation):
     def tab_widget_change(self):
         """切换导航页功能"""
 
-        def control_status(disable_control):
+        def control_status(disable_control_):
             """控制控件的状态"""
-            self.label_33.setEnabled(disable_control)
-            self.label_34.setEnabled(disable_control)
-            self.label_35.setEnabled(disable_control)
-            self.comboBox_9.setEnabled(disable_control)
+            self.label_33.setEnabled(disable_control_)
+            self.label_34.setEnabled(disable_control_)
+            self.label_35.setEnabled(disable_control_)
+            self.comboBox_9.setCurrentIndex(0)
+            self.comboBox_9.setEnabled(disable_control_)
+            self.comboBox_10.clear()
+            self.comboBox_10.setEnabled(disable_control_)
+            self.comboBox_11.clear()
 
-        print('切换导航页')
-        print(self.tab_title_list)
+        # 获取当前活动页面的标题
+        current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
+        disable_control = self.function_mapping.get(current_title)[1]
+        control_status(disable_control)  # 控制控件的状态
 
     def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并
@@ -1087,8 +971,9 @@ class Na(QWidget, Ui_navigation):
             elif pars_1 == '坐标点击':
                 self.mouse_position_function = '坐标点击'
 
-    def exception_handling_judgment_type(self):
-        """判断异常护理选项并调整控件"""
+    def exception_handling_judgment_type(self, type_):
+        """判断异常护理选项并调整控件
+        :param type_: 判断类型（报错处理、分支名称）"""
 
         def disable_combobox(judge: bool = False):
             """禁用控件"""
@@ -1098,23 +983,31 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_11.setEnabled(judge)
 
         try:
-            if self.comboBox_9.currentText() == '自动跳过':
-                disable_combobox()
-            elif self.comboBox_9.currentText() == '提示异常并暂停':
-                disable_combobox()
-            elif self.comboBox_9.currentText() == '提示异常并停止':
-                disable_combobox()
-            elif self.comboBox_9.currentText() == '跳转分支':
-                disable_combobox(True)
-                self.comboBox_10.addItems(extract_global_parameter('分支表名'))
-                self.comboBox_10.setCurrentIndex(0)
-                # 获取分支表名中的指令数量
+            if type_ == '报错处理':  # 报错处理下拉列表变化触发
+                if self.comboBox_9.currentText() == '自动跳过':
+                    disable_combobox()
+                elif self.comboBox_9.currentText() == '提示异常并暂停':
+                    disable_combobox()
+                elif self.comboBox_9.currentText() == '提示异常并停止':
+                    disable_combobox()
+                elif self.comboBox_9.currentText() == '跳转分支':
+                    disable_combobox(True)
+                    self.comboBox_10.addItems(extract_global_parameter('分支表名'))
+                    self.comboBox_10.setCurrentIndex(0)
+                    # 获取分支表名中的指令数量
+                    count_record = get_count_from_branch_name(self.comboBox_10.currentText())
+                    # 加载分支中的命令序号
+                    branch_order = [str(i) for i in range(1, count_record + 1)]
+                    if len(branch_order) == 0:
+                        self.comboBox_10.setCurrentIndex(0)
+                    else:
+                        self.comboBox_11.addItems(branch_order)
+            elif type_ == '分支名称':  # 分支表名下拉列表变化触发
                 count_record = get_count_from_branch_name(self.comboBox_10.currentText())
+                self.comboBox_11.clear()
                 # 加载分支中的命令序号
                 branch_order = [str(i) for i in range(1, count_record + 1)]
                 if len(branch_order) == 0:
-                    # 弹出警告框
-                    self.comboBox_10.setCurrentIndex(0)
                     QMessageBox.warning(self, '警告', '该分支下没有指令，请先添加！', QMessageBox.Yes)
                 else:
                     self.comboBox_11.addItems(branch_order)
@@ -1210,12 +1103,14 @@ class Na(QWidget, Ui_navigation):
         """获取4个参数命令，并保存至数据库"""
         # 当前页的index
         tab_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
-        func_selected = self.function_mapping.get(tab_title)  # 获取当前页的功能
+        func_selected = self.function_mapping.get(tab_title)[0]  # 获取当前页的功能
         # 根据功能获取参数
         if func_selected:
-            func_selected('写入参数')
-        # 关闭窗体
-        self.close()
+            try:
+                func_selected('写入参数')
+                self.close()
+            except Exception as e:
+                print(e)
         # 修改打开的判断
         self.modify_judgment = '保存'
         self.modify_id = None
