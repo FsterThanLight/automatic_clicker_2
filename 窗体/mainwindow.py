@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(482, 607)
+        MainWindow.resize(562, 607)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
         MainWindow.setFont(font)
@@ -337,12 +337,21 @@ class Ui_MainWindow(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
         brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.tableWidget.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
@@ -522,7 +531,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setRowStretch(0, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 482, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 562, 26))
         self.menubar.setObjectName("menubar")
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
@@ -596,7 +605,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
-        self.toolButton_7.clicked.connect(self.plainTextEdit.clear) # type_: ignore
+        self.toolButton_7.clicked.connect(self.plainTextEdit.clear) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -638,7 +647,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "当前分支："))
         self.pushButton.setText(_translate("MainWindow", "添加指令"))
         self.pushButton_2.setText(_translate("MainWindow", "删除"))
-        self.pushButton_3.setText(_translate("MainWindow", "全局参数"))
+        self.pushButton_3.setText(_translate("MainWindow", "设置资源文件夹"))
         self.toolButton_3.setText(_translate("MainWindow", "上移"))
         self.toolButton_2.setText(_translate("MainWindow", "添加分支"))
         self.toolButton_6.setText(_translate("MainWindow", "清除指令"))

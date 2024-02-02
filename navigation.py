@@ -12,7 +12,7 @@ import pyautogui
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QButtonGroup, QApplication
+    QMessageBox, QButtonGroup, QApplication, QDialog
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
@@ -26,13 +26,11 @@ from 网页操作 import WebOption
 class Na(QWidget, Ui_navigation):
     """导航页窗体及其功能"""
 
-    def __init__(self, main_window_):
-        super().__init__()
-        # 使用全局变量窗体的一些方法
+    def __init__(self, main_window_=None):
+        super().__init__(main_window_)
         self.main_window = main_window_
         self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
-        self.setWindowModality(Qt.ApplicationModal)
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
@@ -80,6 +78,10 @@ class Na(QWidget, Ui_navigation):
         for func_name in self.function_mapping:
             self.function_mapping[func_name][0]('按钮功能')
             self.function_mapping[func_name][0]('加载信息')
+
+        # self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+        flags = self.windowFlags()
+        self.setWindowFlags(flags | Qt.Window)
 
     def showEvent(self, a0) -> None:
         """显示窗口时，加载功能窗口的主要功能"""
@@ -931,14 +933,15 @@ class Na(QWidget, Ui_navigation):
 
         def control_status(disable_control_):
             """控制控件的状态"""
-            self.label_33.setEnabled(disable_control_)
-            self.label_34.setEnabled(disable_control_)
-            self.label_35.setEnabled(disable_control_)
+            self.label_33.setVisible(disable_control_)
+            self.label_34.setVisible(disable_control_)
+            self.label_35.setVisible(disable_control_)
             self.comboBox_9.setCurrentIndex(0)
-            self.comboBox_9.setEnabled(disable_control_)
+            self.comboBox_9.setVisible(disable_control_)
             self.comboBox_10.clear()
-            self.comboBox_10.setEnabled(disable_control_)
+            self.comboBox_10.setVisible(disable_control_)
             self.comboBox_11.clear()
+            self.comboBox_11.setVisible(disable_control_)
 
         # 获取当前活动页面的标题
         current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())

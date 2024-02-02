@@ -34,7 +34,7 @@
 #
 # def load_json():
 #     """从json文件中加载更新网址和保留文件名"""
-#     file_name = 'update_data.json'
+#     file_name = 'update_data_dic.json'
 #     with open(file_name, 'r', encoding='utf8') as f:
 #         data = json.load(f)
 #     url = cryptocode.decrypt(data['url_encrypt'], '123456')
@@ -57,3 +57,69 @@
 #             time.sleep(1)
 #         else:
 #             pass
+
+# class Login(QWidget, Ui_Login):
+#     """登录窗体"""
+#
+#     def __init__(self):
+#         super(Login, self).__init__()
+#         self.setupUi(self)
+#         # 登录按钮
+#         self.pushButton.clicked.connect(self.login_main_window)
+#         self.lineEdit_2.returnPressed.connect(self.login_main_window)
+#         self.lineEdit.returnPressed.connect(self.lineEdit_2.setFocus)
+#
+#     def login_main_window(self):
+#         """登录进主窗口"""
+#         # 连接数据库
+#         cursor, con = sqlitedb()
+#         # 获取数据库中的用户名和密码
+#         cursor.execute('select 账号,密码 from 账户')
+#         list_account = cursor.fetchall()
+#         close_database(cursor, con)
+#         # 判断登录
+#         ac = (self.lineEdit.text(), self.lineEdit_2.text())
+#         if ac in list_account:
+#             self.close()
+#             # 如果选中记住密码则保存账户id
+#             if self.checkBox.isChecked():
+#                 cursor, con = sqlitedb()
+#                 # 根据账号和密码获取id
+#                 cursor.execute('select ID from 账户 where 账号=? and 密码=?', (ac[0], ac[1]))
+#                 account_id = cursor.fetchall()[0][0]
+#                 cursor.execute('update 设置 set 值 = ? where 设置类型=?', (str(account_id), '账户ID'))
+#                 cursor.execute('update 设置 set 值 = ? where 设置类型=?', (1, '记住密码'))
+#                 con.commit()
+#                 close_database(cursor, con)
+#             elif not self.checkBox.isChecked():
+#                 cursor, con = sqlitedb()
+#                 cursor.execute('update 设置 set 值 = ? where 设置类型=?', (0, '记住密码'))
+#                 con.commit()
+#                 close_database(cursor, con)
+#             # 创建主窗体
+#             main_window_ = Main_window()
+#             # # 显示窗体，并根据设置检查更新
+#             main_window_.main_show()
+#         else:
+#             QMessageBox.information(self, '提示', '密码错误。')
+#
+#     def login_show(self):
+#         """显示登录窗体"""
+#         cursor, con = sqlitedb()
+#         cursor.execute('select 值 from 设置 where 设置类型=?', ('记住密码',))
+#         remember_password = cursor.fetchall()[0][0]
+#         cursor.execute('select 值 from 设置 where 设置类型=?', ('账户ID',))
+#         account_id = cursor.fetchall()[0][0]
+#         close_database(cursor, con)
+#         self.show()
+#         if remember_password == 1:
+#             self.checkBox.setChecked(True)
+#             cursor, con = sqlitedb()
+#             cursor.execute('select 账号,密码 from 账户 where ID=?', (account_id,))
+#             account = cursor.fetchall()[0]
+#             close_database(cursor, con)
+#             self.lineEdit.setText(account[0])
+#             self.lineEdit_2.setText(account[1])
+#             self.lineEdit_2.setFocus()
+#         else:
+#             self.lineEdit.setFocus()

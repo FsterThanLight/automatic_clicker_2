@@ -61,12 +61,13 @@ class ImageClick:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        setting_data_dic = get_setting_data_from_db(
+            '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
+        )
+        self.duration = float(setting_data_dic.get('持续时间'))
+        self.interval = float(setting_data_dic.get('时间间隔'))
+        self.confidence = float(setting_data_dic.get('图像匹配精度'))
+        self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -146,12 +147,12 @@ class CoordinateClick:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        setting_data_dic = get_setting_data_from_db(
+            '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
+        )
+        self.duration = float(setting_data_dic.get('持续时间'))
+        self.interval = float(setting_data_dic.get('时间间隔'))
+        self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -208,13 +209,6 @@ class TimeWaiting:
     """等待"""
 
     def __init__(self, main_window, ins_dic):
-        # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -312,13 +306,6 @@ class ImageWaiting:
     """图片等待"""
 
     def __init__(self, main_window, ins_dic):
-        # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -367,12 +354,7 @@ class RollerSlide:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -414,12 +396,9 @@ class TextInput:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        setting_data_dic = get_setting_data_from_db('时间间隔', '暂停时间')
+        self.interval = float(setting_data_dic.get('时间间隔'))
+        self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -452,12 +431,9 @@ class MoveMouse:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        setting_data_dic = get_setting_data_from_db('持续时间', '暂停时间')
+        self.duration = float(setting_data_dic.get('持续时间'))
+        self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -499,12 +475,7 @@ class PressKeyboard:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -541,12 +512,7 @@ class MiddleActivation:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -591,12 +557,10 @@ class MouseClick:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        setting_data_dic = get_setting_data_from_db('持续时间', '时间间隔', '暂停时间')
+        self.duration = float(setting_data_dic.get('持续时间'))
+        self.interval = float(setting_data_dic.get('时间间隔'))
+        self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -648,12 +612,7 @@ class InformationEntry:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -805,13 +764,6 @@ class WebEntry:
     """将Excel中的值录入网页"""
 
     def __init__(self, main_window, navigation, ins_dic):
-        # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         self.navigation = navigation
@@ -861,13 +813,7 @@ class MouseDrag:
 
     def __init__(self, main_window, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
-
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         # 指令字典
@@ -1074,12 +1020,7 @@ class SendWeChat:
 
     def __init__(self, main_window, navigation, ins_dic):
         # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
         self.main_window = main_window
         self.navigation = navigation
@@ -1192,13 +1133,6 @@ class SendWeChat:
 class VerificationCode:
 
     def __init__(self, main_window, navigation, ins_dic):
-        # 设置参数
-        (
-            self.duration,
-            self.interval,
-            self.confidence,
-            self.time_sleep
-        ) = get_setting_data_from_db()
         # 主窗口
         self.main_window = main_window
         self.navigation = navigation

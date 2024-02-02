@@ -3,6 +3,19 @@ import sqlite3
 import sys
 
 
+def timer(func):
+    def func_wrapper(*args, **kwargs):
+        from time import time
+        time_start = time()
+        result = func(*args, **kwargs)
+        time_end = time()
+        time_spend = time_end - time_start
+        print('%s cost time: %.3f s' % (func.__name__, time_spend))
+        return result
+
+    return func_wrapper
+
+
 def sqlitedb(db_name='命令集.db'):
     """建立与数据库的连接，返回游标
     :param db_name: 数据库名称
@@ -25,19 +38,43 @@ def close_database(cursor, conn):
     conn.close()
 
 
-def get_setting_data_from_db() -> tuple:
+def get_setting_data_from_db(*args):
     """从数据库中获取设置参数
-    :return: 设置参数"""
+    :param args: 设置类型参数
+    :return: 设置参数字典"""
     cursor, conn = sqlitedb()
-    cursor.execute('select * from 设置')
-    list_setting_data = cursor.fetchall()
-    close_database(cursor, conn)
-    # 使用字典来存储设置参数
-    setting_dict = {i[0]: i[1] for i in list_setting_data}
-    return (setting_dict.get('持续时间'),
-            setting_dict.get('时间间隔'),
-            setting_dict.get('图像匹配精度'),
-            setting_dict.get('暂停时间'))
+    if len(args) > 1:
+        placeholders = ','.join(['?' for _ in args])
+        query = f'SELECT 设置类型, 值 FROM 设置 WHERE 设置类型 IN ({placeholders})'
+        cursor.execute(query, args)
+        results = cursor.fetchall()
+        close_database(cursor, conn)
+        settings_dict = {setting_type: value for setting_type, value in results}
+        return settings_dict
+    elif len(args) == 1:
+        cursor.execute('SELECT 值 FROM 设置 WHERE 设置类型 = ?', (args[0],))
+        result = cursor.fetchone()
+        close_database(cursor, conn)  # 关闭数据库
+        return result[0] if result else None
+    else:
+        return None
+
+
+@timer
+def update_settings_in_database(**kwargs):
+    """在数据库中更新指定表中的设置类型的值
+    :param kwargs: 设置类型和对应值的关键字参数，如：暂停时间=1, 时间间隔=1, 图像匹配精度=0.8
+    """
+    if kwargs:
+        try:
+            cursor, conn = sqlitedb()
+            for setting_type, value in kwargs.items():
+                query = f"UPDATE 设置 SET 值=? WHERE 设置类型 = ?"
+                cursor.execute(query, (value, setting_type))
+            conn.commit()
+            close_database(cursor, conn)
+        except sqlite3.Error as e:
+            print(f"Error updating database: {e}")
 
 
 # 全局参数的数据库操作
@@ -93,4 +130,5 @@ def get_count_from_branch_name(branch_name: str) -> int:
 
 
 if __name__ == '__main__':
-    print(extract_excel_from_global_parameter())
+    pass
+    update_settings_in_database(暂停时间=0.2, 时间间隔=0.2, 图像匹配精度=0.8)

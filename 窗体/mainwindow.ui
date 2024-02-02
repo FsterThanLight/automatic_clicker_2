@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>482</width>
+    <width>575</width>
     <height>607</height>
    </rect>
   </property>
@@ -848,11 +848,29 @@ color: rgb(255, 255, 255);</string>
                </color>
               </brush>
              </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
             </active>
             <inactive>
              <colorrole role="Text">
               <brush brushstyle="SolidPattern">
                <color alpha="255">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
                 <red>0</red>
                 <green>0</green>
                 <blue>255</blue>
@@ -867,6 +885,15 @@ color: rgb(255, 255, 255);</string>
                 <red>120</red>
                 <green>120</green>
                 <blue>120</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
@@ -1282,7 +1309,7 @@ color: rgb(255, 255, 255);</string>
           <item row="1" column="3" colspan="2">
            <widget class="QPushButton" name="pushButton_3">
             <property name="text">
-             <string>全局参数</string>
+             <string>设置资源文件夹</string>
             </property>
            </widget>
           </item>
@@ -1341,8 +1368,8 @@ color: rgb(255, 255, 255);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>482</width>
-     <height>22</height>
+     <width>575</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
