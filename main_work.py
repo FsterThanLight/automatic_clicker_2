@@ -107,7 +107,7 @@ class MainWork:
                             # event.clear()
                             # event.wait(86400)
                         self.number += 1
-                        time.sleep(self.settings.time_sleep)
+                        time.sleep(float(self.settings.time_sleep))
                 # 如果状态为有限次循环
                 elif not self.infinite_cycle and self.number_cycles > 0:
                     self.number = 1
@@ -124,7 +124,7 @@ class MainWork:
                         # print('第', self.number, '次循环')
                         self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
                         self.number += 1
-                        time.sleep(self.settings.time_sleep)
+                        time.sleep(float(self.settings.time_sleep))
                     self.main_window.plainTextEdit.appendPlainText('结束任务')
                 elif not self.infinite_cycle and self.number_cycles <= 0:
                     print("请设置执行循环次数！")
@@ -296,9 +296,9 @@ class MainWork:
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
-                # except Exception as e:
-                # print(e)
-                except IndexError:
+                except Exception as e:
+                    print(e)
+                # except IndexError:
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
 

@@ -48,5 +48,5 @@ class Ui_Global(object):
         Global.setWindowTitle(_translate("Global", "全局参数"))
         self.label.setText(_translate("Global", "资源文件夹路径："))
         self.pushButton_2.setText(_translate("Global", "删除"))
-        self.pushButton.setText(_translate("Global", "选择文件夹"))
+        self.pushButton.setText(_translate("Global", "添加文件夹"))
 import images_rc

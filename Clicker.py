@@ -16,21 +16,20 @@ import shutil
 import openpyxl
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices, QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget,
-                             QTableWidgetItem, QMessageBox, QHeaderView,
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog)
 
 from main_work import MainWork
 from navigation import Na
-from 设置窗口 import Setting
 from 功能类 import exit_main_work
 from 数据库操作 import *
-from 窗体.about import Ui_Dialog
-from 窗体.global_s import Ui_Global
+from 窗体.about import Ui_About
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 网页操作 import WebOption
+from 设置窗口 import Setting
+from 资源文件夹窗口 import Global_s
 
 
 # todo: 重写导航页功能类
@@ -49,7 +48,9 @@ from 网页操作 import WebOption
 # todo: 终止循环功能
 # todo: 执行指令改为多线程
 # todo: OCR识别功能
-# todo: 重写设置窗口
+# done: 重写设置窗口
+# todo：RGB颜色检测功能
+# todo: 使用多线程执行指令
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -75,11 +76,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 窗口和信息
         self.version = 'v0.21'  # 软件版本
         self.navigation = Na(self)  # 实例化导航页窗口
-        self.global_s = Global_s(self)  # 全局设置窗口
         self.main_work = MainWork(self, self.navigation)  # 窗体的功能
-        self.setting = Setting(self)  # 实例化设置窗口Y
-        self.about = About()  # 设置关于窗体
-        self.info = Info()  # 运行提示窗口
         self.web_option = WebOption(self, self.navigation)  # 网页操作模块
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
@@ -89,8 +86,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
         # 主窗体表格功能
         self.toolButton_5.clicked.connect(self.get_data)  # 获取数据，主窗体刷新按钮
-        self.navigation.pushButton_3.clicked.connect(self.get_data)  # 获取数据，子窗体取消按钮
-        self.navigation.pushButton_2.clicked.connect(self.get_data)  # 获取数据，子窗体保存按钮
         self.pushButton_2.clicked.connect(self.delete_data)  # 删除数据，删除按钮
         self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))  # 交换数据，上移按钮
         self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))  # 交换数据，下移按钮
@@ -134,7 +129,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.setColumnWidth(7, 60)
 
     def generateMenu(self, pos):
-        # 获取点击行号
+        # 表格右键菜单
         row_num = -1
         for i in self.tableWidget.selectionModel().selection().indexes():
             row_num = i.row()
@@ -163,20 +158,20 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def show_windows(self, judge):
         """打开窗体"""
-        resize = self.geometry()
         if judge == '设置':
-            self.setting.show()
-            # self.setting.load_setting_data()
-            # self.setting.move(resize.x() + 90, resize.y())
+            setting_win = Setting(self)  # 设置窗体
+            setting_win.setModal(True)
+            setting_win.exec_()
         elif judge == '全局':
-            self.global_s.setModal(True)
-            self.global_s.exec_()
-            # self.global_s.move(resize.x() + 90, resize.y())
+            global_s = Global_s(self)  # 全局设置窗口
+            global_s.setModal(True)
+            global_s.exec_()
         elif judge == '导航':
             self.navigation.show()
         elif judge == '关于':
-            self.about.show()
-            self.about.move(resize.x() + 90, resize.y())
+            about = About(self)  # 设置关于窗体
+            about.setModal(True)
+            about.exec_()
         elif judge == '说明':
             QDesktopServices.openUrl(QUrl('https://gitee.com/automatic_clicker/automatic_clicker_2'))
 
@@ -191,7 +186,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             branch_name = self.comboBox.currentText()
             cursor.execute(
                 'select 图像名称,指令类型,异常处理,备注,参数1,参数2,重复次数,ID from 命令 where 隶属分支=?',
-                (branch_name,))
+                (branch_name,)
+            )
             list_order = cursor.fetchall()
             close_database(cursor, con)
             # 在表格中写入数据
@@ -199,6 +195,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.tableWidget.insertRow(i)
                 for j in range(len(list_order[i])):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(str(list_order[i][j])))
+
+            # self.tableWidget.resizeColumnsToContents()  # 自适应列宽
+            # 自适应列宽（排除第一列）
+            header = self.tableWidget.horizontalHeader()
+            for col in range(1, header.count()):
+                header.setSectionResizeMode(col, QHeaderView.ResizeToContents)
+
         except sqlite3.OperationalError:
             pass
 
@@ -211,12 +214,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
             xx = self.tableWidget.item(row, 7).text()
             print(row, column, xx)
             # 删除数据库中指定id的数据
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
+            cursor, con = sqlitedb()
             branch_name = self.comboBox.currentText()
             cursor.execute('delete from 命令 where ID=? and 隶属分支=?', (xx, branch_name,))
             con.commit()
-            con.close()
+            close_database(cursor, con)
             # 调用get_data()函数，刷新表格
             self.get_data()
         except AttributeError:
@@ -229,15 +231,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
             """交换数据库中的两行数据
             :param id_1: 要交换的第一行的id
             :param id_2: 要交换的第二行的id"""
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
+            cursor, con = sqlitedb()
             # 交换两行的id
             cursor.execute('update 命令 set ID=? where ID=?', (999999, id_1,))
             cursor.execute('update 命令 set ID=? where ID=?', (id_1, id_2,))
             cursor.execute('update 命令 set ID=? where ID=?', (id_2, 999999,))
             con.commit()
             # 刷新数据库
-            con.close()
+            close_database(cursor, con)
 
         try:
             # 获取选中值的行号和id
@@ -270,10 +271,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def get_instructions() -> list:
             """获取所有指令"""
-            cursor, con_ = sqlitedb()
-            cursor.execute('select * from 命令')
-            list_instructions = cursor.fetchall()
-            close_database(cursor, con_)
+            cursor_, con_ = sqlitedb()
+            cursor_.execute('select * from 命令')
+            list_instructions = cursor_.fetchall()
+            close_database(cursor_, con_)
             return list_instructions
 
         def get_file_and_folder() -> tuple:
@@ -290,12 +291,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if (file_name is not None) and (folder_path is not None):
             if judge == 'db':
                 # 连接数据库
-                con = sqlite3.connect('命令集.db')
+                cursor, con = sqlitedb()
                 # 获取数据库文件路径
                 db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
-                con.close()
+                close_database(cursor, con)
                 # 将数据库文件复制到指定文件夹下
-                shutil.copy(db_file, folder_path + '/' + file_name)
+                shutil.copy(db_file, os.path.normpath(folder_path + '/' + file_name))
             elif judge == 'excel':
                 all_list_instructions = get_instructions()
                 # 使用openpyxl模块创建Excel文件
@@ -418,22 +419,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def info_show():
             """显示信息窗口"""
-            self.info.show()
-            resize = self.geometry()
-            self.info.move(resize.x() + 45, resize.y() - 30)
+            info = Info(self)  # 运行提示窗口
+            info.show()
             QApplication.processEvents()
+            return info
 
         # 开始主任务
         if not only_current_instructions:
-            info_show()
+            info_win = info_show()
             self.main_work.start_work()
+            info_win.close()
         elif only_current_instructions:
             if self.comboBox.currentText() == '主流程':
                 QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
             else:
-                info_show()
+                info_win = info_show()
                 self.main_work.start_work(only_current_instructions)
-        self.info.close()
+                info_win.close()
 
     def main_show(self):
         """显示窗体，并根据设置检查更新"""
@@ -548,7 +550,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def load_branch(self):
         """加载分支"""
         # 初始化功能
-        print('加载分支')
+        # print('加载分支')
         cursor, con = sqlitedb()
         # 获取所有分支名
         cursor.execute("select 分支表名 from 全局参数")
@@ -559,16 +561,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.addItems(self.branch_name)
 
 
-class About(QWidget, Ui_Dialog):
+class About(QDialog, Ui_About):
     """关于窗体"""
 
-    def __init__(self):
-        super(About, self).__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 初始化窗体
         self.setupUi(self)
-        # 去除窗体最大化、最小化按钮
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
-        self.setWindowModality(Qt.ApplicationModal)
-
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         self.github.clicked.connect(self.show_github)
         self.gitee.clicked.connect(self.show_gitee)
 
@@ -583,67 +583,9 @@ class About(QWidget, Ui_Dialog):
 
 class Info(QDialog, Ui_Form):
     def __init__(self, parent=None):
-        super(Info, self).__init__(parent)
-        self.setupUi(self)
-        self.setWindowModality(Qt.ApplicationModal)
-        # 去除最大化最小化按钮
-        self.setWindowFlags(Qt.WindowCloseButtonHint)
-        self.setWindowModality(Qt.ApplicationModal)
-
-
-class Global_s(QDialog, Ui_Global):
-    """全局参数设置窗体"""
-
-    def __init__(self, parent=None):
         super().__init__(parent)
-
         self.setupUi(self)
-        # 去除帮助按钮
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        self.refresh_listview()  # 刷新listview
-        self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径
-        self.pushButton_2.clicked.connect(self.delete_listview)  # 删除listview中的项
-
-    def select_file(self):
-        """打开选择文件窗口,并将路径写入数据库"""
-        fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
-        if fil_path != '':
-            global_write_to_database(os.path.normpath(fil_path))
-        self.refresh_listview()
-
-    def delete_listview(self):
-        """删除listview中选中的那行数据"""
-
-        # 获取选中的行的值
-        def delete_data(value_):
-            """删除数据库中的数据"""
-            # 连接数据库
-            cursor, conn = sqlitedb()
-            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 = ?", (value_,))  # 删除数据
-            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 is NULL and 分支表名 is Null")  # 删除无用数据条
-            conn.commit()
-            close_database(cursor, conn)
-
-        try:
-            indexes = self.listView.selectedIndexes()
-            value = self.listView.model().itemFromIndex(indexes[0]).text()
-            delete_data(value)  # 删除数据库中的数据
-            self.refresh_listview()  # 刷新listview
-        except Exception as e:
-            print(e)
-
-    def refresh_listview(self):
-        """刷新listview"""
-
-        def add_listview(list_, listview):
-            """添加listview"""
-            model = QStandardItemModel()
-            listview.setModel(model)
-            for item in list_:
-                model.appendRow(QStandardItem(item))
-
-        res_folder_path = extract_global_parameter('资源文件夹路径')  # 获取数据库中的数据
-        add_listview(res_folder_path, self.listView)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
 
 
 if __name__ == "__main__":

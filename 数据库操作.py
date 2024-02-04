@@ -60,7 +60,7 @@ def get_setting_data_from_db(*args):
         return None
 
 
-@timer
+# @timer
 def update_settings_in_database(**kwargs):
     """在数据库中更新指定表中的设置类型的值
     :param kwargs: 设置类型和对应值的关键字参数，如：暂停时间=1, 时间间隔=1, 图像匹配精度=0.8
@@ -91,7 +91,7 @@ def global_write_to_database(resource_folder_path):
 
 def extract_global_parameter(column_name: str) -> list:
     """从全局参数表中提取指定列的数据
-    :param column_name: 列名（资源文件夹路径、分支表明）"""
+    :param column_name: 列名（资源文件夹路径、分支表名）"""
     cursor, conn = sqlitedb()
     cursor.execute(f"select {column_name} from 全局参数")
     # 去除None并转换为列表

@@ -29,6 +29,7 @@ class Na(QWidget, Ui_navigation):
     def __init__(self, main_window_=None):
         super().__init__(main_window_)
         self.main_window = main_window_
+
         self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
         # 去除最大化最小化按钮
@@ -79,7 +80,7 @@ class Na(QWidget, Ui_navigation):
             self.function_mapping[func_name][0]('按钮功能')
             self.function_mapping[func_name][0]('加载信息')
 
-        # self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+        # 设置窗口的flag
         flags = self.windowFlags()
         self.setWindowFlags(flags | Qt.Window)
 
@@ -89,6 +90,11 @@ class Na(QWidget, Ui_navigation):
         self.textBrowser.clear()  # 清空测试输出
         self.comboBox_9.setCurrentIndex(0)  # 异常处理方式
         self.comboBox_10.clear()  # 分支表名
+
+    def closeEvent(self, a0) -> None:
+        """关闭窗口时,触发的动作"""
+        self.main_window.get_data()
+        self.close()
 
     def switch_navigation_page(self, name):
         """弹出窗口自动选择对应功能页
@@ -157,7 +163,7 @@ class Na(QWidget, Ui_navigation):
             elif self.radioButton_4.isChecked():
                 parameter_2 = self.spinBox_4.value()
             # 检查参数是否有异常
-            if not os.path.exists(image):
+            if (os.path.isdir(image)) or (not os.path.exists(image)):
                 QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
                 raise FileNotFoundError
             # 将命令写入数据库
@@ -329,6 +335,10 @@ class Na(QWidget, Ui_navigation):
             image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
             parameter_1 = self.comboBox_19.currentText()
             parameter_2 = self.spinBox_6.value()
+            # 检查参数是否有异常
+            if (os.path.isdir(image)) or (not os.path.exists(image)):
+                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
+                raise FileNotFoundError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
@@ -451,7 +461,7 @@ class Na(QWidget, Ui_navigation):
             # 获取excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
             # 获取图像文件路径
-            image = self.comboBox_14.currentText() + '/' + self.comboBox_15.currentText()
+            image = os.path.normpath(self.comboBox_14.currentText() + '/' + self.comboBox_15.currentText())
             # 获取单元格值
             parameter_2 = self.lineEdit_4.text()
             # 判断是否递增行号和特殊控件输入
@@ -461,6 +471,10 @@ class Na(QWidget, Ui_navigation):
                 parameter_4 = '自动跳过'
             elif not self.radioButton_3.isChecked() and self.radioButton_5.isChecked():
                 parameter_4 = self.spinBox_5.value()
+            # 检查参数是否有异常
+            if (os.path.isdir(image)) or (not os.path.exists(image)):
+                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
+                raise FileNotFoundError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),

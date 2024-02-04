@@ -42,7 +42,7 @@
      <item row="2" column="1">
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>选择文件夹</string>
+        <string>添加文件夹</string>
        </property>
       </widget>
      </item>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>607</height>
+    <height>656</height>
    </rect>
   </property>
   <property name="font">
@@ -936,7 +936,7 @@ color: rgb(255, 255, 255);</string>
            <number>20</number>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>65</number>
+           <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>false</bool>
@@ -970,7 +970,7 @@ color: rgb(255, 255, 255);</string>
           </column>
           <column>
            <property name="text">
-            <string>备注</string>
+            <string>指令备注</string>
            </property>
            <property name="textAlignment">
             <set>AlignCenter</set>
@@ -978,7 +978,7 @@ color: rgb(255, 255, 255);</string>
           </column>
           <column>
            <property name="text">
-            <string>参数1</string>
+            <string>参数-1</string>
            </property>
            <property name="textAlignment">
             <set>AlignCenter</set>
@@ -986,7 +986,7 @@ color: rgb(255, 255, 255);</string>
           </column>
           <column>
            <property name="text">
-            <string>参数2</string>
+            <string>参数-2</string>
            </property>
            <property name="textAlignment">
             <set>AlignCenter</set>
