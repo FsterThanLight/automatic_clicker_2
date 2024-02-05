@@ -18,16 +18,14 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QHeaderView,
-                             QDialog, QInputDialog, QMenu, QFileDialog)
+                             QDialog, QInputDialog, QMenu, QFileDialog, QStyle)
 
 from main_work import MainWork
 from navigation import Na
-from 功能类 import exit_main_work
 from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
-from 网页操作 import WebOption
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
@@ -71,13 +69,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         super().__init__()
         # 初始化窗体
         self.setupUi(self)
-        # 设置表格列宽自动变化，并使第5列列宽固定
-        # self.format_table()
         # 窗口和信息
         self.version = 'v0.21'  # 软件版本
-        self.navigation = Na(self)  # 实例化导航页窗口
-        self.main_work = MainWork(self, self.navigation)  # 窗体的功能
-        self.web_option = WebOption(self, self.navigation)  # 网页操作模块
+        # self.navigation = Na(self)  # 实例化导航页窗口
+        # self.main_work = MainWork(self, self.navigation)  # 窗体的功能
+        # self.web_option = WebOption(self, self.navigation)  # 网页操作模块
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
         self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
@@ -86,14 +82,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
         # 主窗体表格功能
         self.toolButton_5.clicked.connect(self.get_data)  # 获取数据，主窗体刷新按钮
-        self.pushButton_2.clicked.connect(self.delete_data)  # 删除数据，删除按钮
         self.toolButton_3.clicked.connect(lambda: self.go_up_down("up"))  # 交换数据，上移按钮
         self.toolButton_4.clicked.connect(lambda: self.go_up_down("down"))  # 交换数据，下移按钮
         self.actionb.triggered.connect(lambda: self.save_data_to_current('db'))  # 导出数据，导出按钮
         self.actiona.triggered.connect(lambda: self.save_data_to_current('excel'))
         self.toolButton_6.clicked.connect(self.clear_table)  # 清空指令
         self.actionf.triggered.connect(self.data_import)  # 导入数据
-        self.pushButton_8.clicked.connect(self.modify_parameters)  # 修改参数按钮
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
@@ -111,6 +105,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 右键菜单
         self.tableWidget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
+        # 加载上次的指令表格
+        self.get_data()
 
     def format_table(self):
         """设置主窗口表格格式"""
@@ -129,6 +125,77 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.tableWidget.setColumnWidth(7, 60)
 
     def generateMenu(self, pos):
+        """生成右键菜单"""
+
+        def modify_parameters():
+            """修改参数"""
+            try:
+                # 获取当前行行号列号
+                row = self.tableWidget.currentRow()
+                id_ = self.tableWidget.item(row, 7).text()  # 指令ID
+                ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
+                # 将导航页的tabWidget设置为对应的页
+                navigation = Na(self)  # 实例化导航页窗口
+                navigation.show()
+                navigation.switch_navigation_page(ins_type)
+                # 修改数据中的参数
+                navigation.modify_judgment = '修改'
+                navigation.modify_id = id_
+            except AttributeError:
+                QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
+
+        def delete_data():
+            """删除选中的数据行"""
+            # 获取选中值的行号和id
+            try:
+                row = self.tableWidget.currentRow()
+                column = self.tableWidget.currentColumn()
+                xx = self.tableWidget.item(row, 7).text()
+                print(row, column, xx)
+                # 删除数据库中指定id的数据
+                cursor, con = sqlitedb()
+                branch_name = self.comboBox.currentText()
+                cursor.execute('delete from 命令 where ID=? and 隶属分支=?', (xx, branch_name,))
+                con.commit()
+                close_database(cursor, con)
+                # 调用get_data()函数，刷新表格
+                self.get_data()
+            except AttributeError:
+                pass
+
+        def copy_data():
+            """复制指定id的指令数据，插入到对应的id位置"""
+
+            def get_new_order():
+                """获取新的指令数据"""
+                branch_name = self.comboBox.currentText()
+                cursor.execute('SELECT * FROM 命令 WHERE ID=? AND 隶属分支=?', (id_, branch_name,))
+                list_order = cursor.fetchone()
+                new_id_ = int(list_order[0]) + 1  # 获取id
+                return (new_id_,) + list_order[1:10] + (branch_name,)
+
+            try:
+                row = self.tableWidget.currentRow()
+                id_ = self.tableWidget.item(row, 7).text()  # 指令ID
+                cursor, con = sqlitedb()
+                new_list_order = get_new_order()  # 获取新的指令数据
+                try:
+                    cursor.execute('INSERT INTO 命令 VALUES (?,?,?,?,?,?,?,?,?,?,?)', new_list_order)
+                    con.commit()
+                except sqlite3.IntegrityError:
+                    # 如果下一个id已经存在，则将后面的id全部加1
+                    max_id_ = 1000000
+                    cursor.execute('UPDATE 命令 SET ID=ID+? WHERE ID>?', (max_id_, id_))
+                    cursor.execute('UPDATE 命令 SET ID=ID-? WHERE ID>?', (max_id_ - 1, max_id_ + int(id_)))
+                    cursor.execute('INSERT INTO 命令 VALUES (?,?,?,?,?,?,?,?,?,?,?)', new_list_order)
+                    con.commit()
+                close_database(cursor, con)
+                self.get_data()
+                # 将焦点移动到插入的行
+                self.tableWidget.setCurrentCell(row, 0)
+            except AttributeError:
+                pass
+
         # 表格右键菜单
         row_num = -1
         for i in self.tableWidget.selectionModel().selection().indexes():
@@ -136,25 +203,38 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if row_num != -1:  # 未选中数据不弹出右键菜单
             menu = QMenu()  # 实例化菜单
             up_ins = menu.addAction("上移")
+            up_ins.setIcon(self.style().standardIcon(QStyle.SP_ArrowUp))  # 设置图标
             down_ins = menu.addAction("下移")
+            down_ins.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))  # 设置图标
+            menu.addSeparator()
+            insert_ins_before = menu.addAction("在前面插入指令")
+            insert_ins_after = menu.addAction("在后面插入指令")
             menu.addSeparator()
             copy_ins = menu.addAction("复制指令")
+            copy_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))  # 设置图标
             modify_ins = menu.addAction("修改指令")
+            modify_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogApplyButton))  # 设置图标
             del_ins = menu.addAction("删除指令")
+            del_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogDiscardButton))  # 设置图标
             action = menu.exec_(self.tableWidget.mapToGlobal(pos))
         else:
             return
+
         # 各项操作
         if action == copy_ins:
-            print("清除表格内容")
+            copy_data()  # 复制指令
         elif action == del_ins:
-            self.delete_data()
+            delete_data()  # 删除指令
         elif action == up_ins:
             self.go_up_down('up')
         elif action == down_ins:
             self.go_up_down('down')
         elif action == modify_ins:
-            self.modify_parameters()
+            modify_parameters()  # 修改指令
+        elif action == insert_ins_before:
+            pass
+        elif action == insert_ins_after:
+            pass
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -167,7 +247,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             global_s.setModal(True)
             global_s.exec_()
         elif judge == '导航':
-            self.navigation.show()
+            navigation = Na(self)  # 实例化导航页窗口
+            navigation.show()
         elif judge == '关于':
             about = About(self)  # 设置关于窗体
             about.setModal(True)
@@ -203,25 +284,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 header.setSectionResizeMode(col, QHeaderView.ResizeToContents)
 
         except sqlite3.OperationalError:
-            pass
-
-    def delete_data(self):
-        """删除选中的数据行"""
-        # 获取选中值的行号和id
-        try:
-            row = self.tableWidget.currentRow()
-            column = self.tableWidget.currentColumn()
-            xx = self.tableWidget.item(row, 7).text()
-            print(row, column, xx)
-            # 删除数据库中指定id的数据
-            cursor, con = sqlitedb()
-            branch_name = self.comboBox.currentText()
-            cursor.execute('delete from 命令 where ID=? and 隶属分支=?', (xx, branch_name,))
-            con.commit()
-            close_database(cursor, con)
-            # 调用get_data()函数，刷新表格
-            self.get_data()
-        except AttributeError:
             pass
 
     def go_up_down(self, judge):
@@ -334,15 +396,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         pass
-        choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
-        if choice == QMessageBox.Yes:
-            # 退出终止后台进程并清空数据库
-            event.accept()
-            self.clear_database()
-            self.web_option.close_browser()
-            exit_main_work()
-        else:
-            event.ignore()
+        # choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
+        # if choice == QMessageBox.Yes:
+        #     # 退出终止后台进程并清空数据库
+        #     event.accept()
+        #     self.clear_database()
+        #     if DRIVER is not None:
+        #         DRIVER.quit()
+        #     exit_main_work()
+        # else:
+        #     event.ignore()
 
     def clear_table(self):
         """清空表格和数据库"""
@@ -424,34 +487,20 @@ class Main_window(QMainWindow, Ui_MainWindow):
             QApplication.processEvents()
             return info
 
+        navigation = Na(self)  # 实例化导航页窗口
+        main_work = MainWork(self, navigation)  # 窗体的功能
         # 开始主任务
         if not only_current_instructions:
             info_win = info_show()
-            self.main_work.start_work()
+            main_work.start_work()
             info_win.close()
         elif only_current_instructions:
             if self.comboBox.currentText() == '主流程':
                 QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
             else:
                 info_win = info_show()
-                self.main_work.start_work(only_current_instructions)
+                main_work.start_work(only_current_instructions)
                 info_win.close()
-
-    def main_show(self):
-        """显示窗体，并根据设置检查更新"""
-        self.show()
-        # 连接数据库获取是否检查更新选项
-        # con = sqlite3.connect('命令集.db')
-        # cursor = con.cursor()
-        # cursor.execute('select 值 from 设置 where 设置类型=?', ('启动检查更新',))
-        # x = cursor.fetchall()[0][0]
-        # cursor.close()
-        # print('启动检查更新')
-        # print(x)
-        # if x == 1:
-        #     self.check_update(0)
-        # else:
-        #     pass
 
     def hide_toolbar(self):
         """隐藏工具栏"""
@@ -477,23 +526,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 f.write('日志导出时间：' + now.strftime('%Y-%m-%d %H:%M:%S') + '\n')
                 f.write(logs)
             QMessageBox.information(self, "提示", "操作日志导出成功！")
-
-    def modify_parameters(self):
-        """修改参数"""
-        try:
-            # 获取当前行行号列号
-            row = self.tableWidget.currentRow()
-            id_ = self.tableWidget.item(row, 7).text()  # 指令ID
-            ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
-            # 将导航页的tabWidget设置为对应的页
-            self.show_windows('导航')
-            self.navigation.switch_navigation_page(ins_type)
-            # 修改数据中的参数
-            self.navigation.modify_judgment = '修改'
-            self.navigation.modify_id = id_
-        except AttributeError:
-            QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
-            pass
 
     def create_branch(self):
         """创建分支表并重命名"""
@@ -593,7 +625,7 @@ if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication([])
     main_window = Main_window()  # 创建主窗体
-    main_window.main_show()  # 显示窗体，并根据设置检查更新
+    main_window.show()  # 显示窗体，并根据设置检查更新
     sys.exit(app.exec_())
 
     # def is_admin():

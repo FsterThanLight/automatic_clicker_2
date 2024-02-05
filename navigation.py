@@ -12,13 +12,14 @@ import pyautogui
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QButtonGroup, QApplication, QDialog
+    QMessageBox, QButtonGroup, QApplication
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
 from 功能类 import SendWeChat
 from 截图模块 import ScreenCapture
-from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_count_from_branch_name
+from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_count_from_branch_name, \
+    sqlitedb, close_database
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 
@@ -99,11 +100,12 @@ class Na(QWidget, Ui_navigation):
     def switch_navigation_page(self, name):
         """弹出窗口自动选择对应功能页
         :param name: 功能页名称"""
-        try:
-            tab_index = self.tab_title_list.index(name)
-            self.tabWidget.setCurrentIndex(tab_index)
-        except ValueError:  # 如果没有找到对应的功能页，则跳过
-            pass
+        print('选择功能页：', name)
+        # try:
+        tab_index = self.tab_title_list.index(name)
+        self.tabWidget.setCurrentIndex(tab_index)
+        # except ValueError:  # 如果没有找到对应的功能页，则跳过
+        #     pass
 
     def get_func_info(self) -> dict:
         """返回功能区的参数"""
@@ -341,15 +343,13 @@ class Na(QWidget, Ui_navigation):
                 raise FileNotFoundError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
-            self.writes_commands_to_the_database(
-                instruction_=func_info_dic.get('指令类型'),
-                repeat_number_=func_info_dic.get('重复次数'),
-                exception_handling_=func_info_dic.get('异常处理'),
-                remarks_=func_info_dic.get('备注'),
-                image_=image,
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2
-            )
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 remarks_=func_info_dic.get('备注'),
+                                                 image_=image,
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2)
         elif type_ == '加载信息':
             # 加载图像文件夹路径
             self.comboBox_17.clear()
@@ -362,7 +362,11 @@ class Na(QWidget, Ui_navigation):
             self.lineEdit.setValidator(QIntValidator())
         elif type_ == '写入参数':
             parameter_1 = self.comboBox_4.currentText()  # 鼠标移动的方向
-            parameter_2 = int(self.lineEdit.text())  # 鼠标移动的距离
+            parameter_2 = self.lineEdit.text()  # 鼠标移动的距离
+            # 检查参数是否有异常
+            if not parameter_2.isdigit():
+                QMessageBox.critical(self, "错误", "鼠标移动的距离为输入！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1087,14 +1091,11 @@ class Na(QWidget, Ui_navigation):
                                         parameter_2_=None,
                                         parameter_3_=None,
                                         parameter_4_=None,
-                                        remarks_=None,
-                                        change_id=None,
-                                        judge='保存'
+                                        remarks_=None
                                         ):
         """向数据库写入命令"""
         try:
-            con = sqlite3.connect('命令集.db')
-            cursor = con.cursor()
+            cursor, con = sqlitedb()
             branch_name = self.main_window.comboBox.currentText()
 
             query_params = (
@@ -1102,17 +1103,17 @@ class Na(QWidget, Ui_navigation):
                 exception_handling_, remarks_, branch_name
             )
 
-            if judge == '保存':
+            if self.modify_judgment == '保存':
                 cursor.execute(
                     'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?)',
                     query_params)
-            elif judge == '修改':
+            elif self.modify_judgment == '修改':
                 cursor.execute(
-                    'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=? WHERE ID=?',
-                    query_params + (change_id,))
+                    'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? WHERE ID=?',
+                    query_params + (self.modify_id,))
 
             con.commit()
-            cursor.close()
+            close_database(cursor, con)
         except sqlite3.OperationalError:
             QMessageBox.critical(self, "错误", "无数据写入权限，请以管理员身份运行！")
 
