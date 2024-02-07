@@ -31,25 +31,22 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
 
-# todo: 重写导航页功能类
 # todo: 图片路径改用相对路径
 # todo: 快捷键失效
-# todo: 表格当前行插入指令
 # todo: 导入指令可最近打开
-# todo: 重新修改指令功能
-# todo: 新增提示音功能
+# todo: 新增提示音指令
 # todo: 新增倒计时窗口功能
-# todo: 截图指令重新设计
-# todo: 指令表格右键菜单
+# todo: 快捷截图指令重新设计
 # todo: 指令执行使用多线程
-# todo: 加载导航页窗口控件重新设计
-# todo: 功能区功能重新设计
 # todo: 终止循环功能
 # todo: 执行指令改为多线程
 # todo: OCR识别功能
-# done: 重写设置窗口
 # todo：RGB颜色检测功能
 # todo: 使用多线程执行指令
+# todo: 微信消息开启重复次数后bug
+# todo: 验证码指令使用云码平台
+# todo: 变量池功能
+# todo: qss界面美化
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -105,21 +102,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.get_data()
         self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
 
-    # def format_table(self):
-    #     """设置主窗口表格格式"""
-    #     # 列的大小拉伸，可被调整
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-    #     # 列的大小为可交互式的，用户可以调整
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Interactive)
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Interactive)
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Interactive)
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Interactive)
-    #     # 列的大小调整为固定，列宽不会改变
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(6, QHeaderView.Fixed)
-    #     self.tableWidget.horizontalHeader().setSectionResizeMode(7, QHeaderView.Fixed)
-    #     # 设置列宽为50像素
-    #     self.tableWidget.setColumnWidth(6, 60)
-    #     self.tableWidget.setColumnWidth(7, 60)
     def delete_data(self):
         """删除选中的数据行"""
         # 获取选中值的行号和id
@@ -236,12 +218,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
             menu.addSeparator()
             insert_ins_before = menu.addAction("在前面插入指令")
             icon5 = QtGui.QIcon()
-            icon5.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/上移.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon5.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/上移.png"))
             insert_ins_before.setIcon(icon5)  # 设置图标
 
             insert_ins_after = menu.addAction("在后面插入指令")
             icon6 = QtGui.QIcon()
-            icon6.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/下移.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon6.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/下移.png"))
             insert_ins_after.setIcon(icon6)  # 设置图标
 
             menu.addSeparator()
