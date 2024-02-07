@@ -39,6 +39,7 @@ class Na(QWidget, Ui_navigation):
         # 添加保存按钮事件
         self.modify_judgment = '保存'
         self.modify_id = None
+        self.modify_row = None
         self.pushButton_2.clicked.connect(lambda: self.save_data())
         # 获取鼠标位置参数
         self.mouse_position_function = None
@@ -94,7 +95,7 @@ class Na(QWidget, Ui_navigation):
 
     def closeEvent(self, a0) -> None:
         """关闭窗口时,触发的动作"""
-        self.main_window.get_data()
+        self.main_window.get_data(self.modify_row)
         self.close()
 
     def switch_navigation_page(self, name):
@@ -1105,17 +1106,60 @@ class Na(QWidget, Ui_navigation):
 
             if self.modify_judgment == '保存':
                 cursor.execute(
-                    'INSERT INTO 命令(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                    query_params)
+                    'INSERT INTO 命令'
+                    '(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) '
+                    'VALUES (?,?,?,?,?,?,?,?,?,?)',
+                    query_params
+                )
+
             elif self.modify_judgment == '修改':
                 cursor.execute(
-                    'UPDATE 命令 SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? WHERE ID=?',
-                    query_params + (self.modify_id,))
+                    'UPDATE 命令 '
+                    'SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? '
+                    'WHERE ID=?',
+                    query_params + (self.modify_id,)
+                )
+
+            elif self.modify_judgment == '向前插入':
+                # 将当前ID和之后的ID递增1
+                max_id_ = 1000000
+                cursor.execute('UPDATE 命令 SET ID=ID+? WHERE ID>=?', (max_id_, self.modify_id))
+                cursor.execute('UPDATE 命令 SET ID=ID-? WHERE ID>=?', (max_id_ - 1, max_id_ + int(self.modify_id)))
+                # 插入新的命令
+                cursor.execute(
+                    'INSERT INTO 命令'
+                    '(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) '
+                    'VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+                    (self.modify_id,) + query_params
+                )
+
+            elif self.modify_judgment == '向后插入':
+                self.modify_row = self.modify_row + 1
+                try:
+                    cursor.execute(
+                        'INSERT INTO 命令'
+                        '(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) '
+                        'VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+                        (self.modify_id + 1,) + query_params
+                    )
+                except sqlite3.IntegrityError:
+                    # 如果下一个id已经存在，则将后面的id全部加1
+                    max_id_ = 1000000
+                    cursor.execute('UPDATE 命令 SET ID=ID+? WHERE ID>?', (max_id_, self.modify_id))
+                    cursor.execute('UPDATE 命令 SET ID=ID-? WHERE ID>?', (max_id_ - 1, max_id_ + int(self.modify_id)))
+                    # 插入新的命令
+                    cursor.execute(
+                        'INSERT INTO 命令'
+                        '(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) '
+                        'VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+                        (self.modify_id + 1,) + query_params
+                    )
 
             con.commit()
             close_database(cursor, con)
+
         except sqlite3.OperationalError:
-            QMessageBox.critical(self, "错误", "无数据写入权限，请以管理员身份运行！")
+            QMessageBox.critical(self, "错误", "数据写入失败，请重试！")
 
     def save_data(self):
         """获取4个参数命令，并保存至数据库"""
@@ -1129,9 +1173,9 @@ class Na(QWidget, Ui_navigation):
                 self.close()
             except Exception as e:
                 print(e)
-        # 修改打开的判断
-        self.modify_judgment = '保存'
-        self.modify_id = None
+        # # 修改打开的判断
+        # self.modify_judgment = '保存'
+        # self.modify_id = None
 
     def show_image_to_label(self, comboBox_folder, comboBox_image):
         """将图像显示到label中

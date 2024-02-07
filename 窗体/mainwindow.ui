@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>656</height>
+    <height>682</height>
    </rect>
   </property>
   <property name="font">
@@ -1012,17 +1012,6 @@ color: rgb(255, 255, 255);</string>
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="5">
-           <widget class="QToolButton" name="toolButton_3">
-            <property name="text">
-             <string>上移</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/上移.png</normaloff>:/按钮图标/窗体/res/上移.png</iconset>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="5">
            <widget class="QToolButton" name="toolButton_2">
             <property name="text">
@@ -1035,16 +1024,43 @@ color: rgb(255, 255, 255);</string>
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="QComboBox" name="comboBox"/>
-          </item>
-          <item row="0" column="6">
-           <widget class="QToolButton" name="toolButton_4">
-            <property name="text">
-             <string>下移</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/下移.png</normaloff>:/按钮图标/窗体/res/下移.png</iconset>
+           <widget class="QComboBox" name="comboBox">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>255</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="Text">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>120</red>
+                  <green>120</green>
+                  <blue>120</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
             </property>
            </widget>
           </item>
@@ -1113,44 +1129,7 @@ color: rgb(255, 255, 255);</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="4">
-           <widget class="QToolButton" name="toolButton_6">
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string>清除指令</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/清除.png</normaloff>:/按钮图标/窗体/res/清除.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QToolButton" name="toolButton_5">
-            <property name="text">
-             <string>修改</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/刷新.png</normaloff>:/按钮图标/窗体/res/刷新.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="3">
+          <item row="0" column="0" colspan="7">
            <widget class="QPushButton" name="pushButton">
             <property name="palette">
              <palette>

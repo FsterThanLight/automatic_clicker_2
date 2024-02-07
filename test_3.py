@@ -1,33 +1,40 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QDialog, QVBoxLayout
+import sys
+
+from PyQt5.QtWidgets import *
 
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Main Window")
-
-        self.central_widget = QPushButton("Open Sub Window", self)
-        self.central_widget.clicked.connect(self.open_sub_window)
-        self.setCentralWidget(self.central_widget)
-
-    def open_sub_window(self):
-        sub_window = SubWindow(self)
-        sub_window.setWindowTitle("Sub Window")
-        layout = QVBoxLayout(sub_window)
-        layout.addWidget(QPushButton("Button in Sub Window"))
-        # 将窗口设置为模态，以防止同时操作主窗口和子窗口
-        sub_window.setModal(True)
-        sub_window.exec_()
-
-
-class SubWindow(QDialog):
+class StatusDemo(QMainWindow):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super(StatusDemo, self).__init__(parent)
+
+        # 实例化菜单栏
+        bar = self.menuBar()
+        # 添加父菜单
+        file = bar.addMenu('File')
+        # 添加子菜单
+        file.addAction('show')
+        # 当菜单对象被点击时，触发绑定的自定义的槽函数
+        file.triggered[QAction].connect(self.processTrigger)
+
+        # 设置当行文本输入框为中间控件
+        self.setCentralWidget(QTextEdit())
+
+        # 实例化状态栏
+        self.statusBar = QStatusBar()
+
+        self.setWindowTitle('QStatusBar例子')
+
+        # 设置状态栏，类似布局设置
+        self.setStatusBar(self.statusBar)
+
+    def processTrigger(self, q):
+        if q.text() == 'show':
+            # 设置状态栏的显示文本以及显示时间
+            self.statusBar.showMessage(q.text() + '菜单选项被点击了', 5000)
 
 
 if __name__ == '__main__':
-    app = QApplication([])
-    main_window = MainWindow()
-    main_window.show()
-    app.exec_()
+    app = QApplication(sys.argv)
+    demo = StatusDemo()
+    demo.show()
+    sys.exit(app.exec_())

@@ -31,7 +31,8 @@ class Setting(QDialog, Ui_Setting):
             持续时间=str(self.horizontalSlider_3.value() / 1000),
             暂停时间=str(self.horizontalSlider_4.value() / 1000),
             模式=model,
-            启动检查更新=str(True if self.checkBox.isChecked() else False)
+            启动检查更新=str(True if self.checkBox.isChecked() else False),
+            退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False)
         )
 
     def save_setting(self):
@@ -53,18 +54,28 @@ class Setting(QDialog, Ui_Setting):
         """加载设置数据库中的数据"""
         # 加载设置数据
         setting_data_dic = get_setting_data_from_db(
-            '图像匹配精度', '时间间隔', '持续时间', '暂停时间', '模式', '启动检查更新'
+            '图像匹配精度',
+            '时间间隔',
+            '持续时间',
+            '暂停时间',
+            '模式',
+            '启动检查更新',
+            '退出提醒清空指令'
         )
         self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
         self.horizontalSlider_3.setValue(int(float(setting_data_dic['持续时间']) * 1000))
         self.horizontalSlider_4.setValue(int(float(setting_data_dic['暂停时间']) * 1000))
+
         if setting_data_dic['模式'] == '极速模式':
             self.radioButton_2.setChecked(True)
             self.change_mode('极速模式')
         else:
             self.radioButton.setChecked(True)
             self.change_mode('普通模式')
+
+        self.checkBox.setChecked(eval(setting_data_dic['启动检查更新']))
+        self.checkBox_2.setChecked(eval(setting_data_dic['退出提醒清空指令']))
 
     def change_mode(self, mode: str):
         """切换模式
