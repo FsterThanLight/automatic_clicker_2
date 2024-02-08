@@ -11,6 +11,7 @@
 from __future__ import print_function
 
 import datetime
+import re
 import shutil
 
 import openpyxl
@@ -19,6 +20,7 @@ from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QTableWidgetItem, QMessageBox, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar)
+from openpyxl.utils import get_column_letter
 
 from main_work import MainWork, exit_main_work
 from navigation import Na
@@ -29,7 +31,6 @@ from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
-
 
 # todo: 图片路径改用相对路径
 # todo: 快捷键失效
@@ -43,10 +44,11 @@ from 资源文件夹窗口 import Global_s
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 使用多线程执行指令
-# todo: 微信消息开启重复次数后bug
 # todo: 验证码指令使用云码平台
 # todo: 变量池功能
 # todo: qss界面美化
+# todo: 指令可编译为python代码
+# todo: 播放语言功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -58,6 +60,8 @@ from 资源文件夹窗口 import Global_s
 # 2. 在导航页的页面中添加指令的处理函数
 # 3. 在导航页的treeWidget中添加指令的名称
 # 4. 在功能类中添加运行功能
+
+OUR_WEBSITE = 'https://gitee.com/automatic_clicker/automatic_clicker_2'
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
@@ -78,8 +82,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionabout.triggered.connect(lambda: self.show_windows('关于'))  # 打开关于窗体
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
         # 主窗体表格功能
-        self.actionb.triggered.connect(lambda: self.save_data_to_current('db'))  # 导出数据，导出按钮
-        self.actiona.triggered.connect(lambda: self.save_data_to_current('excel'))
+        self.actionb.triggered.connect(lambda: self.save_data('db'))  # 导出数据，导出按钮
+        self.actiona.triggered.connect(lambda: self.save_data('excel'))
         self.actionf.triggered.connect(self.data_import)  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
@@ -90,7 +94,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
         # 分支表名
         self.branch_name = []
-        self.load_branch()
+        self.load_branch_to_combobox()
         # 创建和删除分支
         self.toolButton_2.clicked.connect(self.create_branch)
         self.toolButton.clicked.connect(self.delete_branch)
@@ -165,7 +169,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 将导航页的tabWidget设置为对应的页
                 navigation = Na(self)  # 实例化导航页窗口
                 # 修改数据中的参数
-                navigation.modify_judgment = '修改'
+                navigation.pushButton_2.setText('修改指令')
                 navigation.modify_id = id_
                 navigation.show()
                 navigation.switch_navigation_page(ins_type)
@@ -176,7 +180,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             """清空表格和数据库"""
             choice = QMessageBox.question(self, "提示", "确认清除所有指令吗？")
             if choice == QMessageBox.Yes:
-                self.clear_database()
+                clear_all_ins()
                 self.get_data()
             else:
                 pass
@@ -191,7 +195,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 navigation = Na(self)  # 实例化导航页窗口
                 navigation.show()
                 # 修改数据中的参数
-                navigation.modify_judgment = judge
+                navigation.pushButton_2.setText(judge)
                 navigation.modify_id = target_id
                 navigation.modify_row = row
             except AttributeError:
@@ -239,8 +243,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
             del_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogCancelButton))  # 设置图标
 
             menu.addSeparator()
+            del_branch = menu.addAction("删除当前分支指令")
+            del_branch.setIcon(self.style().standardIcon(QStyle.SP_DialogDiscardButton))  # 设置图标
+
             del_all_ins = menu.addAction("删除全部指令")
-            del_all_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogDiscardButton))  # 设置图标
+            icon7 = QtGui.QIcon()
+            icon7.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/清除.png"))
+            del_all_ins.setIcon(icon7)  # 设置图标
 
             action = menu.exec_(self.tableWidget.mapToGlobal(pos))
         else:
@@ -267,6 +276,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif action == del_all_ins:
             clear_table()
             self.statusBar.showMessage(f'清空指令表格。', 1000)
+        elif action == del_branch:
+            clear_all_ins(branch_name=self.comboBox.currentText())
+            self.get_data()
+            self.statusBar.showMessage(f'清空当前分支全部指令。', 1000)
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -286,7 +299,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             about.setModal(True)
             about.exec_()
         elif judge == '说明':
-            QDesktopServices.openUrl(QUrl('https://gitee.com/automatic_clicker/automatic_clicker_2'))
+            QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
 
     def get_data(self, row=None):
         """从数据库获取数据并存入表格
@@ -361,25 +374,28 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             pass
 
-    def save_data_to_current(self, judge):
+    def save_data(self, judge):
         """保存配置文件到当前文件夹下
         :param judge: 保存的文件类型（db、excel）"""
 
-        def get_instructions() -> list:
-            """获取所有指令"""
-            cursor_, con_ = sqlitedb()
-            cursor_.execute('select * from 命令')
-            list_instructions = cursor_.fetchall()
-            close_database(cursor_, con_)
-            return list_instructions
-
         def get_file_and_folder() -> tuple:
             """获取文件名和文件夹路径"""
-            file_path = QFileDialog.getSaveFileName(
-                self, "保存文件", '', "(*.db)" if judge == 'db' else "(*.xlsx)"
+            # 获取资源文件夹路径，如果不存在则使用用户的主目录
+            resource_folder_path = extract_global_parameter('资源文件夹路径')
+            directory_path = resource_folder_path[0] if \
+                resource_folder_path else os.path.expanduser("~")
+            # 打开选择文件对话框
+            file_path, _ = QFileDialog.getSaveFileName(
+                parent=self,
+                caption="保存文件",
+                filter="(*.db)" if judge == 'db' else "(*.xlsx)",
+                directory=directory_path
             )
-            if file_path[0] != '':  # 获取文件名称
-                return os.path.split(file_path[0])[1], os.path.split(file_path[0])[0]
+            if file_path != '':  # 获取文件名称
+                return (
+                    os.path.normpath(os.path.split(file_path)[1]),
+                    os.path.normpath(os.path.split(file_path)[0])
+                )
             else:
                 return None, None
 
@@ -392,41 +408,52 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
                 close_database(cursor, con)
                 # 将数据库文件复制到指定文件夹下
-                shutil.copy(db_file, os.path.normpath(folder_path + '/' + file_name))
+                shutil.copy(db_file, os.path.normpath(os.path.join(folder_path, file_name)))
+                QMessageBox.information(self, "提示", "指令数据保存成功！")
             elif judge == 'excel':
-                all_list_instructions = get_instructions()
                 # 使用openpyxl模块创建Excel文件
                 wb = openpyxl.Workbook()
-                # 获取当前活动的sheet
-                sheet = wb.active
-                # 设置表头
-                sheet['A1'] = 'ID'
-                sheet['B1'] = '图像名称'
-                sheet['C1'] = '指令类型'
-                sheet['D1'] = '参数1'
-                sheet['E1'] = '参数2'
-                sheet['F1'] = '参数3'
-                sheet['G1'] = '参数4'
-                sheet['H1'] = '重复次数'
-                sheet['I1'] = '异常处理'
-                sheet['J1'] = '备注'
-                sheet['K1'] = '隶属分支'
-                # 写入数据
-                for ins in range(len(all_list_instructions)):
-                    for i in range(len(all_list_instructions[ins])):
-                        sheet.cell(row=ins + 2, column=i + 1, value=all_list_instructions[ins][i])
-                # 保存Excel文件
-                wb.save(folder_path + '/' + file_name)
-            QMessageBox.information(self, "提示", "指令数据保存成功！")
+                # 获取全局参数表中的资源文件夹路径
+                branch_table_list = extract_global_parameter('分支表名')
+                # 将sheet名设置为分支表名
+                for branch_name in branch_table_list:
+                    wb.create_sheet(branch_name)  # 创建所有分支sheet
+                    # 向分支sheet中写入数据
+                    sheet = wb[branch_name]
+                    # 设置表头
+                    sheet['A1'] = 'ID'
+                    sheet['B1'] = '图像名称'
+                    sheet['C1'] = '指令类型'
+                    sheet['D1'] = '参数1'
+                    sheet['E1'] = '参数2'
+                    sheet['F1'] = '参数3'
+                    sheet['G1'] = '参数4'
+                    sheet['H1'] = '重复次数'
+                    sheet['I1'] = '异常处理'
+                    sheet['J1'] = '备注'
+                    sheet['K1'] = '隶属分支'
+                    # 写入数据
+                    branch_list_instructions = get_branch_table_ins(branch_name)
+                    for ins in range(len(branch_list_instructions)):
+                        for i in range(len(branch_list_instructions[ins])):
+                            sheet.cell(row=ins + 2, column=i + 1, value=branch_list_instructions[ins][i])
+                    # 自适应列宽
+                    for col in range(1, sheet.max_column + 1):
+                        max_length = 0
+                        for cell in sheet[get_column_letter(col)]:
+                            cell_length = 0.7 * len(re.findall('([\u4e00-\u9fa5])',
+                                                               str(cell.value))) + len(str(cell.value))
+                            max_length = max(max_length, cell_length)
+                        sheet.column_dimensions[get_column_letter(col)].width = max_length + 5
 
-    @staticmethod
-    def clear_database():
-        """清空数据库"""
-        cursor, con = sqlitedb()
-        # 清空分支列表中所有的数据
-        cursor.execute('delete from 命令 where ID<>-1')
-        con.commit()
-        close_database(cursor, con)
+                wb.remove(wb['Sheet'])  # 删除默认的sheet
+                # 保存Excel文件
+                save_path = os.path.normpath(os.path.join(folder_path, file_name))
+                wb.save(save_path)
+                # 提示保存成功，是否打开文件夹
+                choice = QMessageBox.question(self, "提示", "指令数据保存成功！是否打开Excel文件？")
+                if choice == QMessageBox.Yes:
+                    os.startfile(save_path)
 
     def closeEvent(self, event):
         """关闭窗口事件"""
@@ -439,50 +466,52 @@ class Main_window(QMainWindow, Ui_MainWindow):
             if choice == QMessageBox.Yes:
                 # 退出终止后台进程并清空数据库
                 event.accept()
-                self.clear_database()
+                clear_all_ins()
                 exit_main_work()
             else:
                 event.ignore()
 
     def data_import(self):
         """导入数据功能"""
-        # 打开选择文件对话框
-        print('导入数据')
-        target_path = QFileDialog.getOpenFileName(None, "请选择指令备份文件", '', "(*.db *.xlsx)")
-        if target_path[0] == '':
-            pass
-        else:
-            suffix = os.path.splitext(target_path[0])[1]
-            # 如果为.db文件
-            if suffix == '.db':
-                # 获取当前文件夹路径
-                # 将目标数据库中的数据导入到当前数据库中
-                cursor, con = sqlitedb()
-                # 获取目标数据库中的数据
-                con_target = sqlite3.connect(target_path[0])
-                cursor_target = con_target.cursor()
-                cursor_target.execute('select * from 命令')
-                list_instructions = cursor_target.fetchall()
-                # 将数据导入到当前数据库中
-                try:
-                    for ins in list_instructions:
-                        cursor.execute('insert into 命令 values (?,?,?,?,?,?,?,?,?,?,?)', ins)
-                        con.commit()
-                except sqlite3.IntegrityError:
-                    QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
-                    close_database(cursor, con)
-                    return
-                close_database(cursor, con)
-                self.load_branch()
-            # 如果为.xlsx文件
-            elif suffix == '.xlsx':
-                # 读取数据
-                wb = openpyxl.load_workbook(target_path[0])
-                sheet = wb.worksheets[0]
+
+        def data_import_from_db(target_path_):
+            # 获取当前文件夹路径
+            # 将目标数据库中的数据导入到当前数据库中
+            cursor, con = sqlitedb()
+            # 获取目标数据库中的数据
+            con_target = sqlite3.connect(target_path_[0])
+            cursor_target = con_target.cursor()
+            cursor_target.execute('select * from 命令')
+            list_instructions = cursor_target.fetchall()
+            # 获取目标数据库中的分支表名
+            cursor_target.execute(f"select 分支表名 from 全局参数")
+            branch_result_list = [item[0] for item in cursor_target.fetchall() if item[0] is not None]
+            close_database(cursor_target, con_target)
+            # 将数据导入到当前数据库中
+            try:
+                # 更新命令表
+                for ins in list_instructions:
+                    cursor.execute('insert into 命令 values (?,?,?,?,?,?,?,?,?,?,?)', ins)
+                    con.commit()
+                # 更新分支表
+                for branch_name in branch_result_list:
+                    global_write_to_database('分支表名', branch_name)
+                self.load_branch_to_combobox()  # 重新加载分支列表
+                QMessageBox.information(self, "提示", "指令数据导入成功！")
+            except sqlite3.IntegrityError:
+                QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
+            close_database(cursor, con)
+
+        def data_import_from_excel(target_path_):
+            # 读取数据
+            wb = openpyxl.load_workbook(target_path_[0])
+            sheets = wb.worksheets  # 获取所有的sheet
+            cursor_, con_ = sqlitedb()
+            for sheet in sheets:
+                global_write_to_database('分支表名', sheet.title)  # 添加分支表名
                 max_row = sheet.max_row
                 max_column = sheet.max_column
-                # 连接数据库
-                cursor, con = sqlitedb()
+                # 向数据库中写入数据
                 try:
                     for row in range(2, max_row + 1):
                         # 获取第一列数据
@@ -491,19 +520,40 @@ class Main_window(QMainWindow, Ui_MainWindow):
                             # 获取单元格数据
                             data = sheet.cell(row, column).value
                             instructions.append(data)
-                        cursor.execute(
+                        cursor_.execute(
                             "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
                             "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                             instructions[0:11])
-                        con.commit()
+                        con_.commit()
                 except Exception as e:
-                    print(e)
-                    QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
-                    close_database(cursor, con)
-                    return
-                close_database(cursor, con)
-                QMessageBox.information(self, "提示", "指令数据导入成功！")
-                self.load_branch()
+                    # 捕获并处理异常
+                    QMessageBox.warning(self, f"导入失败", f"ID重复或格式错误！{e}")
+            close_database(cursor_, con_)
+            self.load_branch_to_combobox()  # 重新加载分支列表
+            QMessageBox.information(self, "提示", "指令数据导入成功！")
+
+        # 获取资源文件夹路径，如果不存在则使用用户的主目录
+        resource_folder_path = extract_global_parameter('资源文件夹路径')
+        directory_path = resource_folder_path[0] if \
+            resource_folder_path else os.path.expanduser("~")
+        # 打开选择文件对话框
+        target_path = QFileDialog.getOpenFileName(
+            parent=self,
+            caption="请选择指令备份文件",
+            directory=directory_path,
+            filter="(*.db *.xlsx)"
+        )
+        # 判断是否选择了文件
+        if target_path[0] != '':
+            suffix = os.path.splitext(target_path[0])[1]  # 获取文件后缀
+            # 如果为.db文件
+            if suffix == '.db':
+                clear_all_ins(True)  # 清空原有数据
+                data_import_from_db(target_path)
+            # 如果为.xlsx文件
+            elif suffix == '.xlsx':
+                clear_all_ins(True)  # 清空原有数据，包括分支表
+                data_import_from_excel(target_path)
 
     def start(self, only_current_instructions=False):
         """主窗体开始按钮"""
@@ -523,7 +573,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             main_work.start_work()
             info_win.close()
         elif only_current_instructions:
-            if self.comboBox.currentText() == '主流程':
+            if self.comboBox.currentText() == MAIN_FLOW:
                 QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
             else:
                 info_win = info_show()
@@ -576,7 +626,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 关闭数据库连接
                 close_database(cursor, con)
                 # 加载分支
-                self.load_branch()
+                self.load_branch_to_combobox()
             except sqlite3.OperationalError:
                 QMessageBox.critical(self, "提示", "分支创建失败！")
                 pass
@@ -585,29 +635,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """删除分支"""
         # 弹出输入对话框，提示输入分支名称
         print('删除分支')
-        cursor, con = sqlitedb()
         text = self.comboBox.currentText()
-        if text == '主流程':
+        if text == MAIN_FLOW:
             QMessageBox.information(self, "提示", "无法删除主分支！")
         else:
             # 将combox显示的名称切换为命令
-            self.comboBox.setCurrentText('主流程')
-            # 删除分支名称
-            cursor.execute('delete from 全局参数 where 分支表名=?', (text,))
-            # 关闭数据库连接
+            self.comboBox.setCurrentIndex(0)
+            cursor, con = sqlitedb()
+            cursor.execute('delete from 全局参数 where 分支表名=?', (text,))  # 删除分支名称
             con.commit()
-            close_database(cursor, con)
-            # 将分支名从分支列表中删除
-            self.branch_name.remove(text)
-            # 弹出提示框
+            close_database(cursor, con)  # 关闭数据库连接
+            self.branch_name.remove(text)  # 将分支名从分支列表中删除
             QMessageBox.information(self, "提示", "分支删除成功！")
-            # 重新加载分支列表
-            self.load_branch()
+            self.load_branch_to_combobox()  # 重新加载分支列表
 
-    def load_branch(self):
+    def load_branch_to_combobox(self):
         """加载分支"""
         # 初始化功能
-        # print('加载分支')
         cursor, con = sqlitedb()
         # 获取所有分支名
         cursor.execute("select 分支表名 from 全局参数")
@@ -649,7 +693,7 @@ class About(QDialog, Ui_About):
 
     @staticmethod
     def show_gitee():
-        QDesktopServices.openUrl(QUrl('https://gitee.com/fasterthanlight/automatic_clicker'))
+        QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
 
 
 class Info(QDialog, Ui_Form):
@@ -661,7 +705,7 @@ class Info(QDialog, Ui_Form):
 
 if __name__ == "__main__":
     # 自适应高分辨率
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication([])
     main_window = Main_window()  # 创建主窗体
     main_window.show()  # 显示窗体，并根据设置检查更新

@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Global(object):
     def setupUi(self, Global):
         Global.setObjectName("Global")
-        Global.resize(550, 380)
+        Global.resize(482, 342)
         font = QtGui.QFont()
         font.setFamily("黑体")
         Global.setFont(font)
@@ -28,16 +28,19 @@ class Ui_Global(object):
         self.verticalLayout.addWidget(self.label)
         self.gridLayout_2 = QtWidgets.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.pushButton_2 = QtWidgets.QPushButton(Global)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout_2.addWidget(self.pushButton_2, 2, 2, 1, 1)
         self.pushButton = QtWidgets.QPushButton(Global)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout_2.addWidget(self.pushButton, 2, 1, 1, 1)
         self.listView = QtWidgets.QListView(Global)
         self.listView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listView.setObjectName("listView")
-        self.gridLayout_2.addWidget(self.listView, 1, 0, 1, 4)
+        self.gridLayout_2.addWidget(self.listView, 1, 0, 1, 5)
+        self.pushButton_2 = QtWidgets.QPushButton(Global)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.gridLayout_2.addWidget(self.pushButton_2, 2, 3, 1, 1)
+        self.pushButton_3 = QtWidgets.QPushButton(Global)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.gridLayout_2.addWidget(self.pushButton_3, 2, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
 
         self.retranslateUi(Global)
@@ -47,6 +50,7 @@ class Ui_Global(object):
         _translate = QtCore.QCoreApplication.translate
         Global.setWindowTitle(_translate("Global", "全局参数"))
         self.label.setText(_translate("Global", "资源文件夹路径："))
-        self.pushButton_2.setText(_translate("Global", "删除"))
         self.pushButton.setText(_translate("Global", "添加文件夹"))
+        self.pushButton_2.setText(_translate("Global", "删除"))
+        self.pushButton_3.setText(_translate("Global", "打开路径"))
 import images_rc

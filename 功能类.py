@@ -234,39 +234,6 @@ class TimeWaiting:
             QApplication.processEvents()
             self.stop_time(wait_time)
 
-    # def wait_to_the_specified_image(self, image, wait_instruction_type, timeout_period):
-    #     """执行图片等待"""
-    #     repeat = True
-    #     stat_time = time.time()
-    #
-    #     def event_in_waiting(text, start_time, timeout_period_):
-    #         """等待中的事件"""
-    #         difference_time = int(time.time() - start_time)
-    #         if difference_time > int(timeout_period_):
-    #             self.main_window.plainTextEdit.appendPlainText('等待超时，已等待%d秒' % difference_time)
-    #             raise pyautogui.ImageNotFoundException
-    #         self.main_window.plainTextEdit.appendPlainText(
-    #             '等待至图像%s,已等待%d秒', text, difference_time)
-    #         QApplication.processEvents()
-    #
-    #     while repeat:
-    #         location = pyautogui.locateCenterOnScreen(image=image, confidence=self.confidence)
-    #         if wait_instruction_type == '等待到指定图像出现':
-    #             if location is not None:
-    #                 self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
-    #                 QApplication.processEvents()
-    #                 repeat = False
-    #             else:
-    #                 event_in_waiting('出现', stat_time, timeout_period)
-    #         elif wait_instruction_type == '等待到指定图像消失':
-    #             if location is None:
-    #                 self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
-    #                 QApplication.processEvents()
-    #                 repeat = False
-    #             else:
-    #                 event_in_waiting('消失', stat_time, timeout_period)
-    #         time.sleep(0.1)
-
     def wait_to_time(self, target_time, interval):
         """检查时间，指定时间则执行操作
         :param target_time: 目标时间
@@ -845,6 +812,7 @@ class MouseDrag:
             while i < re_try + 1:
                 self.mouse_drag(list_ins_.get('起始位置'), list_ins_.get('结束位置'))
                 time.sleep(self.time_sleep)
+                i += 1
 
 
 class SaveForm:
@@ -1058,10 +1026,11 @@ class SendWeChat:
             if t == title_:
                 return h
 
-    def send_message_to_wechat(self, contact_person, message):
+    def send_message_to_wechat(self, contact_person, message, repeat_times=1):
         """向微信好友发送消息
         :param contact_person: 联系人
-        :param message: 消息内容"""
+        :param message: 消息内容
+        :param repeat_times: 重复次数"""
 
         def get_process_id(hwnd_):
             thread_id, process_id_ = win32process.GetWindowThreadProcessId(hwnd_)
@@ -1105,9 +1074,13 @@ class SendWeChat:
                 wx_chat_win = wx_win.child_window(title=contact_person, control_type="ListItem")
                 # 聚焦到所需的对话框
                 wx_chat_win.click_input()
-                pyperclip.copy(new_message)  # 将消息内容复制到剪切板
-                pyautogui.hotkey('ctrl', 'v')
-                pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
+
+                for i in range(repeat_times):  # 重复次数
+                    pyperclip.copy(new_message)  # 将消息内容复制到剪切板
+                    pyautogui.hotkey('ctrl', 'v')
+                    pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
+                    time.sleep(self.time_sleep)
+
                 win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
                 output_info('成功', new_message)  # 向主窗口输出提示信息
             else:
@@ -1124,10 +1097,7 @@ class SendWeChat:
         if re_try == 1:
             self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'))
         elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
-                self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'))
-                time.sleep(self.time_sleep)
+            self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'), re_try)
 
 
 class VerificationCode:

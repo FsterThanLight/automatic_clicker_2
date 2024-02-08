@@ -2,6 +2,8 @@ import os
 import sqlite3
 import sys
 
+MAIN_FLOW = '主流程'
+
 
 def timer(func):
     def func_wrapper(*args, **kwargs):
@@ -78,14 +80,25 @@ def update_settings_in_database(**kwargs):
 
 
 # 全局参数的数据库操作
-def global_write_to_database(resource_folder_path):
+def global_write_to_database(judge, value):
     """将全局参数写入数据库
-    :param resource_folder_path: 资源文件夹路径"""
+    :param judge: 判断写入类型（资源文件夹路径、分支表名）
+    :param value: 资源文件夹路径"""
     # 连接数据库
     cursor, conn = sqlitedb()
-    cursor.execute('INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)',
-                   (resource_folder_path, None))
-    conn.commit()
+    if judge == '资源文件夹路径':
+        cursor.execute('INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)',
+                       (value, None))
+        conn.commit()
+    elif judge == '分支表名':
+        if value != MAIN_FLOW:
+            cursor, con = sqlitedb()
+            cursor.execute(
+                'insert into 全局参数(资源文件夹路径,分支表名) '
+                'values(?,?)',
+                (None, value)
+            )
+            con.commit()
     close_database(cursor, conn)
 
 
@@ -129,6 +142,50 @@ def get_count_from_branch_name(branch_name: str) -> int:
     return count_record
 
 
+def get_branch_table_ins(branch_name: str) -> list:
+    """获取某分支表名中的所有指令
+    :param branch_name 目标分支表名
+    :return 目标分支表名中的指令内容"""
+    # 连接数据库
+    cursor, con = sqlitedb()
+    # 获取表中数据记录的个数
+    cursor.execute('SELECT * FROM 命令 where 隶属分支=?', (branch_name,))
+    count_record = cursor.fetchall()
+    # 关闭连接
+    close_database(cursor, con)
+    return count_record
+
+
+def get_instructions() -> list:
+    """获取所有指令"""
+    cursor_, con_ = sqlitedb()
+    cursor_.execute('select * from 命令')
+    list_instructions = cursor_.fetchall()
+    close_database(cursor_, con_)
+    return list_instructions
+
+
+def clear_all_ins(judge: bool = False, branch_name: str = None):
+    """清空数据库中所有指令
+    :param judge: 是否清除分支表名
+    :param branch_name: 分支表名，如果不传入，则清空所有分支表名的数据"""
+    cursor, con = sqlitedb()
+    # 清空分支列表中所有的数据
+    if branch_name:  # 清空指定分支表名的数据
+        cursor.execute('delete from 命令 where 隶属分支=?', (branch_name,))
+    else:
+        cursor.execute('delete from 命令 where ID<>-1')
+    if judge:  # 清空全局参数表中所有的除了“主流程”的分支表名
+        cursor.execute(
+            'delete from 全局参数 '
+            'where (分支表名 != ?  and 分支表名 is not null)',
+            (MAIN_FLOW,)
+        )
+    con.commit()
+    close_database(cursor, con)
+
+
 if __name__ == '__main__':
     pass
-    update_settings_in_database(暂停时间=0.2, 时间间隔=0.2, 图像匹配精度=0.8)
+    # update_settings_in_database(暂停时间=0.2, 时间间隔=0.2, 图像匹配精度=0.8)
+    # clear_all_ins(judge=True)

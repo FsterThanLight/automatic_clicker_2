@@ -20,13 +20,28 @@ class Global_s(QDialog, Ui_Global):
         self.refresh_listview()  # 刷新listview
         self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径
         self.pushButton_2.clicked.connect(self.delete_listview)  # 删除listview中的项
+        self.pushButton_3.clicked.connect(self.open_select_listview)  # 打开listview中的文件夹路径
+        self.listView.doubleClicked.connect(self.open_select_listview)  # 双击打开listview中的文件夹路径
 
     def select_file(self):
         """打开选择文件窗口,并将路径写入数据库"""
-        fil_path = QFileDialog.getExistingDirectory(self, "选择存储目标图像的文件夹")
+        fil_path = QFileDialog.getExistingDirectory(
+            parent=self,
+            caption="选择存储目标图像的文件夹",
+            directory=os.path.expanduser("~")
+        )
         if fil_path != '':
-            global_write_to_database(os.path.normpath(fil_path))
+            global_write_to_database('资源文件夹路径', os.path.normpath(fil_path))
         self.refresh_listview()
+
+    def open_select_listview(self):
+        """打开选中的listview中的文件夹路径"""
+        try:
+            indexes = self.listView.selectedIndexes()
+            value = self.listView.model().itemFromIndex(indexes[0]).text()
+            os.startfile(value)
+        except Exception as e:
+            print(e)
 
     def delete_listview(self):
         """删除listview中选中的那行数据"""

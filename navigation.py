@@ -37,7 +37,6 @@ class Na(QWidget, Ui_navigation):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
         # 添加保存按钮事件
-        self.modify_judgment = '保存'
         self.modify_id = None
         self.modify_row = None
         self.pushButton_2.clicked.connect(lambda: self.save_data())
@@ -102,11 +101,11 @@ class Na(QWidget, Ui_navigation):
         """弹出窗口自动选择对应功能页
         :param name: 功能页名称"""
         print('选择功能页：', name)
-        # try:
-        tab_index = self.tab_title_list.index(name)
-        self.tabWidget.setCurrentIndex(tab_index)
-        # except ValueError:  # 如果没有找到对应的功能页，则跳过
-        #     pass
+        try:
+            tab_index = self.tab_title_list.index(name)
+            self.tabWidget.setCurrentIndex(tab_index)
+        except ValueError:  # 如果没有找到对应的功能页，则跳过
+            pass
 
     def get_func_info(self) -> dict:
         """返回功能区的参数"""
@@ -836,7 +835,7 @@ class Na(QWidget, Ui_navigation):
             }
             wechat_option = SendWeChat(self.main_window, self, ins_dic)
             wechat_option.is_test = True
-            wechat_option.send_message_to_wechat(parameter_1_, parameter_2_)
+            wechat_option.send_message_to_wechat(parameter_1_, parameter_2_, int(self.spinBox.value()))
 
         if type_ == '按钮功能':
             Lock_control()
@@ -1103,8 +1102,7 @@ class Na(QWidget, Ui_navigation):
                 image_, instruction_, parameter_1_, parameter_2_, parameter_3_, parameter_4_, repeat_number_,
                 exception_handling_, remarks_, branch_name
             )
-
-            if self.modify_judgment == '保存':
+            if self.pushButton_2.text() == '添加指令':
                 cursor.execute(
                     'INSERT INTO 命令'
                     '(图像名称,指令类型,参数1,参数2,参数3,参数4,重复次数,异常处理,备注,隶属分支) '
@@ -1112,7 +1110,7 @@ class Na(QWidget, Ui_navigation):
                     query_params
                 )
 
-            elif self.modify_judgment == '修改':
+            elif self.pushButton_2.text() == '修改指令':
                 cursor.execute(
                     'UPDATE 命令 '
                     'SET 图像名称=?,指令类型=?,参数1=?,参数2=?,参数3=?,参数4=?,重复次数=?,异常处理=?,备注=?,隶属分支=? '
@@ -1120,7 +1118,7 @@ class Na(QWidget, Ui_navigation):
                     query_params + (self.modify_id,)
                 )
 
-            elif self.modify_judgment == '向前插入':
+            elif self.pushButton_2.text() == '向前插入':
                 # 将当前ID和之后的ID递增1
                 max_id_ = 1000000
                 cursor.execute('UPDATE 命令 SET ID=ID+? WHERE ID>=?', (max_id_, self.modify_id))
@@ -1133,7 +1131,7 @@ class Na(QWidget, Ui_navigation):
                     (self.modify_id,) + query_params
                 )
 
-            elif self.modify_judgment == '向后插入':
+            elif self.pushButton_2.text() == '向后插入':
                 self.modify_row = self.modify_row + 1
                 try:
                     cursor.execute(
@@ -1173,9 +1171,6 @@ class Na(QWidget, Ui_navigation):
                 self.close()
             except Exception as e:
                 print(e)
-        # # 修改打开的判断
-        # self.modify_judgment = '保存'
-        # self.modify_id = None
 
     def show_image_to_label(self, comboBox_folder, comboBox_image):
         """将图像显示到label中
