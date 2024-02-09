@@ -105,7 +105,7 @@ class Na(QWidget, Ui_navigation):
     def switch_navigation_page(self, name):
         """弹出窗口自动选择对应功能页
         :param name: 功能页名称"""
-        print('选择功能页：', name)
+        # print('选择功能页：', name)
         try:
             tab_index = self.tab_title_list.index(name)
             self.tabWidget.setCurrentIndex(tab_index)
@@ -925,7 +925,6 @@ class Na(QWidget, Ui_navigation):
         for i in range(len(images_name) - 1, -1, -1):
             if ".png" not in images_name[i]:
                 images_name.remove(images_name[i])
-        print(images_name)
         # 清空combox_2中的所有元素
         combox_2.clear()
         # 将images_name中的所有元素添加到combox_2中
@@ -957,7 +956,7 @@ class Na(QWidget, Ui_navigation):
         """切换导航页功能"""
 
         def control_status(disable_control_):
-            """控制控件的状态"""
+            """控制控件的状态，功能区参数控件的状态"""
             self.label_33.setVisible(disable_control_)
             self.label_34.setVisible(disable_control_)
             self.label_35.setVisible(disable_control_)

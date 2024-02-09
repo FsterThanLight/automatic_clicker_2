@@ -128,7 +128,7 @@ class WebOption:
         target_ele = self.lookup_element(element_value_, element_type_, timeout_type_)
         if target_ele is not None:
             print('找到网页元素，执行鼠标操作。')
-            # self.main_window_.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
+            # self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
             # QApplication.processEvents()
             if action == '左键单击':
                 ActionChains(self.driver).click(target_ele).perform()

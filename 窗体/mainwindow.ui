@@ -1332,8 +1332,10 @@ color: rgb(255, 255, 255);</string>
             </property>
             <property name="font">
              <font>
-              <family>SimSun</family>
+              <family>微软雅黑</family>
+              <pointsize>10</pointsize>
               <weight>75</weight>
+              <italic>false</italic>
               <bold>true</bold>
              </font>
             </property>
@@ -1341,7 +1343,7 @@ color: rgb(255, 255, 255);</string>
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>添加指令</string>
+             <string>添加指令（Ctrl+Enter）</string>
             </property>
             <property name="iconSize">
              <size>

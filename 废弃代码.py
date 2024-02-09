@@ -41,7 +41,7 @@
 #     return url
 #
 #
-# def get_download_address(main_window_, warning):
+# def get_download_address(main_window, warning):
 #     """获取下载地址、版本信息、更新说明"""
 #     global headers
 #     url = load_json()
@@ -53,7 +53,7 @@
 #     except requests.exceptions.ConnectionError:
 #         if warning == 1:
 #             # print("无法获取更新信息，请检查网络。")
-#             QMessageBox.critical(main_window_, "更新检查", "无法获取更新信息，请检查网络。")
+#             QMessageBox.critical(main_window, "更新检查", "无法获取更新信息，请检查网络。")
 #             time.sleep(1)
 #         else:
 #             pass
@@ -97,9 +97,9 @@
 #                 con.commit()
 #                 close_database(cursor, con)
 #             # 创建主窗体
-#             main_window_ = Main_window()
+#             main_window = Main_window()
 #             # # 显示窗体，并根据设置检查更新
-#             main_window_.main_show()
+#             main_window.main_show()
 #         else:
 #             QMessageBox.information(self, '提示', '密码错误。')
 #

@@ -142,15 +142,6 @@ def get_branch_count(branch_name: str) -> int:
     return count_record
 
 
-# def get_instructions() -> list:
-#     """获取所有指令"""
-#     cursor_, con_ = sqlitedb()
-#     cursor_.execute('select * from 命令')
-#     list_instructions = cursor_.fetchall()
-#     close_database(cursor_, con_)
-#     return list_instructions
-
-
 def clear_all_ins(judge: bool = False, branch_name: str = None):
     """清空数据库中所有指令
     :param judge: 是否清除分支表名
@@ -171,7 +162,7 @@ def clear_all_ins(judge: bool = False, branch_name: str = None):
     close_database(cursor, con)
 
 
-def save_window_size(save_size: tuple, window_name: str = '主窗口'):
+def save_window_size(save_size: tuple, window_name: str):
     """获取窗口大小
     :param save_size: 保存时的窗口大小
     :param window_name:（主窗口、设置窗口、导航窗口）
@@ -188,7 +179,7 @@ def save_window_size(save_size: tuple, window_name: str = '主窗口'):
     close_database(cursor, con)
 
 
-def set_window_size(window_name: str = '主窗口'):
+def set_window_size(window_name: str):
     """设置窗口大小
     :param window_name:（主窗口、设置窗口、导航窗口）
     :return: 窗口大小"""
