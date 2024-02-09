@@ -4,7 +4,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog
 
-from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter
+from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter, set_window_size, \
+    save_window_size
 from 窗体.global_s import Ui_Global
 
 
@@ -17,6 +18,11 @@ class Global_s(QDialog, Ui_Global):
         self.setupUi(self)
         # 去除帮助按钮
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
+        # 设置窗口大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
+        # 绑定事件
         self.refresh_listview()  # 刷新listview
         self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径
         self.pushButton_2.clicked.connect(self.delete_listview)  # 删除listview中的项
@@ -76,3 +82,9 @@ class Global_s(QDialog, Ui_Global):
 
         res_folder_path = extract_global_parameter('资源文件夹路径')  # 获取数据库中的数据
         add_listview(res_folder_path, self.listView)
+
+    def closeEvent(self, event):
+        """关闭窗口时触发"""
+        # 窗口大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
+

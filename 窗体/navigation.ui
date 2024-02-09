@@ -49,6 +49,10 @@
        <property name="text">
         <string>键鼠指令</string>
        </property>
+       <property name="icon">
+        <iconset resource="../images.qrc">
+         <normaloff>:/按钮图标/窗体/res/图标.png</normaloff>:/按钮图标/窗体/res/图标.png</iconset>
+       </property>
        <item>
         <property name="text">
          <string>图像点击</string>

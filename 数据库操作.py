@@ -185,6 +185,34 @@ def clear_all_ins(judge: bool = False, branch_name: str = None):
     close_database(cursor, con)
 
 
+def save_window_size(save_size: tuple, window_name: str = '主窗口'):
+    """获取窗口大小
+    :param save_size: 保存时的窗口大小
+    :param window_name:（主窗口、设置窗口、导航窗口）
+    :return: 窗口大小"""
+    cursor, con = sqlitedb()
+    # 查找数据库中是否有该设置类型
+    cursor.execute('SELECT * FROM 设置 WHERE 设置类型 = ?', (window_name,))
+    result = cursor.fetchone()
+    if result:
+        cursor.execute('UPDATE 设置 SET 值=? WHERE 设置类型 = ?', (str(save_size), window_name))
+    else:
+        cursor.execute('INSERT INTO 设置(设置类型, 值) VALUES (?, ?)', (window_name, str(save_size)))
+    con.commit()
+    close_database(cursor, con)
+
+
+def set_window_size(window_name: str = '主窗口'):
+    """设置窗口大小
+    :param window_name:（主窗口、设置窗口、导航窗口）
+    :return: 窗口大小"""
+    try:
+        height, width = eval(get_setting_data_from_db(window_name))
+        return int(height), int(width)
+    except TypeError:
+        return 0, 0
+
+
 if __name__ == '__main__':
     pass
     # update_settings_in_database(暂停时间=0.2, 时间间隔=0.2, 图像匹配精度=0.8)

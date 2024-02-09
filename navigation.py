@@ -19,7 +19,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 from 功能类 import SendWeChat
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_count_from_branch_name, \
-    sqlitedb, close_database
+    sqlitedb, close_database, set_window_size, save_window_size
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 
@@ -36,6 +36,10 @@ class Na(QWidget, Ui_navigation):
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
+        # 设置窗口大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
@@ -95,7 +99,8 @@ class Na(QWidget, Ui_navigation):
     def closeEvent(self, a0) -> None:
         """关闭窗口时,触发的动作"""
         self.main_window.get_data(self.modify_row)
-        self.close()
+        # 窗口大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
 
     def switch_navigation_page(self, name):
         """弹出窗口自动选择对应功能页

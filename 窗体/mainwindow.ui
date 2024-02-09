@@ -1365,7 +1365,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>575</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -1383,6 +1383,7 @@ color: rgb(255, 255, 255);</string>
     <addaction name="actionabout"/>
     <addaction name="actionj"/>
     <addaction name="actionhelp"/>
+    <addaction name="actionk"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -1500,6 +1501,15 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>保存为Excel</string>
+   </property>
+  </action>
+  <action name="actionk">
+   <property name="icon">
+    <iconset resource="../images.qrc">
+     <normaloff>:/按钮图标/窗体/res/帮助.png</normaloff>:/按钮图标/窗体/res/帮助.png</iconset>
+   </property>
+   <property name="text">
+    <string>快捷键说明</string>
    </property>
   </action>
  </widget>

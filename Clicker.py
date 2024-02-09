@@ -75,12 +75,17 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.version = 'v0.21'  # 软件版本
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
+        # 根据上次退出时的大小，重新设置窗口大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
         self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
         self.actions_2.triggered.connect(lambda: self.show_windows('设置'))  # 打开设置
         self.actionabout.triggered.connect(lambda: self.show_windows('关于'))  # 打开关于窗体
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
+        self.actionk.triggered.connect(lambda: self.show_windows('快捷键说明'))  # 打开快捷键说明
         # 主窗体表格功能
         self.actionb.triggered.connect(lambda: self.save_data('db'))  # 导出数据，导出按钮
         self.actiona.triggered.connect(lambda: self.save_data('excel'))
@@ -105,6 +110,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 加载上次的指令表格
         self.get_data()
         self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
+        # 重新设置表格的快捷键
+        self.tableWidget.installEventFilter(self)  # 安装事件过滤器
 
     def delete_data(self):
         """删除选中的数据行"""
@@ -212,11 +219,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
             refresh.setIcon(self.style().standardIcon(QStyle.SP_BrowserReload))  # 设置图标
 
             up_ins = menu.addAction("上移")
-            up_ins.setShortcut('Home')
+            up_ins.setShortcut('Shift+↑')
             up_ins.setIcon(self.style().standardIcon(QStyle.SP_ArrowUp))  # 设置图标
 
             down_ins = menu.addAction("下移")
-            down_ins.setShortcut('End')
+            down_ins.setShortcut('Shift+↓')
             down_ins.setIcon(self.style().standardIcon(QStyle.SP_ArrowDown))  # 设置图标
 
             menu.addSeparator()
@@ -300,6 +307,17 @@ class Main_window(QMainWindow, Ui_MainWindow):
             about.exec_()
         elif judge == '说明':
             QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
+        elif judge == '快捷键说明':
+            # 使用MessageBox显示快捷键说明
+            QMessageBox.information(
+                self, "快捷键说明",
+                "Ctrl+C：复制指令\n"
+                "Delete：删除指令\n"
+                "Shift+↑：上移指令\n"
+                "Shift+↓：下移指令\n"
+                "Ctrl+↑：切换到上个分支\n"
+                "Ctrl+↓：切换到下个分支\n"
+            )
 
     def get_data(self, row=None):
         """从数据库获取数据并存入表格
@@ -470,6 +488,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 exit_main_work()
             else:
                 event.ignore()
+        # 窗口大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
 
     def data_import(self):
         """导入数据功能"""
@@ -662,18 +682,42 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.addItems(self.branch_name)
 
     def keyPressEvent(self, event):
-        # 如果按下delete键
-        if event.key() == Qt.Key_Delete:
-            self.delete_data()
-        # 如果按下home键
-        if event.key() == Qt.Key_Home:
-            self.go_up_down('up')
-        # 如果按下end键
-        if event.key() == Qt.Key_End:
-            self.go_up_down('down')
-        # 如果按下ctrl+c键
-        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
-            self.copy_data()
+        pass
+
+    def eventFilter(self, obj, event):
+        # 重写self.tableWidget的快捷键事件
+        if obj == self.tableWidget and event.type() == QtCore.QEvent.KeyPress:
+            # 如果按下delete键
+            if event.key() == Qt.Key_Delete:
+                self.delete_data()
+            # 如果按下ctrl+c键
+            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
+                self.copy_data()
+            # 如果按下shift+向上键
+            if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Up:
+                self.go_up_down('up')
+                # 将焦点下移一行,抵消上移的误差
+                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
+            # 如果按下shift+向下键
+            if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Down:
+                self.go_up_down('down')
+                # 将焦点上移一行,抵消下移的误差
+                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
+            # 如果按下ctrl+向上键
+            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Up:
+                # 将焦点下移一行,抵消上移的误差
+                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
+                # 如果分支不为self.comboBox的第一个则,切换上一个分支
+                if self.comboBox.currentIndex() != 0:
+                    self.comboBox.setCurrentIndex(self.comboBox.currentIndex() - 1)
+            # 如果按下ctrl+向下键
+            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Down:
+                # 将焦点上移一行,抵消下移的误差
+                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
+                # 如果分支不为self.comboBox的最后一个则,切换下一个分支
+                if self.comboBox.currentIndex() != self.comboBox.count() - 1:
+                    self.comboBox.setCurrentIndex(self.comboBox.currentIndex() + 1)
+        return super().eventFilter(obj, event)
 
 
 class About(QDialog, Ui_About):
@@ -684,6 +728,11 @@ class About(QDialog, Ui_About):
         # 初始化窗体
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+        # 加载窗体大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
+        # 绑定事件
         self.github.clicked.connect(self.show_github)
         self.gitee.clicked.connect(self.show_gitee)
 
@@ -694,6 +743,10 @@ class About(QDialog, Ui_About):
     @staticmethod
     def show_gitee():
         QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
+
+    def closeEvent(self, event):
+        # 保存窗体大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
 
 
 class Info(QDialog, Ui_Form):

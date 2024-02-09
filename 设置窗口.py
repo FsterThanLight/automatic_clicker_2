@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMessageBox, QDialog
 
-from 数据库操作 import update_settings_in_database, get_setting_data_from_db
+from 数据库操作 import update_settings_in_database, get_setting_data_from_db, set_window_size, save_window_size
 from 窗体.setting import Ui_Setting
 
 
@@ -13,6 +13,11 @@ class Setting(QDialog, Ui_Setting):
         # 初始化设置窗口
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+        # 设置窗口大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
+        # 绑定事件
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
         self.radioButton_2.clicked.connect(lambda: self.change_mode('极速模式'))  # 开启极速模式
@@ -92,3 +97,7 @@ class Setting(QDialog, Ui_Setting):
             self.horizontalSlider_4.setEnabled(True)
             self.pushButton_3.setEnabled(True)
             self.restore_default()
+
+    def closeEvent(self, event):
+        # 窗口大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
