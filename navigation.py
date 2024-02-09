@@ -18,7 +18,7 @@ from openpyxl.utils.exceptions import InvalidFileException
 
 from 功能类 import SendWeChat
 from 截图模块 import ScreenCapture
-from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_count_from_branch_name, \
+from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
@@ -123,12 +123,14 @@ class Na(QWidget, Ui_navigation):
             if selected_text in {'自动跳过', '提示异常并暂停', '提示异常并停止'}:
                 exception_handling_text = selected_text
             elif selected_text == '跳转分支':
-                branch_table_name = extract_global_parameter('分支表名')
-                branch_table_name_index = branch_table_name.index(self.comboBox_10.currentText())
+                # branch_table_name = extract_global_parameter('分支表名')
+                # branch_table_name_index = branch_table_name.index(self.comboBox_10.currentText())
+                select_branch_table_name = self.comboBox_10.currentText()
                 if self.comboBox_11.currentText() == '':
                     QMessageBox.critical(self, "错误", "分支表下无指令，请检查分支表名是否正确！")
                     raise ValueError
-                exception_handling_text = f'分支-{branch_table_name_index}-{int(self.comboBox_11.currentText()) - 1}'
+                exception_handling_text = f'{select_branch_table_name}-{int(self.comboBox_11.currentText())}'
+                # exception_handling_text = f'分支-{branch_table_name_index}-{int(self.comboBox_11.currentText()) - 1}'
             return exception_handling_text
 
         # 当前页的index
@@ -1021,7 +1023,7 @@ class Na(QWidget, Ui_navigation):
                     self.comboBox_10.addItems(extract_global_parameter('分支表名'))
                     self.comboBox_10.setCurrentIndex(0)
                     # 获取分支表名中的指令数量
-                    count_record = get_count_from_branch_name(self.comboBox_10.currentText())
+                    count_record = get_branch_count(self.comboBox_10.currentText())
                     # 加载分支中的命令序号
                     branch_order = [str(i) for i in range(1, count_record + 1)]
                     if len(branch_order) == 0:
@@ -1029,7 +1031,7 @@ class Na(QWidget, Ui_navigation):
                     else:
                         self.comboBox_11.addItems(branch_order)
             elif type_ == '分支名称':  # 分支表名下拉列表变化触发
-                count_record = get_count_from_branch_name(self.comboBox_10.currentText())
+                count_record = get_branch_count(self.comboBox_10.currentText())
                 self.comboBox_11.clear()
                 # 加载分支中的命令序号
                 branch_order = [str(i) for i in range(1, count_record + 1)]

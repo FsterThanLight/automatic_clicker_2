@@ -128,7 +128,7 @@ def extract_excel_from_global_parameter():
     return excel_files
 
 
-def get_count_from_branch_name(branch_name: str) -> int:
+def get_branch_count(branch_name: str) -> int:
     """获取分支表的数量
     :param branch_name: 分支表名
     :return: 目标分支表名中的指令数量"""
@@ -142,27 +142,13 @@ def get_count_from_branch_name(branch_name: str) -> int:
     return count_record
 
 
-def get_branch_table_ins(branch_name: str) -> list:
-    """获取某分支表名中的所有指令
-    :param branch_name 目标分支表名
-    :return 目标分支表名中的指令内容"""
-    # 连接数据库
-    cursor, con = sqlitedb()
-    # 获取表中数据记录的个数
-    cursor.execute('SELECT * FROM 命令 where 隶属分支=?', (branch_name,))
-    count_record = cursor.fetchall()
-    # 关闭连接
-    close_database(cursor, con)
-    return count_record
-
-
-def get_instructions() -> list:
-    """获取所有指令"""
-    cursor_, con_ = sqlitedb()
-    cursor_.execute('select * from 命令')
-    list_instructions = cursor_.fetchall()
-    close_database(cursor_, con_)
-    return list_instructions
+# def get_instructions() -> list:
+#     """获取所有指令"""
+#     cursor_, con_ = sqlitedb()
+#     cursor_.execute('select * from 命令')
+#     list_instructions = cursor_.fetchall()
+#     close_database(cursor_, con_)
+#     return list_instructions
 
 
 def clear_all_ins(judge: bool = False, branch_name: str = None):
@@ -213,7 +199,42 @@ def set_window_size(window_name: str = '主窗口'):
         return 0, 0
 
 
+def extracted_ins_from_database(branch_name=None) -> list:
+    """提取所有分支表名
+    :param branch_name: 分支表名，如果不传入，则提取所有指令
+    :return: 分支表名列表"""
+
+    def get_branch_table_ins(branch_name_: str) -> list:
+        """获取某分支表名中的所有指令
+        :param branch_name_ 目标分支表名
+        :return 目标分支表名中的指令内容"""
+        # 连接数据库
+        cursor, con = sqlitedb()
+        # 获取表中数据记录的个数
+        cursor.execute('SELECT * FROM 命令 where 隶属分支=?', (branch_name_,))
+        count_record = cursor.fetchall()
+        # 关闭连接
+        close_database(cursor, con)
+        return count_record
+
+    # 提取所有分支中的指令
+    if branch_name:
+        return get_branch_table_ins(branch_name)  # 返回分支指令列表
+    else:
+        # 提取所有分支表中的指令
+        branch_table_name_list = extract_global_parameter('分支表名')
+        all_list_instructions = []
+        if len(branch_table_name_list) != 0:
+            for branch_table_name in branch_table_name_list:
+                all_list_instructions.append(get_branch_table_ins(branch_table_name))
+            return all_list_instructions
+
+
 if __name__ == '__main__':
     pass
-    # update_settings_in_database(暂停时间=0.2, 时间间隔=0.2, 图像匹配精度=0.8)
-    # clear_all_ins(judge=True)
+    all_list_instructions_ = extracted_ins_from_database()
+    print(all_list_instructions_)
+    print(len(all_list_instructions_))
+    for i in all_list_instructions_:
+        print(i)
+    # print(get_branch_table_ins('分支1'))

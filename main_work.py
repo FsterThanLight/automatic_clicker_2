@@ -13,17 +13,28 @@ import subprocess
 
 #
 import winsound
+from PyQt5.QtCore import *
 
 from 功能类 import *
 from 数据库操作 import sqlitedb, close_database, extract_global_parameter
 from 网页操作 import WebOption
 
-COMMAND_TYPE_SIMULATE_CLICK = "模拟点击"
-COMMAND_TYPE_CUSTOM = "自定义"
-
 
 def exit_main_work():
     sys.exit()
+
+
+class CommandThread(QThread):
+    """指令线程"""
+
+    def __init__(self):
+        super(CommandThread, self).__init__()
+        # 自定义信号
+        self.send_message = pyqtSignal(str, name='send_message')
+        self.finished_signal = pyqtSignal(str, name='finished_signal')
+
+    def run(self):
+        pass
 
 
 class MainWork:
@@ -33,15 +44,12 @@ class MainWork:
         # 终止和暂停标志
         self.start_state = True
         self.suspended = False
-        # 主窗体
-        self.main_window = main_window
-        # 导航窗体
-        self.navigation = navigation
+        self.main_window = main_window  # 主窗体
+        self.navigation = navigation  # 导航窗体
         # 网页操作类
         self.web_option = WebOption(self.main_window, self.navigation)
         # 读取配置文件
-        self.settings = SettingsData()
-        self.settings.init()
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 在窗体中显示循环次数
         self.number = 1
         # 全部指令的循环次数，无限循环为标志
@@ -50,6 +58,10 @@ class MainWork:
         # 从数据库中读取全局参数
         self.image_folder_path = extract_global_parameter('资源文件夹路径')
         self.branch_table_name = extract_global_parameter('分支表名')
+        # 指令执行线程
+        self.command_thread = CommandThread()
+        self.command_thread.send_message.connect(self.send_message)
+        self.command_thread.finished_signal.connect(self.thread_finished)
 
     def reset_loop_count_and_infinite_loop_judgment(self):
         """重置循环次数和无限循环标志"""
@@ -89,8 +101,6 @@ class MainWork:
         # 读取数据库中的数据
         list_instructions = self.extracted_data_all_list(only_current_instructions)
         # 开始执行主要操作
-        self.main_window.plainTextEdit.clear()
-        self.main_window.tabWidget.setCurrentIndex(0)
         try:
             if len(list_instructions) != 0:
                 # keyboard.hook(self.abc)
@@ -107,7 +117,7 @@ class MainWork:
                             # event.clear()
                             # event.wait(86400)
                         self.number += 1
-                        time.sleep(float(self.settings.time_sleep))
+                        time.sleep(self.time_sleep)
                 # 如果状态为有限次循环
                 elif not self.infinite_cycle and self.number_cycles > 0:
                     self.number = 1
@@ -124,7 +134,7 @@ class MainWork:
                         # print('第', self.number, '次循环')
                         self.main_window.plainTextEdit.appendPlainText('完成第' + str(self.number) + '次循环')
                         self.number += 1
-                        time.sleep(float(self.settings.time_sleep))
+                        time.sleep(self.time_sleep)
                     self.main_window.plainTextEdit.appendPlainText('结束任务')
                 elif not self.infinite_cycle and self.number_cycles <= 0:
                     print("请设置执行循环次数！")
@@ -298,7 +308,7 @@ class MainWork:
                     current_index += 1
                 except Exception as e:
                     print(e)
-                # except IndexError:
+                    # except IndexError:
                     # 跳转分支的指定指令
                     print('分支指令:' + exception_handling)
 
@@ -376,35 +386,13 @@ class MainWork:
         #     print('你按下了恢复键')
         #     self.suspended = False
 
+    def send_message(self, message):
+        """发送消息"""
+        self.main_window.plainTextEdit.appendPlainText(message)
 
-class SettingsData:
-    def __init__(self):
-        self.duration = 0
-        self.interval = 0
-        self.confidence = 0
-        self.time_sleep = 0
-
-    def init(self):
-        """设置初始化"""
-        # 从数据库加载设置
-        # 取得当前文件目录
-        cursor, conn = sqlitedb()
-        # 从数据库中取出全部数据
-        cursor.execute('select * from 设置')
-        # 读取全部数据
-        list_setting_data = cursor.fetchall()
-        # 关闭连接
-        close_database(cursor, conn)
-
-        for i in range(len(list_setting_data)):
-            if list_setting_data[i][0] == '图像匹配精度':
-                self.confidence = list_setting_data[i][1]
-            elif list_setting_data[i][0] == '时间间隔':
-                self.interval = list_setting_data[i][1]
-            elif list_setting_data[i][0] == '持续时间':
-                self.duration = list_setting_data[i][1]
-            elif list_setting_data[i][0] == '暂停时间':
-                self.time_sleep = list_setting_data[i][1]
+    def thread_finished(self, message):
+        """线程结束"""
+        self.main_window.plainTextEdit.appendPlainText(message)
 
 
 if __name__ == '__main__':

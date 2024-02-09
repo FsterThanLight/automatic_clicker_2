@@ -451,7 +451,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     sheet['J1'] = '备注'
                     sheet['K1'] = '隶属分支'
                     # 写入数据
-                    branch_list_instructions = get_branch_table_ins(branch_name)
+                    branch_list_instructions = extracted_ins_from_database(branch_name)
                     for ins in range(len(branch_list_instructions)):
                         for i in range(len(branch_list_instructions[ins])):
                             sheet.cell(row=ins + 2, column=i + 1, value=branch_list_instructions[ins][i])
@@ -590,6 +590,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 开始主任务
         if not only_current_instructions:
             info_win = info_show()
+
+            self.plainTextEdit.clear()
+            self.tabWidget.setCurrentIndex(0)
+
             main_work.start_work()
             info_win.close()
         elif only_current_instructions:
