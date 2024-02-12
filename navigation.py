@@ -840,7 +840,7 @@ class Na(QWidget, Ui_navigation):
                 '参数1（键鼠指令）': parameter_1_,
                 '参数2': parameter_2_,
             }
-            wechat_option = SendWeChat(self.main_window, self, ins_dic)
+            wechat_option = SendWeChat(None, self, ins_dic)
             wechat_option.is_test = True
             wechat_option.send_message_to_wechat(parameter_1_, parameter_2_, int(self.spinBox.value()))
 

@@ -11,19 +11,22 @@
 from __future__ import print_function
 
 import datetime
+import re
 import shutil
 
-import winsound
+import openpyxl
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import *
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
-                             QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar)
+                             QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication)
 from openpyxl.utils import get_column_letter
+from system_hotkey import SystemHotkey
 
+from main_work import CommandThread
 from navigation import Na
-from 功能类 import *
+from 功能类 import close_browser
 from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.info import Ui_Form
@@ -48,6 +51,7 @@ from 资源文件夹窗口 import Global_s
 # todo: qss界面美化
 # todo: 指令可编译为python代码
 # todo: 播放语言功能
+# todo: 运行时隐藏主窗口
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -61,280 +65,11 @@ from 资源文件夹窗口 import Global_s
 # 4. 在功能类中添加运行功能
 
 OUR_WEBSITE = 'https://gitee.com/automatic_clicker/automatic_clicker_2'
-branch_name_thread = None  # 分支表名，开始线程时赋值，用于选择是执行所有指令还是当前分支的指令
-
-
-class CommandThread(QThread):
-    """指令线程"""
-    send_message = pyqtSignal(str, name='send_message')
-    finished_signal = pyqtSignal(str, name='finished_signal')
-
-    def __init__(self, main_window, navigation):
-        super(CommandThread, self).__init__(parent=None)
-        # 窗体属性
-        self.main_window = main_window
-        self.navigation = navigation
-        # 循环控制
-        self.number = 1  # 在窗体中显示循环次数
-        self.number_cycles = self.main_window.spinBox.value()  # 循环次数
-        # 终止和暂停标志
-        self.start_state = True
-        self.suspended = False
-        # 读取配置文件
-        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
-        self.image_folder_path = extract_global_parameter('资源文件夹路径')
-        self.branch_table_name = extract_global_parameter('分支表名')
-
-    def run(self):
-        """执行指令"""
-
-        # 执行指令
-        global branch_name_thread
-        list_instructions = extracted_ins_from_database(branch_name_thread)
-        if len(list_instructions) != 0:
-
-            # 如果状态为True执行无限循环
-            if self.main_window.radioButton.isChecked():
-                self.number = 1
-                while self.start_state:
-                    # 执行指令集中的指令
-                    self.execute_instructions(0, 0, list_instructions)
-                    self.main_window.plainTextEdit.appendPlainText(f'完成第{self.time_sleep}次循环')
-                    self.number += 1
-                    time.sleep(self.time_sleep)
-
-            # 如果状态为有限次循环
-            elif (not self.main_window.radioButton.isChecked()) and (self.number_cycles > 0):
-                self.number = 1
-                while self.number <= self.number_cycles and self.start_state:
-                    self.execute_instructions(0, 0, list_instructions)
-                    self.main_window.plainTextEdit.appendPlainText(f'完成第{self.time_sleep}次循环')
-                    self.number += 1
-                    time.sleep(self.time_sleep)
-                # 结束信号
-                self.main_window.plainTextEdit.appendPlainText('完成任务')
-
-            # 结束信号
-            self.finished_signal.emit('完成任务')
-
-    def execute_instructions(self, current_list_index, current_index, list_instructions_):
-        """执行接受到的操作指令"""
-        # 读取指令
-        while current_index < len(list_instructions_[current_list_index]):
-            try:
-                elem_ = list_instructions_[current_list_index][current_index]
-                # print('elem_:', elem_)
-                # 【指令集合【指令分支（指令元素[元素索引]）】】
-                # print('执行当前指令：', elem_)
-                dic_ = {
-                    'ID': elem_[0],
-                    '图像路径': elem_[1],
-                    '指令类型': elem_[2],
-                    '参数1（键鼠指令）': elem_[3],
-                    '参数2': elem_[4],
-                    '参数3': elem_[5],
-                    '参数4': elem_[6],
-                    '重复次数': elem_[7],
-                    '异常处理': elem_[8]
-                }
-                # 读取指令类型
-                cmd_type = dict(dic_)['指令类型']
-                exception_handling = dict(dic_)['异常处理']
-                try:
-                    # 图像识别点击的事件
-                    if cmd_type == "图像点击":
-                        image_click = ImageClick(main_window=self.main_window, ins_dic=dic_)
-                        image_click.start_execute(self.number)
-
-                    # 屏幕坐标点击事件
-                    elif cmd_type == '坐标点击':
-                        coordinate_click = CoordinateClick(main_window=self.main_window, ins_dic=dic_)
-                        coordinate_click.start_execute(self.number)
-
-                    # 等待的事件
-                    elif cmd_type == '时间等待':
-                        waiting = TimeWaiting(main_window=self.main_window, ins_dic=dic_)
-                        waiting.start_execute()
-
-                    # 图像等待事件
-                    elif cmd_type == '图像等待':
-                        image_waiting = ImageWaiting(main_window=self.main_window, ins_dic=dic_)
-                        image_waiting.start_execute()
-
-                    # 滚轮滑动的事件
-                    elif cmd_type == '滚轮滑动':
-                        scroll_wheel = RollerSlide(main_window=self.main_window, ins_dic=dic_)
-                        scroll_wheel.start_execute()
-
-                    # 文本输入的事件
-                    elif cmd_type == '文本输入':
-                        text_input = TextInput(main_window=self.main_window, ins_dic=dic_)
-                        text_input.start_execute()
-
-                    # 鼠标移动的事件
-                    elif cmd_type == '移动鼠标':
-                        move_mouse = MoveMouse(main_window=self.main_window, ins_dic=dic_)
-                        move_mouse.start_execute()
-
-                    # 键盘按键的事件
-                    elif cmd_type == '按下键盘':
-                        press_keyboard = PressKeyboard(main_window=self.main_window, ins_dic=dic_)
-                        press_keyboard.start_execute()
-
-                    # 中键激活的事件
-                    elif cmd_type == '中键激活':
-                        middle_activation = MiddleActivation(main_window=self.main_window, ins_dic=dic_)
-                        middle_activation.start_execute()
-
-                    # 鼠标事件
-                    elif cmd_type == '鼠标点击':
-                        mouse_click = MouseClick(main_window=self.main_window, ins_dic=dic_)
-                        mouse_click.start_execute()
-
-                    # 图片信息录取
-                    elif cmd_type == '信息录入':
-                        information_entry = InformationEntry(main_window=self.main_window, ins_dic=dic_)
-                        information_entry.start_execute(self.number)
-
-                    # 网页操作
-                    elif cmd_type == '打开网址':
-                        web_control = OpenWeb(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
-                        web_control.start_execute()
-
-                    # 网页元素操作
-                    elif cmd_type == '元素控制':
-                        web_element = EleControl(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
-                        web_element.start_execute()
-
-                    # 网页录入
-                    elif cmd_type == '网页录入':
-                        web_entry = WebEntry(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        web_entry.start_execute(self.number)
-
-                    # 鼠标拖拽
-                    elif cmd_type == '鼠标拖拽':
-                        mouse_drag = MouseDrag(main_window=self.main_window, ins_dic=dic_)
-                        mouse_drag.start_execute()
-
-                    # 切换frame
-                    elif cmd_type == '切换frame':
-                        toggle_frame = ToggleFrame(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        toggle_frame.start_execute()
-
-                    # 读取网页数据到excel
-                    elif cmd_type == '保存表格':
-                        save_form = SaveForm(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        save_form.start_execute()
-
-                    # 拖动网页元素
-                    elif cmd_type == '拖动元素':
-                        drag_element = DragWebElements(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        drag_element.start_execute()
-
-                    # 全屏截图
-                    elif cmd_type == '全屏截图':
-                        full_screen_capture = FullScreenCapture(main_window=self.main_window, ins_dic=dic_)
-                        full_screen_capture.start_execute()
-
-                    # 窗口切换
-                    elif cmd_type == '切换窗口':
-                        # 切换窗口
-                        switch_window = SwitchWindow(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        switch_window.start_execute()
-
-                    # 发送消息到微信
-                    elif cmd_type == '发送消息':
-                        sendwechat = SendWeChat(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        sendwechat.start_execute()
-
-                    # 数字验证码
-                    elif cmd_type == '数字验证码':
-                        digital_verification_code = VerificationCode(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
-                        digital_verification_code.start_execute()
-
-                    # 执行完毕后，跳转到下一条指令
-                    current_index += 1
-                except Exception as e:
-                    print(e)
-                    # except IndexError:
-                    # 跳转分支的指定指令
-                    print('分支指令:', exception_handling)
-
-                    # 自动跳过功能
-                    if exception_handling == '自动跳过':
-                        current_index += 1
-                    elif exception_handling == '抛出异常并暂停':
-                        winsound.Beep(1000, 1000)  # 弹出提示框
-                        # 弹出提示框
-                        reply = QMessageBox.question(self.main_window, '提示',
-                                                     'ID为{}的指令抛出异常！\n是否继续执行？'.format(dict(dic_)['ID']),
-                                                     QMessageBox.Yes | QMessageBox.No,
-                                                     QMessageBox.No)
-                        if reply == QMessageBox.Yes:
-                            current_index += 1
-                        else:
-                            self.start_state = False
-                            current_index += 1
-                            break
-
-                    # 抛出异常并停止
-                    elif exception_handling == '抛出异常并停止':
-                        winsound.Beep(1000, 1000)
-                        # 弹出提示框
-                        QMessageBox.warning(self.main_window, '提示',
-                                            'ID为{}的指令抛出异常！\n已停止执行！'.format(dict(dic_)['ID']))
-                        current_index += 1
-                        self.start_state = False
-                        break
-
-                    # 跳转分支指令
-                    else:  # 跳转分支
-                        self.main_window.plainTextEdit.appendPlainText('转到分支：{}'.format(exception_handling))
-                        target_branch_name = exception_handling.split('-')[0]  # 分支表名
-                        # 目标分支表名在分支表名中的索引
-                        branch_table_name_index = self.branch_table_name.index(target_branch_name)
-                        # 分支表中要跳转的指令索引
-                        branch_ins_index = exception_handling.split('-')[1]
-                        x = int(branch_table_name_index)
-                        y = int(branch_ins_index) - 1
-                        self.execute_instructions(x, y, list_instructions_)
-                        break
-
-            except IndexError:
-                self.main_window.plainTextEdit.appendPlainText('分支执行异常！')
-                QMessageBox.warning(self.main_window, '提示', '分支执行异常！')
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
     """主窗口"""
+    sigkeyhot = pyqtSignal(str)  # 自定义信号,用于快捷键
 
     def __init__(self):
         super().__init__()
@@ -361,7 +96,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionf.triggered.connect(self.data_import)  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
-        self.pushButton_4.clicked.connect(lambda: self.start(only_current_instructions=True))
+        self.pushButton_4.clicked.connect(lambda: self.start(True))  # 仅运行分支
         # self.pushButton_6.clicked.connect(exit_main_work)  # 结束任务按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
         # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
@@ -378,6 +113,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.command_thread = CommandThread(self, None)
         self.command_thread.send_message.connect(self.send_message)
         self.command_thread.finished_signal.connect(self.thread_finished)
+        # self.command_thread.send_type_and_id.connect(self.show_message_box_in_thread)
+        # 设置全局快捷键,用于执行指令的终止
+        self.sigkeyhot.connect(self.global_shortcut_key)
+        self.hk_stop = SystemHotkey()
+        self.hk_stop.register(('f11',),
+                              callback=lambda x: self.sendkeyevent("终止线程"))
         # 加载上次的指令表格
         self.get_data()
         self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
@@ -747,9 +488,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         """关闭窗口事件"""
-        # 关闭浏览器
-        if DRIVER is not None:
-            DRIVER.quit()
+        # 终止线程
+        if self.command_thread.isRunning():
+            print('终止线程')
+            self.command_thread.terminate()
         # 是否退出清空数据库
         if eval(get_setting_data_from_db('退出提醒清空指令')):
             choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
@@ -757,11 +499,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 退出终止后台进程并清空数据库
                 event.accept()
                 clear_all_ins()
-                exit_main_work()
             else:
                 event.ignore()
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
+        # 关闭浏览器驱动
+        close_browser()
 
     def data_import(self):
         """导入数据功能"""
@@ -847,7 +590,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 clear_all_ins(True)  # 清空原有数据，包括分支表
                 data_import_from_excel(target_path)
 
-    def start(self, only_current_instructions=False):
+    def start(self, run_branch=False):
         """主窗体开始按钮"""
 
         def operation_before_execution():
@@ -855,19 +598,19 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.plainTextEdit.clear()  # 清空日志
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
 
-        # navigation = Na(self)  # 实例化导航页窗口
-        # 开始主任务
-        if not only_current_instructions:
-            operation_before_execution()
+        if run_branch is False:  # 执行主任务
+            self.comboBox.setCurrentIndex(0)  # 切换到主流程
+            operation_before_execution()  # 执行前的操作
             # 执行主任务
             self.command_thread.start()
 
-        elif only_current_instructions:
+        else:  # 执行当前分支的任务
             if self.comboBox.currentText() == MAIN_FLOW:
                 QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
             else:
                 operation_before_execution()
-                # main_work.start_work(self.comboBox.currentText())
+                self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+                self.command_thread.start()
 
     def hide_toolbar(self):
         """隐藏工具栏"""
@@ -983,14 +726,41 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     self.comboBox.setCurrentIndex(self.comboBox.currentIndex() + 1)
         return super().eventFilter(obj, event)
 
+        # 热键处理函数
+
+    def global_shortcut_key(self, i_str):
+        """全局热键处理函数"""
+        if i_str == "终止线程":
+            self.command_thread.terminate()  # 终止线程
+            self.plainTextEdit.appendPlainText('停止运行！')
+
+    def sendkeyevent(self, i_str):
+        """发送热键信号,将外部信号，转化成qt信号,用于全局热键"""
+        self.sigkeyhot.emit(i_str)
+
     def send_message(self, message):
-        """发送消息"""
+        """向日志窗口发送信息"""
         self.plainTextEdit.appendPlainText(message)
 
     def thread_finished(self, message):
         """线程结束"""
         self.plainTextEdit.appendPlainText(message)
-        # self.info.close()
+
+    # def show_message_box_in_thread(self, type_, id_):
+    #     """在线程中显示消息框"""
+    #     # self.command_thread.pause()
+    #     if type_ == '提示异常并暂停':
+    #         reply = QMessageBox.question(self, '提示',
+    #                                      'ID为{}的指令抛出异常！\n是否继续执行？'.format(id_),
+    #                                      QMessageBox.Yes | QMessageBox.No,
+    #                                      QMessageBox.No)
+    #         if reply == QMessageBox.Yes:
+    #             self.command_thread.set_reply(True)
+    #             # self.command_thread.resume()
+    #         else:
+    #             # self.command_thread.set_reply(False)
+    #             # self.command_thread.resume()
+    #             self.command_thread.terminate()
 
 
 class About(QDialog, Ui_About):

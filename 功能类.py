@@ -43,6 +43,14 @@ def exit_main_work():
     sys.exit()
 
 
+def close_browser():
+    """关闭浏览器"""
+    global DRIVER
+    web_option = WebOption()
+    web_option.driver = DRIVER
+    web_option.close_browser()
+
+
 def timer(func):
     def func_wrapper(*args, **kwargs):
         from time import time
@@ -59,7 +67,7 @@ def timer(func):
 class ImageClick:
     """图像点击"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db(
             '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
@@ -69,7 +77,7 @@ class ImageClick:
         self.confidence = float(setting_data_dic.get('图像匹配精度'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -115,7 +123,7 @@ class ImageClick:
             # nonlocal repeat, number_1
             if location is not None:
                 # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
-                self.main_window.plainTextEdit.appendPlainText('找到匹配图片%s' % str(number))
+                self.command_thread.show_message('找到匹配图片%s' % str(number))
                 pyautogui.click(location.x, location.y,
                                 clicks=click_times,
                                 interval=self.interval,
@@ -124,7 +132,7 @@ class ImageClick:
 
         try:
             min_search_time = 1 if skip == "自动略过" else float(skip)
-            self.main_window.plainTextEdit.appendPlainText('正在查找匹配图像...')
+            self.command_thread.show_message('正在查找匹配图像...')
             QApplication.processEvents()
             location_ = pyautogui.locateCenterOnScreen(
                 image=img,
@@ -134,18 +142,18 @@ class ImageClick:
             if location_:  # 如果找到图像
                 image_match_click(location_)
             elif not location_:  # 如果未找到图像
-                self.main_window.plainTextEdit.appendPlainText('未找到匹配图像')
+                self.command_thread.show_message('未找到匹配图像')
             QApplication.processEvents()
         except OSError:
             QMessageBox.critical(
-                self.main_window, '错误', '文件下未找到.png图像文件，请检查文件是否存在！'
+                None, '错误', '文件下未找到.png图像文件，请检查文件是否存在！'
             )
 
 
 class CoordinateClick:
     """坐标点击"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db(
             '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
@@ -154,7 +162,7 @@ class CoordinateClick:
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -165,7 +173,7 @@ class CoordinateClick:
         x_ = int(self.ins_dic.get('参数2').split('-')[0])
         y_ = int(self.ins_dic.get('参数2').split('-')[1])
         z_ = int(self.ins_dic.get('参数2').split('-')[1])
-        self.main_window.plainTextEdit.appendPlainText('x_,y坐标：' + str(x_) + ',' + str(y_))
+        self.command_thread.show_message(f'x_,y坐标：{str(x_)},{str(y_)}')
         click_map = {
             '左键单击': [1, 'left', x_, y_],
             '左键双击': [2, 'left', x_, y_],
@@ -188,9 +196,9 @@ class CoordinateClick:
                             clicks=click_times,
                             interval=self.interval,
                             duration=self.duration,
-                            button=lOrR)
-            self.main_window.plainTextEdit.appendPlainText(
-                '执行坐标%s:%s点击' % (x__, y__) + str(number))
+                            button=lOrR
+                            )
+            self.command_thread.show_message(f'执行坐标{x__}:{y__}点击{str(number)}')
         elif reTry > 1:
             i = 1
             while i < reTry + 1:
@@ -199,8 +207,9 @@ class CoordinateClick:
                                 interval=self.interval,
                                 duration=self.duration,
                                 button=lOrR)
-                self.main_window.plainTextEdit.appendPlainText(
-                    '执行坐标%s:%s点击' % (x__, y__) + str(number))
+                # self.main_window.plainTextEdit.appendPlainText(
+                #     '执行坐标%s:%s点击' % (x__, y__) + str(number))
+                self.command_thread.show_message(f'执行坐标{x__}:{y__}点击{str(number)}')
                 i += 1
                 time.sleep(self.time_sleep)
 
@@ -208,9 +217,9 @@ class CoordinateClick:
 class TimeWaiting:
     """等待"""
 
-    def __init__(self, main_window, ins_dic):
-        # 主窗口
-        self.main_window = main_window
+    def __init__(self, command_thread, ins_dic):
+        # 执行线程
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -219,8 +228,7 @@ class TimeWaiting:
         wait_type = self.ins_dic.get('参数1（键鼠指令）')
         if wait_type == '时间等待':
             wait_time = int(self.ins_dic.get('参数2'))
-            self.main_window.plainTextEdit.appendPlainText('等待时长%d秒' % wait_time)
-            QApplication.processEvents()
+            self.command_thread.show_message('等待时长%d秒' % wait_time)
             self.stop_time(wait_time)
         elif wait_type == '定时等待':
             target_time, interval_time = self.ins_dic.get('参数2').split('+')
@@ -230,8 +238,7 @@ class TimeWaiting:
         elif wait_type == '随机等待':
             min_time, max_time = self.ins_dic.get('参数2').split('-')
             wait_time = random.randint(int(min_time), int(max_time))
-            self.main_window.plainTextEdit.appendPlainText('随机等待时长%d秒' % wait_time)
-            QApplication.processEvents()
+            self.command_thread.show_message('随机等待时长%d秒' % wait_time)
             self.stop_time(wait_time)
 
     def wait_to_time(self, target_time, interval):
@@ -244,17 +251,11 @@ class TimeWaiting:
         while True:
             now = datetime.now()
             if show_times == 1:
-                self.main_window.plainTextEdit.appendPlainText(
-                    "当前为：%s" % now.strftime('%Y/%m/%d %H:%M:%S')
-                )
-                self.main_window.plainTextEdit.appendPlainText(
-                    "等待至：%s" % target_time
-                )
-                QApplication.processEvents()
+                self.command_thread.show_message('当前为：%s' % now.strftime('%Y/%m/%d %H:%M:%S'))
+                self.command_thread.show_message('等待至：%s' % target_time)
                 show_times = sleep_time
             if now >= parse(target_time):
-                self.main_window.plainTextEdit.appendPlainText("退出等待")
-                # print("退出等待")
+                self.command_thread.show_message('退出等待')
                 break
             # 时间暂停
             time.sleep(sleep_time)
@@ -264,24 +265,23 @@ class TimeWaiting:
         """暂停时间"""
         for i in range(seconds):
             # 显示剩下等待时间
-            self.main_window.plainTextEdit.appendPlainText('等待中...剩余%d秒' % (seconds - i))
-            QApplication.processEvents()
+            self.command_thread.show_message('等待中...剩余%d秒' % (seconds - i))
             time.sleep(1)
 
 
 class ImageWaiting:
     """图片等待"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
     def wait_to_image(self, image, wait_instruction_type, timeout_period):
         """执行图片等待"""
         if wait_instruction_type == '等待到指定图像出现':
-            self.main_window.plainTextEdit.appendPlainText('正在等待指定图像出现中...')
+            self.command_thread.show_message('正在等待指定图像出现中...')
             QApplication.processEvents()
             location = pyautogui.locateCenterOnScreen(
                 image=image,
@@ -289,7 +289,7 @@ class ImageWaiting:
                 minSearchTime=timeout_period
             )
             if location:
-                self.main_window.plainTextEdit.appendPlainText('目标图像已经出现，等待结束')
+                self.command_thread.show_message('目标图像已经出现，等待结束')
                 QApplication.processEvents()
         elif wait_instruction_type == '等待到指定图像消失':
             vanish = True
@@ -302,7 +302,7 @@ class ImageWaiting:
                     )
                     print('location', location)
                 except pyautogui.ImageNotFoundException:
-                    self.main_window.plainTextEdit.appendPlainText('目标图像已经消失，等待结束')
+                    self.command_thread.show_message('目标图像已经消失，等待结束')
                     QApplication.processEvents()
                     vanish = False
                 else:
@@ -319,11 +319,11 @@ class ImageWaiting:
 class RollerSlide:
     """滑动鼠标滚轮"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -354,20 +354,19 @@ class RollerSlide:
     def wheel_slip(self, scroll_direction, scroll_distance):
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
-        self.main_window.plainTextEdit.appendPlainText(
-            '滚轮滑动%s%d距离' % (scroll_direction, abs(scroll_distance)))
+        self.command_thread.show_message('滚轮滑动%s%d距离' % (scroll_direction, abs(scroll_distance)))
 
 
 class TextInput:
     """输入文本"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db('时间间隔', '暂停时间')
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -386,23 +385,23 @@ class TextInput:
             pyperclip.copy(input_value)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(self.time_sleep)
-            self.main_window.plainTextEdit.appendPlainText('执行文本输入%s' % input_value)
+            self.command_thread.show_message('执行文本输入%s' % input_value)
         elif special_control_judgment == 'True':
             pyautogui.typewrite(input_value, interval=self.interval)
-            self.main_window.plainTextEdit.appendPlainText('执行特殊控件的文本输入%s' % input_value)
+            self.command_thread.show_message('执行特殊控件的文本输入%s' % input_value)
             time.sleep(self.time_sleep)
 
 
 class MoveMouse:
     """移动鼠标"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db('持续时间', '暂停时间')
         self.duration = float(setting_data_dic.get('持续时间'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -433,18 +432,17 @@ class MoveMouse:
         if direction in directions:
             x, y = directions.get(direction)
             pyautogui.moveRel(x * int(distance), y * int(distance), duration=self.duration)
-        self.main_window.plainTextEdit.appendPlainText(
-            '移动鼠标%s%s像素距离' % (direction, distance))
+        self.command_thread.show_message('移动鼠标%s%s像素距离' % (direction, distance))
 
 
 class PressKeyboard:
     """模拟按下键盘"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -471,17 +469,17 @@ class PressKeyboard:
         """鼠标移动事件
         :param key: 按键列表"""
         keyboard.press_and_release(key)
-        self.main_window.plainTextEdit.appendPlainText('已经按下按键%s' % key)
+        self.command_thread.show_message('按下按键%s' % key)
 
 
 class MiddleActivation:
     """鼠标中键激活"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -502,34 +500,34 @@ class MiddleActivation:
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""
-        self.main_window.plainTextEdit.appendPlainText('等待按下鼠标中键中...按下esc键退出')
+        self.command_thread.show_message('等待按下鼠标中键中...按下F11键退出')
         QApplication.processEvents()
         # print('等待按下鼠标中键中...按下esc键退出')
         mouse.wait(button='middle')
         try:
             if command_type == "模拟点击":
                 pyautogui.click(clicks=int(click_times), button='left')
-                self.main_window.plainTextEdit.appendPlainText('执行鼠标点击%d次' % click_times)
+                self.command_thread.show_message('执行鼠标点击%d次' % click_times)
                 # print('执行鼠标点击' + click_times + '次')
             elif command_type == "自定义":
                 pass
         except OSError:
             # 弹出提示框。提示检查鼠标是否连接
-            self.main_window.plainTextEdit.appendPlainText('连接失败，请检查鼠标是否连接正确。')
+            self.command_thread.show_message('连接失败，请检查鼠标是否连接正确。')
             # print('连接失败，请检查鼠标是否连接正确。')
 
 
 class MouseClick:
     """鼠标在当前位置点击"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db('持续时间', '时间间隔', '暂停时间')
         self.duration = float(setting_data_dic.get('持续时间'))
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -571,22 +569,22 @@ class MouseClick:
             duration=self.duration,
             button=lOrR
         )
-        self.main_window.plainTextEdit.appendPlainText('执行鼠标事件')
+        self.command_thread.show_message('执行鼠标事件')
 
 
 class InformationEntry:
     """从Excel中录入信息到窗口"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
         # 图像点击、文本输入的部分功能
-        self.image_click = ImageClick(self.main_window, self.ins_dic)
-        self.text_input = TextInput(self.main_window, self.ins_dic)
+        self.image_click = ImageClick(self.command_thread, self.ins_dic)
+        self.text_input = TextInput(self.command_thread, self.ins_dic)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -636,7 +634,7 @@ class InformationEntry:
             number
         )
         self.text_input.text_input(cell_value, list_dic.get('特殊控件输入'))
-        self.main_window.plainTextEdit.appendPlainText('已执行信息录入')
+        self.command_thread.show_message('已执行信息录入')
 
     def extra_excel_cell_value(self, excel_path, sheet_name,
                                cell_position, line_number_increment, number):
@@ -656,35 +654,38 @@ class InformationEntry:
             if not line_number_increment:
                 # 获取单元格的值
                 cell_value = sheet[cell_position].value
-                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+                self.command_thread.show_message(f'获取到的单元格值为：{str(cell_value)}')
             elif line_number_increment:
                 # 获取行号递增的单元格的值
                 column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
                 line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
                 new_cell_position = column_number + str(line_number)
                 cell_value = sheet[new_cell_position].value
-                self.main_window.plainTextEdit.appendPlainText('获取到的单元格值为：' + str(cell_value))
+                self.command_thread.show_message(f'获取到的单元格值为：{str(cell_value)}')
             return cell_value
         except FileNotFoundError:
             print('没有找到工作簿')
+            self.command_thread.show_message('没有找到工作簿')
             exit_main_work()
         except KeyError:
             print('没有找到工作表')
+            self.command_thread.show_message('没有找到工作表')
             exit_main_work()
         except AttributeError:
             print('没有找到单元格')
             exit_main_work()
+            self.command_thread.show_message('没有找到单元格')
 
 
 class OpenWeb:
     """打开网页"""
 
-    def __init__(self, main_window, navigation, ins_dic):
-        self.main_window = main_window  # 主窗口
+    def __init__(self, command_thread, navigation, ins_dic):
+        self.command_thread = command_thread  # 主窗口
         self.navigation = navigation  # 导航
         self.ins_dic = ins_dic  # 指令字典
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def start_execute(self):
         """执行重复次数"""
@@ -961,9 +962,9 @@ class DragWebElements:
 class FullScreenCapture:
     """全屏截图"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -980,17 +981,17 @@ class FullScreenCapture:
         screenshot = pyautogui.screenshot()
         # 将图片保存到指定文件夹
         screenshot.save(image_path)
-        self.main_window.plainTextEdit.appendPlainText('已执行全屏截图')
+        self.command_thread.show_message('已执行全屏截图')
 
 
 class SendWeChat:
     """发送微信消息"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
@@ -1053,13 +1054,13 @@ class SendWeChat:
             output_message = None
             time_now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             if judge == '成功':
-                output_message = f'{time_now} 已发送消息：{message_}' if message_ else f'{time_now} 已发送消息'
+                output_message = f'{time_now} 微信已发送消息：{message_}' if message_ else f'{time_now} 已发送消息'
             elif judge == '失败':
                 output_message = f'{time_now} {failure_info}'
             if self.is_test:
                 self.navigation.textBrowser.append(output_message)
             else:
-                self.main_window.plainTextEdit.appendPlainText(output_message)
+                self.command_thread.show_message(output_message)
 
         pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
         hwnd = self.check_course('微信')
@@ -1129,7 +1130,7 @@ class VerificationCode:
         im_b = im_bytes.getvalue()
         ocr = ddddocr.DdddOcr()
         res = ocr.classification(im_b)
-        self.main_window.plainTextEdit.appendPlainText('识别出的验证码为：' + res)
+        self.main_window.plainTextEdit.appendPlainText(f'识别出的验证码为：{res}')
         # 释放资源
         del im
         del im_bytes

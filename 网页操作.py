@@ -2,6 +2,7 @@ import random
 import time
 
 import pandas as pd
+from PyQt5.QtWidgets import QMessageBox, QApplication
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
@@ -36,12 +37,12 @@ class WebOption:
             self.driver.get(url)
             time.sleep(1)
             self.driver.quit()
-            # QMessageBox.information(self.navigation, '提示', '连接成功。', QMessageBox.Yes)
+            QMessageBox.information(self.navigation, '提示', '连接成功。', QMessageBox.Yes)
         except Exception as e:
             # 弹出错误提示
             print(e)
-            # QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
-            #                     QMessageBox.Yes)
+            QMessageBox.warning(self.navigation, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
+                                QMessageBox.Yes)
 
     def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
@@ -50,12 +51,11 @@ class WebOption:
             driver_ = webdriver.Chrome(service=service)
             driver_.quit()
         except ConnectionError:
-            # QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
-            pass
+            QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
 
     def close_browser(self):
         """关闭浏览器驱动"""
-        print('关闭浏览器驱动。')
+        print(f'关闭浏览器驱动：{self.driver}')
         if self.driver is not None:
             self.driver.quit()
 
@@ -128,8 +128,8 @@ class WebOption:
         target_ele = self.lookup_element(element_value_, element_type_, timeout_type_)
         if target_ele is not None:
             print('找到网页元素，执行鼠标操作。')
-            # self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
-            # QApplication.processEvents()
+            self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
+            QApplication.processEvents()
             if action == '左键单击':
                 ActionChains(self.driver).click(target_ele).perform()
             elif action == '左键双击':
