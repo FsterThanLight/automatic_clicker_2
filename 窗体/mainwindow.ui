@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>682</height>
+    <height>687</height>
    </rect>
   </property>
   <property name="font">
@@ -26,13 +26,137 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_4" rowstretch="1,0,0,0,0,0">
+   <layout class="QGridLayout" name="gridLayout_4" rowstretch="1,0,0,0,0,0,0">
     <property name="leftMargin">
      <number>11</number>
     </property>
     <property name="topMargin">
      <number>11</number>
     </property>
+    <item row="5" column="1">
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="WindowText">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>120</red>
+            <green>120</green>
+            <blue>120</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
+      <property name="font">
+       <font>
+        <family>微软雅黑</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="title">
+       <string>操作</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0,0,0">
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <property name="horizontalSpacing">
+        <number>6</number>
+       </property>
+       <item row="0" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_5">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 0, 0);
+color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="text">
+          <string>开始运行（F10）</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>结束任务（F11）</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_7">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>暂停/恢复</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="text">
+          <string>仅运行当前分支</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="5" column="0">
      <widget class="QGroupBox" name="groupBox_3">
       <property name="palette">
@@ -302,130 +426,6 @@
          </property>
          <property name="text">
           <string>运行时隐藏窗口</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="palette">
-       <palette>
-        <active>
-         <colorrole role="WindowText">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>255</red>
-            <green>0</green>
-            <blue>0</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </active>
-        <inactive>
-         <colorrole role="WindowText">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>255</red>
-            <green>0</green>
-            <blue>0</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </inactive>
-        <disabled>
-         <colorrole role="WindowText">
-          <brush brushstyle="SolidPattern">
-           <color alpha="255">
-            <red>120</red>
-            <green>120</green>
-            <blue>120</blue>
-           </color>
-          </brush>
-         </colorrole>
-        </disabled>
-       </palette>
-      </property>
-      <property name="font">
-       <font>
-        <family>微软雅黑</family>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="title">
-       <string>操作</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="0,0,0,0">
-       <property name="leftMargin">
-        <number>9</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>9</number>
-       </property>
-       <property name="bottomMargin">
-        <number>2</number>
-       </property>
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <item row="0" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_5">
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 0, 0);
-color: rgb(255, 255, 255);</string>
-         </property>
-         <property name="text">
-          <string>开始运行（F10）</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_6">
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>结束任务（F11）</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_7">
-         <property name="font">
-          <font>
-           <family>微软雅黑</family>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>暂停/恢复</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="text">
-          <string>仅运行当前分支</string>
          </property>
         </widget>
        </item>
@@ -1012,7 +1012,25 @@ color: rgb(255, 255, 255);</string>
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
-          <item row="1" column="1" colspan="2">
+          <item row="2" column="5">
+           <widget class="QToolButton" name="toolButton_2">
+            <property name="text">
+             <string>添加分支</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../images.qrc">
+              <normaloff>:/按钮图标/窗体/res/add.png</normaloff>:/按钮图标/窗体/res/add.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3" colspan="2">
+           <widget class="QPushButton" name="pushButton_3">
+            <property name="text">
+             <string>设置资源文件夹</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
            <widget class="QComboBox" name="comboBox">
             <property name="palette">
              <palette>
@@ -1080,83 +1098,7 @@ color: rgb(255, 255, 255);</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="3" colspan="2">
-           <widget class="QPushButton" name="pushButton_3">
-            <property name="text">
-             <string>设置资源文件夹</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="5">
-           <widget class="QToolButton" name="toolButton_2">
-            <property name="text">
-             <string>添加分支</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/add.png</normaloff>:/按钮图标/窗体/res/add.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label">
-            <property name="palette">
-             <palette>
-              <active>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </active>
-              <inactive>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </inactive>
-              <disabled>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>120</red>
-                  <green>120</green>
-                  <blue>120</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </disabled>
-             </palette>
-            </property>
-            <property name="text">
-             <string>当前分支：</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="6">
-           <widget class="QToolButton" name="toolButton">
-            <property name="text">
-             <string>删除分支</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../images.qrc">
-              <normaloff>:/按钮图标/窗体/res/删除.png</normaloff>:/按钮图标/窗体/res/删除.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="7">
+          <item row="3" column="0" colspan="7">
            <widget class="QPushButton" name="pushButton">
             <property name="palette">
              <palette>
@@ -1351,6 +1293,67 @@ color: rgb(255, 255, 255);</string>
               <height>20</height>
              </size>
             </property>
+            <property name="shortcut">
+             <string>Ctrl+Return</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>120</red>
+                  <green>120</green>
+                  <blue>120</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>当前分支：</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="6">
+           <widget class="QToolButton" name="toolButton">
+            <property name="text">
+             <string>删除分支</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../images.qrc">
+              <normaloff>:/按钮图标/窗体/res/删除.png</normaloff>:/按钮图标/窗体/res/删除.png</iconset>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1374,8 +1377,11 @@ color: rgb(255, 255, 255);</string>
     <property name="title">
      <string>文件</string>
     </property>
+    <addaction name="actionx"/>
+    <addaction name="separator"/>
     <addaction name="actionb"/>
     <addaction name="actiona"/>
+    <addaction name="separator"/>
     <addaction name="actionf"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -1409,7 +1415,7 @@ color: rgb(255, 255, 255);</string>
     <string>toolBar</string>
    </property>
    <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -1455,7 +1461,7 @@ color: rgb(255, 255, 255);</string>
      <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
    </property>
    <property name="text">
-    <string>保存为数据库</string>
+    <string>另存为数据库</string>
    </property>
   </action>
   <action name="setting">
@@ -1475,6 +1481,9 @@ color: rgb(255, 255, 255);</string>
    <property name="text">
     <string>导入指令</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
   </action>
   <action name="actions_2">
    <property name="icon">
@@ -1483,6 +1492,9 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>设置</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actiong">
@@ -1502,7 +1514,10 @@ color: rgb(255, 255, 255);</string>
      <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
    </property>
    <property name="text">
-    <string>保存为Excel</string>
+    <string>另保存为Excel</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
    </property>
   </action>
   <action name="actionk">
@@ -1512,6 +1527,18 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>快捷键说明</string>
+   </property>
+  </action>
+  <action name="actionx">
+   <property name="icon">
+    <iconset resource="../images.qrc">
+     <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
+   </property>
+   <property name="text">
+    <string>保存</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
@@ -1532,6 +1559,22 @@ color: rgb(255, 255, 255);</string>
     <hint type="destinationlabel">
      <x>241</x>
      <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actiong</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>toolBar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>287</x>
+     <y>38</y>
     </hint>
    </hints>
   </connection>

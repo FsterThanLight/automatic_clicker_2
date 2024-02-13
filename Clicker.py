@@ -10,6 +10,7 @@
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
 
+import os.path
 import re
 import shutil
 
@@ -34,7 +35,6 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
 # todo: 图片路径改用相对路径
-# todo: 导入指令可最近打开
 # todo: 新增提示音指令
 # todo: 新增倒计时窗口功能
 # todo: 快捷截图指令重新设计
@@ -49,6 +49,10 @@ from 资源文件夹窗口 import Global_s
 # todo: 右键菜单新增转到分支
 # todo: 运行python代码功能
 # todo: 运行外部程序功能
+# todo: 鼠标点击功能可设置按压时长
+# todo: 鼠标移动、滚轮功能可设置随机移动
+# todo: 图像识别增加灰度识别
+# todo: 菜单栏增加最近打开选项
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -84,8 +88,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionhelp.triggered.connect(lambda: self.show_windows('说明'))  # 打开使用说明
         self.actionk.triggered.connect(lambda: self.show_windows('快捷键说明'))  # 打开快捷键说明
         # 主窗体表格功能
+        self.actionx.triggered.connect(lambda: self.save_data('自动保存'))  # 保存指令数据
         self.actionb.triggered.connect(lambda: self.save_data('db'))  # 导出数据，导出按钮
-        self.actiona.triggered.connect(lambda: self.save_data('excel'))
+        self.actiona.triggered.connect(lambda: self.save_data('excel'))  # 导出数据，导出按钮
         self.actionf.triggered.connect(self.data_import)  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
@@ -94,7 +99,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.pushButton_7.clicked.connect(lambda: self.global_shortcut_key('暂停和恢复线程'))  # 暂停和恢复按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
         # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
-        self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
+        # self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
         self.load_branch_to_combobox()  # 加载分支列表
         # 创建和删除分支
         self.toolButton_2.clicked.connect(self.create_branch)
@@ -410,21 +415,27 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             pass
 
-    def save_data(self, judge):
+    def save_data(self, judge: str):
         """保存配置文件到当前文件夹下
-        :param judge: 保存的文件类型（db、excel）"""
+        :param judge: 保存的文件类型（db、excel、自动保存）"""
 
-        def get_file_and_folder() -> tuple:
-            """获取文件名和文件夹路径"""
-            # 获取资源文件夹路径，如果不存在则使用用户的主目录
+        def get_directory_pyth_global(judge__):
+            """获取全局资源文件夹路径,如果不存在最近打开的文件路径"""
             resource_folder_path = extract_global_parameter('资源文件夹路径')
-            directory_path = resource_folder_path[0] if \
+            directory_folder_path = resource_folder_path[0] if \
                 resource_folder_path else os.path.expanduser("~")
+            # 默认文件名
+            default_file_name = '指令数据.xlsx' if judge__ == 'excel' else '指令数据.db'
+            return os.path.normpath(os.path.join(directory_folder_path, default_file_name))
+
+        def get_file_and_folder(judge__) -> tuple:
+            """获取文件名和文件夹路径"""
+            directory_path = get_directory_pyth_global(judge__)  # 获取全局资源文件夹路径
             # 打开选择文件对话框
             file_path, _ = QFileDialog.getSaveFileName(
                 parent=self,
                 caption="保存文件",
-                filter="(*.db)" if judge == 'db' else "(*.xlsx)",
+                filter="(*.db)" if judge__ == 'db' else "(*.xlsx)",
                 directory=directory_path
             )
             if file_path != '':  # 获取文件名称
@@ -435,18 +446,45 @@ class Main_window(QMainWindow, Ui_MainWindow):
             else:
                 return None, None
 
-        file_name, folder_path = get_file_and_folder()  # 获取文件名和文件夹路径
+        def get_file_and_folder_from_setting():
+            """获取文件名和文件夹路径"""
+            # 获取资源文件夹路径，如果存在则使用用户的主目录
+            recently_opened = get_setting_data_from_db('最近导入文件路径')
+            if (recently_opened != 'None') and (os.path.exists(recently_opened)):
+                return (
+                    os.path.normpath(os.path.split(recently_opened)[1]),
+                    os.path.normpath(os.path.split(recently_opened)[0])
+                )
+            else:
+                self.statusBar.showMessage(f'未找到最近导入的文件路径。已自动切换为另存为...', 3000)
+                return get_file_and_folder('excel')
+
+        # 判断是否为另存为,如果不是则自动判断文件类型
+        judge_ = None
+        if judge != '自动保存':
+            file_name, folder_path = get_file_and_folder(judge)  # 获取文件名和文件夹路径
+            judge_ = judge
+        else:
+            file_name, folder_path = get_file_and_folder_from_setting()  # 如果存在最近打开的文件路径
+            if (file_name != '') and (file_name is not None):
+                judge_ = 'excel' if file_name.endswith('.xlsx') else 'db'
+
+        # 开始保存数据
         if (file_name is not None) and (folder_path is not None):
-            if judge == 'db':
+            if judge_ == 'db':
                 # 连接数据库
                 cursor, con = sqlitedb()
                 # 获取数据库文件路径
                 db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
                 close_database(cursor, con)
                 # 将数据库文件复制到指定文件夹下
-                shutil.copy(db_file, os.path.normpath(os.path.join(folder_path, file_name)))
-                QMessageBox.information(self, "提示", "指令数据保存成功！")
-            elif judge == 'excel':
+                save_path = os.path.normpath(os.path.join(folder_path, file_name))
+                shutil.copy(db_file, save_path)
+                # 提示保存成功
+                if judge != '自动保存':
+                    QMessageBox.information(self, "提示", "指令数据保存成功！")
+                self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
+            elif judge_ == 'excel':
                 # 使用openpyxl模块创建Excel文件
                 wb = openpyxl.Workbook()
                 # 获取全局参数表中的资源文件夹路径
@@ -487,9 +525,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 save_path = os.path.normpath(os.path.join(folder_path, file_name))
                 wb.save(save_path)
                 # 提示保存成功，是否打开文件夹
-                choice = QMessageBox.question(self, "提示", "指令数据保存成功！是否打开Excel文件？")
-                if choice == QMessageBox.Yes:
-                    os.startfile(save_path)
+                if judge != '自动保存':
+                    choice__ = QMessageBox.question(self,
+                                                    '提示',
+                                                    '指令数据保存成功！是否打开文件夹？',
+                                                    QMessageBox.Yes | QMessageBox.No,
+                                                    QMessageBox.No
+                                                    )
+                    if choice__ == QMessageBox.Yes:
+                        os.startfile(save_path)
+                self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
 
     def closeEvent(self, event):
         """关闭窗口事件"""
@@ -499,11 +544,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.command_thread.terminate()
         # 是否退出清空数据库
         if eval(get_setting_data_from_db('退出提醒清空指令')):
-            choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？")
+            choice = QMessageBox.question(self, "提示", "确定退出并清空所有指令？\n将自动保存当前指令数据。")
             if choice == QMessageBox.Yes:
                 # 退出终止后台进程并清空数据库
+                self.save_data('自动保存')
                 event.accept()
                 clear_all_ins()
+                update_settings_in_database(最近导入文件路径='None')  # 清空最近导入文件路径
             else:
                 event.ignore()
         # 窗口大小
@@ -592,6 +639,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
             elif suffix == '.xlsx':
                 clear_all_ins(True)  # 清空原有数据，包括分支表
                 data_import_from_excel(target_path)
+            # 将最近导入的文件路径写入数据库,用于保存时自动设置路径
+            update_settings_in_database(最近导入文件路径=os.path.normpath(target_path[0]))
+            self.statusBar.showMessage(f'指令数据导入成功！已自动设置保存路径。', 1000)
 
     def start(self, run_branch=False):
         """主窗体开始按钮"""
@@ -618,9 +668,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
                     self.command_thread.start()
 
-    def hide_toolbar(self):
-        """隐藏工具栏"""
-        self.toolBar.setVisible(self.actiong.isChecked())
+    # def hide_toolbar(self):
+    #     """隐藏工具栏"""
+    #     self.toolBar.setVisible(self.actiong.isChecked())
 
     def exporting_operation_logs(self):
         """导出操作日志"""
@@ -689,10 +739,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.clear()
         self.comboBox.addItems(extract_global_parameter('分支表名'))
 
-    def keyPressEvent(self, event):
-        # 按下Ctrl+Enter键
-        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Return:
-            self.show_windows('导航')
+    # def keyPressEvent(self, event):
+    #     # 按下Ctrl+Enter键
+    #     if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Return:
+    #         self.show_windows('导航')
 
     def eventFilter(self, obj, event):
         # 重写self.tableWidget的快捷键事件
