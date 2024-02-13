@@ -10,7 +10,6 @@
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
 
-import datetime
 import re
 import shutil
 
@@ -35,23 +34,21 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
 # todo: 图片路径改用相对路径
-# todo: 快捷键失效
 # todo: 导入指令可最近打开
 # todo: 新增提示音指令
 # todo: 新增倒计时窗口功能
 # todo: 快捷截图指令重新设计
-# todo: 指令执行使用多线程
 # todo: 终止循环功能
-# todo: 执行指令改为多线程
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
-# todo: 使用多线程执行指令
 # todo: 验证码指令使用云码平台
 # todo: 变量池功能
 # todo: qss界面美化
 # todo: 指令可编译为python代码
 # todo: 播放语言功能
-# todo: 运行时隐藏主窗口
+# todo: 右键菜单新增转到分支
+# todo: 运行python代码功能
+# todo: 运行外部程序功能
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -69,7 +66,7 @@ OUR_WEBSITE = 'https://gitee.com/automatic_clicker/automatic_clicker_2'
 
 class Main_window(QMainWindow, Ui_MainWindow):
     """主窗口"""
-    sigkeyhot = pyqtSignal(str)  # 自定义信号,用于快捷键
+    sigkeyhot = pyqtSignal(str, name='sigkeyhot')  # 自定义信号,用于快捷键
 
     def __init__(self):
         super().__init__()
@@ -79,10 +76,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.version = 'v0.21'  # 软件版本
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
-        # 根据上次退出时的大小，重新设置窗口大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
         self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
@@ -97,7 +90,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(True))  # 仅运行分支
-        # self.pushButton_6.clicked.connect(exit_main_work)  # 结束任务按钮
+        self.pushButton_6.clicked.connect(lambda: self.global_shortcut_key('终止线程'))  # 结束任务按钮
+        self.pushButton_7.clicked.connect(lambda: self.global_shortcut_key('暂停和恢复线程'))  # 暂停和恢复按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
         # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
         self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
@@ -113,17 +107,28 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.command_thread = CommandThread(self, None)
         self.command_thread.send_message.connect(self.send_message)
         self.command_thread.finished_signal.connect(self.thread_finished)
-        # self.command_thread.send_type_and_id.connect(self.show_message_box_in_thread)
         # 设置全局快捷键,用于执行指令的终止
         self.sigkeyhot.connect(self.global_shortcut_key)
         self.hk_stop = SystemHotkey()
-        self.hk_stop.register(('f11',),
-                              callback=lambda x: self.sendkeyevent("终止线程"))
         # 加载上次的指令表格
         self.get_data()
-        self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
         # 重新设置表格的快捷键
         self.tableWidget.installEventFilter(self)  # 安装事件过滤器
+        # 加载窗体初始值
+        self.load_initialization()
+
+    def load_initialization(self):
+        """加载窗体初始值"""
+        # 根据上次退出时的大小，重新设置窗口大小
+        width, height = set_window_size(self.windowTitle())
+        if width and height:
+            self.resize(width, height)
+        # 注册全局快捷键
+        self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
+        self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
+        self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
+        # 设置状态栏信息
+        self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
 
     def delete_data(self):
         """删除选中的数据行"""
@@ -490,7 +495,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """关闭窗口事件"""
         # 终止线程
         if self.command_thread.isRunning():
-            print('终止线程')
+            # print('终止线程')
             self.command_thread.terminate()
         # 是否退出清空数据库
         if eval(get_setting_data_from_db('退出提醒清空指令')):
@@ -503,8 +508,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 event.ignore()
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
-        # 关闭浏览器驱动
-        close_browser()
 
     def data_import(self):
         """导入数据功能"""
@@ -597,20 +600,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
             """执行前的操作"""
             self.plainTextEdit.clear()  # 清空日志
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
+            if self.checkBox_2.isChecked():
+                self.hide()
 
-        if run_branch is False:  # 执行主任务
-            self.comboBox.setCurrentIndex(0)  # 切换到主流程
-            operation_before_execution()  # 执行前的操作
-            # 执行主任务
-            self.command_thread.start()
-
-        else:  # 执行当前分支的任务
-            if self.comboBox.currentText() == MAIN_FLOW:
-                QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
-            else:
-                operation_before_execution()
-                self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+        if not self.command_thread.isRunning():  # 如果线程未运行,则执行
+            if run_branch is False:  # 执行主任务
+                self.comboBox.setCurrentIndex(0)  # 切换到主流程
+                operation_before_execution()  # 执行前的操作
+                # 执行主任务
                 self.command_thread.start()
+
+            else:  # 执行当前分支的任务
+                if self.comboBox.currentText() == MAIN_FLOW:
+                    QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
+                else:
+                    operation_before_execution()
+                    self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+                    self.command_thread.start()
 
     def hide_toolbar(self):
         """隐藏工具栏"""
@@ -626,11 +632,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         else:
             # 获取操作日志
             logs = self.plainTextEdit.toPlainText()
-            # 获取当前日期时间
-            now = datetime.datetime.now()
             # 将操作日志写入文件
             with open(target_path[0], 'w') as f:
-                f.write('日志导出时间：' + now.strftime('%Y-%m-%d %H:%M:%S') + '\n')
+                f.write(f'日志导出时间：{get_str_now_time()}\n')
                 f.write(logs)
             QMessageBox.information(self, "提示", "操作日志导出成功！")
 
@@ -677,7 +681,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             cursor.execute('delete from 全局参数 where 分支表名=?', (text,))  # 删除分支名称
             con.commit()
             close_database(cursor, con)  # 关闭数据库连接
-            # self.branch_name.remove(text)  # 将分支名从分支列表中删除
             QMessageBox.information(self, "提示", "分支删除成功！")
             self.load_branch_to_combobox()  # 重新加载分支列表
 
@@ -730,9 +733,28 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def global_shortcut_key(self, i_str):
         """全局热键处理函数"""
+        system_prompt_tone('全局快捷键')  # 发出提示音
+
         if i_str == "终止线程":
-            self.command_thread.terminate()  # 终止线程
-            self.plainTextEdit.appendPlainText('停止运行！')
+            if self.command_thread.isRunning():
+                self.command_thread.terminate()  # 终止线程
+                # 获取当前时间
+                self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务终止！')
+                if self.checkBox_2.isChecked():
+                    self.show()
+                QApplication.processEvents()
+
+        elif i_str == "开始线程":
+            self.start()
+
+        elif i_str == "暂停和恢复线程":
+            if self.command_thread.isRunning():
+                if self.command_thread.is_paused:
+                    self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务恢复！')
+                    self.command_thread.resume()
+                else:
+                    self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务暂停！')
+                    self.command_thread.pause()
 
     def sendkeyevent(self, i_str):
         """发送热键信号,将外部信号，转化成qt信号,用于全局热键"""
@@ -743,24 +765,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.plainTextEdit.appendPlainText(message)
 
     def thread_finished(self, message):
-        """线程结束"""
+        """任务结束"""
         self.plainTextEdit.appendPlainText(message)
-
-    # def show_message_box_in_thread(self, type_, id_):
-    #     """在线程中显示消息框"""
-    #     # self.command_thread.pause()
-    #     if type_ == '提示异常并暂停':
-    #         reply = QMessageBox.question(self, '提示',
-    #                                      'ID为{}的指令抛出异常！\n是否继续执行？'.format(id_),
-    #                                      QMessageBox.Yes | QMessageBox.No,
-    #                                      QMessageBox.No)
-    #         if reply == QMessageBox.Yes:
-    #             self.command_thread.set_reply(True)
-    #             # self.command_thread.resume()
-    #         else:
-    #             # self.command_thread.set_reply(False)
-    #             # self.command_thread.resume()
-    #             self.command_thread.terminate()
+        # 显示窗口
+        if self.checkBox_2.isChecked():
+            self.show()
+            QApplication.processEvents()
+        # 发出提示音
+        system_prompt_tone('线程结束')
+        # 关闭浏览器驱动
+        close_browser()
 
 
 class About(QDialog, Ui_About):

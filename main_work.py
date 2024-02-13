@@ -10,11 +10,10 @@
 # See the Mulan PSL v2 for more details.
 
 import pymsgbox
-import winsound
 from PyQt5.QtCore import *
 
 from 功能类 import *
-from 数据库操作 import extract_global_parameter, extracted_ins_from_database
+from 数据库操作 import extract_global_parameter, extracted_ins_from_database, get_str_now_time, system_prompt_tone
 
 branch_name_index = 0  # 开始执行时的分支表名索引，用于判断是否是分支还是主流程
 
@@ -32,13 +31,12 @@ class CommandThread(QThread):
         self.navigation = navigation
         # 循环控制
         self.number: int = 1  # 在窗体中显示循环次数
-        self.number_cycles = self.main_window.spinBox.value()  # 循环次数
+        self.number_cycles: int = 0  # 循环次数
         # 终止和暂停标志
-        self.start_state = True
-        self.suspended = False
+        self.start_state: bool = True
+        self.suspended: bool = False
         # 运行时的参数
         self.branch_name_index: int = 0  # 分支表名索引
-        self.reply = None  # 返回值,用于判断提示错误后是否继续执行
         # 读取配置文件
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         self.image_folder_path = extract_global_parameter('资源文件夹路径')
@@ -46,16 +44,11 @@ class CommandThread(QThread):
         # 互斥锁,用于暂停线程
         self.mutex = QMutex()
         self.condition = QWaitCondition()
-        self.is_paused = False
+        self.is_paused: bool = False
 
     def set_branch_name_index(self, branch_name_index_):
         """设置分支表名索引"""
         self.branch_name_index = branch_name_index_
-
-    # def set_reply(self, reply_info):
-    #     """设置Qmessage的返回值"""
-    #     self.reply = reply_info
-    #     self.start()
 
     def show_message(self, message):
         """显示消息"""
@@ -69,32 +62,21 @@ class CommandThread(QThread):
         print('分支表索引：', self.branch_name_index)
         list_instructions = extracted_ins_from_database()
         if len(list_instructions) != 0:
-
-            # 如果状态为True执行无限循环
-            if self.main_window.radioButton.isChecked():
-                print('无限循环')
-                self.number = 1
-                while self.start_state:
-                    # 执行指令集中的指令
-                    self.execute_instructions(self.branch_name_index, 0, list_instructions)
-                    self.send_message.emit(f'完成第{self.number}次循环')
-                    self.number += 1
-                    time.sleep(self.time_sleep)
-
-            # 如果状态为有限次循环
-            elif (not self.main_window.radioButton.isChecked()) and (self.number_cycles > 0):
-                print('有限循环')
-                self.number = 1
-                while self.number <= self.number_cycles and self.start_state:
-                    self.execute_instructions(self.branch_name_index, 0, list_instructions)
-                    self.send_message.emit(f'完成第{self.number}次循环')
-                    self.number += 1
-                    time.sleep(self.time_sleep)
+            # 设置主流程循环前的参数
+            loop_type = '无限循环' if self.main_window.radioButton.isChecked() else '有限循环'
+            self.number = 1
+            self.number_cycles = int(self.main_window.spinBox.value())
+            # 开始循环执行指令
+            while (self.start_state and loop_type == '无限循环') or \
+                    (loop_type == '有限循环' and self.number <= self.number_cycles):
+                # 执行指令集中的指令
+                self.execute_instructions(self.branch_name_index, 0, list_instructions)
+                self.send_message.emit(f'完成第{self.number}次循环')
+                self.number += 1
+                time.sleep(self.time_sleep)
 
             # 结束信号
-            self.finished_signal.emit('完成任务')
-            # 关闭浏览器
-            # close_browser()
+            self.finished_signal.emit(f'{get_str_now_time()} 完成任务')
 
     def pause(self):
         self.mutex.lock()
@@ -202,13 +184,13 @@ class CommandThread(QThread):
 
                     # 网页元素操作
                     elif cmd_type == '元素控制':
-                        web_element = EleControl(main_window=self.main_window, ins_dic=dic_, navigation=self.navigation)
+                        web_element = EleControl(command_thread=self, ins_dic=dic_, navigation=self.navigation)
                         web_element.start_execute()
 
                     # 网页录入
                     elif cmd_type == '网页录入':
                         web_entry = WebEntry(
-                            main_window=self.main_window,
+                            command_thread=self,
                             ins_dic=dic_,
                             navigation=self.navigation
                         )
@@ -216,13 +198,13 @@ class CommandThread(QThread):
 
                     # 鼠标拖拽
                     elif cmd_type == '鼠标拖拽':
-                        mouse_drag = MouseDrag(main_window=self.main_window, ins_dic=dic_)
+                        mouse_drag = MouseDrag(command_thread=self, ins_dic=dic_)
                         mouse_drag.start_execute()
 
                     # 切换frame
                     elif cmd_type == '切换frame':
                         toggle_frame = ToggleFrame(
-                            main_window=self.main_window,
+                            command_thread=self,
                             ins_dic=dic_,
                             navigation=self.navigation
                         )
@@ -231,7 +213,7 @@ class CommandThread(QThread):
                     # 读取网页数据到excel
                     elif cmd_type == '保存表格':
                         save_form = SaveForm(
-                            main_window=self.main_window,
+                            command_thread=self,
                             ins_dic=dic_,
                             navigation=self.navigation
                         )
@@ -240,7 +222,7 @@ class CommandThread(QThread):
                     # 拖动网页元素
                     elif cmd_type == '拖动元素':
                         drag_element = DragWebElements(
-                            main_window=self.main_window,
+                            command_thread=self,
                             ins_dic=dic_,
                             navigation=self.navigation
                         )
@@ -255,7 +237,7 @@ class CommandThread(QThread):
                     elif cmd_type == '切换窗口':
                         # 切换窗口
                         switch_window = SwitchWindow(
-                            main_window=self.main_window,
+                            command_thread=self,
                             ins_dic=dic_,
                             navigation=self.navigation
                         )
@@ -292,25 +274,27 @@ class CommandThread(QThread):
 
                     # 提示异常并暂停
                     elif exception_handling == '提示异常并暂停':
-                        winsound.Beep(1000, 1000)
+                        system_prompt_tone('执行异常')
                         # 弹出带有OK按钮的提示框
-                        if pymsgbox.confirm(
-                                text=f'ID为{str_id}的指令抛出异常！\n是否继续执行？\n\n错误信息：{str(type(e))}',
-                                title='提示',
-                                buttons=['OK', 'Cancel']
-                        ) == 'OK':
+                        choice = pymsgbox.confirm(
+                            text=f'ID为{str_id}的指令执行异常！\n是否重试？\n\n错误类型：{str(type(e))}',
+                            title='提示',
+                            buttons=[pymsgbox.ABORT_TEXT, pymsgbox.RETRY_TEXT, pymsgbox.IGNORE_TEXT])
+                        # 选择的按钮
+                        if choice == pymsgbox.RETRY_TEXT:  # 重试指令
+                            pass
+                        elif choice == pymsgbox.IGNORE_TEXT:  # 忽略该指令,继续执行下一条指令
                             current_index += 1
-                        else:
+                        elif choice == pymsgbox.ABORT_TEXT:  # 终止任务
                             self.start_state = False
-                            current_index += 1
                             break
 
                     # 抛出异常并停止
                     elif exception_handling == '提示异常并停止':
-                        winsound.Beep(1000, 1000)
+                        system_prompt_tone('执行异常')
                         # 弹出提示框
                         pymsgbox.alert(
-                            text=f'ID为{str_id}的指令抛出异常！\n\n错误信息：{str(type(e))}',
+                            text=f'ID为{str_id}的指令抛出异常！\n\n错误类型：{str(type(e))}',
                             title='提示',
                             icon=pymsgbox.STOP
                         )
@@ -332,5 +316,5 @@ class CommandThread(QThread):
                         break
 
             except IndexError:
-                self.main_window.plainTextEdit.appendPlainText('分支执行异常！')
+                self.show_message('分支执行异常！')
                 break

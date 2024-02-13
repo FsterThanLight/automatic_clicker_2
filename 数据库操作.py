@@ -1,6 +1,9 @@
+import datetime
 import os
 import sqlite3
 import sys
+
+import winsound
 
 MAIN_FLOW = '主流程'
 
@@ -16,6 +19,24 @@ def timer(func):
         return result
 
     return func_wrapper
+
+
+def get_str_now_time():
+    """获取当前时间"""
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+def system_prompt_tone(judge: str):
+    """系统提示音
+    :param judge: 判断类型（线程结束、全局快捷键）"""
+    is_tone = eval(get_setting_data_from_db('系统提示音'))
+    if judge == '线程结束' and is_tone:
+        for i_ in range(3):
+            winsound.Beep(500, 300)
+    elif judge == '全局快捷键' and is_tone:
+        winsound.Beep(500, 300)
+    elif judge == '执行异常' and is_tone:
+        winsound.Beep(1000, 1000)
 
 
 def sqlitedb(db_name='命令集.db'):
@@ -40,6 +61,7 @@ def close_database(cursor, conn):
     conn.close()
 
 
+# @timer
 def get_setting_data_from_db(*args):
     """从数据库中获取设置参数
     :param args: 设置类型参数

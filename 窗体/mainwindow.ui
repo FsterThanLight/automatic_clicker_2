@@ -390,7 +390,7 @@
 color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>开始运行</string>
+          <string>开始运行（F10）</string>
          </property>
         </widget>
        </item>
@@ -404,7 +404,7 @@ color: rgb(255, 255, 255);</string>
           </font>
          </property>
          <property name="text">
-          <string>结束任务</string>
+          <string>结束任务（F11）</string>
          </property>
         </widget>
        </item>

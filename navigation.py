@@ -31,7 +31,7 @@ class Na(QWidget, Ui_navigation):
         super().__init__(main_window_)
         self.main_window = main_window_
 
-        self.web_option = WebOption(self.main_window, self)
+        # self.web_option = WebOption(self.main_window, self)
         self.setupUi(self)
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -512,7 +512,9 @@ class Na(QWidget, Ui_navigation):
             """网页连接测试"""
             if judge == '测试':
                 url = self.lineEdit_19.text()
-                self.web_option.web_open_test(url)
+                web_option = WebOption(None, self)
+                web_option.web_open_test(url)
+
             elif judge == '安装浏览器':
                 url = 'https://google.cn/chrome/'
                 QDesktopServices.openUrl(QUrl(url))
@@ -523,7 +525,8 @@ class Na(QWidget, Ui_navigation):
                 )
                 if x == QMessageBox.Yes:
                     print('下载浏览器驱动')
-                    self.web_option.install_browser_driver()
+                    web_option = WebOption(None, self)
+                    web_option.install_browser_driver()
                     QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
 
         if type_ == '按钮功能':

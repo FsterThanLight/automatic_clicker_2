@@ -14,8 +14,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class WebOption:
-    def __init__(self, main_window=None, navigation=None):
-        self.main_window = main_window
+    def __init__(self, command_thread=None, navigation=None):
+        self.command_thread = command_thread
         self.navigation = navigation
         self.driver = None
         # 保存的表格数据
@@ -47,9 +47,11 @@ class WebOption:
     def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
         try:
+            self.command_thread.show_message('正在安装谷歌浏览器驱动...')
             service = ChromeService(executable_path=ChromeDriverManager().install())
             driver_ = webdriver.Chrome(service=service)
             driver_.quit()
+            self.command_thread.show_message('浏览器驱动安装成功。')
         except ConnectionError:
             QMessageBox.warning(self.navigation, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
 
@@ -128,7 +130,7 @@ class WebOption:
         target_ele = self.lookup_element(element_value_, element_type_, timeout_type_)
         if target_ele is not None:
             print('找到网页元素，执行鼠标操作。')
-            self.main_window.plainTextEdit.appendPlainText('找到网页元素，执行鼠标操作。')
+            self.command_thread.show_message('找到网页元素，执行鼠标操作。')
             QApplication.processEvents()
             if action == '左键单击':
                 ActionChains(self.driver).click(target_ele).perform()
@@ -168,32 +170,6 @@ class WebOption:
         :param element_type_: 元素类型（元素ID、元素名称、xpath定位）
         :param element_value_: 元素值
         :param timeout_type_: 超时错误（找不到元素自动跳过、秒数）"""
-
-        # def open_url(url_):
-        #     """打开网页或者直接跳过"""
-        #     if url_ == '' or url_ is None:
-        #         pass
-        #     else:
-        #         if (url_[:7] != 'http://') and (url_[:8] != 'https://'):
-        #             url_ = 'http://' + url_
-        #
-        #         chrome_options = webdriver.ChromeOptions()
-        #         # 添加选项配置：  # 但是用程序打开的网页的window.navigator.webdriver仍然是true。
-        #         chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-        #         chrome_options.add_experimental_option("detach", True)
-        #         chrome_options.add_argument('--start-maximized')
-        #         # 初始化浏览器并打开网页
-        #         self.driver = webdriver.Chrome(options=chrome_options)
-        #         self.driver.maximize_window()
-        #         self.driver.get(url_)
-        #         # 窗口最大化
-        #         # self.driver.maximize_window()
-        #
-        #         time.sleep(1)
-
-        # open_url(url)
-        # if driver is None:
-        #     self.driver = self.open_driver(url)
         if not action:
             print('没有鼠标操作。')
             return

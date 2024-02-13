@@ -697,12 +697,12 @@ class OpenWeb:
 class EleControl:
     """网页控制"""
 
-    def __init__(self, main_window, navigation, ins_dic):
-        self.main_window = main_window  # 主窗口
+    def __init__(self, command_thread, navigation, ins_dic):
+        self.command_thread = command_thread  # 主窗口
         self.navigation = navigation  # 导航
         self.ins_dic = ins_dic  # 指令字典
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -731,15 +731,15 @@ class EleControl:
 class WebEntry:
     """将Excel中的值录入网页"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
-        self.InformationEntry = InformationEntry(self.main_window, self.ins_dic)
+        self.InformationEntry = InformationEntry(self.command_thread, self.ins_dic)
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -779,11 +779,11 @@ class WebEntry:
 class MouseDrag:
     """鼠标拖拽"""
 
-    def __init__(self, main_window, ins_dic):
+    def __init__(self, command_thread, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         # 指令字典
         self.ins_dic = ins_dic
 
@@ -797,9 +797,7 @@ class MouseDrag:
         """鼠标拖拽事件"""
         pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
         pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
-        self.main_window.plainTextEdit.appendPlainText(
-            '鼠标拖拽' + str(start_position) + '到' + str(end_position)
-        )
+        self.command_thread.show_message('鼠标拖拽%s到%s' % (str(start_position), str(end_position)))
 
     def start_execute(self):
         """执行重复次数"""
@@ -819,14 +817,14 @@ class MouseDrag:
 class SaveForm:
     """保存网页表格"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -859,14 +857,14 @@ class SaveForm:
 class ToggleFrame:
     """切换frame"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -891,14 +889,14 @@ class ToggleFrame:
 class SwitchWindow:
     """切换网页窗口"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -921,14 +919,14 @@ class SwitchWindow:
 class DragWebElements:
     """拖拽网页元素"""
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, command_thread, navigation, ins_dic):
         # 主窗口
-        self.main_window = main_window
+        self.command_thread = command_thread
         self.navigation = navigation
         # 指令字典
         self.ins_dic = ins_dic
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.command_thread, self.navigation)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
