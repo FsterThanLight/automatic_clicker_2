@@ -201,15 +201,20 @@ def save_window_size(save_size: tuple, window_name: str):
     close_database(cursor, con)
 
 
-def set_window_size(window_name: str):
-    """设置窗口大小
-    :param window_name:（主窗口、设置窗口、导航窗口）
-    :return: 窗口大小"""
-    try:
-        height, width = eval(get_setting_data_from_db(window_name))
-        return int(height), int(width)
-    except TypeError:
-        return 0, 0
+def set_window_size(window):
+    def get_window_size(window_name: str):
+        """设置窗口大小
+        :param window_name:（主窗口、设置窗口、导航窗口）
+        :return: 窗口大小"""
+        try:
+            height_, width_ = eval(get_setting_data_from_db(window_name))
+            return int(height_), int(width_)
+        except TypeError:
+            return 0, 0
+
+    width, height = get_window_size(window.windowTitle())
+    if width and height:
+        window.resize(width, height)
 
 
 def extracted_ins_from_database(branch_name=None) -> list:
@@ -243,11 +248,88 @@ def extracted_ins_from_database(branch_name=None) -> list:
             return all_list_instructions
 
 
+# @timer
+def writes_to_recently_opened_files(file_path: str):
+    """将最近打开的文件写入数据库
+    :param file_path: 文件路径"""
+
+    def write_to_new_file(cursor_, file_path_, time_stamp_) -> None:
+        # 查找数据库中是否存在该文件路径,如果存在则更新打开时间，如果不存在则插入数据
+        cursor_.execute('SELECT * FROM 最近打开 WHERE 文件路径 = ?',
+                        (file_path_,))
+        result = cursor_.fetchone()
+        if result:
+            cursor_.execute('UPDATE 最近打开 SET 打开时间=? WHERE 文件路径 = ?',
+                            (time_stamp_, file_path_))
+        else:
+            cursor_.execute('INSERT INTO 最近打开(文件路径, 打开时间) VALUES (?, ?)',
+                            (file_path_, time_stamp_))
+
+    def delete_the_oldest_file(cursor_, con_, keep_number=5) -> None:
+        """从数据库中删除最早的文件"""
+        try:
+            cursor_.execute('SELECT 文件路径 FROM 最近打开 ORDER BY 打开时间 ')
+            result_ = cursor_.fetchall()
+
+            if len(result_) > keep_number:
+                # 只保留最近打开的3个文件
+                files_to_keep = [item[0] for item in result_[-keep_number:]]
+                print(files_to_keep)
+                # 根据文件路径删除记录
+                cursor_.execute(
+                    'DELETE FROM 最近打开'
+                    ' WHERE 文件路径 not IN ({})'.format(','.join('?' * len(files_to_keep))),
+                    files_to_keep)
+            else:
+                print("数据库中没有足够的文件需要删除")
+        except Exception as e_:
+            print("An error occurred:", e_)
+        finally:
+            con_.commit()
+
+    # 将时间转化为13位时间戳
+    time_stamp = int(datetime.datetime.now().timestamp() * 1000)
+    try:
+        # 连接数据库
+        cursor, con = sqlitedb()
+        write_to_new_file(cursor, file_path, time_stamp)
+        delete_the_oldest_file(cursor, con)  # 删除最早打开的文件
+        con.commit()
+        close_database(cursor, con)
+    except Exception as e:
+        print("An error occurred:", e)
+
+
+def get_recently_opened_file(judge='单文件'):
+    """获取最近打开的文件
+    :param judge: 返回类型（单文件、文件列表）
+    :return: 最近打开的文件"""
+    cursor, con = sqlitedb()
+    cursor.execute('SELECT 文件路径 FROM 最近打开 ORDER BY 打开时间 DESC')
+    result = cursor.fetchall()
+    close_database(cursor, con)
+    if judge == '单文件':
+        return os.path.normpath([item[0] for item in result][0])
+    elif judge == '文件列表':
+        return [item[0] for item in result]
+
+
+def remove_recently_opened_file(file_path: str):
+    """从最近打开的文件中删除指定的文件
+    :param file_path: 文件路径"""
+    cursor, con = sqlitedb()
+    cursor.execute('DELETE FROM 最近打开 WHERE 文件路径 = ?', (file_path,))
+    con.commit()
+    close_database(cursor, con)
+
+
 if __name__ == '__main__':
-    pass
-    all_list_instructions_ = extracted_ins_from_database()
-    print(all_list_instructions_)
-    print(len(all_list_instructions_))
-    for i in all_list_instructions_:
-        print(i)
-    # print(get_branch_table_ins('分支1'))
+    path_1 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_1.py'
+    path_2 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_2.py'
+    path_3 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_3.py'
+    path_4 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_4.py'
+    path_5 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_5.py'
+    path_6 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_6.py'
+
+    # writes_to_recently_opened_files(path_1)
+    print(get_recently_opened_file('文件列表'))

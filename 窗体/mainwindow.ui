@@ -26,7 +26,7 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_4" rowstretch="1,0,0,0,0,0,0">
+   <layout class="QGridLayout" name="gridLayout_4" rowstretch="1,0,0,0,0,0">
     <property name="leftMargin">
      <number>11</number>
     </property>
@@ -1370,19 +1370,30 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>575</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>文件</string>
     </property>
+    <widget class="QMenu" name="menu_5">
+     <property name="title">
+      <string>另存为</string>
+     </property>
+     <addaction name="actionb"/>
+     <addaction name="actiona"/>
+    </widget>
+    <widget class="QMenu" name="menuzv">
+     <property name="title">
+      <string>最近打开</string>
+     </property>
+    </widget>
     <addaction name="actionx"/>
-    <addaction name="separator"/>
-    <addaction name="actionb"/>
-    <addaction name="actiona"/>
+    <addaction name="menu_5"/>
     <addaction name="separator"/>
     <addaction name="actionf"/>
+    <addaction name="menuzv"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -1411,6 +1422,9 @@ color: rgb(255, 255, 255);</string>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -1461,7 +1475,7 @@ color: rgb(255, 255, 255);</string>
      <normaloff>:/按钮图标/窗体/res/保存.png</normaloff>:/按钮图标/窗体/res/保存.png</iconset>
    </property>
    <property name="text">
-    <string>另存为数据库</string>
+    <string>另存为DB</string>
    </property>
   </action>
   <action name="setting">
@@ -1502,7 +1516,7 @@ color: rgb(255, 255, 255);</string>
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>工具栏</string>
@@ -1539,6 +1553,16 @@ color: rgb(255, 255, 255);</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionceui_1">
+   <property name="text">
+    <string>ceui_1</string>
+   </property>
+  </action>
+  <action name="actiondh">
+   <property name="text">
+    <string>dh</string>
    </property>
   </action>
  </widget>

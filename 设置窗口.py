@@ -13,10 +13,7 @@ class Setting(QDialog, Ui_Setting):
         # 初始化设置窗口
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
-        # 设置窗口大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
+        set_window_size(self)  # 获取上次退出时的窗口大小
         # 绑定事件
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮

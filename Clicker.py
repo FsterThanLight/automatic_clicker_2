@@ -15,15 +15,17 @@ import re
 import shutil
 
 import openpyxl
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
-                             QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication)
+                             QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
+                             QAction)
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
+from icon import Icon
 from main_work import CommandThread
 from navigation import Na
 from 功能类 import close_browser
@@ -52,7 +54,7 @@ from 资源文件夹窗口 import Global_s
 # todo: 鼠标点击功能可设置按压时长
 # todo: 鼠标移动、滚轮功能可设置随机移动
 # todo: 图像识别增加灰度识别
-# todo: 菜单栏增加最近打开选项
+# done: 菜单栏增加最近打开选项
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -78,8 +80,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # 窗口和信息
         self.version = 'v0.21'  # 软件版本
+        self.toolBar.setVisible(False)  # 隐藏工具栏
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
+        self.icon = Icon()  # 实例化图标
+        self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
         self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
@@ -91,15 +96,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionx.triggered.connect(lambda: self.save_data('自动保存'))  # 保存指令数据
         self.actionb.triggered.connect(lambda: self.save_data('db'))  # 导出数据，导出按钮
         self.actiona.triggered.connect(lambda: self.save_data('excel'))  # 导出数据，导出按钮
-        self.actionf.triggered.connect(self.data_import)  # 导入数据
+        self.actionf.triggered.connect(lambda: self.data_import('资源文件夹路径'))  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
         self.pushButton_4.clicked.connect(lambda: self.start(True))  # 仅运行分支
         self.pushButton_6.clicked.connect(lambda: self.global_shortcut_key('终止线程'))  # 结束任务按钮
         self.pushButton_7.clicked.connect(lambda: self.global_shortcut_key('暂停和恢复线程'))  # 暂停和恢复按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
-        # self.actionj.triggered.connect(lambda: self.check_update(1)) # 检查更新按钮（菜单栏）
-        # self.actiong.triggered.connect(self.hide_toolbar)  # 隐藏工具栏
         self.load_branch_to_combobox()  # 加载分支列表
         # 创建和删除分支
         self.toolButton_2.clicked.connect(self.create_branch)
@@ -117,23 +120,54 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.hk_stop = SystemHotkey()
         # 加载上次的指令表格
         self.get_data()
-        # 重新设置表格的快捷键
-        self.tableWidget.installEventFilter(self)  # 安装事件过滤器
+        self.tableWidget.installEventFilter(self)  # 安装事件过滤器,重新设置表格的快捷键
         # 加载窗体初始值
         self.load_initialization()
 
     def load_initialization(self):
         """加载窗体初始值"""
-        # 根据上次退出时的大小，重新设置窗口大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
+        set_window_size(self)  # 获取上次退出时的窗口大小
+        # 显示工具栏
+        judge = eval(get_setting_data_from_db('显示工具栏'))
+        self.toolBar.setVisible(judge)
+        self.actiong.setChecked(judge)
         # 注册全局快捷键
         self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
         self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
         self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
         # 设置状态栏信息
         self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
+
+    def add_recent_to_fileMenu(self):
+        """将最近文件添加到菜单中"""
+        recently_opened_list = get_recently_opened_file('文件列表')
+        current_file_path = get_setting_data_from_db('当前文件路径')
+        # 将最近打开文件添加到菜单中
+        if len(recently_opened_list) != 0:
+            for file in recently_opened_list:
+                file_action = QAction(text=file, parent=self)
+                # 设置信号
+                file_action.triggered.connect(
+                    lambda checked, file_=file: self.open_recent_file(file_))
+                file_action.setCheckable(True)
+                # 设置当前文件为选中状态
+                if file == current_file_path:
+                    file_action.setChecked(True)
+                self.menuzv.addAction(file_action)
+
+    def open_recent_file(self, file_path):
+        """打开最近打开的文件
+        :param file_path: 文件路径"""
+        if os.path.exists(file_path):
+            self.data_import(file_path)
+        else:
+            # 如果文件不存在，则删除最近打开文件列表中的文件
+            remove_recently_opened_file(file_path)
+            # 从菜单中删除文件
+            for action in self.menuzv.actions():
+                if action.text() == file_path:
+                    self.menuzv.removeAction(action)
+            QMessageBox.critical(self, "错误", "文件不存在！已经从最近打开文件中删除。")
 
     def delete_data(self):
         """删除选中的数据行"""
@@ -250,14 +284,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
             menu.addSeparator()
             insert_ins_before = menu.addAction("在前面插入指令")
-            icon5 = QtGui.QIcon()
-            icon5.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/上移.png"))
-            insert_ins_before.setIcon(icon5)  # 设置图标
+            insert_ins_before.setIcon(self.icon.move_up)  # 设置图标
 
             insert_ins_after = menu.addAction("在后面插入指令")
-            icon6 = QtGui.QIcon()
-            icon6.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/下移.png"))
-            insert_ins_after.setIcon(icon6)  # 设置图标
+            insert_ins_after.setIcon(self.icon.move_down)  # 设置图标
 
             menu.addSeparator()
             copy_ins = menu.addAction("复制指令")
@@ -276,9 +306,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             del_branch.setIcon(self.style().standardIcon(QStyle.SP_DialogDiscardButton))  # 设置图标
 
             del_all_ins = menu.addAction("删除全部指令")
-            icon7 = QtGui.QIcon()
-            icon7.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/清除.png"))
-            del_all_ins.setIcon(icon7)  # 设置图标
+            del_all_ins.setIcon(self.icon.delete)  # 设置图标
 
             action = menu.exec_(self.tableWidget.mapToGlobal(pos))
         else:
@@ -449,7 +477,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         def get_file_and_folder_from_setting():
             """获取文件名和文件夹路径"""
             # 获取资源文件夹路径，如果存在则使用用户的主目录
-            recently_opened = get_setting_data_from_db('最近导入文件路径')
+            recently_opened = get_recently_opened_file()
             if (recently_opened != 'None') and (os.path.exists(recently_opened)):
                 return (
                     os.path.normpath(os.path.split(recently_opened)[1]),
@@ -460,6 +488,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 return get_file_and_folder('excel')
 
         # 判断是否为另存为,如果不是则自动判断文件类型
+        print('保存数据', judge)
         judge_ = None
         if judge != '自动保存':
             file_name, folder_path = get_file_and_folder(judge)  # 获取文件名和文件夹路径
@@ -468,7 +497,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             file_name, folder_path = get_file_and_folder_from_setting()  # 如果存在最近打开的文件路径
             if (file_name != '') and (file_name is not None):
                 judge_ = 'excel' if file_name.endswith('.xlsx') else 'db'
-
         # 开始保存数据
         if (file_name is not None) and (folder_path is not None):
             if judge_ == 'db':
@@ -538,9 +566,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, event):
         """关闭窗口事件"""
+        # 是否隐藏工具栏
+        update_settings_in_database(显示工具栏=str(self.actiong.isChecked()))
         # 终止线程
         if self.command_thread.isRunning():
-            # print('终止线程')
             self.command_thread.terminate()
         # 是否退出清空数据库
         if eval(get_setting_data_from_db('退出提醒清空指令')):
@@ -550,13 +579,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.save_data('自动保存')
                 event.accept()
                 clear_all_ins()
-                update_settings_in_database(最近导入文件路径='None')  # 清空最近导入文件路径
+                # update_settings_in_database(最近导入文件路径='None')  # 清空最近导入文件路径
             else:
                 event.ignore()
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
 
-    def data_import(self):
+    def data_import(self, file_path):
         """导入数据功能"""
 
         def data_import_from_db(target_path_):
@@ -582,7 +611,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 for branch_name in branch_result_list:
                     global_write_to_database('分支表名', branch_name)
                 self.load_branch_to_combobox()  # 重新加载分支列表
-                QMessageBox.information(self, "提示", "指令数据导入成功！")
+                if file_path == '资源文件夹路径':
+                    QMessageBox.information(self, "提示", "指令数据导入成功！")
             except sqlite3.IntegrityError:
                 QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
             close_database(cursor, con)
@@ -615,33 +645,45 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     QMessageBox.warning(self, f"导入失败", f"ID重复或格式错误！{e}")
             close_database(cursor_, con_)
             self.load_branch_to_combobox()  # 重新加载分支列表
-            QMessageBox.information(self, "提示", "指令数据导入成功！")
+            if file_path == '资源文件夹路径':
+                QMessageBox.information(self, "提示", "指令数据导入成功！")
 
         # 获取资源文件夹路径，如果不存在则使用用户的主目录
-        resource_folder_path = extract_global_parameter('资源文件夹路径')
-        directory_path = resource_folder_path[0] if \
-            resource_folder_path else os.path.expanduser("~")
-        # 打开选择文件对话框
-        target_path = QFileDialog.getOpenFileName(
-            parent=self,
-            caption="请选择指令备份文件",
-            directory=directory_path,
-            filter="(*.db *.xlsx)"
-        )
-        # 判断是否选择了文件
-        if target_path[0] != '':
-            suffix = os.path.splitext(target_path[0])[1]  # 获取文件后缀
-            # 如果为.db文件
-            if suffix == '.db':
-                clear_all_ins(True)  # 清空原有数据
-                data_import_from_db(target_path)
-            # 如果为.xlsx文件
-            elif suffix == '.xlsx':
-                clear_all_ins(True)  # 清空原有数据，包括分支表
-                data_import_from_excel(target_path)
-            # 将最近导入的文件路径写入数据库,用于保存时自动设置路径
-            update_settings_in_database(最近导入文件路径=os.path.normpath(target_path[0]))
-            self.statusBar.showMessage(f'指令数据导入成功！已自动设置保存路径。', 1000)
+        if file_path == '资源文件夹路径':
+            resource_folder_path = extract_global_parameter('资源文件夹路径')[0]
+            # 获取当前文件夹路径
+            directory_path = resource_folder_path if \
+                resource_folder_path else os.path.expanduser("~")
+            # 打开选择文件对话框
+            target_path = QFileDialog.getOpenFileName(
+                parent=self,
+                caption="请选择指令备份文件",
+                directory=directory_path,
+                filter="(*.db *.xlsx)"
+            )
+            # 判断是否选择了文件
+            if target_path[0] != '':
+                suffix = os.path.splitext(target_path[0])[1]  # 获取文件后缀
+            else:
+                return
+        else:
+            target_path = (file_path, '')
+            suffix = os.path.splitext(file_path)[1]
+
+        # 如果为.db文件
+        if suffix == '.db':
+            clear_all_ins(True)  # 清空原有数据
+            data_import_from_db(target_path)
+        # 如果为.xlsx文件
+        elif suffix == '.xlsx':
+            clear_all_ins(True)  # 清空原有数据，包括分支表
+            data_import_from_excel(target_path)
+        # 将最近导入的文件路径写入数据库,用于保存时自动设置路径
+        update_settings_in_database(当前文件路径=os.path.normpath(target_path[0]))  # 写入当前文件路径
+        writes_to_recently_opened_files(os.path.normpath(target_path[0]))  # 写入最近打开的文件
+        self.statusBar.showMessage(f'指令数据导入成功！已自动设置保存路径。', 1000)
+        self.menuzv.clear()  # 清空最近打开文件菜单
+        self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
 
     def start(self, run_branch=False):
         """主窗体开始按钮"""
@@ -667,10 +709,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     operation_before_execution()
                     self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
                     self.command_thread.start()
-
-    # def hide_toolbar(self):
-    #     """隐藏工具栏"""
-    #     self.toolBar.setVisible(self.actiong.isChecked())
 
     def exporting_operation_logs(self):
         """导出操作日志"""
@@ -835,10 +873,7 @@ class About(QDialog, Ui_About):
         # 初始化窗体
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
-        # 加载窗体大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
+        set_window_size(self)  # 获取上次退出时的窗口大小
         # 绑定事件
         self.github.clicked.connect(self.show_github)
         self.gitee.clicked.connect(self.show_gitee)

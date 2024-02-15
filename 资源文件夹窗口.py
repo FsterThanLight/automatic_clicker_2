@@ -18,10 +18,7 @@ class Global_s(QDialog, Ui_Global):
         self.setupUi(self)
         # 去除帮助按钮
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
-        # 设置窗口大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
+        set_window_size(self)  # 获取上次退出时的窗口大小
         # 绑定事件
         self.refresh_listview()  # 刷新listview
         self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径

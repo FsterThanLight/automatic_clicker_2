@@ -36,10 +36,7 @@ class Na(QWidget, Ui_navigation):
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
-        # 设置窗口大小
-        width, height = set_window_size(self.windowTitle())
-        if width and height:
-            self.resize(width, height)
+        set_window_size(self)  # 获取上次退出时的窗口大小
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
