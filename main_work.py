@@ -51,14 +51,13 @@ class CommandThread(QThread):
 
     def show_message(self, message):
         """显示消息"""
-        self.send_message.emit(message)
+        self.send_message.emit(f'{get_str_now_time()}\t{message}')
 
     def run(self):
         """执行指令"""
         self.start_state = True
         self.suspended = False
         # 执行指令
-        print('分支表索引：', self.branch_name_index)
         list_instructions = extracted_ins_from_database()
         if len(list_instructions) != 0:
             # 设置主流程循环前的参数
@@ -70,12 +69,13 @@ class CommandThread(QThread):
                     (loop_type == '有限循环' and self.number <= self.number_cycles):
                 # 执行指令集中的指令
                 self.execute_instructions(self.branch_name_index, 0, list_instructions)
-                self.send_message.emit(f'完成第{self.number}次循环')
+                self.show_message(f'完成第{self.number}次循环')
                 self.number += 1
                 time.sleep(self.time_sleep)
 
             # 结束信号
-            self.finished_signal.emit(f'{get_str_now_time()} 完成任务')
+            system_prompt_tone('线程结束')
+            self.show_message('完成任务')
 
     def pause(self):
         self.mutex.lock()
@@ -123,9 +123,6 @@ class CommandThread(QThread):
                 try:
                     # 图像识别点击的事件
                     if cmd_type == "图像点击":
-                        # image_click = ImageClick(command_thread=self,
-                        #                          navigation=self.navigation,
-                        #                          ins_dic=dic_)
                         image_click = ImageClick(outputmessage=self.out_mes, ins_dic=dic_)
                         image_click.start_execute(self.number)
 
@@ -309,7 +306,7 @@ class CommandThread(QThread):
 
                     # 跳转分支指令
                     else:  # 跳转分支
-                        self.show_message('转到分支：{}'.format(exception_handling))
+                        self.show_message(f'转到分支：{exception_handling}')
                         target_branch_name = exception_handling.split('-')[0]  # 分支表名
                         # 目标分支表名在分支表名中的索引
                         branch_table_name_index = self.branch_table_name.index(target_branch_name)
@@ -321,5 +318,5 @@ class CommandThread(QThread):
                         break
 
             except IndexError:
-                self.show_message('分支执行异常！')
+                self.show_message(f'分支执行异常！')
                 break

@@ -28,7 +28,7 @@ def get_str_now_time():
 
 def system_prompt_tone(judge: str):
     """系统提示音
-    :param judge: 判断类型（线程结束、全局快捷键）"""
+    :param judge: 判断类型（线程结束、全局快捷键、执行异常）"""
     is_tone = eval(get_setting_data_from_db('系统提示音'))
     if judge == '线程结束' and is_tone:
         for i_ in range(3):

@@ -17,7 +17,7 @@ import win32process
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from dateutil.parser import parse
 
-from 数据库操作 import get_setting_data_from_db
+from 数据库操作 import get_setting_data_from_db, get_str_now_time
 from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
@@ -64,7 +64,9 @@ class OutputMessage:
         if not is_test:
             self.command_thread.show_message(message)
         elif is_test:
-            self.navigation.textBrowser.append(message)
+            self.navigation.textBrowser.append(
+                f'{get_str_now_time()}\t{message}'
+            )
         QApplication.processEvents()
 
 
@@ -140,21 +142,21 @@ class ImageClick:
             if location is not None:
                 if not self.is_test:
                     # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
-                    self.out_mes.out_mes('已找到匹配图片%s' % str(number), self.is_test)
+                    self.out_mes.out_mes(f'已找到匹配图片%s' % str(number), self.is_test)
                     pyautogui.click(location.x, location.y,
                                     clicks=click_times,
                                     interval=self.interval,
                                     duration=self.duration,
                                     button=lOrR)
                 elif self.is_test:
-                    self.out_mes.out_mes('已找到匹配图片%s' % str(number), self.is_test)
+                    self.out_mes.out_mes(f'已找到匹配图片%s' % str(number), self.is_test)
                     # 移动鼠标到图片位置
                     pyautogui.moveTo(location.x, location.y, duration=0.2)
 
         try:
             min_search_time = 1 if skip == "自动略过" else float(skip)
             # 显示信息
-            self.out_mes.out_mes('正在查找匹配图像...', self.is_test)
+            self.out_mes.out_mes(f'正在查找匹配图像...', self.is_test)
             QApplication.processEvents()
             location_ = pyautogui.locateCenterOnScreen(
                 image=img,

@@ -368,7 +368,7 @@
              <item>
               <widget class="QPushButton" name="pushButton_7">
                <property name="text">
-                <string>删除该文件夹下图像</string>
+                <string>打开文件夹</string>
                </property>
               </widget>
              </item>
@@ -415,10 +415,10 @@
                 <bool>true</bool>
                </property>
                <property name="text">
-                <string>灰度识别</string>
+                <string>启用灰度识别</string>
                </property>
                <property name="checked">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -7518,7 +7518,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab_20">
           <attribute name="title">
@@ -7729,14 +7729,38 @@ p, li { white-space: pre-wrap; }
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_45">
            <item>
-            <widget class="QLabel" name="label_43">
-             <property name="text">
-              <string>暂无</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
+            <layout class="QGridLayout" name="gridLayout_34" columnstretch="3,1">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pushButton_9">
+               <property name="text">
+                <string>查看图像</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pushButton_10">
+               <property name="text">
+                <string>删除图像</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" rowspan="2">
+              <widget class="QLabel" name="label_43">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>暂无</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

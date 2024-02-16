@@ -3,7 +3,6 @@ import io
 import os
 import random
 import re
-import shutil
 import sqlite3
 
 import ddddocr
@@ -19,9 +18,12 @@ from openpyxl.utils.exceptions import InvalidFileException
 from 功能类 import SendWeChat, ImageClick, OutputMessage
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
-    sqlitedb, close_database, set_window_size, save_window_size, get_str_now_time
+    sqlitedb, close_database, set_window_size, save_window_size
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
+
+
+# image_path: str = '' # 用于图像预览图像路径
 
 
 class Na(QWidget, Ui_navigation):
@@ -45,6 +47,8 @@ class Na(QWidget, Ui_navigation):
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.activated.connect(lambda: self.exception_handling_judgment_type('报错处理'))
         self.comboBox_10.activated.connect(lambda: self.exception_handling_judgment_type('分支名称'))
+        self.pushButton_9.clicked.connect(lambda: self.on_button_clicked('查看'))
+        self.pushButton_10.clicked.connect(lambda: self.on_button_clicked('删除'))
         # 快捷选择导航页
         self.tab_title_list = [self.tabWidget.tabText(x) for x in range(self.tabWidget.count())]
         self.treeWidget.itemClicked.connect(
@@ -198,16 +202,18 @@ class Na(QWidget, Ui_navigation):
                 image_click.start_execute('')
             except Exception as e:
                 print(e)
-                self.textBrowser.append(f'{get_str_now_time()} 未找到目标图像，测试结束。')
+                self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+
+        def open_image_folder():
+            """打开图像文件夹"""
+            os.startfile(os.path.normpath(self.label_3.text()))
 
         if type_ == '按钮功能':
             # 快捷截图功能
             self.pushButton.clicked.connect(
                 lambda: self.quick_screenshot(self.comboBox_8, self.comboBox, '快捷截图')
             )
-            self.pushButton_7.clicked.connect(
-                lambda: self.quick_screenshot(self.comboBox_8, self.comboBox, '删除图像')
-            )
+            self.pushButton_7.clicked.connect(open_image_folder)  # 打开图像文件夹
             # 加载下拉列表数据
             self.comboBox_8.currentTextChanged.connect(
                 lambda: self.find_images(self.comboBox_8, self.comboBox)
@@ -388,7 +394,7 @@ class Na(QWidget, Ui_navigation):
             )
         elif type_ == '写入参数':
             # 获取参数
-            image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
+            image = os.path.normpath(os.path.join(self.comboBox_8.currentText(), self.comboBox.currentText()))
             parameter_1 = self.comboBox_19.currentText()
             parameter_2 = self.spinBox_6.value()
             # 检查参数是否有异常
@@ -1130,10 +1136,11 @@ class Na(QWidget, Ui_navigation):
             if combox.currentText() == '':
                 pass
             else:
-                file_path = combox.currentText()
-                # 删除文件夹中所有文件，保留文件夹
-                shutil.rmtree(file_path)
-                os.mkdir(file_path)
+                file_path = os.path.normpath(
+                    os.path.join(combox.currentText(), combox_2.currentText())
+                )
+                if os.path.exists(file_path):
+                    os.remove(file_path)
                 self.find_images(combox, combox_2)
                 # 弹出提示框
                 QMessageBox.information(self, '提示', '已删除所有图像！', QMessageBox.Yes)
@@ -1228,14 +1235,36 @@ class Na(QWidget, Ui_navigation):
             except Exception as e:
                 print(e)
 
-    def show_image_to_label(self, comboBox_folder, comboBox_image):
+    def show_image_to_label(self, comboBox_folder, comboBox_image, judge='显示'):
         """将图像显示到label中
+        :param judge:
         :param comboBox_folder: 图像文件夹下拉列表
         :param comboBox_image: 图像名称下拉列表"""
         image_path = os.path.normpath(
-            comboBox_folder.currentText() + '/' + comboBox_image.currentText()
+            os.path.join(comboBox_folder.currentText(), comboBox_image.currentText())
         )
-        # 将图像转换为QImage对象
-        image = QImage(image_path)
-        image = image.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
-        self.label_43.setPixmap(QPixmap.fromImage(image))
+        if judge == '显示':
+            # 将图像转换为QImage对象
+            image_ = QImage(image_path)
+            image = image_.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
+            self.label_43.setPixmap(QPixmap.fromImage(image))
+        elif judge == '删除':
+            os.remove(image_path)
+        elif judge == '查看':
+            os.startfile(image_path)
+
+    def on_button_clicked(self, judge: str) -> None:
+        """按钮点击事件,用于图像预览的按钮事件
+        :param judge: 执行的操作(删除、查看)"""
+        combo_boxes = {
+            '图像点击': (self.comboBox_8, self.comboBox),
+            '图像等待': (self.comboBox_17, self.comboBox_18)
+        }
+        current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
+        if current_title in combo_boxes:
+            combo_box1, combo_box2 = combo_boxes.get(current_title)
+            self.show_image_to_label(combo_box1, combo_box2, judge)
+            if judge == '删除':
+                for value in combo_boxes.values():
+                    self.find_images(value[0], value[1])
+

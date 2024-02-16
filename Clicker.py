@@ -53,7 +53,7 @@ from 资源文件夹窗口 import Global_s
 # todo: 运行外部程序功能
 # todo: 鼠标点击功能可设置按压时长
 # todo: 鼠标移动、滚轮功能可设置随机移动
-# todo: 图像识别增加灰度识别
+# done: 图像识别增加灰度识别
 # done: 菜单栏增加最近打开选项
 
 # activate clicker
