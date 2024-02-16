@@ -16,10 +16,10 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat
+from 功能类 import SendWeChat, ImageClick, OutputMessage
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
-    sqlitedb, close_database, set_window_size, save_window_size
+    sqlitedb, close_database, set_window_size, save_window_size, get_str_now_time
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 
@@ -30,8 +30,7 @@ class Na(QWidget, Ui_navigation):
     def __init__(self, main_window_=None):
         super().__init__(main_window_)
         self.main_window = main_window_
-
-        # self.web_option = WebOption(self.main_window, self)
+        self.out_mes = OutputMessage(None, self)  # 输出信息
         self.setupUi(self)
         # 去除最大化最小化按钮
         self.setWindowFlags(Qt.WindowCloseButtonHint)
@@ -109,6 +108,29 @@ class Na(QWidget, Ui_navigation):
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
 
+    @staticmethod
+    def get_test_dic(instruction_,
+                     repeat_number_,
+                     exception_handling_,
+                     image_=None,
+                     parameter_1_=None,
+                     parameter_2_=None,
+                     parameter_3_=None,
+                     parameter_4_=None
+                     ):
+        """返回测试字典,用于测试按钮的功能"""
+        return {
+            'ID': None,
+            '图像路径': image_,
+            '指令类型': instruction_,
+            '参数1（键鼠指令）': parameter_1_,
+            '参数2': parameter_2_,
+            '参数3': parameter_3_,
+            '参数4': parameter_4_,
+            '重复次数': repeat_number_,
+            '异常处理': exception_handling_
+        }
+
     def get_func_info(self) -> dict:
         """返回功能区的参数"""
 
@@ -120,14 +142,11 @@ class Na(QWidget, Ui_navigation):
             if selected_text in {'自动跳过', '提示异常并暂停', '提示异常并停止'}:
                 exception_handling_text = selected_text
             elif selected_text == '跳转分支':
-                # branch_table_name = extract_global_parameter('分支表名')
-                # branch_table_name_index = branch_table_name.index(self.comboBox_10.currentText())
                 select_branch_table_name = self.comboBox_10.currentText()
                 if self.comboBox_11.currentText() == '':
                     QMessageBox.critical(self, "错误", "分支表下无指令，请检查分支表名是否正确！")
                     raise ValueError
                 exception_handling_text = f'{select_branch_table_name}-{int(self.comboBox_11.currentText())}'
-                # exception_handling_text = f'分支-{branch_table_name_index}-{int(self.comboBox_11.currentText()) - 1}'
             return exception_handling_text
 
         # 当前页的index
@@ -142,6 +161,45 @@ class Na(QWidget, Ui_navigation):
     def image_click_function(self, type_):
         """图像点击识别窗口的功能
         :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            image_ = os.path.normpath(os.path.join(self.comboBox_8.currentText(), self.comboBox.currentText()))
+            parameter_1_ = self.comboBox_2.currentText()
+            # 如果复选框被选中，则获取第二个参数
+            parameter_2_ = None
+            if self.radioButton_2.isChecked():
+                parameter_2_ = '自动略过'
+            elif self.radioButton_4.isChecked():
+                parameter_2_ = self.spinBox_4.value()
+            # 检查参数是否有异常
+            if (os.path.isdir(image_)) or (not os.path.exists(image_)):
+                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
+                raise FileNotFoundError
+            return image_, parameter_1_, parameter_2_
+
+        def test():
+            """测试功能"""
+            self.tabWidget_2.setCurrentIndex(3)
+            image_, parameter_1_, parameter_2_ = get_parameters()
+            func_info_dic_ = self.get_func_info()  # 获取功能区的参数
+            dic_ = self.get_test_dic(instruction_=func_info_dic_.get('指令类型'),
+                                     repeat_number_=func_info_dic_.get('重复次数'),
+                                     exception_handling_=func_info_dic_.get('异常处理'),
+                                     image_=image_,
+                                     parameter_1_=parameter_1_,
+                                     parameter_2_=parameter_2_,
+                                     parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
+                                     )
+            # 测试用例
+            try:
+                image_click = ImageClick(self.out_mes, dic_)
+                image_click.is_test = True
+                image_click.start_execute('')
+            except Exception as e:
+                print(e)
+                self.textBrowser.append(f'{get_str_now_time()} 未找到目标图像，测试结束。')
+
         if type_ == '按钮功能':
             # 快捷截图功能
             self.pushButton.clicked.connect(
@@ -158,20 +216,11 @@ class Na(QWidget, Ui_navigation):
             self.comboBox.currentTextChanged.connect(
                 lambda: self.show_image_to_label(self.comboBox_8, self.comboBox)
             )
+            # 测试按钮
+            self.pushButton_6.clicked.connect(test)
+
         elif type_ == '写入参数':
-            # 获取5个参数命令，写入数据库
-            image = os.path.normpath(self.comboBox_8.currentText() + '/' + self.comboBox.currentText())
-            parameter_1 = self.comboBox_2.currentText()
-            # 如果复选框被选中，则获取第二个参数
-            parameter_2 = None
-            if self.radioButton_2.isChecked():
-                parameter_2 = '自动略过'
-            elif self.radioButton_4.isChecked():
-                parameter_2 = self.spinBox_4.value()
-            # 检查参数是否有异常
-            if (os.path.isdir(image)) or (not os.path.exists(image)):
-                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
-                raise FileNotFoundError
+            image, parameter_1, parameter_2 = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -180,6 +229,7 @@ class Na(QWidget, Ui_navigation):
                                                  image_=image,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
+                                                 parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 加载图像文件夹路径

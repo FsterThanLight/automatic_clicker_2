@@ -51,6 +51,23 @@ def close_browser():
     web_option.close_browser()
 
 
+class OutputMessage:
+    """输出信息，测试时输出到文本框，非测试时输出到主窗口"""
+
+    def __init__(self, command_thread, navigation):
+        # 输出的窗口
+        self.command_thread = command_thread
+        self.navigation = navigation
+
+    def out_mes(self, message, is_test: bool = False):
+        """输出信息,测试时输出到文本框，非测试时输出到主窗口"""
+        if not is_test:
+            self.command_thread.show_message(message)
+        elif is_test:
+            self.navigation.textBrowser.append(message)
+        QApplication.processEvents()
+
+
 def timer(func):
     def func_wrapper(*args, **kwargs):
         from time import time
@@ -67,7 +84,7 @@ def timer(func):
 class ImageClick:
     """图像点击"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db(
             '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
@@ -76,10 +93,9 @@ class ImageClick:
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.confidence = float(setting_data_dic.get('图像匹配精度'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
-        # 指令字典
-        self.ins_dic = ins_dic
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数
@@ -88,61 +104,68 @@ class ImageClick:
         img = self.ins_dic.get('图像路径')
         # 取重复次数
         re_try = self.ins_dic.get('重复次数')
-        # 是否跳过参数
-        skip = self.ins_dic.get('参数2')
+        skip = self.ins_dic.get('参数2')  # 是否跳过参数
+        gray_recognition = eval(self.ins_dic.get('参数3'))  # 是否灰度识别
         click_map = {
             '左键单击': [1, 'left', img, skip],
             '左键双击': [2, 'left', img, skip],
             '右键单击': [1, 'right', img, skip],
-            '右键双击': [2, 'right', img, skip]
+            '右键双击': [2, 'right', img, skip],
+            '仅移动鼠标': [0, 'left', img, skip]
         }
         list_ins = click_map.get(self.ins_dic.get('参数1（键鼠指令）'))
         # 返回重复次数，点击次数，左键右键，图片名称，是否跳过
-        return re_try, list_ins[0], list_ins[1], list_ins[2], list_ins[3]
+        return re_try, gray_recognition, list_ins[0], list_ins[1], list_ins[2], list_ins[3]
 
     def start_execute(self, number):
         """开始执行鼠标点击事件
         :param number: 主窗口显示的循环次数"""
         # 解析指令字典
-        reTry, click_times, lOrR, img, skip = self.parsing_ins_dic()
+        reTry, gray_rec, click_times, lOrR, img, skip = self.parsing_ins_dic()
         # 执行图像点击
         if reTry == 1:
-            self.execute_click(click_times, lOrR, img, skip, number)
+            self.execute_click(click_times, gray_rec, lOrR, img, skip, number)
         elif reTry > 1:
             i = 1
             while i < reTry + 1:
-                self.execute_click(click_times, lOrR, img, skip, number)
+                self.execute_click(click_times, gray_rec, lOrR, img, skip, number)
                 i += 1
                 time.sleep(self.time_sleep)
 
-    def execute_click(self, click_times, lOrR, img, skip, number):
+    def execute_click(self, click_times, gray_rec, lOrR, img, skip, number):
         """执行鼠标点击事件"""
 
         # 4个参数：鼠标点击时间，按钮类型（左键右键中键），图片名称，重复次数
         def image_match_click(location):
-            # nonlocal repeat, number_1
             if location is not None:
-                # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
-                self.command_thread.show_message('找到匹配图片%s' % str(number))
-                pyautogui.click(location.x, location.y,
-                                clicks=click_times,
-                                interval=self.interval,
-                                duration=self.duration,
-                                button=lOrR)
+                if not self.is_test:
+                    # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
+                    self.out_mes.out_mes('已找到匹配图片%s' % str(number), self.is_test)
+                    pyautogui.click(location.x, location.y,
+                                    clicks=click_times,
+                                    interval=self.interval,
+                                    duration=self.duration,
+                                    button=lOrR)
+                elif self.is_test:
+                    self.out_mes.out_mes('已找到匹配图片%s' % str(number), self.is_test)
+                    # 移动鼠标到图片位置
+                    pyautogui.moveTo(location.x, location.y, duration=0.2)
 
         try:
             min_search_time = 1 if skip == "自动略过" else float(skip)
-            self.command_thread.show_message('正在查找匹配图像...')
+            # 显示信息
+            self.out_mes.out_mes('正在查找匹配图像...', self.is_test)
             QApplication.processEvents()
             location_ = pyautogui.locateCenterOnScreen(
                 image=img,
                 confidence=self.confidence,
-                minSearchTime=min_search_time
+                minSearchTime=min_search_time,
+                grayscale=gray_rec
             )
             if location_:  # 如果找到图像
                 image_match_click(location_)
             elif not location_:  # 如果未找到图像
-                self.command_thread.show_message('未找到匹配图像')
+                self.out_mes.out_mes('未找到匹配图像', self.is_test)
             QApplication.processEvents()
         except OSError:
             QMessageBox.critical(

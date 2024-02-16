@@ -265,7 +265,7 @@ def writes_to_recently_opened_files(file_path: str):
             cursor_.execute('INSERT INTO 最近打开(文件路径, 打开时间) VALUES (?, ?)',
                             (file_path_, time_stamp_))
 
-    def delete_the_oldest_file(cursor_, con_, keep_number=5) -> None:
+    def delete_the_oldest_file(cursor_, con_, keep_number=10) -> None:
         """从数据库中删除最早的文件"""
         try:
             cursor_.execute('SELECT 文件路径 FROM 最近打开 ORDER BY 打开时间 ')

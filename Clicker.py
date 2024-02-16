@@ -48,7 +48,7 @@ from 资源文件夹窗口 import Global_s
 # todo: qss界面美化
 # todo: 指令可编译为python代码
 # todo: 播放语言功能
-# todo: 右键菜单新增转到分支
+# done: 右键菜单新增转到分支
 # todo: 运行python代码功能
 # todo: 运行外部程序功能
 # todo: 鼠标点击功能可设置按压时长
@@ -158,16 +158,22 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def open_recent_file(self, file_path):
         """打开最近打开的文件
         :param file_path: 文件路径"""
-        if os.path.exists(file_path):
-            self.data_import(file_path)
+        recent_file = get_setting_data_from_db('当前文件路径')
+        if file_path != recent_file:
+            if os.path.exists(file_path):
+                self.data_import(file_path)
+            elif not os.path.exists(file_path):
+                # 如果文件不存在，则删除最近打开文件列表中的文件
+                remove_recently_opened_file(file_path)
+                # 从菜单中删除文件
+                for action in self.menuzv.actions():
+                    if action.text() == file_path:
+                        self.menuzv.removeAction(action)
+                QMessageBox.critical(self, "错误", "文件不存在！已经从最近打开文件中删除。")
         else:
-            # 如果文件不存在，则删除最近打开文件列表中的文件
-            remove_recently_opened_file(file_path)
-            # 从菜单中删除文件
             for action in self.menuzv.actions():
                 if action.text() == file_path:
-                    self.menuzv.removeAction(action)
-            QMessageBox.critical(self, "错误", "文件不存在！已经从最近打开文件中删除。")
+                    action.setChecked(True)
 
     def delete_data(self):
         """删除选中的数据行"""
@@ -218,6 +224,19 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.statusBar.showMessage(f'复制指令。', 1000)
         except AttributeError:
             pass
+
+    def go_to_branch(self):
+        """转到分支"""
+        row = self.tableWidget.currentRow()  # 获取当前行行号
+        branch_name = self.tableWidget.item(row, 2).text()  # 分支名称
+        if branch_name not in ['自动跳过', '提示异常并暂停', '提示异常并停止']:
+            # 跳转到对应的分支表和行
+            go_branch_name = branch_name.split('-')[0]
+            go_row_num = branch_name.split('-')[1]
+            self.comboBox.setCurrentText(go_branch_name)
+            self.tableWidget.setCurrentCell(int(go_row_num) - 1, 0)  # 设置焦点
+        else:
+            self.statusBar.showMessage(f'当前指令无分支。', 1000)
 
     def generateMenu(self, pos):
         """生成右键菜单"""
@@ -297,6 +316,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
             modify_ins = menu.addAction("修改指令")
             modify_ins.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))  # 设置图标
 
+            go_branch = menu.addAction("转到分支")
+            go_branch.setShortcut('Ctrl+G')
+            go_branch.setIcon(self.style().standardIcon(QStyle.SP_ArrowForward))  # 设置图标
+
             del_ins = menu.addAction("删除指令")
             del_ins.setShortcut('Delete')
             del_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogCancelButton))  # 设置图标
@@ -337,6 +360,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             clear_all_ins(branch_name=self.comboBox.currentText())
             self.get_data()
             self.statusBar.showMessage(f'清空当前分支全部指令。', 1000)
+        elif action == go_branch:
+            self.go_to_branch()
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -477,7 +502,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         def get_file_and_folder_from_setting():
             """获取文件名和文件夹路径"""
             # 获取资源文件夹路径，如果存在则使用用户的主目录
-            recently_opened = get_recently_opened_file()
+            recently_opened = get_setting_data_from_db('当前文件路径')
             if (recently_opened != 'None') and (os.path.exists(recently_opened)):
                 return (
                     os.path.normpath(os.path.split(recently_opened)[1]),
@@ -815,6 +840,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 如果分支不为self.comboBox的最后一个则,切换下一个分支
                 if self.comboBox.currentIndex() != self.comboBox.count() - 1:
                     self.comboBox.setCurrentIndex(self.comboBox.currentIndex() + 1)
+            # 如果按下ctrl+t键
+            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_G:
+                self.go_to_branch()  # 转到分支
         return super().eventFilter(obj, event)
 
         # 热键处理函数

@@ -15,8 +15,6 @@ from PyQt5.QtCore import *
 from 功能类 import *
 from 数据库操作 import extract_global_parameter, extracted_ins_from_database, get_str_now_time, system_prompt_tone
 
-branch_name_index = 0  # 开始执行时的分支表名索引，用于判断是否是分支还是主流程
-
 
 class CommandThread(QThread):
     """指令线程"""
@@ -29,6 +27,7 @@ class CommandThread(QThread):
         # 窗体属性
         self.main_window = main_window
         self.navigation = navigation
+        self.out_mes = OutputMessage(self, self.navigation)
         # 循环控制
         self.number: int = 1  # 在窗体中显示循环次数
         self.number_cycles: int = 0  # 循环次数
@@ -124,7 +123,10 @@ class CommandThread(QThread):
                 try:
                     # 图像识别点击的事件
                     if cmd_type == "图像点击":
-                        image_click = ImageClick(command_thread=self, ins_dic=dic_)
+                        # image_click = ImageClick(command_thread=self,
+                        #                          navigation=self.navigation,
+                        #                          ins_dic=dic_)
+                        image_click = ImageClick(outputmessage=self.out_mes, ins_dic=dic_)
                         image_click.start_execute(self.number)
 
                     # 屏幕坐标点击事件
@@ -270,11 +272,13 @@ class CommandThread(QThread):
 
                     # 自动跳过功能
                     if exception_handling == '自动跳过':
+                        self.show_message(f'ID为{str_id}的指令执行异常，已自动跳过。')
                         current_index += 1
 
                     # 提示异常并暂停
                     elif exception_handling == '提示异常并暂停':
                         system_prompt_tone('执行异常')
+                        self.show_message(f'ID为{str_id}的指令执行异常，已提示异常并暂停。')
                         # 弹出带有OK按钮的提示框
                         choice = pymsgbox.confirm(
                             text=f'ID为{str_id}的指令执行异常！\n是否重试？\n\n错误类型：{str(type(e))}',
@@ -292,6 +296,7 @@ class CommandThread(QThread):
                     # 抛出异常并停止
                     elif exception_handling == '提示异常并停止':
                         system_prompt_tone('执行异常')
+                        self.show_message(f'ID为{str_id}的指令执行异常，已提示异常并停止。')
                         # 弹出提示框
                         pymsgbox.alert(
                             text=f'ID为{str_id}的指令抛出异常！\n\n错误类型：{str(type(e))}',
