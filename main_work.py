@@ -13,7 +13,7 @@ import pymsgbox
 from PyQt5.QtCore import *
 
 from 功能类 import *
-from 数据库操作 import extract_global_parameter, extracted_ins_from_database, get_str_now_time, system_prompt_tone
+from 数据库操作 import extract_global_parameter, extracted_ins_from_database, system_prompt_tone
 
 
 class CommandThread(QThread):
@@ -127,7 +127,7 @@ class CommandThread(QThread):
 
                     # 屏幕坐标点击事件
                     elif cmd_type == '坐标点击':
-                        coordinate_click = CoordinateClick(command_thread=self, ins_dic=dic_)
+                        coordinate_click = CoordinateClick(outputmessage=self.out_mes, ins_dic=dic_)
                         coordinate_click.start_execute(self.number)
 
                     # 等待的事件
@@ -152,7 +152,7 @@ class CommandThread(QThread):
 
                     # 鼠标移动的事件
                     elif cmd_type == '移动鼠标':
-                        move_mouse = MoveMouse(command_thread=self, ins_dic=dic_)
+                        move_mouse = MoveMouse(outputmessage=self.out_mes, ins_dic=dic_)
                         move_mouse.start_execute()
 
                     # 键盘按键的事件
@@ -262,9 +262,10 @@ class CommandThread(QThread):
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                except Exception as e:
+                # except Exception as e:
+                except IndexError:
+                    e = 'test'
                     str_id = str(dict(dic_)['ID'])
-                    # except IndexError:
 
                     # 自动跳过功能
                     if exception_handling == '自动跳过':

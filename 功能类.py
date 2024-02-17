@@ -14,7 +14,7 @@ import pyperclip
 import win32con
 import win32gui
 import win32process
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication
 from dateutil.parser import parse
 
 from 数据库操作 import get_setting_data_from_db, get_str_now_time
@@ -177,7 +177,7 @@ class ImageClick:
 class CoordinateClick:
     """坐标点击"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db(
             '持续时间', '时间间隔', '图像匹配精度', '暂停时间'
@@ -185,10 +185,9 @@ class CoordinateClick:
         self.duration = float(setting_data_dic.get('持续时间'))
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
-        # 指令字典
-        self.ins_dic = ins_dic
+        self.out_mes = outputmessage  # 用于输出信息
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
@@ -196,14 +195,15 @@ class CoordinateClick:
         # 取x,y坐标的值
         x_ = int(self.ins_dic.get('参数2').split('-')[0])
         y_ = int(self.ins_dic.get('参数2').split('-')[1])
-        z_ = int(self.ins_dic.get('参数2').split('-')[1])
-        self.command_thread.show_message(f'x_,y坐标：{str(x_)},{str(y_)}')
+        z_ = int(self.ins_dic.get('参数2').split('-')[2])
+        self.out_mes.out_mes(f'x_,y坐标：{str(x_)},{str(y_)}', self.is_test)
         click_map = {
             '左键单击': [1, 'left', x_, y_],
             '左键双击': [2, 'left', x_, y_],
             '右键单击': [1, 'right', x_, y_],
             '右键双击': [2, 'right', x_, y_],
-            '左键（自定义次数）': [z_, 'left', x_, y_]
+            '左键（自定义次数）': [z_, 'left', x_, y_],
+            '仅移动鼠标': [0, 'left', x_, y_]
         }
         list_ins = click_map.get(self.ins_dic.get('参数1（键鼠指令）'))
         # 返回重复次数，点击次数，左键右键，x坐标，y坐标
@@ -222,7 +222,7 @@ class CoordinateClick:
                             duration=self.duration,
                             button=lOrR
                             )
-            self.command_thread.show_message(f'执行坐标{x__}:{y__}点击{str(number)}')
+            self.out_mes.out_mes(f'执行坐标{x__}:{y__}点击{str(number)}', self.is_test)
         elif reTry > 1:
             i = 1
             while i < reTry + 1:
@@ -231,9 +231,7 @@ class CoordinateClick:
                                 interval=self.interval,
                                 duration=self.duration,
                                 button=lOrR)
-                # self.main_window.plainTextEdit.appendPlainText(
-                #     '执行坐标%s:%s点击' % (x__, y__) + str(number))
-                self.command_thread.show_message(f'执行坐标{x__}:{y__}点击{str(number)}')
+                self.out_mes.out_mes(f'执行坐标{x__}:{y__}点击{str(number)}', self.is_test)
                 i += 1
                 time.sleep(self.time_sleep)
 
@@ -419,35 +417,52 @@ class TextInput:
 class MoveMouse:
     """移动鼠标"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db('持续时间', '暂停时间')
         self.duration = float(setting_data_dic.get('持续时间'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage  # 用于输出信息
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
-    def parsing_ins_dic(self):
+    def parsing_ins_dic(self, type_):
         """解析指令字典"""
-        re_try = self.ins_dic.get('重复次数')
-        direction = self.ins_dic.get('参数1（键鼠指令）')
-        distance = self.ins_dic.get('参数2')
-        return re_try, direction, distance
+        if type_ == '移动鼠标':
+            direction = self.ins_dic.get('参数2').split(',')[0]
+            distance = self.ins_dic.get('参数2').split(',')[1]
+            return direction, distance
+        elif type_ == '随机移动鼠标':
+            random_type = self.ins_dic.get('参数2')
+            return random_type
 
     def start_execute(self):
         """执行重复次数"""
-        re_try, direction, distance = self.parsing_ins_dic()
+        re_try = self.ins_dic.get('重复次数')
+        type_ = self.ins_dic.get('参数1（键鼠指令）')
         # 执行滚轮滑动
         if re_try == 1:
-            self.mouse_moves(direction, distance)
+            self.mouse_move_fun(type_)  # 执行鼠标移动
         elif re_try > 1:
             i = 1
             while i < re_try + 1:
-                self.mouse_moves(direction, distance)
+                self.mouse_move_fun(type_)  # 执行鼠标移动
                 i += 1
                 time.sleep(self.time_sleep)
+
+    def mouse_move_fun(self, type_: str) -> None:
+        """执行鼠标移动
+        :param type_: 鼠标移动类型"""
+        if type_ == '移动鼠标':
+            direction, distance = self.parsing_ins_dic(type_)
+            self.mouse_moves(direction, distance)
+        elif type_ == '随机移动鼠标':
+            random_type = self.parsing_ins_dic(type_)
+            if random_type == '类型1':
+                self.mouse_moves_random_1()
+            elif random_type == '类型2':
+                self.mouse_moves_random_2()
 
     def mouse_moves(self, direction, distance):
         """鼠标移动事件"""
@@ -456,7 +471,35 @@ class MoveMouse:
         if direction in directions:
             x, y = directions.get(direction)
             pyautogui.moveRel(x * int(distance), y * int(distance), duration=self.duration)
-        self.command_thread.show_message('移动鼠标%s%s像素距离' % (direction, distance))
+        self.out_mes.out_mes('移动鼠标%s%s像素距离' % (direction, distance), self.is_test)
+
+    def mouse_moves_random_1(self):
+        """鼠标移动事件"""
+        screen_width, screen_height = pyautogui.size()
+        # 随机生成坐标
+        x = random.randint(0, screen_width)
+        y = random.randint(0, screen_height)
+        # 随机生成时间
+        duration_ran = random.uniform(0.1, 0.9)
+        try:
+            pyautogui.moveTo(x, y, duration=duration_ran)
+            self.out_mes.out_mes('随机移动鼠标', self.is_test)
+        except pyautogui.FailSafeException:
+            pass
+
+    def mouse_moves_random_2(self):
+        """鼠标移动事件"""
+        directions = {'↑': (0, -1), '↓': (0, 1), '←': (-1, 0), '→': (1, 0)}
+        direction = random.choice(list(directions.keys()))
+        if direction in directions:
+            x, y = directions.get(direction)
+            distance = random.randint(1, 500)
+            duration_ran = random.uniform(0.1, 0.9)
+            try:
+                pyautogui.moveRel(x * distance, y * distance, duration=duration_ran)
+                self.out_mes.out_mes('随机移动鼠标', self.is_test)
+            except pyautogui.FailSafeException:
+                pass
 
 
 class PressKeyboard:
@@ -651,11 +694,12 @@ class InformationEntry:
             number
         )
         self.image_click.execute_click(
-            list_dic.get('点击次数'),
-            list_dic.get('按钮类型'),
-            list_dic.get('图像路径'),
-            list_dic.get('超时报错'),
-            number
+            click_times=list_dic.get('点击次数'),
+            gray_rec=False,
+            lOrR=list_dic.get('按钮类型'),
+            img=list_dic.get('图像路径'),
+            skip=list_dic.get('超时报错'),
+            number=number
         )
         self.text_input.text_input(cell_value, list_dic.get('特殊控件输入'))
         self.command_thread.show_message('已执行信息录入')

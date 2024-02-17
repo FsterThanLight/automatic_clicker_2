@@ -398,7 +398,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def get_data(self, row=None):
         """从数据库获取数据并存入表格
         :param row: 设置焦点行号"""
-        print('刷新表格')
         try:
             self.tableWidget.clearContents()
             self.tableWidget.setRowCount(0)
@@ -416,8 +415,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.tableWidget.insertRow(i_)
                 for j in range(len(list_order[i_])):
                     self.tableWidget.setItem(i_, j, QTableWidgetItem(str(list_order[i_][j])))
-
-            # self.tableWidget.resizeColumnsToContents()  # 自适应列宽
             # 自适应列宽（排除第一列）
             header = self.tableWidget.horizontalHeader()
             for col in range(1, header.count()):

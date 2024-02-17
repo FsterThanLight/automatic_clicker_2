@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage
+from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
@@ -36,6 +36,7 @@ class Na(QWidget, Ui_navigation):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
         set_window_size(self)  # 获取上次退出时的窗口大小
+        self.tabWidget.setCurrentIndex(0)  # 设置默认页
         self.treeWidget.expandAll()  # treeWidget全部展开
         # 添加保存按钮事件
         self.modify_id = None
@@ -117,9 +118,7 @@ class Na(QWidget, Ui_navigation):
             pass
 
     @staticmethod
-    def get_test_dic(instruction_,
-                     repeat_number_,
-                     exception_handling_,
+    def get_test_dic(repeat_number_,
                      image_=None,
                      parameter_1_=None,
                      parameter_2_=None,
@@ -130,13 +129,11 @@ class Na(QWidget, Ui_navigation):
         return {
             'ID': None,
             '图像路径': image_,
-            '指令类型': instruction_,
             '参数1（键鼠指令）': parameter_1_,
             '参数2': parameter_2_,
             '参数3': parameter_3_,
             '参数4': parameter_4_,
-            '重复次数': repeat_number_,
-            '异常处理': exception_handling_
+            '重复次数': repeat_number_
         }
 
     def get_func_info(self) -> dict:
@@ -191,10 +188,7 @@ class Na(QWidget, Ui_navigation):
             self.tabWidget_2.setCurrentIndex(3)
             try:
                 image_, parameter_1_, parameter_2_ = get_parameters()
-                func_info_dic_ = self.get_func_info()  # 获取功能区的参数
-                dic_ = self.get_test_dic(instruction_=func_info_dic_.get('指令类型'),
-                                         repeat_number_=func_info_dic_.get('重复次数'),
-                                         exception_handling_=func_info_dic_.get('异常处理'),
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
                                          image_=image_,
                                          parameter_1_=parameter_1_,
                                          parameter_2_=parameter_2_,
@@ -315,6 +309,23 @@ class Na(QWidget, Ui_navigation):
                 self.label_22.setEnabled(False)
                 self.spinBox_2.setValue(0)
 
+        def test():
+            """测试功能"""
+            self.tabWidget_2.setCurrentIndex(3)
+            parameter_1_ = self.comboBox_3.currentText()
+            parameter_2_ = f'{self.label_9.text()}-{self.label_10.text()}-{self.spinBox_2.value()}'
+            dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                     parameter_1_=parameter_1_,
+                                     parameter_2_=parameter_2_)
+            # 测试用例
+            try:
+                cor_click = CoordinateClick(self.out_mes, dic_)
+                cor_click.is_test = True
+                cor_click.start_execute('')
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'参数异常', True)
+
         if type_ == '按钮功能':
             # 坐标点击
             self.pushButton_4.pressed.connect(
@@ -325,9 +336,15 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_4.clicked.connect(self.mouseMoveEvent)
             # 是否激活自定义点击次数
             self.comboBox_3.currentTextChanged.connect(spinBox_2_enable)
+            # 测试按钮
+            self.pushButton_23.clicked.connect(test)
         elif type_ == '写入参数':
             parameter_1 = self.comboBox_3.currentText()
-            parameter_2 = self.label_9.text() + "-" + self.label_10.text() + "-" + str(self.spinBox_2.value())
+            parameter_2 = f'{self.label_9.text()}-{self.label_10.text()}-{self.spinBox_2.value()}'
+            # 检查参数是否有异常
+            if self.label_9.text() == '0' and self.label_10.text() == '0':
+                QMessageBox.critical(self, "错误", "未设置坐标，请设置坐标！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -441,13 +458,26 @@ class Na(QWidget, Ui_navigation):
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
         if type_ == '按钮功能':
+            # 将不同的单选按钮添加到同一个按钮组
+            buttonGroup_2 = QButtonGroup(self)
+            buttonGroup_2.addButton(self.radioButton_19)
+            buttonGroup_2.addButton(self.radioButton_ran)
+            # 限制输入框只能输入数字
             self.lineEdit.setValidator(QIntValidator())
         elif type_ == '写入参数':
-            parameter_1 = self.comboBox_4.currentText()  # 鼠标移动的方向
-            parameter_2 = self.lineEdit.text()  # 鼠标移动的距离
+            parameter_1 = None
+            parameter_2 = None
+            # 鼠标移动
+            if self.radioButton_19.isChecked():
+                parameter_1 = '移动鼠标'
+                parameter_2 = f'{self.comboBox_4.currentText()},{self.lineEdit.text()}'
+            # 随机移动
+            elif self.radioButton_ran.isChecked():
+                parameter_1 = '随机移动鼠标'
+                parameter_2 = self.comboBox_16.currentText()
             # 检查参数是否有异常
-            if not parameter_2.isdigit():
-                QMessageBox.critical(self, "错误", "鼠标移动的距离为输入！")
+            if not self.lineEdit.text().isdigit() and self.radioButton_19.isChecked():
+                QMessageBox.critical(self, "错误", "鼠标移动的距离未输入！")
                 raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
@@ -1054,6 +1084,9 @@ class Na(QWidget, Ui_navigation):
         current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
         disable_control = self.function_mapping.get(current_title)[1]
         control_status(disable_control)  # 控制控件的状态
+        # 刷新图像预览
+        if current_title in self.combo_image_preview.keys():
+            self.find_images(current_title)
 
     def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并
@@ -1148,9 +1181,7 @@ class Na(QWidget, Ui_navigation):
                 self.find_images(self.tabWidget.tabText(self.tabWidget.currentIndex()))
 
         elif judge == '打开文件夹':
-            if combox_folder.currentText() == '':
-                pass
-            else:
+            if combox_folder.currentText() != '':
                 os.startfile(os.path.normpath(combox_folder.currentText()))
 
     def writes_commands_to_the_database(self,
@@ -1261,6 +1292,8 @@ class Na(QWidget, Ui_navigation):
                 os.remove(image_path)
             elif judge == '查看':
                 os.startfile(image_path)
+        else:
+            self.label_43.setText('暂无')
 
     def on_button_clicked(self, judge: str) -> None:
         """按钮点击事件,用于图像预览的按钮事件

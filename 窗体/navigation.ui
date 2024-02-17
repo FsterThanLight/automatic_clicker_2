@@ -209,7 +209,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -842,6 +842,11 @@
                    <string>左键（自定义次数）</string>
                   </property>
                  </item>
+                 <item>
+                  <property name="text">
+                   <string>仅移动鼠标</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="1" column="0">
@@ -890,13 +895,64 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_23">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>指令测试</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="tab_5">
           <attribute name="title">
            <string>移动鼠标</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_59">
+          <layout class="QVBoxLayout" name="verticalLayout_62">
            <item>
             <widget class="QLabel" name="label_31">
              <property name="sizePolicy">
@@ -1023,11 +1079,33 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <layout class="QGridLayout" name="gridLayout_3">
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_12">
+               <widget class="QRadioButton" name="radioButton_19">
+                <property name="text">
+                 <string>移动鼠标</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="autoRepeat">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_3" columnstretch="1,1">
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="lineEdit"/>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_13">
                   <property name="text">
-                   <string>移动方向：</string>
+                   <string>移动距离（像素）：</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -1058,18 +1136,65 @@
                   </item>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_13">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_12">
                   <property name="text">
-                   <string>移动距离（像素）：</string>
+                   <string>移动方向：</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
-                 <widget class="QLineEdit" name="lineEdit"/>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_30">
+             <property name="title">
+              <string>随机移动</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_59">
+              <item>
+               <widget class="QRadioButton" name="radioButton_ran">
+                <property name="text">
+                 <string>随机移动</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_35" columnstretch="1,1">
+                <item row="0" column="1">
+                 <widget class="QComboBox" name="comboBox_16">
+                  <item>
+                   <property name="text">
+                    <string>类型1</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>类型2</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_102">
+                  <property name="text">
+                   <string>随机类型：</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
