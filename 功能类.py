@@ -170,9 +170,8 @@ class ImageClick:
                 self.out_mes.out_mes('未找到匹配图像', self.is_test)
             QApplication.processEvents()
         except OSError:
-            QMessageBox.critical(
-                None, '错误', '文件下未找到.png图像文件，请检查文件是否存在！'
-            )
+            self.out_mes.out_mes('文件下未找到png图像，请检查文件是否存在！', self.is_test)
+            raise FileNotFoundError
 
 
 class CoordinateClick:

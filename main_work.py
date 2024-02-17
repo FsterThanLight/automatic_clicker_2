@@ -51,7 +51,7 @@ class CommandThread(QThread):
 
     def show_message(self, message):
         """显示消息"""
-        self.send_message.emit(f'{get_str_now_time()}\t{message}')
+        self.send_message.emit(message)
 
     def run(self):
         """执行指令"""
@@ -74,8 +74,7 @@ class CommandThread(QThread):
                 time.sleep(self.time_sleep)
 
             # 结束信号
-            system_prompt_tone('线程结束')
-            self.show_message('完成任务')
+            self.finished_signal.emit('任务完成')
 
     def pause(self):
         self.mutex.lock()

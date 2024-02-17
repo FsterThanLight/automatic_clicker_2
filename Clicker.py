@@ -39,7 +39,7 @@ from 资源文件夹窗口 import Global_s
 # todo: 图片路径改用相对路径
 # todo: 新增提示音指令
 # todo: 新增倒计时窗口功能
-# todo: 快捷截图指令重新设计
+# done: 快捷截图指令重新设计
 # todo: 终止循环功能
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
@@ -878,11 +878,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
-        self.plainTextEdit.appendPlainText(message)
+        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
 
     def thread_finished(self, message):
         """任务结束"""
-        self.plainTextEdit.appendPlainText(message)
+        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
         # 显示窗口
         if self.checkBox_2.isChecked():
             self.show()

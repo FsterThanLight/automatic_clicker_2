@@ -21,9 +21,7 @@ from 数据库操作 import extract_global_parameter, extract_excel_from_global_
     sqlitedb, close_database, set_window_size, save_window_size
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
-
-
-# image_path: str = '' # 用于图像预览图像路径
+from 设置窗口 import Setting
 
 
 class Na(QWidget, Ui_navigation):
@@ -38,6 +36,7 @@ class Na(QWidget, Ui_navigation):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.setWindowModality(Qt.ApplicationModal)
         set_window_size(self)  # 获取上次退出时的窗口大小
+        self.treeWidget.expandAll()  # treeWidget全部展开
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
@@ -47,6 +46,11 @@ class Na(QWidget, Ui_navigation):
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.activated.connect(lambda: self.exception_handling_judgment_type('报错处理'))
         self.comboBox_10.activated.connect(lambda: self.exception_handling_judgment_type('分支名称'))
+        self.combo_image_preview = {
+            '图像点击': (self.comboBox_8, self.comboBox),
+            '图像等待': (self.comboBox_17, self.comboBox_18),
+            '信息录入': (self.comboBox_14, self.comboBox_15),
+        }
         self.pushButton_9.clicked.connect(lambda: self.on_button_clicked('查看'))
         self.pushButton_10.clicked.connect(lambda: self.on_button_clicked('删除'))
         # 快捷选择导航页
@@ -185,38 +189,46 @@ class Na(QWidget, Ui_navigation):
         def test():
             """测试功能"""
             self.tabWidget_2.setCurrentIndex(3)
-            image_, parameter_1_, parameter_2_ = get_parameters()
-            func_info_dic_ = self.get_func_info()  # 获取功能区的参数
-            dic_ = self.get_test_dic(instruction_=func_info_dic_.get('指令类型'),
-                                     repeat_number_=func_info_dic_.get('重复次数'),
-                                     exception_handling_=func_info_dic_.get('异常处理'),
-                                     image_=image_,
-                                     parameter_1_=parameter_1_,
-                                     parameter_2_=parameter_2_,
-                                     parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
-                                     )
-            # 测试用例
             try:
-                image_click = ImageClick(self.out_mes, dic_)
-                image_click.is_test = True
-                image_click.start_execute('')
-            except Exception as e:
-                print(e)
-                self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+                image_, parameter_1_, parameter_2_ = get_parameters()
+                func_info_dic_ = self.get_func_info()  # 获取功能区的参数
+                dic_ = self.get_test_dic(instruction_=func_info_dic_.get('指令类型'),
+                                         repeat_number_=func_info_dic_.get('重复次数'),
+                                         exception_handling_=func_info_dic_.get('异常处理'),
+                                         image_=image_,
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_,
+                                         parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
+                                         )
+                # 测试用例
+                try:
+                    image_click = ImageClick(self.out_mes, dic_)
+                    image_click.is_test = True
+                    image_click.start_execute('')
+                except Exception as e:
+                    print(e)
+                    self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+            except FileNotFoundError:
+                self.out_mes.out_mes(f'图像文件未设置！', True)
 
-        def open_image_folder():
-            """打开图像文件夹"""
-            os.startfile(os.path.normpath(self.label_3.text()))
+        def open_setting_window():
+            """打开图像点击设置窗口"""
+            setting_win = Setting(self)  # 设置窗体
+            setting_win.setModal(True)
+            setting_win.exec_()
 
         if type_ == '按钮功能':
             # 快捷截图功能
             self.pushButton.clicked.connect(
-                lambda: self.quick_screenshot(self.comboBox_8, self.comboBox, '快捷截图')
+                lambda: self.quick_screenshot(self.comboBox_8, '快捷截图')
             )
-            self.pushButton_7.clicked.connect(open_image_folder)  # 打开图像文件夹
+            # 打开图像文件夹
+            self.pushButton_7.clicked.connect(
+                lambda: self.quick_screenshot(self.comboBox_8, '打开文件夹')
+            )
             # 加载下拉列表数据
             self.comboBox_8.currentTextChanged.connect(
-                lambda: self.find_images(self.comboBox_8, self.comboBox)
+                lambda: self.find_images('图像点击')
             )
             # 元素预览
             self.comboBox.currentTextChanged.connect(
@@ -224,6 +236,8 @@ class Na(QWidget, Ui_navigation):
             )
             # 测试按钮
             self.pushButton_6.clicked.connect(test)
+            # 打开设置窗口
+            self.pushButton_11.clicked.connect(open_setting_window)
 
         elif type_ == '写入参数':
             image, parameter_1, parameter_2 = get_parameters()
@@ -245,7 +259,7 @@ class Na(QWidget, Ui_navigation):
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""
         if type_ == '按钮功能':
-            self.lineEdit_3.setValidator(QIntValidator())
+            self.lineEdit_3.setValidator(QIntValidator())  # 设置只能输入数字
         elif type_ == '写入参数':
             parameter_1 = self.comboBox_5.currentText()  # 鼠标滚轮滑动的方向
             parameter_2 = self.lineEdit_3.text()  # 鼠标滚轮滑动的距离
@@ -386,11 +400,19 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 下拉列表数据
             self.comboBox_17.currentTextChanged.connect(
-                lambda: self.find_images(self.comboBox_17, self.comboBox_18)
+                lambda: self.find_images('图像等待')
             )
             # 元素预览
             self.comboBox_18.currentTextChanged.connect(
                 lambda: self.show_image_to_label(self.comboBox_17, self.comboBox_18)
+            )
+            # 快捷截图功能
+            self.pushButton_21.clicked.connect(
+                lambda: self.quick_screenshot(self.comboBox_17, '快捷截图')
+            )
+            # 打开图像文件夹
+            self.pushButton_22.clicked.connect(
+                lambda: self.quick_screenshot(self.comboBox_17, '打开文件夹')
             )
         elif type_ == '写入参数':
             # 获取参数
@@ -507,10 +529,10 @@ class Na(QWidget, Ui_navigation):
             self.checkBox_3.clicked.connect(line_number_increasing)
             # 信息录入页面的快捷截图功能
             self.pushButton_5.clicked.connect(
-                lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15, '快捷截图')
+                lambda: self.quick_screenshot(self.comboBox_14, '快捷截图')
             )
             self.pushButton_8.clicked.connect(
-                lambda: self.quick_screenshot(self.comboBox_14, self.comboBox_15, '删除图像')
+                lambda: self.quick_screenshot(self.comboBox_14, '打开文件夹')
             )
             # 信息录入窗口的excel功能
             self.comboBox_12.currentTextChanged.connect(
@@ -518,7 +540,11 @@ class Na(QWidget, Ui_navigation):
             )
             # 加载下拉列表数据
             self.comboBox_14.currentTextChanged.connect(
-                lambda: self.find_images(self.comboBox_14, self.comboBox_15)
+                lambda: self.find_images('信息录入')
+            )
+            # 图像预览
+            self.comboBox_15.currentTextChanged.connect(
+                lambda: self.show_image_to_label(self.comboBox_14, self.comboBox_15)
             )
         elif type_ == '写入参数':
             parameter_4 = None
@@ -968,10 +994,10 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
-    def find_images(self, combox, combox_2):
+    def find_images(self, ins_name: str) -> None:
         """选择图像文件夹并返回文件夹名称
-        :param combox: 选择图像文件夹的下拉列表
-        :param combox_2: 选择图像名称的下拉列表"""
+        :param ins_name: 指令名称"""
+        combox, combox_2 = self.combo_image_preview.get(ins_name)
         fil_path = combox.currentText()
         try:
             images_name = os.listdir(fil_path)
@@ -986,6 +1012,7 @@ class Na(QWidget, Ui_navigation):
         # 将images_name中的所有元素添加到combox_2中
         combox_2.addItems(images_name)
         self.label_3.setText(self.comboBox_8.currentText())
+        QApplication.processEvents()
 
     @staticmethod
     def find_excel_sheet_name(comboBox_before, comboBox_after):
@@ -1097,13 +1124,12 @@ class Na(QWidget, Ui_navigation):
         except sqlite3.OperationalError:
             pass
 
-    def quick_screenshot(self, combox, combox_2, judge):
+    def quick_screenshot(self, combox_folder, judge):
         """截图功能
-        :param combox: 图像文件夹下拉列表
-        :param combox_2: 图像名称下拉列表
-        :param judge: 功能选择（快捷截图、删除图像）"""
+        :param combox_folder: 图像文件夹下拉列表
+        :param judge: 功能选择（快捷截图、打开文件夹）"""
         if judge == '快捷截图':
-            if combox.currentText() == '':
+            if combox_folder.currentText() == '':
                 QMessageBox.warning(self, '警告', '未选择图像文件夹！', QMessageBox.Yes)
             else:
                 # 隐藏主窗口
@@ -1111,39 +1137,21 @@ class Na(QWidget, Ui_navigation):
                 self.main_window.hide()
                 # 截图
                 screen_capture = ScreenCapture()
-                screen_capture.screenshot_area()
-                screen_capture.screenshot_region()
+                screen_capture.screenshot_area()  # 设置截图区域
+                screen_capture.screenshot_region()  # 截图
+                screen_capture.show_preview()  # 显示预览
                 # 显示主窗口
                 self.show()
                 self.main_window.show()
-                # # 文件夹路径和文件名
-                # image_folder_path = combox.currentText()
-                # image_name, ok = QInputDialog.getText(self, "截图", "请输入图像名称：")
-                # if ok:
-                #     # 检查image_name是否包含中文字符
-                #     if re.search('[\u4e00-\u9fa5]', image_name) is not None:
-                #         QMessageBox.warning(self, '警告', '图像名称暂不支持中文字符！保存失败。', QMessageBox.Yes)
-                #     else:
-                #         screen_capture.screen_shot(image_folder_path, image_name)
                 # 刷新图像文件夹
                 QApplication.processEvents()
-                screen_capture.pic.show()
-                self.find_images(combox, combox_2)
-                # self.main_window.plainTextEdit.appendPlainText('已快捷截图：' + image_name)
-                # combox_2.setCurrentText(image_name)
+                self.find_images(self.tabWidget.tabText(self.tabWidget.currentIndex()))
 
-        elif judge == '删除图像':
-            if combox.currentText() == '':
+        elif judge == '打开文件夹':
+            if combox_folder.currentText() == '':
                 pass
             else:
-                file_path = os.path.normpath(
-                    os.path.join(combox.currentText(), combox_2.currentText())
-                )
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                self.find_images(combox, combox_2)
-                # 弹出提示框
-                QMessageBox.information(self, '提示', '已删除所有图像！', QMessageBox.Yes)
+                os.startfile(os.path.normpath(combox_folder.currentText()))
 
     def writes_commands_to_the_database(self,
                                         instruction_,
@@ -1236,35 +1244,34 @@ class Na(QWidget, Ui_navigation):
                 print(e)
 
     def show_image_to_label(self, comboBox_folder, comboBox_image, judge='显示'):
-        """将图像显示到label中
-        :param judge:
+        """将图像显示到label中,图像预览的功能
+        :param judge: 显示、删除、查看
         :param comboBox_folder: 图像文件夹下拉列表
         :param comboBox_image: 图像名称下拉列表"""
         image_path = os.path.normpath(
             os.path.join(comboBox_folder.currentText(), comboBox_image.currentText())
         )
-        if judge == '显示':
-            # 将图像转换为QImage对象
-            image_ = QImage(image_path)
-            image = image_.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
-            self.label_43.setPixmap(QPixmap.fromImage(image))
-        elif judge == '删除':
-            os.remove(image_path)
-        elif judge == '查看':
-            os.startfile(image_path)
+        if (os.path.exists(image_path)) and (os.path.isfile(image_path)):  # 判断图像是否存在
+            if judge == '显示':
+                # 将图像转换为QImage对象
+                image_ = QImage(image_path)
+                image = image_.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
+                self.label_43.setPixmap(QPixmap.fromImage(image))
+            elif judge == '删除':
+                os.remove(image_path)
+            elif judge == '查看':
+                os.startfile(image_path)
 
     def on_button_clicked(self, judge: str) -> None:
         """按钮点击事件,用于图像预览的按钮事件
         :param judge: 执行的操作(删除、查看)"""
-        combo_boxes = {
-            '图像点击': (self.comboBox_8, self.comboBox),
-            '图像等待': (self.comboBox_17, self.comboBox_18)
-        }
+        # 获取当前页的标题
         current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
-        if current_title in combo_boxes:
-            combo_box1, combo_box2 = combo_boxes.get(current_title)
+        if current_title in self.combo_image_preview:
+            combo_box1, combo_box2 = self.combo_image_preview.get(current_title)
             self.show_image_to_label(combo_box1, combo_box2, judge)
             if judge == '删除':
-                for value in combo_boxes.values():
-                    self.find_images(value[0], value[1])
-
+                for value in self.combo_image_preview.values():
+                    self.find_images(current_title)
+                    if value[1].currentText() == '':
+                        self.label_43.setText('暂无')

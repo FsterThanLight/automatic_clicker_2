@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>663</width>
-    <height>693</height>
+    <height>767</height>
    </rect>
   </property>
   <property name="font">
@@ -386,8 +386,18 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="comboBox"/>
+             <item row="1" column="4">
+              <widget class="QCheckBox" name="checkBox">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>启用灰度识别</string>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+              </widget>
              </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_36">
@@ -409,20 +419,7 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="2">
-              <widget class="QCheckBox" name="checkBox">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="text">
-                <string>启用灰度识别</string>
-               </property>
-               <property name="checked">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" colspan="2">
+             <item row="0" column="1" colspan="4">
               <widget class="QComboBox" name="comboBox_8">
                <property name="layoutDirection">
                 <enum>Qt::LeftToRight</enum>
@@ -438,7 +435,17 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1" colspan="2">
+             <item row="1" column="1" colspan="3">
+              <widget class="QComboBox" name="comboBox"/>
+             </item>
+             <item row="2" column="4">
+              <widget class="QPushButton" name="pushButton_11">
+               <property name="text">
+                <string>高级设置</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1" colspan="3">
               <widget class="QComboBox" name="comboBox_2">
                <property name="currentIndex">
                 <number>0</number>
@@ -696,7 +703,7 @@
               </palette>
              </property>
              <property name="text">
-              <string>操作说明：按下“获取坐标”按钮，并移动鼠标。</string>
+              <string>操作说明：按住“获取坐标”按钮，并移动鼠标。</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1770,6 +1777,19 @@
              </layout>
             </widget>
            </item>
+           <item>
+            <spacer name="verticalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="tab_19">
@@ -1902,6 +1922,68 @@
               <string>图像等待</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_20">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QPushButton" name="pushButton_21">
+                  <property name="palette">
+                   <palette>
+                    <active>
+                     <colorrole role="ButtonText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>255</red>
+                        <green>0</green>
+                        <blue>0</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </active>
+                    <inactive>
+                     <colorrole role="ButtonText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>255</red>
+                        <green>0</green>
+                        <blue>0</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </inactive>
+                    <disabled>
+                     <colorrole role="ButtonText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>120</red>
+                        <green>120</green>
+                        <blue>120</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </disabled>
+                   </palette>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>微软雅黑</family>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>快捷截图</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_22">
+                  <property name="text">
+                   <string>打开文件夹</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
               <item>
                <layout class="QGridLayout" name="gridLayout_9">
                 <item row="1" column="0">
@@ -3345,84 +3427,8 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="8" column="0">
-              <widget class="QCheckBox" name="checkBox_3">
-               <property name="text">
-                <string>单元格行号自动递增</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_37">
-               <property name="text">
-                <string>Excel工作簿名称：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label_39">
-               <property name="text">
-                <string>单元格：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="8" column="1">
-              <widget class="QCheckBox" name="checkBox_4">
-               <property name="text">
-                <string>特殊控件输入</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_38">
-               <property name="text">
-                <string>工作表名：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="7" column="0">
-              <widget class="QLabel" name="label_41">
-               <property name="text">
-                <string>图像名称：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QComboBox" name="comboBox_12">
-               <property name="sizeAdjustPolicy">
-                <enum>QComboBox::AdjustToContents</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="0">
-              <widget class="QLabel" name="label_40">
-               <property name="text">
-                <string>图像文件夹路径：</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="1">
-              <widget class="QComboBox" name="comboBox_14">
-               <property name="sizeAdjustPolicy">
-                <enum>QComboBox::AdjustToContents</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="1">
-              <widget class="QLineEdit" name="lineEdit_4">
-               <property name="placeholderText">
-                <string>如：A1、B2...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QComboBox" name="comboBox_13"/>
-             </item>
-             <item row="7" column="1">
-              <widget class="QComboBox" name="comboBox_15"/>
-             </item>
-             <item row="1" column="0" colspan="2">
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
               <widget class="QPushButton" name="pushButton_5">
                <property name="palette">
                 <palette>
@@ -3473,10 +3479,94 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="2" column="0" colspan="2">
+             <item>
               <widget class="QPushButton" name="pushButton_8">
                <property name="text">
-                <string>删除该文件夹下所有图像</string>
+                <string>打开文件夹</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_41">
+               <property name="text">
+                <string>图像名称：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QComboBox" name="comboBox_14">
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="lineEdit_4">
+               <property name="placeholderText">
+                <string>如：A1、B2...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_37">
+               <property name="text">
+                <string>Excel工作簿名称：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_40">
+               <property name="text">
+                <string>图像文件夹路径：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QComboBox" name="comboBox_15"/>
+             </item>
+             <item row="2" column="1">
+              <widget class="QComboBox" name="comboBox_12">
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_39">
+               <property name="text">
+                <string>单元格：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_38">
+               <property name="text">
+                <string>工作表名：</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QComboBox" name="comboBox_13"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QCheckBox" name="checkBox_3">
+               <property name="text">
+                <string>单元格行号自动递增</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_4">
+               <property name="text">
+                <string>特殊控件输入</string>
                </property>
               </widget>
              </item>
@@ -7518,7 +7608,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_20">
           <attribute name="title">
@@ -7527,33 +7617,6 @@ p, li { white-space: pre-wrap; }
           <layout class="QVBoxLayout" name="verticalLayout_44">
            <item>
             <layout class="QGridLayout" name="gridLayout_5">
-             <item row="0" column="1">
-              <widget class="QSpinBox" name="spinBox">
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-               <property name="minimum">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <number>999</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QComboBox" name="comboBox_10">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QComboBox" name="comboBox_11">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="2">
               <widget class="QLabel" name="label_33">
                <property name="text">
@@ -7564,37 +7627,10 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-             <item row="0" column="3">
-              <widget class="QComboBox" name="comboBox_9">
-               <item>
-                <property name="text">
-                 <string>提示异常并暂停</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>自动跳过</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>提示异常并停止</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>跳转分支</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_35">
-               <property name="text">
-                <string>开始位置：</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
+             <item row="1" column="3">
+              <widget class="QComboBox" name="comboBox_11">
+               <property name="enabled">
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -7602,16 +7638,6 @@ p, li { white-space: pre-wrap; }
               <widget class="QLabel" name="label_21">
                <property name="text">
                 <string>重复次数：</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_34">
-               <property name="text">
-                <string>分支名称：</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -7716,6 +7742,70 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="placeholderText">
                 <string>输入指令备注信息...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_34">
+               <property name="text">
+                <string>分支名称：</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QComboBox" name="comboBox_9">
+               <item>
+                <property name="text">
+                 <string>提示异常并暂停</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>自动跳过</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>提示异常并停止</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>跳转分支</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBox">
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboBox_10">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_35">
+               <property name="text">
+                <string>开始位置：</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
              </item>
