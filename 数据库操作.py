@@ -3,6 +3,8 @@ import os
 import sqlite3
 import sys
 
+import win32con
+import win32gui
 import winsound
 
 MAIN_FLOW = '主流程'
@@ -24,6 +26,22 @@ def timer(func):
 def get_str_now_time():
     """获取当前时间"""
     return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+def show_normal_window_with_specified_title(title):
+    """将指定标题的窗口正常显示"""
+
+    def get_window_titles(hwnd, titles):
+        titles[hwnd] = win32gui.GetWindowText(hwnd)
+
+    hwnd_title = {}
+    win32gui.EnumWindows(get_window_titles, hwnd_title)
+
+    for h, t in hwnd_title.items():
+        if t == title:
+            win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
+            win32gui.SetForegroundWindow(h)
+            break
 
 
 def system_prompt_tone(judge: str):

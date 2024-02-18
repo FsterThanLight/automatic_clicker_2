@@ -196,7 +196,6 @@ class CoordinateClick:
         x_ = int(self.ins_dic.get('参数2').split('-')[0])
         y_ = int(self.ins_dic.get('参数2').split('-')[1])
         z_ = int(self.ins_dic.get('参数2').split('-')[2])
-        self.out_mes.out_mes(f'x_,y坐标：{str(x_)},{str(y_)}', self.is_test)
         click_map = {
             '左键单击': [1, 'left', x_, y_],
             '左键双击': [2, 'left', x_, y_],
@@ -209,31 +208,31 @@ class CoordinateClick:
         # 返回重复次数，点击次数，左键右键，x坐标，y坐标
         return re_try, list_ins[0], list_ins[1], list_ins[2], list_ins[3]
 
-    def start_execute(self, number):
-        """开始执行鼠标点击事件
-        :param number: 主窗口显示的循环次数"""
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
         # 获取参数
         reTry, click_times, lOrR, x__, y__ = self.parsing_ins_dic()
         # 执行坐标点击
         if reTry == 1:
-            pyautogui.click(x=x__, y=y__,
-                            clicks=click_times,
-                            interval=self.interval,
-                            duration=self.duration,
-                            button=lOrR
-                            )
-            self.out_mes.out_mes(f'执行坐标{x__}:{y__}点击{str(number)}', self.is_test)
+            self.coor_click(click_times, lOrR, x__, y__)
         elif reTry > 1:
             i = 1
             while i < reTry + 1:
-                pyautogui.click(x=x__, y=y__,
-                                clicks=click_times,
-                                interval=self.interval,
-                                duration=self.duration,
-                                button=lOrR)
-                self.out_mes.out_mes(f'执行坐标{x__}:{y__}点击{str(number)}', self.is_test)
+                self.coor_click(click_times, lOrR, x__, y__)
                 i += 1
                 time.sleep(self.time_sleep)
+
+    def coor_click(self, click_times, lOrR, x__, y__):
+        pyautogui.click(x=x__, y=y__,
+                        clicks=click_times,
+                        interval=self.interval,
+                        duration=self.duration,
+                        button=lOrR
+                        )
+        if click_times == 0:
+            self.out_mes.out_mes(f'移动鼠标到{x__}:{y__}', self.is_test)
+        else:
+            self.out_mes.out_mes(f'执行坐标{x__}:{y__}点击', self.is_test)
 
 
 class TimeWaiting:
@@ -341,42 +340,47 @@ class ImageWaiting:
 class RollerSlide:
     """滑动鼠标滚轮"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
-        # 指令字典
-        self.ins_dic = ins_dic
+        self.out_mes = outputmessage  # 用于输出信息
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
 
-    def parsing_ins_dic(self):
+    def parsing_ins_dic(self, type_):
         """解析指令字典"""
-        scroll_direction = self.ins_dic.get('参数1（键鼠指令）')
-        scroll_distance = int(self.ins_dic.get('参数2'))
-        re_try = self.ins_dic.get('重复次数')
-        if scroll_direction == '↑':
-            scroll_distance = scroll_distance
-        elif scroll_direction == '↓':
-            scroll_distance = -scroll_distance
-        return scroll_direction, scroll_distance, re_try
+        if type_ == '滚轮滑动':
+            scroll_direction = str(self.ins_dic.get('参数2').split(',')[0])
+            scroll_distance_ = int(self.ins_dic.get('参数2').split(',')[1])
+            scroll_distance = scroll_distance_ if scroll_direction == '↑' else -scroll_distance_
+            return scroll_direction, scroll_distance
+        elif type_ == '随机滚轮滑动':
+            min_distance = int(self.ins_dic.get('参数2').split(',')[0])
+            max_distance = int(self.ins_dic.get('参数2').split(',')[1])
+            scroll_direction = random.choice(['↑', '↓'])
+            scroll_distance_ = random.randint(min_distance, max_distance)
+            scroll_distance = scroll_distance_ if scroll_direction == '↑' else -scroll_distance_
+            return scroll_direction, scroll_distance
 
     def start_execute(self):
         """执行重复次数"""
-        scroll_direction, scroll_distance, re_try = self.parsing_ins_dic()
+        type_ = self.ins_dic.get('参数1（键鼠指令）')
+        re_try = self.ins_dic.get('重复次数')
+        scroll_direction, scroll_distance = self.parsing_ins_dic(type_)
         # 执行滚轮滑动
         if re_try == 1:
-            self.wheel_slip(scroll_direction, scroll_distance)
+            self.wheel_slip(scroll_direction, scroll_distance, type_)
         elif re_try > 1:
             i = 1
             while i < re_try + 1:
-                self.wheel_slip(scroll_direction, scroll_distance)
+                self.wheel_slip(scroll_direction, scroll_distance, type_)
                 i += 1
                 time.sleep(self.time_sleep)
 
-    def wheel_slip(self, scroll_direction, scroll_distance):
+    def wheel_slip(self, scroll_direction, scroll_distance, type_):
         """滚轮滑动事件"""
         pyautogui.scroll(scroll_distance)
-        self.command_thread.show_message('滚轮滑动%s%d距离' % (scroll_direction, abs(scroll_distance)))
+        self.out_mes.out_mes(f'{type_}{scroll_direction}{scroll_distance}距离', self.is_test)
 
 
 class TextInput:
@@ -587,56 +591,48 @@ class MiddleActivation:
 class MouseClick:
     """鼠标在当前位置点击"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
-        setting_data_dic = get_setting_data_from_db('持续时间', '时间间隔', '暂停时间')
-        self.duration = float(setting_data_dic.get('持续时间'))
-        self.interval = float(setting_data_dic.get('时间间隔'))
-        self.time_sleep = float(setting_data_dic.get('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        key_dict = {
-            '左键单击': [1, 'left'],
-            '左键双击': [2, 'left'],
-            '右键单击': [1, 'right'],
-            '右键双击': [2, 'right']
-        }
-        list_ins = key_dict.get(self.ins_dic.get('参数1（键鼠指令）'))
-        return list_ins[0], list_ins[1]
+        return self.ins_dic.get('参数1（键鼠指令）'), \
+            int(self.ins_dic.get('参数2').split('-')[0]), \
+            int(self.ins_dic.get('参数2').split('-')[1]) / 1000, \
+            int(self.ins_dic.get('参数2').split('-')[2]) / 1000
 
     def start_execute(self):
         """执行重复次数"""
-        click_times, lOrR = self.parsing_ins_dic()
+        button_type, click_times, duration, interval = self.parsing_ins_dic()
         re_try = self.ins_dic.get('重复次数')
         # 执行
         if re_try == 1:
-            self.mouse_click(click_times, lOrR)
+            self.simulated_mouse_click(click_times, button_type, duration, interval)
         elif re_try > 1:
             i = 1
             while i < re_try + 1:
-                self.mouse_click(click_times, lOrR)
+                self.simulated_mouse_click(click_times, button_type, duration, interval)
                 i += 1
                 time.sleep(self.time_sleep)
 
-    def mouse_click(self, click_times, lOrR):
-        """鼠标点击事件
+    def simulated_mouse_click(self, click_times, lOrR, duration, interval):
+        """模拟鼠标点击
+        :param duration:按压时长,单位：秒
+        :param interval:时间间隔,单位：秒
         :param click_times: 点击次数
-        :param lOrR: 左键右键（left,right）"""
-        position = pyautogui.position()
-        pyautogui.click(
-            x=position[0],
-            y=position[1],
-            clicks=click_times,
-            interval=self.interval,
-            duration=self.duration,
-            button=lOrR
-        )
-        self.command_thread.show_message('执行鼠标事件')
+        :param lOrR: (左键、右键)"""
+        button = 'left' if lOrR == '左键' else 'right'
+        for i in range(click_times):
+            mouse.press(button=button)
+            time.sleep(duration)  # 将毫秒转换为秒
+            mouse.release(button=button)
+            time.sleep(interval)
+        self.out_mes.out_mes(f'鼠标在当前位置点击{click_times}次', self.is_test)
 
 
 class InformationEntry:

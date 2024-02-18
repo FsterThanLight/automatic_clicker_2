@@ -52,7 +52,7 @@ from 资源文件夹窗口 import Global_s
 # todo: 运行python代码功能
 # todo: 运行外部程序功能
 # todo: 鼠标点击功能可设置按压时长
-# todo: 鼠标移动、滚轮功能可设置随机移动
+# done: 鼠标移动、滚轮功能可设置随机移动
 # done: 图像识别增加灰度识别
 # done: 菜单栏增加最近打开选项
 
@@ -79,7 +79,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 初始化窗体
         self.setupUi(self)
         # 窗口和信息
-        self.version = 'v0.21'  # 软件版本
+        self.version = 'v0.21 Beta'  # 软件版本
         self.toolBar.setVisible(False)  # 隐藏工具栏
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
@@ -856,6 +856,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 if self.checkBox_2.isChecked():
                     self.show()
                 QApplication.processEvents()
+                show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
 
         elif i_str == "开始线程":
             self.start()
@@ -880,14 +881,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def thread_finished(self, message):
         """任务结束"""
         self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
-        # 显示窗口
-        if self.checkBox_2.isChecked():
+        if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
             QApplication.processEvents()
-        # 发出提示音
-        system_prompt_tone('线程结束')
-        # 关闭浏览器驱动
-        close_browser()
+        system_prompt_tone('线程结束')  # 发出提示音
+        show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
+        close_browser()  # 关闭浏览器驱动
 
 
 class About(QDialog, Ui_About):

@@ -128,7 +128,7 @@ class CommandThread(QThread):
                     # 屏幕坐标点击事件
                     elif cmd_type == '坐标点击':
                         coordinate_click = CoordinateClick(outputmessage=self.out_mes, ins_dic=dic_)
-                        coordinate_click.start_execute(self.number)
+                        coordinate_click.start_execute()
 
                     # 等待的事件
                     elif cmd_type == '时间等待':
@@ -142,7 +142,7 @@ class CommandThread(QThread):
 
                     # 滚轮滑动的事件
                     elif cmd_type == '滚轮滑动':
-                        scroll_wheel = RollerSlide(command_thread=self, ins_dic=dic_)
+                        scroll_wheel = RollerSlide(outputmessage=self.out_mes, ins_dic=dic_)
                         scroll_wheel.start_execute()
 
                     # 文本输入的事件
@@ -167,7 +167,7 @@ class CommandThread(QThread):
 
                     # 鼠标事件
                     elif cmd_type == '鼠标点击':
-                        mouse_click = MouseClick(command_thread=self, ins_dic=dic_)
+                        mouse_click = MouseClick(outputmessage=self.out_mes, ins_dic=dic_)
                         mouse_click.start_execute()
 
                     # 图片信息录取

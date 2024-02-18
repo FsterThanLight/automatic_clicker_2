@@ -253,10 +253,24 @@ class Na(QWidget, Ui_navigation):
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""
         if type_ == '按钮功能':
+            # 将不同的单选按钮添加到同一个按钮组
+            buttonGroup_3 = QButtonGroup(self)
+            buttonGroup_3.addButton(self.radioButton_gun)
+            buttonGroup_3.addButton(self.radioButton_sv)
             self.lineEdit_3.setValidator(QIntValidator())  # 设置只能输入数字
         elif type_ == '写入参数':
-            parameter_1 = self.comboBox_5.currentText()  # 鼠标滚轮滑动的方向
-            parameter_2 = self.lineEdit_3.text()  # 鼠标滚轮滑动的距离
+            parameter_1 = None
+            parameter_2 = None
+            if self.radioButton_gun.isChecked():
+                parameter_1 = '滚轮滑动'
+                parameter_2 = f'{self.comboBox_5.currentText()},{self.lineEdit_3.text()}'  # 鼠标滚轮滑动的方向
+            elif self.radioButton_sv.isChecked():
+                parameter_1 = '随机滚轮滑动'
+                parameter_2 = f'{self.spinBox_16.value()},{self.spinBox_17.value()}'
+            # 检查参数是否有异常
+            if not self.lineEdit_3.text().isdigit() and self.radioButton_gun.isChecked():
+                QMessageBox.critical(self, "错误", "滚动的距离未输入！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -321,7 +335,7 @@ class Na(QWidget, Ui_navigation):
             try:
                 cor_click = CoordinateClick(self.out_mes, dic_)
                 cor_click.is_test = True
-                cor_click.start_execute('')
+                cor_click.start_execute()
             except Exception as e:
                 print(e)
                 self.out_mes.out_mes(f'参数异常', True)
@@ -533,13 +547,15 @@ class Na(QWidget, Ui_navigation):
             pass
         elif type_ == '写入参数':
             # 获取鼠标当前位置的参数
-            parameter_1 = self.comboBox_7.currentText()
+            parameter_1 = self.comboBox_35.currentText().replace('（自定义次数）', '')
+            parameter_2 = f'{self.spinBox_18.value()}-{self.spinBox_19.value()}-{self.spinBox_20.value()}'
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
                                                  parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
     def information_entry_function(self, type_):
