@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick
+from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
@@ -83,7 +83,8 @@ class Na(QWidget, Ui_navigation):
             '全屏截图': (lambda x: self.full_screen_capture_function(x), False),
             '切换窗口': (lambda x: self.switch_window_function(x), False),
             '发送消息': (lambda x: self.wechat_function(x), False),
-            '数字验证码': (lambda x: self.verification_code_function(x), True)
+            '数字验证码': (lambda x: self.verification_code_function(x), True),
+            '提示音': (lambda x: self.play_voice_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -117,8 +118,8 @@ class Na(QWidget, Ui_navigation):
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
 
-    @staticmethod
-    def get_test_dic(repeat_number_,
+    def get_test_dic(self,
+                     repeat_number_,
                      image_=None,
                      parameter_1_=None,
                      parameter_2_=None,
@@ -126,6 +127,7 @@ class Na(QWidget, Ui_navigation):
                      parameter_4_=None
                      ):
         """返回测试字典,用于测试按钮的功能"""
+        self.tabWidget_2.setCurrentIndex(3)
         return {
             'ID': None,
             '图像路径': image_,
@@ -185,7 +187,6 @@ class Na(QWidget, Ui_navigation):
 
         def test():
             """测试功能"""
-            self.tabWidget_2.setCurrentIndex(3)
             try:
                 image_, parameter_1_, parameter_2_ = get_parameters()
                 dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
@@ -325,7 +326,6 @@ class Na(QWidget, Ui_navigation):
 
         def test():
             """测试功能"""
-            self.tabWidget_2.setCurrentIndex(3)
             parameter_1_ = self.comboBox_3.currentText()
             parameter_2_ = f'{self.label_9.text()}-{self.label_10.text()}-{self.spinBox_2.value()}'
             dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
@@ -1038,6 +1038,65 @@ class Na(QWidget, Ui_navigation):
                                                  image_=image,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def play_voice_function(self, type_):
+        """播放语音的功能"""
+
+        def get_parameters():
+            parameter_1_ = None
+            parameter_2_ = None
+            parameter_3_ = None
+            if self.radioButton_8.isChecked():
+                parameter_1_ = '音频信号'
+                parameter_2_ = (f'{self.spinBox_21.value()},{self.spinBox_23.value()},'
+                                f'{self.spinBox_22.value()},{self.spinBox_24.value()}')  # 信号频率
+            elif self.radioButton_9.isChecked():
+                parameter_1_ = '系统提示音'
+                parameter_2_ = self.comboBox_7.currentText()
+            elif self.radioButton_20.isChecked():
+                parameter_1_ = '播放语音'
+                parameter_2_ = self.textEdit_4.toPlainText()
+                parameter_3_ = self.horizontalSlider.value()
+            # 检查参数是否有异常
+            if self.radioButton_20.isChecked() and parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "内容未输入！")
+                raise ValueError
+            return parameter_1_, parameter_2_, parameter_3_
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_,
+                                         parameter_3_=parameter_3_)
+                play_voice = PlayVoice(self.out_mes, dic_)
+                play_voice.is_test = True
+                play_voice.start_execute()
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'参数异常', True)
+
+        if type_ == '按钮功能':
+            # 将不同的单选按钮添加到同一个按钮组
+            buttonGroup_4 = QButtonGroup(self)
+            buttonGroup_4.addButton(self.radioButton_8)
+            buttonGroup_4.addButton(self.radioButton_9)
+            buttonGroup_4.addButton(self.radioButton_20)
+            # 测试按钮
+            self.pushButton_24.clicked.connect(test)
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, parameter_3 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 parameter_3_=parameter_3,
                                                  remarks_=func_info_dic.get('备注'))
 
     def find_images(self, ins_name: str) -> None:

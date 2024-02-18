@@ -11,9 +11,11 @@ import mouse
 import openpyxl
 import pyautogui
 import pyperclip
+import pyttsx4
 import win32con
 import win32gui
 import win32process
+import winsound
 from PyQt5.QtWidgets import QApplication
 from dateutil.parser import parse
 
@@ -238,18 +240,19 @@ class CoordinateClick:
 class TimeWaiting:
     """等待"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 执行线程
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def start_execute(self):
         """从指令字典中解析出指令参数"""
         wait_type = self.ins_dic.get('参数1（键鼠指令）')
         if wait_type == '时间等待':
             wait_time = int(self.ins_dic.get('参数2'))
-            self.command_thread.show_message('等待时长%d秒' % wait_time)
+            self.out_mes.out_mes('等待时长%d秒' % wait_time, self.is_test)
             self.stop_time(wait_time)
         elif wait_type == '定时等待':
             target_time, interval_time = self.ins_dic.get('参数2').split('+')
@@ -259,7 +262,7 @@ class TimeWaiting:
         elif wait_type == '随机等待':
             min_time, max_time = self.ins_dic.get('参数2').split('-')
             wait_time = random.randint(int(min_time), int(max_time))
-            self.command_thread.show_message('随机等待时长%d秒' % wait_time)
+            self.out_mes.out_mes('随机等待时长%d秒' % wait_time, self.is_test)
             self.stop_time(wait_time)
 
     def wait_to_time(self, target_time, interval):
@@ -272,11 +275,11 @@ class TimeWaiting:
         while True:
             now = datetime.now()
             if show_times == 1:
-                self.command_thread.show_message('当前为：%s' % now.strftime('%Y/%m/%d %H:%M:%S'))
-                self.command_thread.show_message('等待至：%s' % target_time)
+                self.out_mes.out_mes('当前为：%s' % now.strftime('%Y/%m/%d %H:%M:%S'), self.is_test)
+                self.out_mes.out_mes('等待至：%s' % target_time, self.is_test)
                 show_times = sleep_time
             if now >= parse(target_time):
-                self.command_thread.show_message('退出等待')
+                self.out_mes.out_mes('退出等待', self.is_test)
                 break
             # 时间暂停
             time.sleep(sleep_time)
@@ -286,23 +289,24 @@ class TimeWaiting:
         """暂停时间"""
         for i in range(seconds):
             # 显示剩下等待时间
-            self.command_thread.show_message('等待中...剩余%d秒' % (seconds - i))
+            self.out_mes.out_mes('等待中...剩余%d秒' % (seconds - i), self.is_test)
             time.sleep(1)
 
 
 class ImageWaiting:
     """图片等待"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def wait_to_image(self, image, wait_instruction_type, timeout_period):
         """执行图片等待"""
         if wait_instruction_type == '等待到指定图像出现':
-            self.command_thread.show_message('正在等待指定图像出现中...')
+            self.out_mes.out_mes('正在等待指定图像出现中...', self.is_test)
             QApplication.processEvents()
             location = pyautogui.locateCenterOnScreen(
                 image=image,
@@ -310,7 +314,7 @@ class ImageWaiting:
                 minSearchTime=timeout_period
             )
             if location:
-                self.command_thread.show_message('目标图像已经出现，等待结束')
+                self.out_mes.out_mes('目标图像已经出现，等待结束', self.is_test)
                 QApplication.processEvents()
         elif wait_instruction_type == '等待到指定图像消失':
             vanish = True
@@ -323,7 +327,7 @@ class ImageWaiting:
                     )
                     print('location', location)
                 except pyautogui.ImageNotFoundException:
-                    self.command_thread.show_message('目标图像已经消失，等待结束')
+                    self.out_mes.out_mes('目标图像已经消失，等待结束', self.is_test)
                     QApplication.processEvents()
                     vanish = False
                 else:
@@ -386,15 +390,16 @@ class RollerSlide:
 class TextInput:
     """输入文本"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         setting_data_dic = get_setting_data_from_db('时间间隔', '暂停时间')
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def start_execute(self):
         """解析指令字典"""
@@ -411,10 +416,10 @@ class TextInput:
             pyperclip.copy(input_value)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(self.time_sleep)
-            self.command_thread.show_message('执行文本输入%s' % input_value)
+            self.out_mes.out_mes('执行文本输入%s' % input_value, self.is_test)
         elif special_control_judgment == 'True':
             pyautogui.typewrite(input_value, interval=self.interval)
-            self.command_thread.show_message('执行特殊控件的文本输入%s' % input_value)
+            self.out_mes.out_mes('执行特殊控件的文本输入%s' % input_value, self.is_test)
             time.sleep(self.time_sleep)
 
 
@@ -509,13 +514,13 @@ class MoveMouse:
 class PressKeyboard:
     """模拟按下键盘"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -540,19 +545,20 @@ class PressKeyboard:
         """鼠标移动事件
         :param key: 按键列表"""
         keyboard.press_and_release(key)
-        self.command_thread.show_message('按下按键%s' % key)
+        self.out_mes.out_mes('按下按键%s' % key, self.is_test)
 
 
 class MiddleActivation:
     """鼠标中键激活"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def start_execute(self):
         """执行重复次数"""
@@ -571,21 +577,20 @@ class MiddleActivation:
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""
-        self.command_thread.show_message('等待按下鼠标中键中...按下F11键退出')
+        self.out_mes.out_mes('等待按下鼠标中键中...按下F11键退出', self.is_test)
         QApplication.processEvents()
         # print('等待按下鼠标中键中...按下esc键退出')
         mouse.wait(button='middle')
         try:
             if command_type == "模拟点击":
                 pyautogui.click(clicks=int(click_times), button='left')
-                self.command_thread.show_message('执行鼠标点击%d次' % click_times)
+                self.out_mes.out_mes('执行鼠标点击%d次' % click_times, self.is_test)
                 # print('执行鼠标点击' + click_times + '次')
             elif command_type == "自定义":
                 pass
         except OSError:
             # 弹出提示框。提示检查鼠标是否连接
-            self.command_thread.show_message('连接失败，请检查鼠标是否连接正确。')
-            # print('连接失败，请检查鼠标是否连接正确。')
+            self.out_mes.out_mes('连接失败，请检查鼠标是否连接正确。', self.is_test)
 
 
 class MouseClick:
@@ -638,16 +643,17 @@ class MouseClick:
 class InformationEntry:
     """从Excel中录入信息到窗口"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
         # 图像点击、文本输入的部分功能
-        self.image_click = ImageClick(self.command_thread, self.ins_dic)
-        self.text_input = TextInput(self.command_thread, self.ins_dic)
+        self.image_click = ImageClick(self.out_mes, self.ins_dic)
+        self.text_input = TextInput(self.out_mes, self.ins_dic)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -698,7 +704,7 @@ class InformationEntry:
             number=number
         )
         self.text_input.text_input(cell_value, list_dic.get('特殊控件输入'))
-        self.command_thread.show_message('已执行信息录入')
+        self.out_mes.out_mes('已执行信息录入', self.is_test)
 
     def extra_excel_cell_value(self, excel_path, sheet_name,
                                cell_position, line_number_increment, number):
@@ -718,38 +724,37 @@ class InformationEntry:
             if not line_number_increment:
                 # 获取单元格的值
                 cell_value = sheet[cell_position].value
-                self.command_thread.show_message(f'获取到的单元格值为：{str(cell_value)}')
+                self.out_mes.out_mes(f'获取到的单元格值为：{str(cell_value)}', self.is_test)
             elif line_number_increment:
                 # 获取行号递增的单元格的值
                 column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
                 line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
                 new_cell_position = column_number + str(line_number)
                 cell_value = sheet[new_cell_position].value
-                self.command_thread.show_message(f'获取到的单元格值为：{str(cell_value)}')
+                self.out_mes.out_mes(f'获取到的单元格值为：{str(cell_value)}', self.is_test)
             return cell_value
         except FileNotFoundError:
             print('没有找到工作簿')
-            self.command_thread.show_message('没有找到工作簿')
+            self.out_mes.out_mes('没有找到工作簿', self.is_test)
             exit_main_work()
         except KeyError:
             print('没有找到工作表')
-            self.command_thread.show_message('没有找到工作表')
+            self.out_mes.out_mes('没有找到工作表', self.is_test)
             exit_main_work()
         except AttributeError:
             print('没有找到单元格')
             exit_main_work()
-            self.command_thread.show_message('没有找到单元格')
+            self.out_mes.out_mes('没有找到单元格', self.is_test)
 
 
 class OpenWeb:
     """打开网页"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
-        self.command_thread = command_thread  # 主窗口
-        self.navigation = navigation  # 导航
+    def __init__(self, outputmessage, ins_dic):
+        self.out_mes = outputmessage  # 主窗口
         self.ins_dic = ins_dic  # 指令字典
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def start_execute(self):
         """执行重复次数"""
@@ -761,12 +766,11 @@ class OpenWeb:
 class EleControl:
     """网页控制"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
-        self.command_thread = command_thread  # 主窗口
-        self.navigation = navigation  # 导航
+    def __init__(self, outputmessage, ins_dic):
+        self.out_mes = outputmessage  # 主窗口
         self.ins_dic = ins_dic  # 指令字典
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -795,15 +799,14 @@ class EleControl:
 class WebEntry:
     """将Excel中的值录入网页"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
-        self.InformationEntry = InformationEntry(self.command_thread, self.ins_dic)
+        self.InformationEntry = InformationEntry(self.out_mes, self.ins_dic)
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -843,13 +846,14 @@ class WebEntry:
 class MouseDrag:
     """鼠标拖拽"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -861,7 +865,7 @@ class MouseDrag:
         """鼠标拖拽事件"""
         pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
         pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
-        self.command_thread.show_message('鼠标拖拽%s到%s' % (str(start_position), str(end_position)))
+        self.out_mes.out_mes('鼠标拖拽%s到%s' % (str(start_position), str(end_position)), self.is_test)
 
     def start_execute(self):
         """执行重复次数"""
@@ -881,14 +885,14 @@ class MouseDrag:
 class SaveForm:
     """保存网页表格"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -921,14 +925,14 @@ class SaveForm:
 class ToggleFrame:
     """切换frame"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -953,14 +957,14 @@ class ToggleFrame:
 class SwitchWindow:
     """切换网页窗口"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -983,14 +987,14 @@ class SwitchWindow:
 class DragWebElements:
     """拖拽网页元素"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False
         # 网页控制的部分功能
-        self.web_option = WebOption(self.command_thread, self.navigation)
+        self.web_option = WebOption(self.out_mes)
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -1024,11 +1028,12 @@ class DragWebElements:
 class FullScreenCapture:
     """全屏截图"""
 
-    def __init__(self, command_thread, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.command_thread = command_thread
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
+        self.is_test = False  # 是否测试
 
     def parsing_ins_dic(self):
         """解析指令字典"""
@@ -1043,18 +1048,16 @@ class FullScreenCapture:
         screenshot = pyautogui.screenshot()
         # 将图片保存到指定文件夹
         screenshot.save(image_path)
-        self.command_thread.show_message('已执行全屏截图')
+        self.out_mes.out_mes('已执行全屏截图', self.is_test)
 
 
 class SendWeChat:
     """发送微信消息"""
 
-    def __init__(self, command_thread, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 设置参数
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
-        # 主窗口
-        self.command_thread = command_thread
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
         # 是否是测试
@@ -1119,10 +1122,7 @@ class SendWeChat:
                 output_message = f'{time_now} 微信已发送消息：{message_}' if message_ else f'{time_now} 已发送消息'
             elif judge == '失败':
                 output_message = f'{time_now} {failure_info}'
-            if self.is_test:
-                self.navigation.textBrowser.append(output_message)
-            else:
-                self.command_thread.show_message(output_message)
+            self.out_mes.out_mes(output_message, self.is_test)
 
         pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
         hwnd = self.check_course('微信')
@@ -1165,14 +1165,13 @@ class SendWeChat:
 
 class VerificationCode:
 
-    def __init__(self, main_window, navigation, ins_dic):
+    def __init__(self, outputmessage, ins_dic):
         # 主窗口
-        self.main_window = main_window
-        self.navigation = navigation
+        self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
         # 网页控制的部分功能
-        self.web_option = WebOption(self.main_window, self.navigation)
+        self.web_option = WebOption(self.out_mes)
         # 是否是测试
         self.is_test = False
 
@@ -1192,7 +1191,7 @@ class VerificationCode:
         im_b = im_bytes.getvalue()
         ocr = ddddocr.DdddOcr()
         res = ocr.classification(im_b)
-        self.main_window.plainTextEdit.appendPlainText(f'识别出的验证码为：{res}')
+        self.out_mes.out_mes(f'识别出的验证码为：{res}', self.is_test)
         # 释放资源
         del im
         del im_bytes
@@ -1215,6 +1214,102 @@ class VerificationCode:
             list_dic.get('元素类型'),
             list_dic.get('元素值')
         )
+
+
+class PlayVoice:
+    """播放声音"""
+
+    def __init__(self, outputmessage, ins_dic):
+        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
+        self.out_mes = outputmessage  # 用于输出信息
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
+
+    def parsing_ins_dic(self, type_):
+        """解析指令字典"""
+        if type_ == '系统提示音':
+            return self.ins_dic.get('参数2')
+        elif type_ == '音频信号':
+            return int(self.ins_dic.get('参数2').split(',')[0]), \
+                int(self.ins_dic.get('参数2').split(',')[1]), \
+                int(self.ins_dic.get('参数2').split(',')[2]), \
+                int(self.ins_dic.get('参数2').split(',')[3])
+        elif type_ == '播放语音':
+            return self.ins_dic.get('参数2'), int(self.ins_dic.get('参数3'))
+
+    def play_voice(self, type_):
+        """播放声音"""
+        if type_ == '系统提示音':
+            self.out_mes.out_mes('播放系统提示音', self.is_test)
+            self.system_prompt_tone(self.parsing_ins_dic('系统提示音'))
+        elif type_ == '音频信号':
+            self.out_mes.out_mes('播放音频信号', self.is_test)
+            self.sound_signal(*self.parsing_ins_dic('音频信号'))
+        elif type_ == '播放语音':
+            self.out_mes.out_mes('播放语音', self.is_test)
+            self.play_audio(*self.parsing_ins_dic('播放语音'))
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        reTry = self.ins_dic.get('重复次数')
+        type_ = self.ins_dic.get('参数1（键鼠指令）')
+        # 执行坐标点击
+        if reTry == 1:
+            self.play_voice(type_)
+        elif reTry > 1:
+            i = 1
+            while i < reTry + 1:
+                self.play_voice(type_)
+                i += 1
+                time.sleep(self.time_sleep)
+
+    @staticmethod
+    def system_prompt_tone(sound_type) -> None:
+        """系统提示音
+        :param sound_type: 提示音类型(1:警告, 2:错误, 3:询问, 4:信息, 5:系统启动, 6:系统关闭)"""
+        if sound_type == '系统警告':
+            winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
+        elif sound_type == '系统错误':
+            winsound.PlaySound('SystemExclamation', winsound.SND_ALIAS)
+        elif sound_type == '系统询问':
+            winsound.PlaySound('SystemQuestion', winsound.SND_ALIAS)
+        elif sound_type == '系统信息':
+            winsound.PlaySound('SystemHand', winsound.SND_ALIAS)
+        elif sound_type == '系统启动':
+            winsound.PlaySound('SystemStart', winsound.SND_ALIAS)
+        elif sound_type == '系统关闭':
+            winsound.PlaySound('SystemExit', winsound.SND_ALIAS)
+
+    @staticmethod
+    def sound_signal(frequency: int,
+                     duration: int,
+                     times: int = 1,
+                     interval: int = 0) -> None:
+        """播放音频信号
+        :param frequency: 频率(37~32767)
+        :param duration: 持续时间(毫秒)
+        :param times: 次数
+        :param interval: 间隔时间(毫秒)"""
+        print('播放音频信号')
+        print(frequency, duration, times, interval)
+        try:
+            for _ in range(times):
+                winsound.Beep(frequency, duration)
+                if interval:
+                    time.sleep(interval / 1000)
+        except RuntimeError:
+            print('播放音频信号失败')
+
+    @staticmethod
+    def play_audio(info: str, rate: int = 200) -> None:
+        """播放TTS提示音"""
+        try:
+            engine = pyttsx4.init()
+            engine.setProperty('rate', rate)  # 设置语速
+            engine.say(info)
+            engine.runAndWait()
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':

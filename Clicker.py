@@ -36,8 +36,7 @@ from 窗体.mainwindow import Ui_MainWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
-# todo: 图片路径改用相对路径
-# todo: 新增提示音指令
+# done: 新增提示音指令
 # todo: 新增倒计时窗口功能
 # done: 快捷截图指令重新设计
 # todo: 终止循环功能
@@ -47,11 +46,11 @@ from 资源文件夹窗口 import Global_s
 # todo: 变量池功能
 # todo: qss界面美化
 # todo: 指令可编译为python代码
-# todo: 播放语言功能
+# done: 播放语言功能
 # done: 右键菜单新增转到分支
 # todo: 运行python代码功能
 # todo: 运行外部程序功能
-# todo: 鼠标点击功能可设置按压时长
+# done: 鼠标点击功能可设置按压时长
 # done: 鼠标移动、滚轮功能可设置随机移动
 # done: 图像识别增加灰度识别
 # done: 菜单栏增加最近打开选项

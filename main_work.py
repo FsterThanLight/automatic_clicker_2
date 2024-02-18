@@ -120,6 +120,19 @@ class CommandThread(QThread):
                 cmd_type = dict(dic_)['指令类型']
                 exception_handling = dict(dic_)['异常处理']
                 try:
+                    # 命令类型与对应操作类的映射
+                    # command_mapping = {
+                    #     "图像点击": (ImageClick, self.out_mes, dic_),
+                    #     "坐标点击": (CoordinateClick, self.out_mes, dic_),
+                    #     "时间等待": (TimeWaiting, self.out_mes, dic_),
+                    #     "图像等待": (ImageWaiting, self.out_mes, dic_)
+                    # }
+                    # # 根据命令类型执行相应操作
+                    # if cmd_type in command_mapping:
+                    #     command_class, *args = command_mapping[cmd_type]
+                    #     command_instance = command_class(*args)
+                    #     command_instance.start_execute(self.number)
+
                     # 图像识别点击的事件
                     if cmd_type == "图像点击":
                         image_click = ImageClick(outputmessage=self.out_mes, ins_dic=dic_)
@@ -132,12 +145,12 @@ class CommandThread(QThread):
 
                     # 等待的事件
                     elif cmd_type == '时间等待':
-                        waiting = TimeWaiting(command_thread=self, ins_dic=dic_)
+                        waiting = TimeWaiting(outputmessage=self.out_mes, ins_dic=dic_)
                         waiting.start_execute()
 
                     # 图像等待事件
                     elif cmd_type == '图像等待':
-                        image_waiting = ImageWaiting(command_thread=self, ins_dic=dic_)
+                        image_waiting = ImageWaiting(outputmessage=self.out_mes, ins_dic=dic_)
                         image_waiting.start_execute()
 
                     # 滚轮滑动的事件
@@ -147,7 +160,7 @@ class CommandThread(QThread):
 
                     # 文本输入的事件
                     elif cmd_type == '文本输入':
-                        text_input = TextInput(command_thread=self, ins_dic=dic_)
+                        text_input = TextInput(outputmessage=self.out_mes, ins_dic=dic_)
                         text_input.start_execute()
 
                     # 鼠标移动的事件
@@ -157,12 +170,12 @@ class CommandThread(QThread):
 
                     # 键盘按键的事件
                     elif cmd_type == '按下键盘':
-                        press_keyboard = PressKeyboard(command_thread=self, ins_dic=dic_)
+                        press_keyboard = PressKeyboard(outputmessage=self.out_mes, ins_dic=dic_)
                         press_keyboard.start_execute()
 
                     # 中键激活的事件
                     elif cmd_type == '中键激活':
-                        middle_activation = MiddleActivation(command_thread=self, ins_dic=dic_)
+                        middle_activation = MiddleActivation(outputmessage=self.out_mes, ins_dic=dic_)
                         middle_activation.start_execute()
 
                     # 鼠标事件
@@ -172,92 +185,69 @@ class CommandThread(QThread):
 
                     # 图片信息录取
                     elif cmd_type == '信息录入':
-                        information_entry = InformationEntry(command_thread=self, ins_dic=dic_)
+                        information_entry = InformationEntry(outputmessage=self.out_mes, ins_dic=dic_)
                         information_entry.start_execute(self.number)
 
                     # 网页操作
                     elif cmd_type == '打开网址':
-                        web_control = OpenWeb(command_thread=self, ins_dic=dic_, navigation=self.navigation)
+                        web_control = OpenWeb(outputmessage=self.out_mes, ins_dic=dic_)
                         web_control.start_execute()
 
                     # 网页元素操作
                     elif cmd_type == '元素控制':
-                        web_element = EleControl(command_thread=self, ins_dic=dic_, navigation=self.navigation)
+                        web_element = EleControl(outputmessage=self.out_mes, ins_dic=dic_)
                         web_element.start_execute()
 
                     # 网页录入
                     elif cmd_type == '网页录入':
-                        web_entry = WebEntry(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        web_entry = WebEntry(outputmessage=self.out_mes, ins_dic=dic_)
                         web_entry.start_execute(self.number)
 
                     # 鼠标拖拽
                     elif cmd_type == '鼠标拖拽':
-                        mouse_drag = MouseDrag(command_thread=self, ins_dic=dic_)
+                        mouse_drag = MouseDrag(outputmessage=self.out_mes, ins_dic=dic_)
                         mouse_drag.start_execute()
 
                     # 切换frame
                     elif cmd_type == '切换frame':
-                        toggle_frame = ToggleFrame(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        toggle_frame = ToggleFrame(outputmessage=self.out_mes, ins_dic=dic_)
                         toggle_frame.start_execute()
 
                     # 读取网页数据到excel
                     elif cmd_type == '保存表格':
-                        save_form = SaveForm(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        save_form = SaveForm(outputmessage=self.out_mes, ins_dic=dic_)
                         save_form.start_execute()
 
                     # 拖动网页元素
                     elif cmd_type == '拖动元素':
-                        drag_element = DragWebElements(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        drag_element = DragWebElements(outputmessage=self.out_mes, ins_dic=dic_)
                         drag_element.start_execute()
 
                     # 全屏截图
                     elif cmd_type == '全屏截图':
-                        full_screen_capture = FullScreenCapture(command_thread=self, ins_dic=dic_)
+                        full_screen_capture = FullScreenCapture(outputmessage=self.out_mes, ins_dic=dic_)
                         full_screen_capture.start_execute()
 
                     # 窗口切换
                     elif cmd_type == '切换窗口':
                         # 切换窗口
-                        switch_window = SwitchWindow(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        switch_window = SwitchWindow(outputmessage=self.out_mes, ins_dic=dic_)
                         switch_window.start_execute()
 
                     # 发送消息到微信
                     elif cmd_type == '发送消息':
-                        sendwechat = SendWeChat(
-                            command_thread=self,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        sendwechat = SendWeChat(outputmessage=self.out_mes, ins_dic=dic_)
                         sendwechat.start_execute()
 
                     # 数字验证码
                     elif cmd_type == '数字验证码':
-                        digital_verification_code = VerificationCode(
-                            main_window=self.main_window,
-                            ins_dic=dic_,
-                            navigation=self.navigation
-                        )
+                        digital_verification_code = VerificationCode(outputmessage=self.out_mes, ins_dic=dic_)
                         digital_verification_code.start_execute()
+
+                    # 提示音
+                    elif cmd_type == '提示音':
+                        sound_signal = PlayVoice(outputmessage=self.out_mes, ins_dic=dic_)
+                        sound_signal.start_execute()
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
