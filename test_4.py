@@ -1,57 +1,55 @@
-import time
-import unittest
+class WaitWindow(QDialog, Ui_wait_win):
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        super().__init__()
+        self.setupUi(self)
+        # 倒计时
+        self.timer = QTimer(self)
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.update_label)  # 每次计时结束，触发update_label
+        # 窗口参数
+        self.out_mes = outputmessage  # 用于输出信息
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+        # 立即执行
+        self.is_raise = False
+        self.pushButton.clicked.connect(self.stop_win)  # 停止运行
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)  # 置顶窗口, 禁用窗口最大化和最小化
 
-import pyttsx4
-import winsound
+    def update_label(self):
+        """更新倒计时"""
+        current_count = int(self.label_2.text())
+        current_count -= 1
+        if current_count < 1:
+            self.timer.stop()
+            self.close()
+            self.out_mes.out_mes('已结束等待窗口', self.is_test)
+            return
+        self.label_2.setText(str(current_count))
+        self.out_mes.out_mes('倒计时：%s' % current_count, self.is_test)
 
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        list_dic = {
+            '窗口标题': self.ins_dic.get('参数1（键鼠指令）'),
+            '提示信息': self.ins_dic.get('参数2'),
+            '等待时间': self.ins_dic.get('参数3')
+        }
+        return list_dic
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(self.sound_signal(32767, 500), None)
+    def stop_win(self):
+        """停止窗口"""
+        self.timer.stop()
+        self.close()
+        self.out_mes.out_mes('已结束等待窗口', self.is_test)
 
-    @staticmethod
-    def system_prompt_tone(sound_type) -> None:
-        """系统提示音
-        :param sound_type: 提示音类型(1:警告, 2:错误, 3:询问, 4:信息, 5:系统启动, 6:系统关闭)"""
-        if sound_type == '系统警告':
-            winsound.PlaySound('SystemAsterisk', winsound.SND_ALIAS)
-        elif sound_type == '系统错误':
-            winsound.PlaySound('SystemExclamation', winsound.SND_ALIAS)
-        elif sound_type == '系统询问':
-            winsound.PlaySound('SystemQuestion', winsound.SND_ALIAS)
-        elif sound_type == '系统信息':
-            winsound.PlaySound('SystemHand', winsound.SND_ALIAS)
-        elif sound_type == '系统启动':
-            winsound.PlaySound('SystemStart', winsound.SND_ALIAS)
-        elif sound_type == '系统关闭':
-            winsound.PlaySound('SystemExit', winsound.SND_ALIAS)
-
-    @staticmethod
-    def sound_signal(frequency: int, duration: int, times: int = 1, interval: int = 0) -> None:
-        """播放音频信号
-        :param frequency: 频率(37~32767)
-        :param duration: 持续时间(毫秒)
-        :param times: 次数
-        :param interval: 间隔时间(毫秒)"""
-        try:
-            for _ in range(times):
-                winsound.Beep(frequency, duration)
-                if interval:
-                    time.sleep(interval / 1000)
-        except RuntimeError:
-            pass
-
-    @staticmethod
-    def play_audio(info: str, rate: int = 200) -> None:
-        """播放TTS提示音"""
-        try:
-            engine = pyttsx4.init()
-            engine.setProperty('rate', rate)  # 设置语速
-            engine.say(info)
-            engine.runAndWait()
-        except Exception as e:
-            print(e)
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def start_execute(self):
+        """显示窗口"""
+        list_dic = self.parsing_ins_dic()
+        self.label_2.setText(str(list_dic.get('等待时间')))  # 重置倒计时
+        self.setWindowTitle(list_dic.get('窗口标题'))  # 设置窗口标题
+        self.label.setText(list_dic.get('提示信息'))  # 设置提示信息
+        self.out_mes.out_mes('弹出等待窗口', self.is_test)
+        # 开始倒计时
+        self.timer.start()
+        self.exec_()

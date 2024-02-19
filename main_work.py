@@ -121,140 +121,159 @@ class CommandThread(QThread):
                 exception_handling = dict(dic_)['异常处理']
                 try:
                     # 命令类型与对应操作类的映射
-                    # command_mapping = {
-                    #     "图像点击": (ImageClick, self.out_mes, dic_),
-                    #     "坐标点击": (CoordinateClick, self.out_mes, dic_),
-                    #     "时间等待": (TimeWaiting, self.out_mes, dic_),
-                    #     "图像等待": (ImageWaiting, self.out_mes, dic_)
-                    # }
-                    # # 根据命令类型执行相应操作
-                    # if cmd_type in command_mapping:
-                    #     command_class, *args = command_mapping[cmd_type]
-                    #     command_instance = command_class(*args)
-                    #     command_instance.start_execute(self.number)
+                    command_mapping = {
+                        "图像点击": (ImageClick, self.out_mes, dic_),
+                        "坐标点击": (CoordinateClick, self.out_mes, dic_),
+                        "时间等待": (TimeWaiting, self.out_mes, dic_),
+                        "图像等待": (ImageWaiting, self.out_mes, dic_),
+                        "滚轮滑动": (RollerSlide, self.out_mes, dic_),
+                        "文本输入": (TextInput, self.out_mes, dic_),
+                        "移动鼠标": (MoveMouse, self.out_mes, dic_),
+                        "按下键盘": (PressKeyboard, self.out_mes, dic_),
+                        "中键激活": (MiddleActivation, self.out_mes, dic_),
+                        "鼠标点击": (MouseClick, self.out_mes, dic_),
+                        "信息录入": (InformationEntry, self.out_mes, dic_, self.number),
+                        "打开网址": (OpenWeb, self.out_mes, dic_),
+                        "元素控制": (EleControl, self.out_mes, dic_),
+                        "网页录入": (WebEntry, self.out_mes, dic_, self.number),
+                        "鼠标拖拽": (MouseDrag, self.out_mes, dic_),
+                        "切换frame": (ToggleFrame, self.out_mes, dic_),
+                        "保存表格": (SaveForm, self.out_mes, dic_),
+                        "拖动元素": (DragWebElements, self.out_mes, dic_),
+                        "全屏截图": (FullScreenCapture, self.out_mes, dic_),
+                        "切换窗口": (SwitchWindow, self.out_mes, dic_),
+                        "发送消息": (SendWeChat, self.out_mes, dic_),
+                        "数字验证码": (VerificationCode, self.out_mes, dic_),
+                        "提示音": (PlayVoice, self.out_mes, dic_),
+                        "倒计时窗口": (WaitWindow, self.out_mes, dic_),
+                    }
+                    # 根据命令类型执行相应操作
+                    if cmd_type in command_mapping:
+                        command_class, *args = command_mapping[cmd_type]
+                        command_instance = command_class(*args)
+                        command_instance.start_execute()
 
-                    # 图像识别点击的事件
-                    if cmd_type == "图像点击":
-                        image_click = ImageClick(outputmessage=self.out_mes, ins_dic=dic_)
-                        image_click.start_execute(self.number)
+                    # # 图像识别点击的事件
+                    # if cmd_type == "图像点击":
+                    #     image_click = ImageClick(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     image_click.start_execute()
 
-                    # 屏幕坐标点击事件
-                    elif cmd_type == '坐标点击':
-                        coordinate_click = CoordinateClick(outputmessage=self.out_mes, ins_dic=dic_)
-                        coordinate_click.start_execute()
+                    # # 屏幕坐标点击事件
+                    # elif cmd_type == '坐标点击':
+                    #     coordinate_click = CoordinateClick(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     coordinate_click.start_execute()
 
-                    # 等待的事件
-                    elif cmd_type == '时间等待':
-                        waiting = TimeWaiting(outputmessage=self.out_mes, ins_dic=dic_)
-                        waiting.start_execute()
+                    # # 等待的事件
+                    # elif cmd_type == '时间等待':
+                    #     waiting = TimeWaiting(outputmessage=self.out_mes, ins_dic=dic_, cycle_number=self.number)
+                    #     waiting.start_execute()
 
-                    # 图像等待事件
-                    elif cmd_type == '图像等待':
-                        image_waiting = ImageWaiting(outputmessage=self.out_mes, ins_dic=dic_)
-                        image_waiting.start_execute()
+                    # # 图像等待事件
+                    # elif cmd_type == '图像等待':
+                    #     image_waiting = ImageWaiting(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     image_waiting.start_execute()
 
-                    # 滚轮滑动的事件
-                    elif cmd_type == '滚轮滑动':
-                        scroll_wheel = RollerSlide(outputmessage=self.out_mes, ins_dic=dic_)
-                        scroll_wheel.start_execute()
+                    # # 滚轮滑动的事件
+                    # elif cmd_type == '滚轮滑动':
+                    #     scroll_wheel = RollerSlide(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     scroll_wheel.start_execute()
+                    #
+                    # # 文本输入的事件
+                    # elif cmd_type == '文本输入':
+                    #     text_input = TextInput(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     text_input.start_execute()
+                    #
+                    # # 鼠标移动的事件
+                    # elif cmd_type == '移动鼠标':
+                    #     move_mouse = MoveMouse(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     move_mouse.start_execute()
+                    #
+                    # # 键盘按键的事件
+                    # elif cmd_type == '按下键盘':
+                    #     press_keyboard = PressKeyboard(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     press_keyboard.start_execute()
 
-                    # 文本输入的事件
-                    elif cmd_type == '文本输入':
-                        text_input = TextInput(outputmessage=self.out_mes, ins_dic=dic_)
-                        text_input.start_execute()
+                    # # 中键激活的事件
+                    # elif cmd_type == '中键激活':
+                    #     middle_activation = MiddleActivation(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     middle_activation.start_execute()
+                    #
+                    # # 鼠标事件
+                    # elif cmd_type == '鼠标点击':
+                    #     mouse_click = MouseClick(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     mouse_click.start_execute()
+                    #
+                    # # 图片信息录取 elif cmd_type == '信息录入': information_entry = InformationEntry(
+                    # outputmessage=self.out_mes, ins_dic=dic_, cycle_number=self.number)
+                    # information_entry.start_execute()
 
-                    # 鼠标移动的事件
-                    elif cmd_type == '移动鼠标':
-                        move_mouse = MoveMouse(outputmessage=self.out_mes, ins_dic=dic_)
-                        move_mouse.start_execute()
+                    # # 网页操作
+                    # elif cmd_type == '打开网址':
+                    #     web_control = OpenWeb(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     web_control.start_execute()
+                    #
+                    # # 网页元素操作
+                    # elif cmd_type == '元素控制':
+                    #     web_element = EleControl(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     web_element.start_execute()
+                    #
+                    # # 网页录入
+                    # elif cmd_type == '网页录入':
+                    #     web_entry = WebEntry(outputmessage=self.out_mes, ins_dic=dic_, cycle_number=self.number)
+                    #     web_entry.start_execute()
+                    #
+                    # # 鼠标拖拽
+                    # elif cmd_type == '鼠标拖拽':
+                    #     mouse_drag = MouseDrag(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     mouse_drag.start_execute()
 
-                    # 键盘按键的事件
-                    elif cmd_type == '按下键盘':
-                        press_keyboard = PressKeyboard(outputmessage=self.out_mes, ins_dic=dic_)
-                        press_keyboard.start_execute()
-
-                    # 中键激活的事件
-                    elif cmd_type == '中键激活':
-                        middle_activation = MiddleActivation(outputmessage=self.out_mes, ins_dic=dic_)
-                        middle_activation.start_execute()
-
-                    # 鼠标事件
-                    elif cmd_type == '鼠标点击':
-                        mouse_click = MouseClick(outputmessage=self.out_mes, ins_dic=dic_)
-                        mouse_click.start_execute()
-
-                    # 图片信息录取
-                    elif cmd_type == '信息录入':
-                        information_entry = InformationEntry(outputmessage=self.out_mes, ins_dic=dic_)
-                        information_entry.start_execute(self.number)
-
-                    # 网页操作
-                    elif cmd_type == '打开网址':
-                        web_control = OpenWeb(outputmessage=self.out_mes, ins_dic=dic_)
-                        web_control.start_execute()
-
-                    # 网页元素操作
-                    elif cmd_type == '元素控制':
-                        web_element = EleControl(outputmessage=self.out_mes, ins_dic=dic_)
-                        web_element.start_execute()
-
-                    # 网页录入
-                    elif cmd_type == '网页录入':
-                        web_entry = WebEntry(outputmessage=self.out_mes, ins_dic=dic_)
-                        web_entry.start_execute(self.number)
-
-                    # 鼠标拖拽
-                    elif cmd_type == '鼠标拖拽':
-                        mouse_drag = MouseDrag(outputmessage=self.out_mes, ins_dic=dic_)
-                        mouse_drag.start_execute()
-
-                    # 切换frame
-                    elif cmd_type == '切换frame':
-                        toggle_frame = ToggleFrame(outputmessage=self.out_mes, ins_dic=dic_)
-                        toggle_frame.start_execute()
-
-                    # 读取网页数据到excel
-                    elif cmd_type == '保存表格':
-                        save_form = SaveForm(outputmessage=self.out_mes, ins_dic=dic_)
-                        save_form.start_execute()
-
-                    # 拖动网页元素
-                    elif cmd_type == '拖动元素':
-                        drag_element = DragWebElements(outputmessage=self.out_mes, ins_dic=dic_)
-                        drag_element.start_execute()
-
-                    # 全屏截图
-                    elif cmd_type == '全屏截图':
-                        full_screen_capture = FullScreenCapture(outputmessage=self.out_mes, ins_dic=dic_)
-                        full_screen_capture.start_execute()
-
-                    # 窗口切换
-                    elif cmd_type == '切换窗口':
-                        # 切换窗口
-                        switch_window = SwitchWindow(outputmessage=self.out_mes, ins_dic=dic_)
-                        switch_window.start_execute()
-
-                    # 发送消息到微信
-                    elif cmd_type == '发送消息':
-                        sendwechat = SendWeChat(outputmessage=self.out_mes, ins_dic=dic_)
-                        sendwechat.start_execute()
-
-                    # 数字验证码
-                    elif cmd_type == '数字验证码':
-                        digital_verification_code = VerificationCode(outputmessage=self.out_mes, ins_dic=dic_)
-                        digital_verification_code.start_execute()
-
-                    # 提示音
-                    elif cmd_type == '提示音':
-                        sound_signal = PlayVoice(outputmessage=self.out_mes, ins_dic=dic_)
-                        sound_signal.start_execute()
+                    # # 切换frame
+                    # elif cmd_type == '切换frame':
+                    #     toggle_frame = ToggleFrame(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     toggle_frame.start_execute()
+                    #
+                    # # 读取网页数据到excel
+                    # elif cmd_type == '保存表格':
+                    #     save_form = SaveForm(outputmessage=self.out_mes, ins_dic=dic_, )
+                    #     save_form.start_execute()
+                    #
+                    # # 拖动网页元素
+                    # elif cmd_type == '拖动元素':
+                    #     drag_element = DragWebElements(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     drag_element.start_execute()
+                    #
+                    # # 全屏截图
+                    # elif cmd_type == '全屏截图':
+                    #     full_screen_capture = FullScreenCapture(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     full_screen_capture.start_execute()
+                    #
+                    # # 窗口切换
+                    # elif cmd_type == '切换窗口':
+                    #     # 切换窗口
+                    #     switch_window = SwitchWindow(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     switch_window.start_execute()
+                    #
+                    # # 发送消息到微信
+                    # elif cmd_type == '发送消息':
+                    #     sendwechat = SendWeChat(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     sendwechat.start_execute()
+                    #
+                    # # 数字验证码
+                    # elif cmd_type == '数字验证码':
+                    #     digital_verification_code = VerificationCode(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     digital_verification_code.start_execute()
+                    #
+                    # # 提示音
+                    # elif cmd_type == '提示音':
+                    #     sound_signal = PlayVoice(outputmessage=self.out_mes, ins_dic=dic_)
+                    #     sound_signal.start_execute()
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                # except Exception as e:
-                except IndexError:
-                    e = 'test'
+                except Exception as e:
+                    # except IndexError:
+                    #     e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

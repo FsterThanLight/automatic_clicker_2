@@ -50,6 +50,10 @@ from 资源文件夹窗口 import Global_s
 # done: 右键菜单新增转到分支
 # todo: 运行python代码功能
 # todo: 运行外部程序功能
+# done: 文本输入功能无法按下ctrl+v
+# todo: 从微信获取变量
+# todo: 可暂时禁用指令功能
+# done: 快捷截图后自动设置为最新图像
 # done: 鼠标点击功能可设置按压时长
 # done: 鼠标移动、滚轮功能可设置随机移动
 # done: 图像识别增加灰度识别
@@ -237,25 +241,25 @@ class Main_window(QMainWindow, Ui_MainWindow):
         else:
             self.statusBar.showMessage(f'当前指令无分支。', 1000)
 
+    def modify_parameters(self):
+        """修改参数"""
+        try:
+            # 获取当前行行号列号
+            row = self.tableWidget.currentRow()
+            id_ = int(self.tableWidget.item(row, 7).text())  # 指令ID
+            ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
+            # 将导航页的tabWidget设置为对应的页
+            navigation = Na(self)  # 实例化导航页窗口
+            # 修改数据中的参数
+            navigation.pushButton_2.setText('修改指令')
+            navigation.modify_id = id_
+            navigation.show()
+            navigation.switch_navigation_page(ins_type)
+        except AttributeError:
+            QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
+
     def generateMenu(self, pos):
         """生成右键菜单"""
-
-        def modify_parameters():
-            """修改参数"""
-            try:
-                # 获取当前行行号列号
-                row = self.tableWidget.currentRow()
-                id_ = int(self.tableWidget.item(row, 7).text())  # 指令ID
-                ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
-                # 将导航页的tabWidget设置为对应的页
-                navigation = Na(self)  # 实例化导航页窗口
-                # 修改数据中的参数
-                navigation.pushButton_2.setText('修改指令')
-                navigation.modify_id = id_
-                navigation.show()
-                navigation.switch_navigation_page(ins_type)
-            except AttributeError:
-                QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
 
         def clear_table():
             """清空表格和数据库"""
@@ -313,6 +317,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             copy_ins.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))  # 设置图标
 
             modify_ins = menu.addAction("修改指令")
+            modify_ins.setShortcut('Ctrl+Y')
             modify_ins.setIcon(self.style().standardIcon(QStyle.SP_ComputerIcon))  # 设置图标
 
             go_branch = menu.addAction("转到分支")
@@ -344,7 +349,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif action == down_ins:
             self.go_up_down('down')
         elif action == modify_ins:
-            modify_parameters()  # 修改指令
+            self.modify_parameters()  # 修改指令
         elif action == insert_ins_before:
             insert_data_before('向前插入')
         elif action == insert_ins_after:
@@ -798,47 +803,46 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.clear()
         self.comboBox.addItems(extract_global_parameter('分支表名'))
 
-    # def keyPressEvent(self, event):
-    #     # 按下Ctrl+Enter键
-    #     if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Return:
-    #         self.show_windows('导航')
-
     def eventFilter(self, obj, event):
         # 重写self.tableWidget的快捷键事件
-        if obj == self.tableWidget and event.type() == QtCore.QEvent.KeyPress:
-            # 如果按下delete键
-            if event.key() == Qt.Key_Delete:
-                self.delete_data()
-            # 如果按下ctrl+c键
-            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
-                self.copy_data()
-            # 如果按下shift+向上键
-            if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Up:
-                self.go_up_down('up')
-                # 将焦点下移一行,抵消上移的误差
-                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
-            # 如果按下shift+向下键
-            if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Down:
-                self.go_up_down('down')
-                # 将焦点上移一行,抵消下移的误差
-                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
-            # 如果按下ctrl+向上键
-            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Up:
-                # 将焦点下移一行,抵消上移的误差
-                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
-                # 如果分支不为self.comboBox的第一个则,切换上一个分支
-                if self.comboBox.currentIndex() != 0:
-                    self.comboBox.setCurrentIndex(self.comboBox.currentIndex() - 1)
-            # 如果按下ctrl+向下键
-            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Down:
-                # 将焦点上移一行,抵消下移的误差
-                self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
-                # 如果分支不为self.comboBox的最后一个则,切换下一个分支
-                if self.comboBox.currentIndex() != self.comboBox.count() - 1:
-                    self.comboBox.setCurrentIndex(self.comboBox.currentIndex() + 1)
-            # 如果按下ctrl+t键
-            if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_G:
-                self.go_to_branch()  # 转到分支
+        if obj == self.tableWidget:
+            if event.type() == 6:  # 键盘按下事件
+                # 如果按下delete键
+                if event.key() == Qt.Key_Delete:
+                    self.delete_data()
+                # 如果按下ctrl+c键
+                if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_C:
+                    self.copy_data()
+                # 如果按下shift+向上键
+                if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Up:
+                    self.go_up_down('up')
+                    # 将焦点下移一行,抵消上移的误差
+                    self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
+                # 如果按下shift+向下键
+                if event.modifiers() == Qt.ShiftModifier and event.key() == Qt.Key_Down:
+                    self.go_up_down('down')
+                    # 将焦点上移一行,抵消下移的误差
+                    self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
+                # 如果按下ctrl+向上键
+                if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Up:
+                    # 将焦点下移一行,抵消上移的误差
+                    self.tableWidget.setCurrentCell(self.tableWidget.currentRow() + 1, 0)
+                    # 如果分支不为self.comboBox的第一个则,切换上一个分支
+                    if self.comboBox.currentIndex() != 0:
+                        self.comboBox.setCurrentIndex(self.comboBox.currentIndex() - 1)
+                # 如果按下ctrl+向下键
+                if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Down:
+                    # 将焦点上移一行,抵消下移的误差
+                    self.tableWidget.setCurrentCell(self.tableWidget.currentRow() - 1, 0)
+                    # 如果分支不为self.comboBox的最后一个则,切换下一个分支
+                    if self.comboBox.currentIndex() != self.comboBox.count() - 1:
+                        self.comboBox.setCurrentIndex(self.comboBox.currentIndex() + 1)
+                # 如果按下ctrl+g键
+                if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_G:
+                    self.go_to_branch()  # 转到分支
+                # 如果按下ctrl+x键
+                if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Y:
+                    self.modify_parameters()  # 修改指令
         return super().eventFilter(obj, event)
 
         # 热键处理函数

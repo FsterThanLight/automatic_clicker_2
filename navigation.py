@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice
+from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
@@ -52,6 +52,10 @@ class Na(QWidget, Ui_navigation):
             '图像等待': (self.comboBox_17, self.comboBox_18),
             '信息录入': (self.comboBox_14, self.comboBox_15),
         }
+        self.combo_excel_preview = {
+            '信息录入': (self.comboBox_12, self.comboBox_13),
+            '网页录入': (self.comboBox_20, self.comboBox_23),
+        }
         self.pushButton_9.clicked.connect(lambda: self.on_button_clicked('查看'))
         self.pushButton_10.clicked.connect(lambda: self.on_button_clicked('删除'))
         # 快捷选择导航页
@@ -85,12 +89,13 @@ class Na(QWidget, Ui_navigation):
             '发送消息': (lambda x: self.wechat_function(x), False),
             '数字验证码': (lambda x: self.verification_code_function(x), True),
             '提示音': (lambda x: self.play_voice_function(x), False),
+            '倒计时窗口': (lambda x: self.wait_window_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
             self.function_mapping[func_name][0]('按钮功能')
             self.function_mapping[func_name][0]('加载信息')
-
+        self.tabWidget_2.setCurrentIndex(0)  # 设置到功能页面到预览页
         # 设置窗口的flag
         flags = self.windowFlags()
         self.setWindowFlags(flags | Qt.Window)
@@ -199,7 +204,7 @@ class Na(QWidget, Ui_navigation):
                 try:
                     image_click = ImageClick(self.out_mes, dic_)
                     image_click.is_test = True
-                    image_click.start_execute('')
+                    image_click.start_execute()
                 except Exception as e:
                     print(e)
                     self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
@@ -290,9 +295,7 @@ class Na(QWidget, Ui_navigation):
             # 检查text中是否为英文大小写字母和数字
             if re.search('[a-zA-Z0-9]', text) is None:
                 self.checkBox_2.setChecked(False)
-                print('文本输入仅支持输入英文大小写字母和数字！')
-                QMessageBox.warning(self, '警告', '文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
-                raise ValueError
+                QMessageBox.warning(self, '警告', '特殊控件的文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
 
         if type_ == '按钮功能':
             # 检查输入的数据是否合法
@@ -582,7 +585,7 @@ class Na(QWidget, Ui_navigation):
             )
             # 信息录入窗口的excel功能
             self.comboBox_12.currentTextChanged.connect(
-                lambda: self.find_excel_sheet_name(self.comboBox_12, self.comboBox_13)
+                lambda: self.find_excel_sheet_name('信息录入')
             )
             # 加载下拉列表数据
             self.comboBox_14.currentTextChanged.connect(
@@ -637,7 +640,7 @@ class Na(QWidget, Ui_navigation):
             """网页连接测试"""
             if judge == '测试':
                 url = self.lineEdit_19.text()
-                web_option = WebOption(None, self)
+                web_option = WebOption(self.out_mes)
                 web_option.web_open_test(url)
 
             elif judge == '安装浏览器':
@@ -650,7 +653,7 @@ class Na(QWidget, Ui_navigation):
                 )
                 if x == QMessageBox.Yes:
                     print('下载浏览器驱动')
-                    web_option = WebOption(None, self)
+                    web_option = WebOption(self.out_mes)
                     web_option.install_browser_driver()
                     QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
 
@@ -706,8 +709,9 @@ class Na(QWidget, Ui_navigation):
         """网页录入的窗口功能"""
         if type_ == '按钮功能':
             # 网页信息录入的excel功能
-            self.comboBox_20.currentTextChanged.connect(lambda:
-                                                        self.find_excel_sheet_name(self.comboBox_20, self.comboBox_23))
+            self.comboBox_20.currentTextChanged.connect(
+                lambda: self.find_excel_sheet_name('网页录入')
+            )
         elif type_ == '写入参数':
             parameter_4 = None
             # 获取excel工作簿路径和工作表名称
@@ -968,7 +972,7 @@ class Na(QWidget, Ui_navigation):
                 '参数1（键鼠指令）': parameter_1_,
                 '参数2': parameter_2_,
             }
-            wechat_option = SendWeChat(None, self, ins_dic)
+            wechat_option = SendWeChat(self.out_mes, ins_dic)
             wechat_option.is_test = True
             wechat_option.send_message_to_wechat(parameter_1_, parameter_2_, int(self.spinBox.value()))
 
@@ -1099,31 +1103,72 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_3_=parameter_3,
                                                  remarks_=func_info_dic.get('备注'))
 
+    def wait_window_function(self, type_):
+        """倒计时等待窗口的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = f'{self.lineEdit_2.text()}'
+            parameter_2_ = f'{self.lineEdit_6.text()}'
+            parameter_3_ = f'{self.spinBox_25.value()}'
+            # 检查参数是否有异常
+            if parameter_1_ == '' or parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "信息未填写！")
+                raise ValueError
+            return parameter_1_, parameter_2_, parameter_3_
+
+        def test():
+            # """测试功能"""
+            parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+            dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                     parameter_1_=parameter_1_,
+                                     parameter_2_=parameter_2_,
+                                     parameter_3_=parameter_3_)
+
+            # 测试用例
+            test_class = WaitWindow(self.out_mes, dic_)
+            test_class.is_test = True
+            test_class.start_execute()
+
+        if type_ == '按钮功能':
+            self.pushButton_25.clicked.connect(test)
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, parameter_3 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 parameter_3_=parameter_3,
+                                                 remarks_=func_info_dic.get('备注'))
+
     def find_images(self, ins_name: str) -> None:
         """选择图像文件夹并返回文件夹名称
         :param ins_name: 指令名称"""
-        combox, combox_2 = self.combo_image_preview.get(ins_name)
-        fil_path = combox.currentText()
+        combox_folder, combox_file_name = self.combo_image_preview.get(ins_name)
+        folder_path = combox_folder.currentText()
         try:
-            images_name = os.listdir(fil_path)
+            # List all files in folder_path
+            images_name = [f for f in os.listdir(folder_path) if f.endswith('.png')]
+            # Sort files by modification time
+            images_name.sort(key=lambda x: os.path.getmtime(os.path.join(folder_path, x)), reverse=True)
         except FileNotFoundError:
             images_name = []
-        # 去除文件夹中非png文件名称
-        for i in range(len(images_name) - 1, -1, -1):
-            if ".png" not in images_name[i]:
-                images_name.remove(images_name[i])
         # 清空combox_2中的所有元素
-        combox_2.clear()
+        combox_file_name.clear()
         # 将images_name中的所有元素添加到combox_2中
-        combox_2.addItems(images_name)
+        combox_file_name.addItems(images_name)
         self.label_3.setText(self.comboBox_8.currentText())
         QApplication.processEvents()
 
-    @staticmethod
-    def find_excel_sheet_name(comboBox_before, comboBox_after):
+    def find_excel_sheet_name(self, ins_name: str) -> None:
         """获取excel表格中的所有sheet名称
-        :param comboBox_before: 选择excel文件的下拉列表
-        :param comboBox_after: 选择sheet名称的下拉列表"""
+        :param ins_name:指令名称"""
+        comboBox_before, comboBox_after = self.combo_excel_preview.get(ins_name)
         excel_path = comboBox_before.currentText()
         try:
             # 用openpyxl获取excel表格中的所有sheet名称
@@ -1162,6 +1207,9 @@ class Na(QWidget, Ui_navigation):
         # 刷新图像预览
         if current_title in self.combo_image_preview.keys():
             self.find_images(current_title)
+        if current_title in self.combo_excel_preview.keys():
+            self.find_excel_sheet_name(current_title)
+        self.tabWidget_2.setCurrentIndex(0)
 
     def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并
@@ -1369,6 +1417,7 @@ class Na(QWidget, Ui_navigation):
                 os.startfile(image_path)
         else:
             self.label_43.setText('暂无')
+        self.tabWidget_2.setCurrentIndex(1)  # 设置到功能页面到预览页
 
     def on_button_clicked(self, judge: str) -> None:
         """按钮点击事件,用于图像预览的按钮事件

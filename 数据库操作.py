@@ -39,8 +39,11 @@ def show_normal_window_with_specified_title(title):
 
     for h, t in hwnd_title.items():
         if t == title:
-            win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
-            win32gui.SetForegroundWindow(h)
+            try:
+                win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
+                win32gui.SetForegroundWindow(h)
+            except Exception as e:
+                print(f"An error occurred: {e}")
             break
 
 
@@ -342,12 +345,13 @@ def remove_recently_opened_file(file_path: str):
 
 
 if __name__ == '__main__':
-    path_1 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_1.py'
-    path_2 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_2.py'
-    path_3 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_3.py'
-    path_4 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_4.py'
-    path_5 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_5.py'
-    path_6 = r'C:\Users\zhuzj5\PycharmProjects\PyQt5\test\test_6.py'
-
-    # writes_to_recently_opened_files(path_1)
-    print(get_recently_opened_file('文件列表'))
+    # path_1 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_1.py'
+    # path_2 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_2.py'
+    # path_3 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_3.py'
+    # path_4 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_4.py'
+    # path_5 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_5.py'
+    # path_6 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_6.py'
+    # 
+    # # writes_to_recently_opened_files(path_1)
+    # print(get_recently_opened_file('文件列表'))
+    pass
