@@ -148,6 +148,7 @@ class CommandThread(QThread):
                         "提示窗口": (DialogWindow, self.out_mes, dic_),
                         "跳转分支": (BranchJump, self.out_mes, dic_),
                         "终止流程": (TerminationProcess, self.out_mes, dic_),
+                        "窗口控制": (WindowControl, self.out_mes, dic_),
                     }
                     # 根据命令类型执行相应操作
                     if cmd_type in command_mapping:
@@ -273,9 +274,9 @@ class CommandThread(QThread):
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                # except Exception as e:
-                except IndexError:
-                    e = 'test'
+                except Exception as e:
+                    # except IndexError:
+                    #     e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

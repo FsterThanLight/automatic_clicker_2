@@ -39,7 +39,7 @@ def xxx_function(self, type_):
 
         except Exception as e:
             print(e)
-            self.out_mes.out_mes(f'xxxx！', True)
+            self.out_mes.out_mes(f'指令错误请重试！', True)
 
     if type_ == '按钮功能':
         pass

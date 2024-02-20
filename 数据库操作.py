@@ -2,6 +2,7 @@ import datetime
 import os
 import sqlite3
 import sys
+import time
 
 import win32con
 import win32gui
@@ -40,6 +41,7 @@ def show_normal_window_with_specified_title(title):
     for h, t in hwnd_title.items():
         if t == title:
             try:
+                time.sleep(0.5)
                 win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
                 win32gui.SetForegroundWindow(h)
             except Exception as e:

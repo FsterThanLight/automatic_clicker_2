@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow
+from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
+    WindowControl
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
@@ -93,6 +94,7 @@ class Na(QWidget, Ui_navigation):
             '提示窗口': (lambda x: self.dialog_window_function(x), False),
             '跳转分支': (lambda x: self.branch_jump_function(x), False),
             '终止流程': (lambda x: self.termination_process_function(x), False),
+            '窗口控制': (lambda x: self.window_control_function(x), True),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -1113,13 +1115,13 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = f'{self.lineEdit_2.text()}'
-            parameter_2_ = f'{self.lineEdit_6.text()}'
+            parameter_1_ = f'{self.lineEdit_2.text()}' or '示例'
+            parameter_2_ = f'{self.lineEdit_6.text()}' or '示例'
             parameter_3_ = f'{self.spinBox_25.value()}'
-            # 检查参数是否有异常
-            if parameter_1_ == '' or parameter_2_ == '':
-                QMessageBox.critical(self, "错误", "信息未填写！")
-                raise ValueError
+            # # 检查参数是否有异常
+            # if parameter_1_ == '' or parameter_2_ == '':
+            #     QMessageBox.critical(self, "错误", "信息未填写！")
+            #     raise ValueError
             return parameter_1_, parameter_2_, parameter_3_
 
         def test():
@@ -1156,13 +1158,9 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.lineEdit_8.text()  # 对话框标题
-            parameter_2_ = self.lineEdit_20.text()  # 对话框内容
-            parameter_3_ = self.comboBox_36.currentText()  # 对话框图标
-            # 检查参数是否有异常
-            if parameter_1_ == '' or parameter_2_ == '':
-                QMessageBox.critical(self, "错误", "信息未填写！")
-                raise ValueError
+            parameter_1_ = self.lineEdit_8.text() or '提示框'  # 提示框标题
+            parameter_2_ = self.lineEdit_20.text() or '示例'  # 提示框内容
+            parameter_3_ = self.comboBox_36.currentText()  # icon类型
             return parameter_1_, parameter_2_, parameter_3_
 
         def test():
@@ -1265,6 +1263,52 @@ class Na(QWidget, Ui_navigation):
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=exception_handling_,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def window_control_function(self, type_):
+        """窗口控制的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.lineEdit_21.text()
+            parameter_2_ = f'{self.comboBox_40.currentText()}-{self.checkBox_5.isChecked()}'
+            # 检查参数是否有异常
+            if parameter_1_ == '':
+                QMessageBox.critical(self, "错误", "窗口标题未填！")
+                raise ValueError
+            return parameter_1_, parameter_2_
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_, parameter_2_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_)
+
+                # 测试用例
+                test_class = WindowControl(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                # self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_27.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
     def find_images(self, ins_name: str) -> None:

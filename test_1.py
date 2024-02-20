@@ -1,57 +1,41 @@
-import pymsgbox
+import time
+
+import win32con
+import win32gui
 
 
-# pymsgbox.alert(text='', title='', button='OK')
-# pymsgbox.confirm(text='', title='', buttons=['OK', 'Cancel'])
-# pymsgbox.prompt(text='', title='', default='')
-# pymsgbox.password(text='', title='', default='', mask='*')
-#
-# # 弹窗确认框
-# pymsgbox.alert('This is an alert.', 'Alert!')
-#
-# # 选择确认框
-# pymsgbox.confirm('你是否要查看以下内容?', '查看确认', ["确定", '取消'])
-#
-# # 密码输入框,mask指定密码代替符号
-# res = pymsgbox.password('Enter your password.', mask='$')
-# print(res)
-#
-# # 默认输入框
-# pymsgbox.prompt('What does the fox say?', default='This reference dates this example.')
-#
-# # 选择确认框，设置时间后自动消失
-# pymsgbox.confirm('你是否要查看以下内容?', '查看确认', ["确定", '取消'], timeout=2000)
+def show_normal_window_with_specified_title(title, judge='最大化'):
+    """将指定标题的窗口置顶
+    :param title: 指定标题
+    :param judge: 判断（最大化、最小化、显示窗口、关闭）"""
 
-def alert_dialog_box(text, title, icon_):
-    """测试功能
-    :param text: 弹窗内容
-    :param title: 弹窗标题
-    :param icon_: 弹窗图标"""
-    icon_dic = {
-        'STOP': pymsgbox.STOP,
-        'WARNING': pymsgbox.WARNING,
-        'INFO': pymsgbox.INFO,
-        'QUESTION': pymsgbox.QUESTION,
-    }
-    pymsgbox.alert(
-        text=text,
-        title=title,
-        icon=icon_dic.get(icon_)
-    )
+    def get_all_window_title():
+        """获取所有窗口句柄和窗口标题"""
+        hwnd_title_ = dict()
 
+        def get_all_hwnd(hwnd, mouse):
+            if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+                hwnd_title_.update({hwnd: win32gui.GetWindowText(hwnd)})
 
-def confirm_dialog_box(text, title, buttons):
-    """测试功能
-    :param text: 弹窗内容
-    :param title: 弹窗标题
-    :param buttons: 按钮"""
-    pymsgbox.confirm(
-        text=text,
-        title=title,
-        buttons=buttons
-    )
+        win32gui.EnumWindows(get_all_hwnd, 0)
+        return hwnd_title_
+
+    hwnd_title = get_all_window_title()
+    for h, t in hwnd_title.items():
+        if title in t:
+            if judge == '最大化':
+                win32gui.ShowWindow(h, win32con.SW_SHOWMAXIMIZED)  # 最大化显示窗口
+            elif judge == '最小化':
+                win32gui.ShowWindow(h, win32con.SW_SHOWMINIMIZED)
+            elif judge == '显示窗口':
+                win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 显示窗口
+            elif judge == '关闭窗口':
+                win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
+            break
+    else:
+        print(f'没有找到标题为“{title}”的窗口！')
 
 
 if __name__ == '__main__':
-    # alert_dialog_box('This is an alert.', 'Alert!', 'STOP')
-    confirm_dialog_box('你是否要查看以下内容?', '查看确认', ["确定", '取消'])
+    time.sleep(5)
+    show_normal_window_with_specified_title('Clash', '关闭')

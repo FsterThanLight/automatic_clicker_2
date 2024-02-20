@@ -1506,18 +1506,66 @@ class TerminationProcess:
         raise IndexError
 
 
-if __name__ == '__main__':
-    pass
-    elem = (1, None, '等待', '等待到指定时间', '2023/10/5 22:46:24+1000', None, None, 1, '抛出异常并暂停', '', '主流程')
-    dic = {
-        'ID': elem[0],
-        '图像路径': elem[1],
-        '指令类型': elem[2],
-        '参数1（键鼠指令）': elem[3],
-        '参数2': elem[4],
-        '参数3': elem[5],
-        '参数4': elem[6],
-        '重复次数': elem[7],
-        '异常处理': elem[8]
-    }
-    main_window_ = None
+class WindowControl:
+    """窗口控制"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '窗口标题': self.ins_dic.get('参数1（键鼠指令）'),
+            '操作类型': self.ins_dic.get('参数2').split('-')[0].replace('窗口', ''),
+            '是否报错': eval(self.ins_dic.get('参数2').split('-')[1])
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        list_dic = self.parsing_ins_dic()
+        self.show_normal_window_with_specified_title(
+            list_dic.get('窗口标题'),
+            list_dic.get('操作类型'),
+            list_dic.get('是否报错')
+        )
+
+    def show_normal_window_with_specified_title(self, title, judge='最大化', is_error=True):
+        """将指定标题的窗口置顶
+        :param is_error: 是否报错
+        :param title: 指定标题
+        :param judge: 判断（最大化、最小化、显示窗口、关闭）"""
+
+        def get_all_window_title():
+            """获取所有窗口句柄和窗口标题"""
+            hwnd_title_ = dict()
+
+            def get_all_hwnd(hwnd, mouse):
+                if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
+                    hwnd_title_.update({hwnd: win32gui.GetWindowText(hwnd)})
+
+            win32gui.EnumWindows(get_all_hwnd, 0)
+            return hwnd_title_
+
+        hwnd_title = get_all_window_title()
+        for h, t in hwnd_title.items():
+            if title in t:
+                if judge == '最大化':
+                    win32gui.ShowWindow(h, win32con.SW_SHOWMAXIMIZED)  # 最大化显示窗口
+                elif judge == '最小化':
+                    win32gui.ShowWindow(h, win32con.SW_SHOWMINIMIZED)
+                elif judge == '显示':
+                    win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 显示窗口
+                elif judge == '关闭':
+                    win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
+                self.out_mes.out_mes(f'已{judge}指定标题包含“{title}”的窗口', self.is_test)
+                break
+        else:
+            self.out_mes.out_mes(f'没有找到标题包含“{title}”的窗口！', self.is_test)
+            if is_error:
+                raise ValueError(f'没有找到标题包含“{title}”的窗口！')

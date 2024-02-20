@@ -57,7 +57,7 @@ from 资源文件夹窗口 import Global_s
 # todo: 对话框指令集
 # todo: excel指令集
 # done: 流程控制指令（转分支、终止流程）
-# todo: 应用控制指令（打开、关闭、最小化、最大化、置顶）
+# done: 应用控制指令（打开、关闭、最小化、最大化、置顶）
 # done: 快捷截图后自动设置为最新图像
 # done: 鼠标点击功能可设置按压时长
 # done: 鼠标移动、滚轮功能可设置随机移动
@@ -744,11 +744,14 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def exporting_operation_logs(self):
         """导出操作日志"""
         # 打开保存文件对话框
-        target_path = QFileDialog.getSaveFileName(self, "请选择保存路径", '', "(*.txt)")
+        target_path = QFileDialog.getSaveFileName(
+            parent=self,
+            caption="请选择保存路径",
+            directory=os.path.join(os.path.expanduser("~"), "操作日志.txt"),
+            filter="(*.txt)"
+        )
         # 判断是否选择了文件
-        if target_path[0] == '':
-            pass
-        else:
+        if target_path[0] != '':
             # 获取操作日志
             logs = self.plainTextEdit.toPlainText()
             # 将操作日志写入文件
@@ -773,7 +776,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     return
                 else:
                     # 向全局参数表中添加分支表名
-                    print('添加分支')
                     cursor.execute('insert into 全局参数(资源文件夹路径,分支表名) values(?,?)', (None, text))
                     con.commit()
                     # 弹出提示框，提示创建成功

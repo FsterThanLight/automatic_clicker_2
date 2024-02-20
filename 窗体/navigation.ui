@@ -180,6 +180,11 @@
        </property>
        <item>
         <property name="text">
+         <string>窗口控制</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
          <string>信息录入</string>
         </property>
        </item>
@@ -244,7 +249,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>26</number>
+          <number>24</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -10834,10 +10839,13 @@ p, li { white-space: pre-wrap; }
                    </palette>
                   </property>
                   <property name="text">
-                   <string>倒计时窗口</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>请输入窗口标题...</string>
                   </property>
                  </widget>
                 </item>
@@ -10922,10 +10930,13 @@ p, li { white-space: pre-wrap; }
                    </palette>
                   </property>
                   <property name="text">
-                   <string>提示信息</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>请输入提示信息...</string>
                   </property>
                  </widget>
                 </item>
@@ -11195,6 +11206,359 @@ p, li { white-space: pre-wrap; }
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="tab_32">
+          <attribute name="title">
+           <string>窗口控制</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_74">
+           <item>
+            <widget class="QGroupBox" name="groupBox_39">
+             <property name="title">
+              <string>任务栏应用控制</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_44" columnstretch="1,2">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_130">
+                <property name="text">
+                 <string>操作类型：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="comboBox_40">
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>120</red>
+                      <green>120</green>
+                      <blue>120</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>显示窗口</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>关闭窗口</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最大化</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>最小化</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="lineEdit_21">
+                <property name="palette">
+                 <palette>
+                  <active>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </active>
+                  <inactive>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>255</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </inactive>
+                  <disabled>
+                   <colorrole role="Text">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="255">
+                      <red>120</red>
+                      <green>120</green>
+                      <blue>120</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                   <colorrole role="PlaceholderText">
+                    <brush brushstyle="SolidPattern">
+                     <color alpha="128">
+                      <red>0</red>
+                      <green>0</green>
+                      <blue>0</blue>
+                     </color>
+                    </brush>
+                   </colorrole>
+                  </disabled>
+                 </palette>
+                </property>
+                <property name="placeholderText">
+                 <string>请输入应用程序的窗口标题...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_129">
+                <property name="text">
+                 <string>窗口标题：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QCheckBox" name="checkBox_5">
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="text">
+                 <string>如果未找到窗口则报错</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_25">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>314</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_27">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>控制测试</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="tab_29">
           <attribute name="title">
            <string>提示窗口</string>
@@ -11285,13 +11649,13 @@ p, li { white-space: pre-wrap; }
                    </palette>
                   </property>
                   <property name="text">
-                   <string>对话框</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
                   </property>
                   <property name="placeholderText">
-                   <string/>
+                   <string>输入标题...</string>
                   </property>
                  </widget>
                 </item>
@@ -11470,10 +11834,13 @@ p, li { white-space: pre-wrap; }
                    </palette>
                   </property>
                   <property name="text">
-                   <string>示例</string>
+                   <string/>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                  <property name="placeholderText">
+                   <string>输入提示信息...</string>
                   </property>
                  </widget>
                 </item>
