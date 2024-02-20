@@ -346,9 +346,9 @@ def remove_recently_opened_file(file_path: str):
 
 if __name__ == '__main__':
     # path_1 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_1.py'
-    # path_2 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_2.py'
+    # path_2 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\测试单元.py'
     # path_3 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_3.py'
-    # path_4 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_4.py'
+    # path_4 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_2.py'
     # path_5 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_5.py'
     # path_6 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_6.py'
     # 

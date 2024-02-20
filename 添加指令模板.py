@@ -13,6 +13,11 @@ def xxx_function(self, type_):
         parameter_2_ = None
         parameter_3_ = None
         parameter_4_ = None
+        # 检查参数是否有异常
+        if image_ is None or parameter_1_ is None or parameter_2_ is None or parameter_3_ is None or parameter_4_ is None:
+            self.out_mes.out_mes(f'参数异常！', True)
+            return None, None, None, None, None
+
         return image_, parameter_1_, parameter_2_, parameter_3_, parameter_4_
 
     def test():
@@ -58,7 +63,7 @@ def xxx_function(self, type_):
 
 
 class XxxxClss:
-    """图像点击"""
+    """xxxx"""
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数

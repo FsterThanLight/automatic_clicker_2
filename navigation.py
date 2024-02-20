@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, \
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow
+from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
@@ -90,6 +90,9 @@ class Na(QWidget, Ui_navigation):
             '数字验证码': (lambda x: self.verification_code_function(x), True),
             '提示音': (lambda x: self.play_voice_function(x), False),
             '倒计时窗口': (lambda x: self.wait_window_function(x), False),
+            '提示窗口': (lambda x: self.dialog_window_function(x), False),
+            '跳转分支': (lambda x: self.branch_jump_function(x), False),
+            '终止流程': (lambda x: self.termination_process_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -1144,6 +1147,124 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  parameter_3_=parameter_3,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def dialog_window_function(self, type_):
+        """xxx的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.lineEdit_8.text()  # 对话框标题
+            parameter_2_ = self.lineEdit_20.text()  # 对话框内容
+            parameter_3_ = self.comboBox_36.currentText()  # 对话框图标
+            # 检查参数是否有异常
+            if parameter_1_ == '' or parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "信息未填写！")
+                raise ValueError
+            return parameter_1_, parameter_2_, parameter_3_
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                dic_ = self.get_test_dic(parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_,
+                                         parameter_3_=parameter_3_,
+                                         repeat_number_=int(self.spinBox.value())
+                                         )
+
+                # 测试用例
+                test_class = DialogWindow(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_26.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, parameter_3 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 parameter_3_=parameter_3,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def branch_jump_function(self, type_):
+        """跳转分支的功能
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.comboBox_37.currentText()  # 分支表名
+            parameter_2_ = self.comboBox_38.currentText()  # 分支序号
+            return parameter_1_, parameter_2_
+
+        def set_branch_count():
+            """当分支表名改变时，加载分支中的命令序号"""
+            count_record_ = get_branch_count(self.comboBox_37.currentText())
+            self.comboBox_38.clear()
+            # 加载分支中的命令序号
+            branch_order_ = [str(i) for i in range(1, count_record_ + 1)]
+            if len(branch_order_) != 0:
+                self.comboBox_38.addItems(branch_order_)
+
+        if type_ == '按钮功能':
+            self.comboBox_37.currentTextChanged.connect(set_branch_count)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2 = get_parameters()
+            # 检查参数是否有异常
+            if parameter_1 == '' or parameter_2 == '':
+                QMessageBox.critical(self, "错误", "分支为空，请先添加！")
+                raise ValueError
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=f'{parameter_1}-{parameter_2}',
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            self.comboBox_37.addItems(extract_global_parameter('分支表名'))
+            self.comboBox_37.setCurrentIndex(0)
+            # 获取分支表名中的指令数量
+            count_record = get_branch_count(self.comboBox_37.currentText())
+            # 加载分支中的命令序号
+            branch_order = [str(i) for i in range(1, count_record + 1)]
+            if len(branch_order) == 0:
+                self.comboBox_37.setCurrentIndex(0)
+            else:
+                self.comboBox_38.addItems(branch_order)
+
+    def termination_process_function(self, type_):
+        """终止流程的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.comboBox_39.currentText()
+            return parameter_1_
+
+        if type_ == '按钮功能':
+            pass
+
+        elif type_ == '写入参数':
+            exception_handling_ = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=exception_handling_,
                                                  remarks_=func_info_dic.get('备注'))
 
     def find_images(self, ins_name: str) -> None:

@@ -1,60 +1,57 @@
-import re
-
-import cryptocode
-
-list_all = [[(1, 2, 3, 4, ""), (4, 5, 6, 7, ""), (3, 4, 6, 8, "")],
-            [(7, 8, 9, 2, ""), (3, 6, 9, 4, "3-1")],
-            [(3, 2, 3, 4, ""), (3, 5, 6, 7, "4-1"), (3, 4, 6, 8, "")],
-            [(4, 2, 3, 4, ""), (4, 5, 6, 7, ""), (4, 4, 6, 8, "")]]
+import pymsgbox
 
 
-def traverse_lists(current_list_index, current_index, list_all):
-    while current_index < len(list_all[current_list_index]):
-        elem = list_all[current_list_index][current_index]
-        print(elem)
-        print("执行函数")
-        if elem[-1] == '':
-            current_index += 1
-        elif elem[-1] != '':
-            branch_name_index, branch_index = elem[-1].split('-')
-            x = int(branch_name_index) - 1
-            y = int(branch_index) - 1
-            traverse_lists(x, y, list_all)
-            break
+# pymsgbox.alert(text='', title='', button='OK')
+# pymsgbox.confirm(text='', title='', buttons=['OK', 'Cancel'])
+# pymsgbox.prompt(text='', title='', default='')
+# pymsgbox.password(text='', title='', default='', mask='*')
+#
+# # 弹窗确认框
+# pymsgbox.alert('This is an alert.', 'Alert!')
+#
+# # 选择确认框
+# pymsgbox.confirm('你是否要查看以下内容?', '查看确认', ["确定", '取消'])
+#
+# # 密码输入框,mask指定密码代替符号
+# res = pymsgbox.password('Enter your password.', mask='$')
+# print(res)
+#
+# # 默认输入框
+# pymsgbox.prompt('What does the fox say?', default='This reference dates this example.')
+#
+# # 选择确认框，设置时间后自动消失
+# pymsgbox.confirm('你是否要查看以下内容?', '查看确认', ["确定", '取消'], timeout=2000)
+
+def alert_dialog_box(text, title, icon_):
+    """测试功能
+    :param text: 弹窗内容
+    :param title: 弹窗标题
+    :param icon_: 弹窗图标"""
+    icon_dic = {
+        'STOP': pymsgbox.STOP,
+        'WARNING': pymsgbox.WARNING,
+        'INFO': pymsgbox.INFO,
+        'QUESTION': pymsgbox.QUESTION,
+    }
+    pymsgbox.alert(
+        text=text,
+        title=title,
+        icon=icon_dic.get(icon_)
+    )
 
 
-def get_a_number(cell_position, number=1):
-    column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
-    line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
-    new_cell_position = column_number + str(line_number)
-    return new_cell_position
+def confirm_dialog_box(text, title, buttons):
+    """测试功能
+    :param text: 弹窗内容
+    :param title: 弹窗标题
+    :param buttons: 按钮"""
+    pymsgbox.confirm(
+        text=text,
+        title=title,
+        buttons=buttons
+    )
 
 
-def string_judgment(filename):
-    if filename.endswith('.py') or filename.endswith('.exe'):
-        print('Python文件或可执行文件')
-    else:
-        print('未知文件类型')
-
-
-def encrypt(string, judge):
-    if judge == '加密':
-        return cryptocode.encrypt(string, "123456")
-    elif judge == '解密':
-        return cryptocode.decrypt(string, '123456')
-
-
-
-# if __name__ == '__main__':
-    # cell_position = 'b2'
-    # new_cell_position = get_a_number(cell_position, 4)
-    # print(new_cell_position)
-    # traverse_lists(0, 0, list_all)
-    # x=input("输入任意字符结束")
-    # 解密字符串
-    # with open('SoftwareUpdateInformation.txt', 'r') as f:
-    #     # 读取文件中的所有内容
-    #     content = f.read()
-    #     content = encrypt(content, '解密')
-    # print(content)
-    # 截图功能测试
+if __name__ == '__main__':
+    # alert_dialog_box('This is an alert.', 'Alert!', 'STOP')
+    confirm_dialog_box('你是否要查看以下内容?', '查看确认', ["确定", '取消'])

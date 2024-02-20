@@ -12,6 +12,7 @@ import keyboard
 import mouse
 import openpyxl
 import pyautogui
+import pymsgbox
 import pyperclip
 import pyttsx4
 import win32con
@@ -325,7 +326,7 @@ class ImageWaiting:
             vanish = True
             while vanish:
                 try:
-                    location = pyautogui.locateCenterOnScreen(
+                    pyautogui.locateCenterOnScreen(
                         image=image,
                         confidence=0.8,
                         minSearchTime=1
@@ -572,7 +573,7 @@ class MiddleActivation:
     def start_execute(self):
         """执行重复次数"""
         command_type = self.ins_dic.get('参数1（键鼠指令）')
-        click_count = self.ins_dic.get('参数2')
+        click_count = int(self.ins_dic.get('参数2'))
         re_try = self.ins_dic.get('重复次数')
         # 执行滚轮滑动
         if re_try == 1:
@@ -588,18 +589,25 @@ class MiddleActivation:
         """中键点击事件"""
         self.out_mes.out_mes('等待按下鼠标中键中...按下F11键退出', self.is_test)
         QApplication.processEvents()
-        # print('等待按下鼠标中键中...按下esc键退出')
         mouse.wait(button='middle')
         try:
             if command_type == "模拟点击":
-                pyautogui.click(clicks=int(click_times), button='left')
-                self.out_mes.out_mes('执行鼠标点击%d次' % click_times, self.is_test)
-                # print('执行鼠标点击' + click_times + '次')
+                self.simulated_mouse_click(click_times, '左键')
+                self.out_mes.out_mes(f'执行鼠标点击{click_times}次', self.is_test)
             elif command_type == "自定义":
                 pass
         except OSError:
             # 弹出提示框。提示检查鼠标是否连接
             self.out_mes.out_mes('连接失败，请检查鼠标是否连接正确。', self.is_test)
+
+    @staticmethod
+    def simulated_mouse_click(click_times, lOrR):
+        """模拟鼠标点击
+        :param click_times: 点击次数
+        :param lOrR: (左键、右键)"""
+        button = 'left' if lOrR == '左键' else 'right'
+        for i in range(click_times):
+            mouse.click(button=button)
 
 
 class MouseClick:
@@ -1410,6 +1418,92 @@ class WaitWindow:
         self.count = int(self.ins_dic.get('参数3'))  # 等待时间
         self.label.config(text=self.ins_dic.get('参数2'))
         self.root.mainloop()
+
+
+class DialogWindow:
+    """提示框功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '标题': self.ins_dic.get('参数1（键鼠指令）'),
+            '内容': self.ins_dic.get('参数2'),
+            '图标': self.ins_dic.get('参数3')
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        # 解析指令字典
+        ins_dic = self.parsing_ins_dic()
+        self.alert_dialog_box(ins_dic.get('内容'), ins_dic.get('标题'), ins_dic.get('图标'))
+
+    def alert_dialog_box(self, text, title, icon_):
+        """弹出对话框
+        :param text: 弹窗内容
+        :param title: 弹窗标题
+        :param icon_: 弹窗图标"""
+        self.out_mes.out_mes('已执行弹窗', self.is_test)
+        icon_dic = {
+            'STOP': pymsgbox.STOP,
+            'WARNING': pymsgbox.WARNING,
+            'INFO': pymsgbox.INFO,
+            'QUESTION': pymsgbox.QUESTION,
+        }
+        pymsgbox.alert(
+            text=text,
+            title=title,
+            icon=icon_dic.get(icon_)
+        )
+
+
+class BranchJump:
+    """跳转分支的功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return self.ins_dic.get('重复次数')
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        raise IndexError
+
+
+class TerminationProcess:
+    """终止流程的功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return self.ins_dic.get('重复次数')
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        raise IndexError
 
 
 if __name__ == '__main__':

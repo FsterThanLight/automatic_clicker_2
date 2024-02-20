@@ -9,7 +9,6 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import pymsgbox
 from PyQt5.QtCore import *
 
 from 功能类 import *
@@ -146,6 +145,9 @@ class CommandThread(QThread):
                         "数字验证码": (VerificationCode, self.out_mes, dic_),
                         "提示音": (PlayVoice, self.out_mes, dic_),
                         "倒计时窗口": (WaitWindow, self.out_mes, dic_),
+                        "提示窗口": (DialogWindow, self.out_mes, dic_),
+                        "跳转分支": (BranchJump, self.out_mes, dic_),
+                        "终止流程": (TerminationProcess, self.out_mes, dic_),
                     }
                     # 根据命令类型执行相应操作
                     if cmd_type in command_mapping:
@@ -271,9 +273,9 @@ class CommandThread(QThread):
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                except Exception as e:
-                    # except IndexError:
-                    #     e = 'test'
+                # except Exception as e:
+                except IndexError:
+                    e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能
@@ -309,6 +311,14 @@ class CommandThread(QThread):
                             title='提示',
                             icon=pymsgbox.STOP
                         )
+                        current_index += 1
+                        self.start_state = False
+                        break
+
+                    # 终止所有任务
+                    elif exception_handling == '终止所有任务':
+                        system_prompt_tone('执行异常')
+                        self.show_message(f'ID为{str_id}的指令触发‘终止流程’指令。')
                         current_index += 1
                         self.start_state = False
                         break

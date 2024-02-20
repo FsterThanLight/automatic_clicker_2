@@ -37,9 +37,9 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
 # done: 新增提示音指令
-# todo: 新增倒计时窗口功能
+# done: 新增倒计时窗口功能
 # done: 快捷截图指令重新设计
-# todo: 终止循环功能
+# done: 终止循环功能
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
@@ -53,6 +53,11 @@ from 资源文件夹窗口 import Global_s
 # done: 文本输入功能无法按下ctrl+v
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
+# todo: win通知指令
+# todo: 对话框指令集
+# todo: excel指令集
+# done: 流程控制指令（转分支、终止流程）
+# todo: 应用控制指令（打开、关闭、最小化、最大化、置顶）
 # done: 快捷截图后自动设置为最新图像
 # done: 鼠标点击功能可设置按压时长
 # done: 鼠标移动、滚轮功能可设置随机移动
@@ -863,6 +868,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         elif i_str == "开始线程":
             self.start()
+            self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务开始！')
 
         elif i_str == "暂停和恢复线程":
             if self.command_thread.isRunning():
