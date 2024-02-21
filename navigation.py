@@ -95,6 +95,7 @@ class Na(QWidget, Ui_navigation):
             '跳转分支': (lambda x: self.branch_jump_function(x), False),
             '终止流程': (lambda x: self.termination_process_function(x), False),
             '窗口控制': (lambda x: self.window_control_function(x), True),
+            '按键等待': (lambda x: self.key_wait_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -1307,6 +1308,79 @@ class Na(QWidget, Ui_navigation):
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+
+    def key_wait_function(self, type_):
+        """按键等待的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_2_ = None
+            parameter_3_ = None
+            parameter_1_ = self.keySequenceEdit_2.keySequence().toString()
+            if self.radioButton_22.isChecked():
+                parameter_2_ = '等待按键'
+                parameter_3_ = '自动跳过'
+            elif self.radioButton_21.isChecked():
+                parameter_2_ = '等待跳转分支'
+                parameter_3_ = f'{self.comboBox_41.currentText()}-{self.comboBox_42.currentText()}'
+
+            # 检查参数是否有异常
+            if parameter_1_ == '':
+                QMessageBox.critical(self, "错误", "按键未设置！")
+                raise ValueError
+            if parameter_1_.count('+') >= 1:
+                QMessageBox.critical(self, "错误", "该功能暂不支持复合按键！")
+                raise ValueError
+            if parameter_1_.lower() in ['esc', 'f10', 'f11']:
+                QMessageBox.critical(self, "错误", "该功能暂不支持设置为esc、f10、f11键！")
+                raise ValueError
+            if self.radioButton_21.isChecked() and (
+                    self.comboBox_41.currentText() == '' or self.comboBox_42.currentText() == ''
+            ):
+                QMessageBox.critical(self, "错误", "分支异常，请先添加！")
+                raise ValueError
+            return parameter_1_, parameter_2_, parameter_3_
+
+        def set_branch_count():
+            """当分支表名改变时，加载分支中的命令序号"""
+            count_record_ = get_branch_count(self.comboBox_41.currentText())
+            self.comboBox_42.clear()
+            # 加载分支中的命令序号
+            branch_order_ = [str(i) for i in range(1, count_record_ + 1)]
+            if len(branch_order_) != 0:
+                self.comboBox_42.addItems(branch_order_)
+
+        def set_branch_name():
+            """当选择跳转分支功能时，加载分支表名"""
+            disable_control(True)
+            self.comboBox_41.addItems(extract_global_parameter('分支表名'))
+
+        def disable_control(judge_: bool):
+            """禁用控件"""
+            self.comboBox_41.clear()
+            self.comboBox_42.clear()
+            self.label_133.setEnabled(judge_)
+            self.label_132.setEnabled(judge_)
+            self.comboBox_41.setEnabled(judge_)
+            self.comboBox_42.setEnabled(judge_)
+
+        if type_ == '按钮功能':
+            self.radioButton_21.toggled.connect(set_branch_name)
+            self.radioButton_22.toggled.connect(lambda: disable_control(False))
+            self.comboBox_41.currentTextChanged.connect(set_branch_count)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, exception_handling_ = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=exception_handling_,
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))

@@ -1569,3 +1569,31 @@ class WindowControl:
             self.out_mes.out_mes(f'没有找到标题包含“{title}”的窗口！', self.is_test)
             if is_error:
                 raise ValueError(f'没有找到标题包含“{title}”的窗口！')
+
+
+class KeyWait:
+    """按键等待的功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic = ins_dic  # 指令字典
+
+        self.is_test = False  # 是否测试
+        self.cycle_number = cycle_number  # 循环次数
+
+        self.key: str = ''
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        self.key = self.ins_dic.get('参数1（键鼠指令）')
+        type_ = self.ins_dic.get('参数2')
+        self.out_mes.out_mes(f'等待按键{self.key}按下中...', self.is_test)
+        if type_ == '等待按键':
+            keyboard.wait(self.key.lower())
+            self.out_mes.out_mes(f'按键{self.key}已被按下', self.is_test)
+        elif type_ == '等待跳转分支':
+            keyboard.wait(self.key.lower())
+            self.out_mes.out_mes(f'按键{self.key}已被按下！跳转分支。', self.is_test)
+            raise ValueError(f'按键{self.key}已被按下！')

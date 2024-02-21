@@ -67,12 +67,12 @@ class XxxxClss:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = 0.5  # 等待时间
+        self.time_sleep: float = 0.5  # 等待时间
         self.out_mes = outputmessage  # 用于输出信息到不同的窗口
-        self.ins_dic = ins_dic  # 指令字典
+        self.ins_dic: dict = ins_dic  # 指令字典
 
-        self.is_test = False  # 是否测试
-        self.cycle_number = cycle_number  # 循环次数
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""

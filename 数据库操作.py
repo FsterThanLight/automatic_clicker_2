@@ -45,7 +45,7 @@ def show_normal_window_with_specified_title(title):
                 win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
                 win32gui.SetForegroundWindow(h)
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"主窗口显示出现错误: {e}")
             break
 
 

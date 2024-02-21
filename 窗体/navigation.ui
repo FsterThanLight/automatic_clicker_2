@@ -118,6 +118,11 @@
          <string>倒计时窗口</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>按键等待</string>
+        </property>
+       </item>
       </item>
       <item>
        <property name="text">
@@ -249,7 +254,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>24</number>
+          <number>28</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -12093,6 +12098,118 @@ p, li { white-space: pre-wrap; }
               <size>
                <width>20</width>
                <height>413</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_33">
+          <attribute name="title">
+           <string>按键等待</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_75">
+           <item>
+            <widget class="QGroupBox" name="groupBox_40">
+             <property name="title">
+              <string>按键名称</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_45" columnstretch="1,0">
+              <item row="0" column="1">
+               <widget class="QKeySequenceEdit" name="keySequenceEdit_2"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_131">
+                <property name="text">
+                 <string>按键名称：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_41">
+             <property name="title">
+              <string>如果按下目标按键，则</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_73">
+              <item>
+               <widget class="QRadioButton" name="radioButton_22">
+                <property name="text">
+                 <string>停止等待</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_46" columnstretch="1,1,1,1">
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_133">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>分支名称：</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QComboBox" name="comboBox_41">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLabel" name="label_132">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>开始位置：</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QComboBox" name="comboBox_42">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="4">
+                 <widget class="QRadioButton" name="radioButton_21">
+                  <property name="text">
+                   <string>跳转分支（如果为其他按键则自动跳过）</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_26">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>272</height>
               </size>
              </property>
             </spacer>

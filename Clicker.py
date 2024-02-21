@@ -18,7 +18,7 @@ import openpyxl
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QCursor, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction)
@@ -31,6 +31,7 @@ from navigation import Na
 from 功能类 import close_browser
 from 数据库操作 import *
 from 窗体.about import Ui_About
+from 窗体.branchwin import Ui_branch
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 设置窗口 import Setting
@@ -56,6 +57,7 @@ from 资源文件夹窗口 import Global_s
 # todo: win通知指令
 # todo: 对话框指令集
 # todo: excel指令集
+# done: 按键等待指令
 # done: 流程控制指令（转分支、终止流程）
 # done: 应用控制指令（打开、关闭、最小化、最大化、置顶）
 # done: 快捷截图后自动设置为最新图像
@@ -93,6 +95,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.setStatusBar(self.statusBar)  # 实例化状态栏
         self.icon = Icon()  # 实例化图标
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
+        self.branch_win = Branch_exe_win(self)  # 分支选择窗口
         # 显示导不同的窗口
         self.pushButton.clicked.connect(lambda: self.show_windows('导航'))  # 显示导航窗口
         self.pushButton_3.clicked.connect(lambda: self.show_windows('全局'))  # 显示全局参数窗口
@@ -107,7 +110,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionf.triggered.connect(lambda: self.data_import('资源文件夹路径'))  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
-        self.pushButton_4.clicked.connect(lambda: self.start(True))  # 仅运行分支
+        self.pushButton_4.clicked.connect(lambda: self.show_windows('分支选择'))  # 结束任务按钮
         self.pushButton_6.clicked.connect(lambda: self.global_shortcut_key('终止线程'))  # 结束任务按钮
         self.pushButton_7.clicked.connect(lambda: self.global_shortcut_key('暂停和恢复线程'))  # 暂停和恢复按钮
         self.toolButton_8.clicked.connect(self.exporting_operation_logs)  # 导出日志按钮
@@ -143,6 +146,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
         self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
         self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
+        self.hk_stop.register(('alt', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
+
         # 设置状态栏信息
         self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
 
@@ -389,6 +394,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
             about = About(self)  # 设置关于窗体
             about.setModal(True)
             about.exec_()
+        elif judge == '分支选择':  # 分支选择窗口
+            if not self.branch_win.isVisible():
+                self.branch_win.show()
         elif judge == '说明':
             QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
         elif judge == '快捷键说明':
@@ -716,7 +724,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.menuzv.clear()  # 清空最近打开文件菜单
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
 
-    def start(self, run_branch=False):
+    def start(self):
         """主窗体开始按钮"""
 
         def operation_before_execution():
@@ -727,19 +735,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.hide()
 
         if not self.command_thread.isRunning():  # 如果线程未运行,则执行
-            if run_branch is False:  # 执行主任务
-                self.comboBox.setCurrentIndex(0)  # 切换到主流程
-                operation_before_execution()  # 执行前的操作
-                # 执行主任务
-                self.command_thread.start()
-
-            else:  # 执行当前分支的任务
-                if self.comboBox.currentText() == MAIN_FLOW:
-                    QMessageBox.warning(self, "警告", "主分支无法执行该操作！")
-                else:
-                    operation_before_execution()
-                    self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
-                    self.command_thread.start()
+            operation_before_execution()
+            self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+            self.command_thread.start()
 
     def exporting_operation_logs(self):
         """导出操作日志"""
@@ -869,7 +867,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
 
         elif i_str == "开始线程":
-            self.start()
+            self.start()  # 执行主任务
             self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务开始！')
 
         elif i_str == "暂停和恢复线程":
@@ -880,6 +878,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 else:
                     self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务暂停！')
                     self.command_thread.pause()
+
+        elif i_str == "弹出分支选择窗口":
+            self.show_windows('分支选择')
 
     def sendkeyevent(self, i_str):
         """发送热键信号,将外部信号，转化成qt信号,用于全局热键"""
@@ -931,6 +932,54 @@ class Info(QDialog, Ui_Form):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+
+
+class Branch_exe_win(QDialog, Ui_branch):
+    """弹出选择执行分支的窗体"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
+        # self.listView.doubleClicked.connect(self.parent().start) # 双击执行分支
+        self.listView.doubleClicked.connect(self.open_select_option)  # 双击执行分支
+
+    def load_setting(self):
+        """设置初始参数"""
+
+        def add_listview(list_, listview):
+            """添加listview"""
+            model = QStandardItemModel()
+            listview.setModel(model)
+            for item in list_:
+                model.appendRow(QStandardItem(item))
+
+        branch_list = extract_global_parameter('分支表名')
+        add_listview(branch_list, self.listView)
+
+    def open_select_option(self):
+        """打开选中的listview中的文件夹路径"""
+        try:
+            indexes = self.listView.selectedIndexes()
+            value = self.listView.model().itemFromIndex(indexes[0]).text()  # 获取选中的值
+            self.parent().comboBox.setCurrentText(value)  # 设置分支
+            self.parent().start()  # 执行分支
+            self.close()
+        except Exception as e:
+            print(e)
+
+    def showEvent(self, a0) -> None:
+        # 设置窗口大小
+        set_window_size(self)
+        # 移动窗口到鼠标位置
+        cursor_pos = QCursor.pos()
+        # 移动窗口使窗口中心与鼠标位置重合
+        self.move(cursor_pos.x() - self.width() / 2, cursor_pos.y() - self.height() / 2)
+        self.load_setting()  # 加载设置
+
+    def closeEvent(self, event):
+        # 保存窗体大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
 
 
 if __name__ == "__main__":

@@ -1,41 +1,17 @@
-import time
+import keyboard
 
-import win32con
-import win32gui
+xxx = 'w'
 
 
-def show_normal_window_with_specified_title(title, judge='最大化'):
-    """将指定标题的窗口置顶
-    :param title: 指定标题
-    :param judge: 判断（最大化、最小化、显示窗口、关闭）"""
-
-    def get_all_window_title():
-        """获取所有窗口句柄和窗口标题"""
-        hwnd_title_ = dict()
-
-        def get_all_hwnd(hwnd, mouse):
-            if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd):
-                hwnd_title_.update({hwnd: win32gui.GetWindowText(hwnd)})
-
-        win32gui.EnumWindows(get_all_hwnd, 0)
-        return hwnd_title_
-
-    hwnd_title = get_all_window_title()
-    for h, t in hwnd_title.items():
-        if title in t:
-            if judge == '最大化':
-                win32gui.ShowWindow(h, win32con.SW_SHOWMAXIMIZED)  # 最大化显示窗口
-            elif judge == '最小化':
-                win32gui.ShowWindow(h, win32con.SW_SHOWMINIMIZED)
-            elif judge == '显示窗口':
-                win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 显示窗口
-            elif judge == '关闭窗口':
-                win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
-            break
+def print_pressed_keys(e):
+    global xxx
+    if e.name == xxx:
+        print(f'{e.name} was pressed')
     else:
-        print(f'没有找到标题为“{title}”的窗口！')
+        print(f'other key was pressed')
 
 
 if __name__ == '__main__':
-    time.sleep(5)
-    show_normal_window_with_specified_title('Clash', '关闭')
+    keyboard.on_press(print_pressed_keys)
+    # 持续监听按键，直到按下 'esc' 键退出
+    keyboard.wait('esc')

@@ -632,7 +632,7 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(_translate("MainWindow", "开始运行（F10）"))
         self.pushButton_6.setText(_translate("MainWindow", "结束任务（F11）"))
         self.pushButton_7.setText(_translate("MainWindow", "暂停/恢复"))
-        self.pushButton_4.setText(_translate("MainWindow", "仅运行当前分支"))
+        self.pushButton_4.setText(_translate("MainWindow", "选择分支运行（Alt+1）"))
         self.groupBox_3.setTitle(_translate("MainWindow", "控制"))
         self.radioButton_2.setText(_translate("MainWindow", "重复次数："))
         self.radioButton.setText(_translate("MainWindow", "无限循环"))
