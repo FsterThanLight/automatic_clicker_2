@@ -397,6 +397,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif judge == '分支选择':  # 分支选择窗口
             if not self.branch_win.isVisible():
                 self.branch_win.show()
+            else:
+                self.branch_win.close()
         elif judge == '说明':
             QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
         elif judge == '快捷键说明':
@@ -941,8 +943,8 @@ class Branch_exe_win(QDialog, Ui_branch):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
-        # self.listView.doubleClicked.connect(self.parent().start) # 双击执行分支
         self.listView.doubleClicked.connect(self.open_select_option)  # 双击执行分支
+        self.pushButton.clicked.connect(self.show_main)
 
     def load_setting(self):
         """设置初始参数"""
@@ -967,6 +969,13 @@ class Branch_exe_win(QDialog, Ui_branch):
             self.close()
         except Exception as e:
             print(e)
+
+    def show_main(self):
+        """显示主窗体"""
+        # 如果父窗体最小化则显示
+        if self.parent().isMinimized():
+            self.parent().showNormal()
+        self.close()
 
     def showEvent(self, a0) -> None:
         # 设置窗口大小

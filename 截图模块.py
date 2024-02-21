@@ -127,6 +127,11 @@ class ScreenCapture:
 
     def screenshot_region(self):
         """截取屏幕区域"""
+        # 检查位置是否异常，right是否小于left，bottom是否小于top
+        if self.region[2] < 0:
+            self.region = (self.region[0] + self.region[2], self.region[1], -self.region[2], self.region[3])
+        if self.region[3] < 0:
+            self.region = (self.region[0], self.region[1] + self.region[3], self.region[2], -self.region[3])
         self.pic = pyautogui.screenshot(region=self.region)
 
     def show_preview(self):

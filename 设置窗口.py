@@ -35,7 +35,8 @@ class Setting(QDialog, Ui_Setting):
             模式=model,
             启动检查更新=str(True if self.checkBox.isChecked() else False),
             退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False),
-            系统提示音=str(True if self.checkBox_3.isChecked() else False)
+            系统提示音=str(True if self.checkBox_3.isChecked() else False),
+            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False)
         )
 
     def save_setting(self):
@@ -64,7 +65,8 @@ class Setting(QDialog, Ui_Setting):
             '模式',
             '启动检查更新',
             '退出提醒清空指令',
-            '系统提示音'
+            '系统提示音',
+            '任务完成后显示主窗口'
         )
         self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
@@ -81,6 +83,7 @@ class Setting(QDialog, Ui_Setting):
         self.checkBox.setChecked(eval(setting_data_dic['启动检查更新']))
         self.checkBox_2.setChecked(eval(setting_data_dic['退出提醒清空指令']))
         self.checkBox_3.setChecked(eval(setting_data_dic['系统提示音']))
+        self.checkBox_4.setChecked(eval(setting_data_dic['任务完成后显示主窗口']))
 
     def change_mode(self, mode: str):
         """切换模式

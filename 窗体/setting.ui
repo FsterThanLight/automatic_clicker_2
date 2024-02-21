@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>426</width>
-    <height>541</height>
+    <height>579</height>
    </rect>
   </property>
   <property name="font">
@@ -1018,6 +1018,13 @@
       <widget class="QCheckBox" name="checkBox_3">
        <property name="text">
         <string>系统提示音</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="checkBox_4">
+       <property name="text">
+        <string>任务完成后显示主窗口</string>
        </property>
       </widget>
      </item>

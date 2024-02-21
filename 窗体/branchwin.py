@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_branch(object):
     def setupUi(self, branch):
         branch.setObjectName("branch")
-        branch.resize(222, 219)
+        branch.resize(222, 244)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         branch.setFont(font)
@@ -91,6 +91,14 @@ class Ui_branch(object):
         self.listView.setViewMode(QtWidgets.QListView.ListMode)
         self.listView.setObjectName("listView")
         self.verticalLayout.addWidget(self.listView, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+        self.pushButton = QtWidgets.QPushButton(branch)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
+        self.verticalLayout.addWidget(self.pushButton)
         self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(1, 9)
 
@@ -101,3 +109,4 @@ class Ui_branch(object):
         _translate = QtCore.QCoreApplication.translate
         branch.setWindowTitle(_translate("branch", "分支执行"))
         self.label.setText(_translate("branch", "双击分支名称开始执行"))
+        self.pushButton.setText(_translate("branch", "显示主窗口"))

@@ -35,18 +35,19 @@ def show_normal_window_with_specified_title(title):
     def get_window_titles(hwnd, titles):
         titles[hwnd] = win32gui.GetWindowText(hwnd)
 
-    hwnd_title = {}
-    win32gui.EnumWindows(get_window_titles, hwnd_title)
+    if eval(get_setting_data_from_db('任务完成后显示主窗口')):
+        hwnd_title = {}
+        win32gui.EnumWindows(get_window_titles, hwnd_title)
 
-    for h, t in hwnd_title.items():
-        if t == title:
-            try:
-                time.sleep(0.5)
-                win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
-                win32gui.SetForegroundWindow(h)
-            except Exception as e:
-                print(f"主窗口显示出现错误: {e}")
-            break
+        for h, t in hwnd_title.items():
+            if t == title:
+                try:
+                    time.sleep(0.5)
+                    win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
+                    win32gui.SetForegroundWindow(h)
+                except Exception as e:
+                    print(f"主窗口显示出现错误: {e}")
+                break
 
 
 def system_prompt_tone(judge: str):
@@ -346,14 +347,41 @@ def remove_recently_opened_file(file_path: str):
     close_database(cursor, con)
 
 
+def get_value_from_variable_table():
+    """从设置表中获取指定设置类型的值
+    :return: 设置类型的值"""
+    cursor, con = sqlitedb()
+    cursor.execute('SELECT 变量名称, 备注 FROM 变量池')
+    result = cursor.fetchall()
+    close_database(cursor, con)
+    return result
+
+
+def set_value_to_variable_table(variable_list: list):
+    """将指定设置类型的值写入设置表
+    :param variable_list: 将要写入的变量列表（变量名称、备注）"""
+    if len(variable_list) != 0:
+        cursor, con = sqlitedb()
+        # 查询数据库中的现有值
+        try:
+            cursor.execute('SELECT * FROM 变量池')
+            existing_values = cursor.fetchall()
+            # 将现有值存储为字典，便于比较
+            existing_values_dict = {row[0]: row[1] for row in existing_values}
+            # 遍历传入的变量列表
+            for variable_name, remark in variable_list:
+                # 如果变量名称在数据库中已存在且对应的备注值不等于传入值，则更新备注值
+                if variable_name in existing_values_dict and existing_values_dict[variable_name] != remark:
+                    cursor.execute('UPDATE 变量池 SET 备注 = ? WHERE 变量名称 = ?', (remark, variable_name))
+                # 如果变量名称不在数据库中，则插入新的记录
+                elif variable_name not in existing_values_dict:
+                    cursor.execute('INSERT INTO 变量池(变量名称, 备注) VALUES (?, ?)', (variable_name, remark))
+        except sqlite3.IntegrityError:
+            print("An error occurred: 数据库中已存在该变量名称")
+
+        con.commit()
+        close_database(cursor, con)
+
+
 if __name__ == '__main__':
-    # path_1 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_1.py'
-    # path_2 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\测试单元.py'
-    # path_3 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_3.py'
-    # path_4 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_2.py'
-    # path_5 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_5.py'
-    # path_6 = r'C:\Users\zuz5\PycharmProjects\PyQt5\test\test_6.py'
-    # 
-    # # writes_to_recently_opened_files(path_1)
-    # print(get_recently_opened_file('文件列表'))
-    pass
+    print(get_value_from_variable_table())

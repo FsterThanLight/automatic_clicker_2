@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Setting(object):
     def setupUi(self, Setting):
         Setting.setObjectName("Setting")
-        Setting.resize(426, 541)
+        Setting.resize(426, 579)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         Setting.setFont(font)
@@ -412,6 +412,9 @@ class Ui_Setting(object):
         self.checkBox_3 = QtWidgets.QCheckBox(Setting)
         self.checkBox_3.setObjectName("checkBox_3")
         self.gridLayout_3.addWidget(self.checkBox_3, 1, 0, 1, 1)
+        self.checkBox_4 = QtWidgets.QCheckBox(Setting)
+        self.checkBox_4.setObjectName("checkBox_4")
+        self.gridLayout_3.addWidget(self.checkBox_4, 1, 1, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout_3)
 
         self.retranslateUi(Setting)
@@ -449,4 +452,5 @@ class Ui_Setting(object):
         self.pushButton.setText(_translate("Setting", "应用"))
         self.checkBox.setText(_translate("Setting", "每次启动检查更新"))
         self.checkBox_3.setText(_translate("Setting", "系统提示音"))
+        self.checkBox_4.setText(_translate("Setting", "任务完成后显示主窗口"))
 import images_rc

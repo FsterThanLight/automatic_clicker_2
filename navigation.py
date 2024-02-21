@@ -102,6 +102,8 @@ class Na(QWidget, Ui_navigation):
             self.function_mapping[func_name][0]('按钮功能')
             self.function_mapping[func_name][0]('加载信息')
         self.tabWidget_2.setCurrentIndex(0)  # 设置到功能页面到预览页
+        # 加载变量
+        self.get_variable()
         # 设置窗口的flag
         flags = self.windowFlags()
         self.setWindowFlags(flags | Qt.Window)
