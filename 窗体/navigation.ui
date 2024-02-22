@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>721</width>
-    <height>793</height>
+    <width>699</width>
+    <height>765</height>
    </rect>
   </property>
   <property name="font">
@@ -24,221 +24,245 @@
    <iconset resource="../images.qrc">
     <normaloff>:/按钮图标/窗体/res/图标.png</normaloff>:/按钮图标/窗体/res/图标.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_43">
+  <layout class="QVBoxLayout" name="verticalLayout_61">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <column>
-       <property name="text">
-        <string>指令选择</string>
-       </property>
-      </column>
-      <item>
-       <property name="text">
-        <string>键鼠指令</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../images.qrc">
-         <normaloff>:/按钮图标/窗体/res/图标.png</normaloff>:/按钮图标/窗体/res/图标.png</iconset>
-       </property>
+     <widget class="QWidget" name="">
+      <layout class="QVBoxLayout" name="verticalLayout_43">
        <item>
-        <property name="text">
-         <string>图像点击</string>
-        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_16">
+         <item>
+          <widget class="QLineEdit" name="lineEdit_22">
+           <property name="placeholderText">
+            <string>搜索指令...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <property name="text">
-         <string>坐标点击</string>
-        </property>
+        <widget class="QTreeWidget" name="treeWidget">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <column>
+          <property name="text">
+           <string>指令选择</string>
+          </property>
+         </column>
+         <item>
+          <property name="text">
+           <string>键鼠指令</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../images.qrc">
+            <normaloff>:/按钮图标/窗体/res/图标.png</normaloff>:/按钮图标/窗体/res/图标.png</iconset>
+          </property>
+          <item>
+           <property name="text">
+            <string>图像点击</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>坐标点击</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>移动鼠标</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>鼠标点击</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>滚轮滑动</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>按下键盘</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>文本输入</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>中键激活</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>鼠标拖拽</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>获取变量</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>获取时间</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>等待</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>时间等待</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>图像等待</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>倒计时窗口</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>按键等待</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>网页指令</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>打开网址</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>元素控制</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>网页录入</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>切换frame</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>保存表格</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>拖动元素</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>切换窗口</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>数字验证码</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>微信</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>发送消息</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>其他</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>窗口控制</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>信息录入</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>全屏截图</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>提示音</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>系统通知</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>提示窗口</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>流程控制</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>跳转分支</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>终止流程</string>
+           </property>
+          </item>
+         </item>
+        </widget>
        </item>
-       <item>
-        <property name="text">
-         <string>移动鼠标</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>鼠标点击</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>滚轮滑动</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>按下键盘</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>文本输入</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>中键激活</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>鼠标拖拽</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>获取变量</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>获取时间</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>等待</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>时间等待</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>图像等待</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>倒计时窗口</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>按键等待</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>网页指令</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>打开网址</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>元素控制</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>网页录入</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>切换frame</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>保存表格</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>拖动元素</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>切换窗口</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>数字验证码</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>微信</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>发送消息</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>其他</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>窗口控制</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>信息录入</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>全屏截图</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>提示音</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>系统通知</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>提示窗口</string>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>流程控制</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>跳转分支</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>终止流程</string>
-        </property>
-       </item>
-      </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -264,7 +288,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>7</number>
+          <number>0</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -276,7 +300,7 @@
           <bool>false</bool>
          </property>
          <property name="tabsClosable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="movable">
           <bool>false</bool>
@@ -1676,7 +1700,7 @@
                    <number>1</number>
                   </property>
                   <property name="maximum">
-                   <number>9999</number>
+                   <number>999</number>
                   </property>
                   <property name="value">
                    <number>100</number>
@@ -2060,7 +2084,7 @@
                    <number>1</number>
                   </property>
                   <property name="maximum">
-                   <number>9999</number>
+                   <number>999</number>
                   </property>
                   <property name="value">
                    <number>100</number>
@@ -6501,7 +6525,7 @@ p, li { white-space: pre-wrap; }
              <property name="title">
               <string>元素指令</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_22">
+             <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_20">
                 <item>
@@ -6611,6 +6635,23 @@ p, li { white-space: pre-wrap; }
                 <property name="verticalSpacing">
                  <number>2</number>
                 </property>
+                <item row="2" column="1">
+                 <widget class="QTextEdit" name="textEdit_3"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_53">
+                  <property name="text">
+                   <string>文本：</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_52">
+                  <property name="text">
+                   <string>指令：</string>
+                  </property>
+                 </widget>
+                </item>
                 <item row="0" column="1">
                  <widget class="QComboBox" name="comboBox_22">
                   <property name="palette">
@@ -6726,22 +6767,36 @@ p, li { white-space: pre-wrap; }
                   </item>
                  </widget>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_53">
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,1">
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_31">
+                  <property name="font">
+                   <font>
+                    <family>微软雅黑</family>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
                   <property name="text">
-                   <string>文本：</string>
+                   <string>插入变量</string>
                   </property>
                  </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="label_52">
-                  <property name="text">
-                   <string>指令：</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QTextEdit" name="textEdit_3"/>
                 </item>
                </layout>
               </item>
@@ -9425,7 +9480,7 @@ p, li { white-space: pre-wrap; }
           <attribute name="title">
            <string>发送消息</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_48">
+          <layout class="QVBoxLayout" name="verticalLayout_47">
            <item>
             <widget class="QLabel" name="label_84">
              <property name="palette">
@@ -9717,7 +9772,7 @@ p, li { white-space: pre-wrap; }
              <property name="title">
               <string>消息</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_47">
+             <layout class="QVBoxLayout" name="verticalLayout_22">
               <item>
                <layout class="QGridLayout" name="gridLayout_10">
                 <item row="0" column="0">
@@ -9727,6 +9782,77 @@ p, li { white-space: pre-wrap; }
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QTextEdit" name="textEdit_2">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="palette">
+                   <palette>
+                    <active>
+                     <colorrole role="Text">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>0</red>
+                        <green>0</green>
+                        <blue>255</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                     <colorrole role="PlaceholderText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="128">
+                        <red>0</red>
+                        <green>0</green>
+                        <blue>255</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </active>
+                    <inactive>
+                     <colorrole role="Text">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>0</red>
+                        <green>0</green>
+                        <blue>255</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                     <colorrole role="PlaceholderText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="128">
+                        <red>0</red>
+                        <green>0</green>
+                        <blue>255</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </inactive>
+                    <disabled>
+                     <colorrole role="Text">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="255">
+                        <red>120</red>
+                        <green>120</green>
+                        <blue>120</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                     <colorrole role="PlaceholderText">
+                      <brush brushstyle="SolidPattern">
+                       <color alpha="128">
+                        <red>0</red>
+                        <green>0</green>
+                        <blue>0</blue>
+                       </color>
+                      </brush>
+                     </colorrole>
+                    </disabled>
+                   </palette>
                   </property>
                  </widget>
                 </item>
@@ -9823,74 +9949,34 @@ p, li { white-space: pre-wrap; }
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="1">
-                 <widget class="QTextEdit" name="textEdit_2">
-                  <property name="enabled">
-                   <bool>false</bool>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="1,1">
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="palette">
-                   <palette>
-                    <active>
-                     <colorrole role="Text">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="255">
-                        <red>0</red>
-                        <green>0</green>
-                        <blue>255</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                     <colorrole role="PlaceholderText">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="128">
-                        <red>0</red>
-                        <green>0</green>
-                        <blue>255</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                    </active>
-                    <inactive>
-                     <colorrole role="Text">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="255">
-                        <red>0</red>
-                        <green>0</green>
-                        <blue>255</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                     <colorrole role="PlaceholderText">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="128">
-                        <red>0</red>
-                        <green>0</green>
-                        <blue>255</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                    </inactive>
-                    <disabled>
-                     <colorrole role="Text">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="255">
-                        <red>120</red>
-                        <green>120</green>
-                        <blue>120</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                     <colorrole role="PlaceholderText">
-                      <brush brushstyle="SolidPattern">
-                       <color alpha="128">
-                        <red>0</red>
-                        <green>0</green>
-                        <blue>0</blue>
-                       </color>
-                      </brush>
-                     </colorrole>
-                    </disabled>
-                   </palette>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_30">
+                  <property name="font">
+                   <font>
+                    <family>微软雅黑</family>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>插入变量</string>
                   </property>
                  </widget>
                 </item>
@@ -9898,6 +9984,19 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_27">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>16</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_15">
@@ -10521,20 +10620,6 @@ p, li { white-space: pre-wrap; }
               <string>播放语音</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_40" columnstretch="2,0,1,0">
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="radioButton_20">
-                <property name="text">
-                 <string>播放语音</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLabel" name="label_117">
-                <property name="text">
-                 <string>语速：</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="2">
                <widget class="QSlider" name="horizontalSlider">
                 <property name="minimum">
@@ -10626,6 +10711,34 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="placeholderText">
                  <string>输入播放的语音，例如：请求人工接管......</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="radioButton_20">
+                <property name="text">
+                 <string>播放语音</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_117">
+                <property name="text">
+                 <string>语速：</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" colspan="3">
+               <widget class="QPushButton" name="pushButton_32">
+                <property name="font">
+                 <font>
+                  <family>微软雅黑</family>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>插入变量</string>
                 </property>
                </widget>
               </item>
@@ -11435,7 +11548,7 @@ p, li { white-space: pre-wrap; }
                  <string>如果未找到窗口则报错</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -12129,6 +12242,275 @@ p, li { white-space: pre-wrap; }
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="tab_34">
+          <attribute name="title">
+           <string>获取时间</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_48">
+           <item>
+            <widget class="QGroupBox" name="groupBox_42">
+             <property name="title">
+              <string>获取当前时间</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <widget class="QLabel" name="label_134">
+                <property name="text">
+                 <string>时间格式：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_43">
+                <item>
+                 <property name="text">
+                  <string>年-月-日 小时:分钟:秒</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>年/月/日 小时:分钟:秒</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>月/日/年 小时:分钟:秒</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>日-月-年 小时:分钟:秒</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>年-月-日</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>月/日/年</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>日-月-年</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>月/年</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>时间戳</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_43">
+             <property name="title">
+              <string>写入变量</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_49" columnstretch="1,1,0">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="comboBox_44"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_135">
+                <property name="text">
+                 <string>变量名称：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>84</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="pushButton_33">
+                <property name="font">
+                 <font>
+                  <family>微软雅黑</family>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>设置变量</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_28">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>264</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_34">
+             <property name="palette">
+              <palette>
+               <active>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </active>
+               <inactive>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>255</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </inactive>
+               <disabled>
+                <colorrole role="WindowText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="Text">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="ButtonText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="255">
+                   <red>120</red>
+                   <green>120</green>
+                   <blue>120</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+                <colorrole role="PlaceholderText">
+                 <brush brushstyle="SolidPattern">
+                  <color alpha="128">
+                   <red>0</red>
+                   <green>0</green>
+                   <blue>0</blue>
+                  </color>
+                 </brush>
+                </colorrole>
+               </disabled>
+              </palette>
+             </property>
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>指令测试</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
          <widget class="QWidget" name="tab_33">
           <attribute name="title">
            <string>按键等待</string>
@@ -12489,20 +12871,6 @@ p, li { white-space: pre-wrap; }
               </widget>
              </item>
             </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab_23">
-          <attribute name="title">
-           <string>变量池</string>
-          </attribute>
-          <layout class="QGridLayout" name="gridLayout_47">
-           <item row="0" column="0">
-            <widget class="QPushButton" name="pushButton_29">
-             <property name="text">
-              <string>设置变量</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>

@@ -44,7 +44,7 @@ from 选择窗体 import Branch_exe_win
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
-# todo: 变量池功能
+# done: 变量池功能
 # todo: qss界面美化
 # todo: 指令可编译为python代码
 # done: 播放语言功能
@@ -57,6 +57,7 @@ from 选择窗体 import Branch_exe_win
 # todo: win通知指令
 # todo: 对话框指令集
 # todo: excel指令集
+# todo: 指令搜索功能
 # done: 使变量可以特殊显示
 # done: 按键等待指令
 # done: 流程控制指令（转分支、终止流程）

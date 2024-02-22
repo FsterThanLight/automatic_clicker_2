@@ -1,27 +1,16 @@
 import re
+import time
 import unittest
 
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        pass
-        # self.assertEqual(True, False)
-        or_text = 'jilejghl;kjal;iejooookf;sldkg@@hjieg@@k;oe@@xxx@@jli'
-
-        value_dict_ = {  # 修改此处
-            'hjieg': '经济',
-            'xxx': '德国'
-        }
-
-        xxx = self.substitution_variable(or_text, value_dict_)
-        print(xxx)
+        print(self.get_now_time())
 
     @staticmethod
-    def substitution_variable(text: str, value_dict: dict) -> str:
-        """将text中的@@variable@@替换为value"""
-        for key, value in value_dict.items():
-            text = text.replace(f'@@{key}@@', value)
-        return text
+    def get_now_time():
+        """获取当前时间"""
+        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
 if __name__ == '__main__':

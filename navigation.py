@@ -16,11 +16,11 @@ from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 
 from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
-    WindowControl
+    WindowControl, GetTimeValue
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
-    sqlitedb, close_database, set_window_size, save_window_size
+    sqlitedb, close_database, set_window_size, save_window_size, get_variable_info
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
@@ -46,20 +46,25 @@ class Na(QWidget, Ui_navigation):
         self.modify_id = None
         self.modify_row = None
         self.pushButton_2.clicked.connect(lambda: self.save_data())
-        self.pushButton_29.clicked.connect(self.set_value_pool)  # 打开变量池窗口
         # 获取鼠标位置参数
         self.mouse_position_function = None
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.activated.connect(lambda: self.exception_handling_judgment_type('报错处理'))
         self.comboBox_10.activated.connect(lambda: self.exception_handling_judgment_type('分支名称'))
-        self.combo_image_preview = {
+        self.combo_image_preview = {  # 图像预览功能
             '图像点击': (self.comboBox_8, self.comboBox),
             '图像等待': (self.comboBox_17, self.comboBox_18),
             '信息录入': (self.comboBox_14, self.comboBox_15),
         }
-        self.combo_excel_preview = {
+        self.combo_excel_preview = {  # excel表格加载功能
             '信息录入': (self.comboBox_12, self.comboBox_13),
             '网页录入': (self.comboBox_20, self.comboBox_23),
+        }
+        self.variable_input_control = {  # 变量控制功能
+            '文本输入': self.textEdit,
+            '元素控制': self.textEdit_3,
+            '发送消息': self.textEdit_2,
+            '提示音': self.textEdit_4,
         }
         self.pushButton_9.clicked.connect(lambda: self.on_button_clicked('查看'))
         self.pushButton_10.clicked.connect(lambda: self.on_button_clicked('删除'))
@@ -100,11 +105,12 @@ class Na(QWidget, Ui_navigation):
             '终止流程': (lambda x: self.termination_process_function(x), False),
             '窗口控制': (lambda x: self.window_control_function(x), True),
             '按键等待': (lambda x: self.key_wait_function(x), False),
+            '获取时间': (lambda x: self.gain_time_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
             self.function_mapping[func_name][0]('按钮功能')
-            self.function_mapping[func_name][0]('加载信息')
+        self.function_mapping[self.tabWidget.tabText(0)][0]('加载信息')  # 加载第一个功能窗口的控件信息
         self.tabWidget_2.setCurrentIndex(0)  # 设置到功能页面到预览页
         # 设置窗口的flag
         flags = self.windowFlags()
@@ -142,7 +148,7 @@ class Na(QWidget, Ui_navigation):
                      parameter_4_=None
                      ):
         """返回测试字典,用于测试按钮的功能"""
-        self.tabWidget_2.setCurrentIndex(3)
+        self.tabWidget_2.setCurrentIndex(2)
         return {
             'ID': None,
             '图像路径': image_,
@@ -237,11 +243,11 @@ class Na(QWidget, Ui_navigation):
                 lambda: self.quick_screenshot(self.comboBox_8, '打开文件夹')
             )
             # 加载下拉列表数据
-            self.comboBox_8.currentTextChanged.connect(
+            self.comboBox_8.activated.connect(
                 lambda: self.find_images('图像点击')
             )
             # 元素预览
-            self.comboBox.currentTextChanged.connect(
+            self.comboBox.activated.connect(
                 lambda: self.show_image_to_label(self.comboBox_8, self.comboBox)
             )
             # 测试按钮
@@ -265,6 +271,7 @@ class Na(QWidget, Ui_navigation):
             # 加载图像文件夹路径
             self.comboBox_8.clear()
             self.comboBox_8.addItems(extract_global_parameter('资源文件夹路径'))
+            self.find_images('图像点击')
 
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""
@@ -364,7 +371,7 @@ class Na(QWidget, Ui_navigation):
             )
             self.pushButton_4.clicked.connect(self.mouseMoveEvent)
             # 是否激活自定义点击次数
-            self.comboBox_3.currentTextChanged.connect(spinBox_2_enable)
+            self.comboBox_3.activated.connect(spinBox_2_enable)
             # 测试按钮
             self.pushButton_23.clicked.connect(test)
         elif type_ == '写入参数':
@@ -445,11 +452,11 @@ class Na(QWidget, Ui_navigation):
         """图像等待识别窗口的功能"""
         if type_ == '按钮功能':
             # 下拉列表数据
-            self.comboBox_17.currentTextChanged.connect(
+            self.comboBox_17.activated.connect(
                 lambda: self.find_images('图像等待')
             )
             # 元素预览
-            self.comboBox_18.currentTextChanged.connect(
+            self.comboBox_18.activated.connect(
                 lambda: self.show_image_to_label(self.comboBox_17, self.comboBox_18)
             )
             # 快捷截图功能
@@ -483,6 +490,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_17.clear()
             self.comboBox_18.clear()
             self.comboBox_17.addItems(extract_global_parameter('资源文件夹路径'))
+            self.find_images('图像等待')
 
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
@@ -596,15 +604,15 @@ class Na(QWidget, Ui_navigation):
                 lambda: self.quick_screenshot(self.comboBox_14, '打开文件夹')
             )
             # 信息录入窗口的excel功能
-            self.comboBox_12.currentTextChanged.connect(
+            self.comboBox_12.activated.connect(
                 lambda: self.find_excel_sheet_name('信息录入')
             )
             # 加载下拉列表数据
-            self.comboBox_14.currentTextChanged.connect(
+            self.comboBox_14.activated.connect(
                 lambda: self.find_images('信息录入')
             )
             # 图像预览
-            self.comboBox_15.currentTextChanged.connect(
+            self.comboBox_15.activated.connect(
                 lambda: self.show_image_to_label(self.comboBox_14, self.comboBox_15)
             )
         elif type_ == '写入参数':
@@ -644,6 +652,8 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_13.clear()
             self.comboBox_14.clear()
             self.comboBox_14.addItems(extract_global_parameter('资源文件夹路径'))
+            self.find_images('信息录入')
+            self.find_excel_sheet_name('信息录入')
 
     def open_web_page_function(self, type_):
         """打开网址的窗口功能"""
@@ -682,7 +692,7 @@ class Na(QWidget, Ui_navigation):
                                                  image_=self.lineEdit_19.text())
 
     def ele_control_function(self, type_):
-        """网页控制的窗口功能"""
+        """网页元素控制的窗口功能"""
 
         def Lock_control():
             """锁定控件"""
@@ -694,7 +704,9 @@ class Na(QWidget, Ui_navigation):
 
         if type_ == '按钮功能':
             Lock_control()
-            self.comboBox_22.currentTextChanged.connect(Lock_control)
+            self.comboBox_22.activated.connect(Lock_control)
+            self.pushButton_31.clicked.connect(lambda: self.variable_sel_win.show())
+
         elif type_ == '写入参数':
             element_type = self.comboBox_21.currentText()
             element_value = self.lineEdit_7.text()
@@ -721,7 +733,7 @@ class Na(QWidget, Ui_navigation):
         """网页录入的窗口功能"""
         if type_ == '按钮功能':
             # 网页信息录入的excel功能
-            self.comboBox_20.currentTextChanged.connect(
+            self.comboBox_20.activated.connect(
                 lambda: self.find_excel_sheet_name('网页录入')
             )
         elif type_ == '写入参数':
@@ -755,6 +767,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_20.clear()
             self.comboBox_20.addItems(extract_excel_from_global_parameter())
             self.comboBox_23.clear()
+            self.find_excel_sheet_name('网页录入')
 
     def mouse_drag_function(self, type_):
         """鼠标拖拽窗口的功能"""
@@ -835,7 +848,7 @@ class Na(QWidget, Ui_navigation):
 
         if type_ == '按钮功能':
             # 切换frame
-            self.comboBox_26.currentTextChanged.connect(switch_frame)
+            self.comboBox_26.activated.connect(switch_frame)
         elif type_ == '写入参数':
             # 切换类型
             parameter_1 = self.comboBox_26.currentText()
@@ -990,9 +1003,11 @@ class Na(QWidget, Ui_navigation):
 
         if type_ == '按钮功能':
             Lock_control()
-            self.comboBox_33.currentTextChanged.connect(Lock_control)
-            self.comboBox_34.currentTextChanged.connect(Lock_control)
+            self.comboBox_33.activated.connect(Lock_control)
+            self.comboBox_34.activated.connect(Lock_control)
             self.pushButton_15.clicked.connect(test)
+            self.pushButton_30.clicked.connect(lambda: self.variable_sel_win.show())
+
         elif type_ == '写入参数':
             parameter_1 = self.comboBox_33.currentText() \
                 if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
@@ -1103,6 +1118,8 @@ class Na(QWidget, Ui_navigation):
             buttonGroup_4.addButton(self.radioButton_20)
             # 测试按钮
             self.pushButton_24.clicked.connect(test)
+            self.pushButton_31.clicked.connect(lambda: self.variable_sel_win.show())
+
         elif type_ == '写入参数':
             parameter_1, parameter_2, parameter_3 = get_parameters()
             # 将命令写入数据库
@@ -1224,7 +1241,7 @@ class Na(QWidget, Ui_navigation):
                 self.comboBox_38.addItems(branch_order_)
 
         if type_ == '按钮功能':
-            self.comboBox_37.currentTextChanged.connect(set_branch_count)
+            self.comboBox_37.activated.connect(set_branch_count)
 
         elif type_ == '写入参数':
             parameter_1, parameter_2 = get_parameters()
@@ -1378,7 +1395,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             self.radioButton_21.toggled.connect(set_branch_name)
             self.radioButton_22.toggled.connect(lambda: disable_control(False))
-            self.comboBox_41.currentTextChanged.connect(set_branch_count)
+            self.comboBox_41.activated.connect(set_branch_count)
 
         elif type_ == '写入参数':
             parameter_1, parameter_2, exception_handling_ = get_parameters()
@@ -1390,6 +1407,57 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
+
+    def gain_time_function(self, type_):
+        """获取时间的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.comboBox_43.currentText()
+            parameter_2_ = self.comboBox_44.currentText()
+            # 检查参数是否有异常
+            if parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "变量未设置！")
+                raise ValueError
+            return parameter_1_, parameter_2_
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_, parameter_2_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_)
+
+                # 测试用例
+                test_class = GetTimeValue(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_33.clicked.connect(self.open_value_pool)
+            self.pushButton_34.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_44.clear()
+            self.comboBox_44.addItems(get_variable_info('list'))
 
     def find_images(self, ins_name: str) -> None:
         """选择图像文件夹并返回文件夹名称
@@ -1445,16 +1513,16 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_11.clear()
             self.comboBox_11.setVisible(disable_control_)
 
-        # 获取当前活动页面的标题
-        current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
-        disable_control = self.function_mapping.get(current_title)[1]
-        control_status(disable_control)  # 控制控件的状态
-        # 刷新图像预览
-        if current_title in self.combo_image_preview.keys():
-            self.find_images(current_title)
-        if current_title in self.combo_excel_preview.keys():
-            self.find_excel_sheet_name(current_title)
-        self.tabWidget_2.setCurrentIndex(0)
+        try:
+            # 获取当前活动页面的标题
+            current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
+            disable_control = self.function_mapping.get(current_title)[1]
+            control_status(disable_control)  # 控制控件的状态
+            # 加载功能窗口的按钮功能
+            self.function_mapping[current_title][0]('加载信息')
+            self.tabWidget_2.setCurrentIndex(0)
+        except TypeError:
+            pass
 
     def merge_additional_functions(self, function_name, pars_1=None):
         """将一次性和冗余的功能合并
@@ -1678,22 +1746,22 @@ class Na(QWidget, Ui_navigation):
                     if value[1].currentText() == '':
                         self.label_43.setText('暂无')
 
-    def set_value_pool(self):
+    def open_value_pool(self):
         """打开变量池窗口"""
         variable_pool = VariablePool_Win(self)
         variable_pool.exec_()
 
-    def write_value_to_textedit(self, value):
+    def write_value_to_textedit(self, value: str) -> None:
         """将变量池中的值写入到文本框中"""
+
         def append_textedit(new_text):
-            # Create formatted strings
             errorFormat_ = '<font color="red">{}</font>'
             # 使textEdit显示不同的文本
-            self.textEdit.insertHtml('☾')
-            self.textEdit.insertHtml((errorFormat_.format(new_text)))
-            self.textEdit.insertHtml('☽')
+            current_title_ = self.tabWidget.tabText(self.tabWidget.currentIndex())
+            textEdit = self.variable_input_control.get(current_title_)
+            textEdit.insertHtml('☾')
+            textEdit.insertHtml((errorFormat_.format(new_text)))
+            textEdit.insertHtml('☽')
 
         if value:
             append_textedit(value)
-
-

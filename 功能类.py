@@ -22,7 +22,7 @@ import winsound
 from PyQt5.QtWidgets import QApplication
 from dateutil.parser import parse
 
-from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info
+from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value
 from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
@@ -809,7 +809,7 @@ class EleControl:
             '元素类型': self.ins_dic.get('图像路径').split('-')[0],
             '元素值': self.ins_dic.get('图像路径').split('-')[1],
             '操作类型': self.ins_dic.get('参数1（键鼠指令）'),
-            '文本内容': self.ins_dic.get('参数2'),
+            '文本内容': sub_variable(self.ins_dic.get('参数2')),
             '超时类型': self.ins_dic.get('参数3')
         }
         return list_dic
@@ -1107,7 +1107,7 @@ class SendWeChat:
         """解析指令字典"""
         return {
             '联系人': self.ins_dic.get('参数1（键鼠指令）'),
-            '消息内容': self.ins_dic.get('参数2'),
+            '消息内容': sub_variable(self.ins_dic.get('参数2')),
         }
 
     @staticmethod
@@ -1157,11 +1157,10 @@ class SendWeChat:
             :param judge: （成功、失败）
             :param message_: 消息内容，可选"""
             output_message = None
-            time_now = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             if judge == '成功':
-                output_message = f'{time_now} 微信已发送消息：{message_}' if message_ else f'{time_now} 已发送消息'
+                output_message = f'微信已发送消息：{message_}' if message_ else f'已发送消息'
             elif judge == '失败':
-                output_message = f'{time_now} {failure_info}'
+                output_message = f'{failure_info}'
             self.out_mes.out_mes(output_message, self.is_test)
 
         pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
@@ -1277,7 +1276,7 @@ class PlayVoice:
                 int(self.ins_dic.get('参数2').split(',')[2]), \
                 int(self.ins_dic.get('参数2').split(',')[3])
         elif type_ == '播放语音':
-            return self.ins_dic.get('参数2'), int(self.ins_dic.get('参数3'))
+            return sub_variable(self.ins_dic.get('参数2')), int(self.ins_dic.get('参数3'))
 
     def play_voice(self, type_):
         """播放声音"""
@@ -1606,3 +1605,60 @@ class KeyWait:
             keyboard.wait(self.key.lower())
             self.out_mes.out_mes(f'按键{self.key}已被按下！跳转分支。', self.is_test)
             raise ValueError(f'按键{self.key}已被按下！')
+
+
+class GetTimeValue:
+    """获取时间变量指令"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '时间格式': self.ins_dic.get('参数1（键鼠指令）'),
+            '变量名称': self.ins_dic.get('参数2')
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        list_dic = self.parsing_ins_dic()  # 参数字典
+        now_time_str = str(self.get_now_time(list_dic.get('时间格式')))
+        if not self.is_test:
+            set_variable_value(list_dic.get('变量名称'), now_time_str)
+            self.out_mes.out_mes(f'已获取当前时间并赋值给变量：{list_dic.get("变量名称")}', self.is_test)
+        else:
+            self.out_mes.out_mes(f'已获取当前时间：{now_time_str}', self.is_test)
+
+    @staticmethod
+    def get_now_time(format_="年-月-日 小时:分钟:秒"):
+        """获取当前时间
+        :param format_: 时间格式
+        :return: 当前时间字符串"""
+        allowed_formats = {
+            "年-月-日 小时:分钟:秒": "%Y-%m-%d %H:%M:%S",
+            "年/月/日 小时:分钟:秒": "%Y/%m/%d %H:%M:%S",
+            "月/日/年 小时:分钟:秒": "%m/%d/%Y %H:%M:%S",
+            "日-月-年 小时:分钟:秒": "%d-%m-%Y %H:%M:%S",
+            "年-月-日": "%Y-%m-%d",
+            "月/日/年": "%m/%d/%Y",
+            "日-月-年": "%d-%m-%Y",
+            "年-月": "%Y-%m",
+            "月/年": "%m/%Y",
+            "年": "%Y",
+            "时间戳": "%s"  # 时间戳格式
+        }
+
+        if format_ not in allowed_formats:
+            raise ValueError("Invalid format_. "
+                             "Please use one of the allowed formats.")
+        if format_ == "时间戳":
+            return int(time.time())
+        else:
+            return time.strftime(allowed_formats[format_], time.localtime())

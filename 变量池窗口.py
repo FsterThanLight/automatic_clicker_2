@@ -97,8 +97,12 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
 
         # 父窗口加载数据
         if self.parent():
-            try:
+            try:  # 重新加载父窗口的数据，用于选择窗口的变量更新
                 self.parent().load_lists('变量选择')
+            except AttributeError:
+                pass
+            try:  # 重新加载父窗口的数据，用于导航窗口的变量更新
+                self.parent().tab_widget_change()
             except AttributeError:
                 pass
 

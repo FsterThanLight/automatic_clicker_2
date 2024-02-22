@@ -150,6 +150,7 @@ class CommandThread(QThread):
                         "终止流程": (TerminationProcess, self.out_mes, dic_),
                         "窗口控制": (WindowControl, self.out_mes, dic_),
                         "按键等待": (KeyWait, self.out_mes, dic_),
+                        "获取时间": (GetTimeValue, self.out_mes, dic_),
                     }
                     # 根据命令类型执行相应操作
                     if cmd_type in command_mapping:

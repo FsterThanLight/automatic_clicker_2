@@ -409,7 +409,9 @@ def get_variable_info(return_type: str) -> dict or list:
 
 
 def set_variable_value(variable_name, new_value) -> None:
-    """设置变量池中的变量的值"""
+    """设置变量池中的变量的值
+    :param variable_name: 变量名称
+    :param new_value: 新的值"""
     cursor, conn = sqlitedb()
     try:
         cursor.execute("UPDATE 变量池 SET 值 = ? WHERE 变量名称 = ?", (new_value, variable_name))

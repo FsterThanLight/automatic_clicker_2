@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     # textEdit.append('sjalijglisajldk')
     # # 插入富文本
-    # textEdit.insertHtml(errorFormat.format('Error'))
+    # textEdit.insertHtml(errorFormat.format_('Error'))
     # # 插入普通文本
     # textEdit.insertPlainText('sjalijglisajldk')
     textEdit.insertHtml('普通文本1')
