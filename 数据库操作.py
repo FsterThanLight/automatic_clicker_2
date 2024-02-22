@@ -358,7 +358,7 @@ def get_value_from_variable_table():
 
 
 def set_value_to_variable_table(variable_list: list):
-    """将指定设置类型的值写入设置表
+    """将指定设置类型的值写入变量池窗口的表格
     :param variable_list: 将要写入的变量列表（变量名称、备注）"""
     if len(variable_list) != 0:
         cursor, con = sqlitedb()
@@ -376,12 +376,51 @@ def set_value_to_variable_table(variable_list: list):
                 # 如果变量名称不在数据库中，则插入新的记录
                 elif variable_name not in existing_values_dict:
                     cursor.execute('INSERT INTO 变量池(变量名称, 备注) VALUES (?, ?)', (variable_name, remark))
+            # 检查变量池中是否有未在传入变量列表中的变量，如果有，则删除这些记录
+            for variable_name in existing_values_dict:
+                if variable_name not in [v[0] for v in variable_list]:
+                    cursor.execute('DELETE FROM 变量池 WHERE 变量名称 = ?', (variable_name,))
+            con.commit()
         except sqlite3.IntegrityError:
             print("An error occurred: 数据库中已存在该变量名称")
+        finally:
+            close_database(cursor, con)
 
-        con.commit()
-        close_database(cursor, con)
+
+def get_variable_info(return_type: str) -> dict or list:
+    """从变量名中获取变量信息，可以选择返回类型为字典或列表
+    :param return_type: 指定返回类型，'dict'表示返回字典，'list'表示返回列表"""
+    cursor, conn = sqlitedb()
+    try:
+        if return_type == 'dict':
+            cursor.execute(f"SELECT 变量名称, 值 FROM 变量池")
+            result = {item[0]: item[1] for item in cursor.fetchall()}  # 获取变量名称和值的字典
+        elif return_type == 'list':
+            cursor.execute(f"SELECT 变量名称 FROM 变量池")
+            result = [item[0] for item in cursor.fetchall()]  # 获取变量名称的列表
+        else:
+            raise ValueError("Invalid return_type. Use 'dict' or 'list'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        result = None
+    finally:
+        close_database(cursor, conn)
+    return result
+
+
+def set_variable_value(variable_name, new_value) -> None:
+    """设置变量池中的变量的值"""
+    cursor, conn = sqlitedb()
+    try:
+        cursor.execute("UPDATE 变量池 SET 值 = ? WHERE 变量名称 = ?", (new_value, variable_name))
+        conn.commit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        close_database(cursor, conn)
 
 
 if __name__ == '__main__':
-    print(get_value_from_variable_table())
+    print(get_variable_info('list'))
+    print(get_variable_info('dict'))
+    # set_variable_value('xx', 'ji')

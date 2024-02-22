@@ -22,7 +22,7 @@ import winsound
 from PyQt5.QtWidgets import QApplication
 from dateutil.parser import parse
 
-from 数据库操作 import get_setting_data_from_db, get_str_now_time
+from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info
 from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
@@ -54,6 +54,16 @@ def close_browser():
     web_option = WebOption()
     web_option.driver = DRIVER
     web_option.close_browser()
+
+
+def sub_variable(text: str):
+    """将text中的变量替换为变量值"""
+    new_text = text
+    if ('☾' in text) and ('☽' in text):
+        variable_dic = get_variable_info('dict')
+        for key, value in variable_dic.items():
+            new_text = new_text.replace(f'☾{key}☽', str(value))
+    return new_text
 
 
 class OutputMessage:
@@ -401,7 +411,6 @@ class TextInput:
         setting_data_dic = get_setting_data_from_db('时间间隔', '暂停时间')
         self.interval = float(setting_data_dic.get('时间间隔'))
         self.time_sleep = float(setting_data_dic.get('暂停时间'))
-        # 主窗口
         self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
@@ -410,7 +419,7 @@ class TextInput:
 
     def start_execute(self):
         """解析指令字典"""
-        input_value = self.ins_dic.get('参数1（键鼠指令）')
+        input_value = sub_variable(self.ins_dic.get('参数1（键鼠指令）'))
         special_control_judgment = eval(self.ins_dic.get('参数2'))
         # 执行文本输入
         self.text_input(input_value, special_control_judgment)
@@ -423,7 +432,7 @@ class TextInput:
             pyperclip.copy(input_value)
             pyautogui.hotkey('ctrl', 'v')
             time.sleep(self.time_sleep)
-            self.out_mes.out_mes('执行文本输入%s' % input_value, self.is_test)
+            self.out_mes.out_mes('执行文本输入：%s' % input_value, self.is_test)
         elif special_control_judgment:
             pyautogui.typewrite(input_value, interval=self.interval)
             self.out_mes.out_mes('执行特殊控件的文本输入%s' % input_value, self.is_test)

@@ -17,12 +17,14 @@ from openpyxl.utils.exceptions import InvalidFileException
 
 from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
     WindowControl
+from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
     sqlitedb, close_database, set_window_size, save_window_size
 from 窗体.navigation import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
+from 选择窗体 import Branch_exe_win
 
 
 class Na(QWidget, Ui_navigation):
@@ -39,10 +41,12 @@ class Na(QWidget, Ui_navigation):
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.tabWidget.setCurrentIndex(0)  # 设置默认页
         self.treeWidget.expandAll()  # treeWidget全部展开
+        self.variable_sel_win = Branch_exe_win(self, '变量选择')  # 变量选择窗口
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
         self.pushButton_2.clicked.connect(lambda: self.save_data())
+        self.pushButton_29.clicked.connect(self.set_value_pool)  # 打开变量池窗口
         # 获取鼠标位置参数
         self.mouse_position_function = None
         # 调整异常处理选项时，控制窗口控件的状态
@@ -102,8 +106,6 @@ class Na(QWidget, Ui_navigation):
             self.function_mapping[func_name][0]('按钮功能')
             self.function_mapping[func_name][0]('加载信息')
         self.tabWidget_2.setCurrentIndex(0)  # 设置到功能页面到预览页
-        # 加载变量
-        self.get_variable()
         # 设置窗口的flag
         flags = self.windowFlags()
         self.setWindowFlags(flags | Qt.Window)
@@ -308,6 +310,8 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 检查输入的数据是否合法
             self.checkBox_2.clicked.connect(check_text_type)
+            self.pushButton_28.clicked.connect(lambda: self.variable_sel_win.show())
+
         elif type_ == '写入参数':
             # 文本输入的内容
             parameter_1 = self.textEdit.toPlainText()
@@ -1673,3 +1677,23 @@ class Na(QWidget, Ui_navigation):
                     self.find_images(current_title)
                     if value[1].currentText() == '':
                         self.label_43.setText('暂无')
+
+    def set_value_pool(self):
+        """打开变量池窗口"""
+        variable_pool = VariablePool_Win(self)
+        variable_pool.exec_()
+
+    def write_value_to_textedit(self, value):
+        """将变量池中的值写入到文本框中"""
+        def append_textedit(new_text):
+            # Create formatted strings
+            errorFormat_ = '<font color="red">{}</font>'
+            # 使textEdit显示不同的文本
+            self.textEdit.insertHtml('☾')
+            self.textEdit.insertHtml((errorFormat_.format(new_text)))
+            self.textEdit.insertHtml('☽')
+
+        if value:
+            append_textedit(value)
+
+

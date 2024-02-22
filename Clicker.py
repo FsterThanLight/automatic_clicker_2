@@ -18,7 +18,7 @@ import openpyxl
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QDesktopServices, QCursor, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction)
@@ -31,11 +31,11 @@ from navigation import Na
 from 功能类 import close_browser
 from 数据库操作 import *
 from 窗体.about import Ui_About
-from 窗体.branchwin import Ui_branch
 from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
+from 选择窗体 import Branch_exe_win
 
 # done: 新增提示音指令
 # done: 新增倒计时窗口功能
@@ -57,6 +57,7 @@ from 资源文件夹窗口 import Global_s
 # todo: win通知指令
 # todo: 对话框指令集
 # todo: excel指令集
+# done: 使变量可以特殊显示
 # done: 按键等待指令
 # done: 流程控制指令（转分支、终止流程）
 # done: 应用控制指令（打开、关闭、最小化、最大化、置顶）
@@ -69,6 +70,7 @@ from 资源文件夹窗口 import Global_s
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
 # pyinstaller -D -w -i clicker.ico Clicker.py
+# pyinstaller -D -i clicker.ico Clicker.py
 # pyinstaller -D -i clicker.ico Clicker.py
 
 # 添加指令的步骤：
@@ -90,7 +92,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         # 窗口和信息
         self.version = 'v0.21 Beta'  # 软件版本
-        self.toolBar.setVisible(False)  # 隐藏工具栏
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
         self.icon = Icon()  # 实例化图标
@@ -110,6 +111,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionf.triggered.connect(lambda: self.data_import('资源文件夹路径'))  # 导入数据
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(self.start)
+        self.start_time = None
         self.pushButton_4.clicked.connect(lambda: self.show_windows('分支选择'))  # 结束任务按钮
         self.pushButton_6.clicked.connect(lambda: self.global_shortcut_key('终止线程'))  # 结束任务按钮
         self.pushButton_7.clicked.connect(lambda: self.global_shortcut_key('暂停和恢复线程'))  # 暂停和恢复按钮
@@ -620,9 +622,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.save_data('自动保存')
                 event.accept()
                 clear_all_ins()
-                # update_settings_in_database(最近导入文件路径='None')  # 清空最近导入文件路径
             else:
                 event.ignore()
+        self.branch_win.close()  # 关闭选择窗口
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
 
@@ -740,6 +742,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
             operation_before_execution()
             self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
             self.command_thread.start()
+            # 记录开始时间的时间戳
+            self.start_time = time.time()
+            print('开始时间：', self.start_time)
 
     def exporting_operation_logs(self):
         """导出操作日志"""
@@ -894,7 +899,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def thread_finished(self, message):
         """任务结束"""
-        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
+        # 获取当前时间
+        now_time = time.time()
+        # 换算为毫秒
+        elapsed_time = round((now_time - self.start_time) * 1000, 2)
+        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}，耗时{elapsed_time}毫秒。')
         if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
             QApplication.processEvents()
@@ -934,61 +943,6 @@ class Info(QDialog, Ui_Form):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
-
-
-class Branch_exe_win(QDialog, Ui_branch):
-    """弹出选择执行分支的窗体"""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)
-        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
-        self.listView.doubleClicked.connect(self.open_select_option)  # 双击执行分支
-        self.pushButton.clicked.connect(self.show_main)
-
-    def load_setting(self):
-        """设置初始参数"""
-
-        def add_listview(list_, listview):
-            """添加listview"""
-            model = QStandardItemModel()
-            listview.setModel(model)
-            for item in list_:
-                model.appendRow(QStandardItem(item))
-
-        branch_list = extract_global_parameter('分支表名')
-        add_listview(branch_list, self.listView)
-
-    def open_select_option(self):
-        """打开选中的listview中的文件夹路径"""
-        try:
-            indexes = self.listView.selectedIndexes()
-            value = self.listView.model().itemFromIndex(indexes[0]).text()  # 获取选中的值
-            self.parent().comboBox.setCurrentText(value)  # 设置分支
-            self.parent().start()  # 执行分支
-            self.close()
-        except Exception as e:
-            print(e)
-
-    def show_main(self):
-        """显示主窗体"""
-        # 如果父窗体最小化则显示
-        if self.parent().isMinimized():
-            self.parent().showNormal()
-        self.close()
-
-    def showEvent(self, a0) -> None:
-        # 设置窗口大小
-        set_window_size(self)
-        # 移动窗口到鼠标位置
-        cursor_pos = QCursor.pos()
-        # 移动窗口使窗口中心与鼠标位置重合
-        self.move(cursor_pos.x() - self.width() / 2, cursor_pos.y() - self.height() / 2)
-        self.load_setting()  # 加载设置
-
-    def closeEvent(self, event):
-        # 保存窗体大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
 
 
 if __name__ == "__main__":
