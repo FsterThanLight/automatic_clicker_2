@@ -734,13 +734,17 @@ class InformationEntry:
         self.text_input.text_input(cell_value, list_dic.get('特殊控件输入'))
         self.out_mes.out_mes('已执行信息录入', self.is_test)
 
-    def extra_excel_cell_value(self, excel_path, sheet_name,
-                               cell_position, line_number_increment, number):
+    def extra_excel_cell_value(self,
+                               excel_path,
+                               sheet_name,
+                               cell_position,
+                               line_number_increment_,
+                               number):
         """获取excel表格中的值
         :param excel_path: excel表格路径
         :param sheet_name: 表格名称
         :param cell_position: 单元格位置
-        :param line_number_increment: 行号递增
+        :param line_number_increment_: 行号递增
         :param number: 循环次数"""
         cell_value = None
         try:
@@ -748,11 +752,11 @@ class InformationEntry:
             wb = openpyxl.load_workbook(excel_path)
             # 选择表格
             sheet = wb[str(sheet_name)]
-            if not line_number_increment:
+            if not line_number_increment_:
                 # 获取单元格的值
                 cell_value = sheet[cell_position].value
                 self.out_mes.out_mes(f'获取到的单元格值为：{str(cell_value)}', self.is_test)
-            elif line_number_increment:
+            elif line_number_increment_:
                 # 获取行号递增的单元格的值
                 column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
                 line_number = int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
@@ -1755,3 +1759,85 @@ class GetDialogValue:
             ins_dic.get('对话框提示信息'),
             ins_dic.get('对话框标题')
         )
+
+
+class ContrastVariables:
+    """变量判断的功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '变量1': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
+            '比较符': self.ins_dic.get('参数2').split('-')[0],
+            '变量2': self.ins_dic.get('参数1（键鼠指令）').split('-')[1],
+            '变量类型': self.ins_dic.get('参数2').split('-')[1]
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        ins_dic = self.parsing_ins_dic()
+        variable_dic = get_variable_info('dict')  # 获取变量字典
+        # 获取变量名称
+        variable1_name = ins_dic.get('变量1')
+        variable2_name = ins_dic.get('变量2')
+        variable_symbol = ins_dic.get('比较符')
+        # 获取变量值
+        variable1 = variable_dic.get(variable1_name)
+        variable2 = variable_dic.get(variable2_name)
+        # 执行变量判断
+        result = self.comparison_variable(
+            variable1, variable_symbol, variable2, ins_dic.get('变量类型')
+        )
+        # 输出信息
+        self.out_mes.out_mes(
+            f'变量判断"{variable1_name}{variable_symbol}{variable2_name}"结果：{result}',
+            self.is_test
+        )
+        if result:
+            raise ValueError('变量判断结果为真，跳转分支。')
+
+    @staticmethod
+    def comparison_variable(variable1,
+                            comparison_symbol,
+                            variable2,
+                            variable_type):
+        """比较变量"""
+
+        def try_parse_date(variable):
+            """尝试将变量解析为日期时间对象"""
+            try:
+                return parse(variable)
+            except ValueError:
+                return None
+
+        variable1_ = variable1
+        variable2_ = variable2
+        if variable_type == '日期或时间':
+            variable1_ = try_parse_date(variable1)
+            variable2_ = try_parse_date(variable2)
+        elif variable_type == '数字':
+            variable1_ = eval(variable1)
+            variable2_ = eval(variable2)
+        elif variable_type == '字符串':
+            variable1_ = str(variable1)
+            variable2_ = str(variable2)
+
+        if comparison_symbol == '=':
+            return variable1_ == variable2_
+        elif comparison_symbol == '≠':
+            return variable1_ != variable2_
+        elif comparison_symbol == '>':
+            return variable1_ > variable2_
+        elif comparison_symbol == '<':
+            return variable1_ < variable2_
+        elif comparison_symbol == '包含':
+            return variable1_ in variable2_

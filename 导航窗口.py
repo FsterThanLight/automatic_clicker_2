@@ -68,6 +68,12 @@ class Na(QWidget, Ui_navigation):
             '发送消息': self.textEdit_2,
             '提示音': self.textEdit_4,
         }
+        self.branch_jump_control = {  # 分支跳转功能
+            '功能区参数': (self.comboBox_10, self.comboBox_11),
+            '跳转分支': (self.comboBox_37, self.comboBox_38),
+            '变量判断': (self.comboBox_52, self.comboBox_53),
+            '按键等待': (self.comboBox_41, self.comboBox_42),
+        }
         self.pushButton_9.clicked.connect(lambda: self.on_button_clicked('查看'))
         self.pushButton_10.clicked.connect(lambda: self.on_button_clicked('删除'))
         # 快捷选择导航页
@@ -110,6 +116,7 @@ class Na(QWidget, Ui_navigation):
             '获取时间': (lambda x: self.gain_time_function(x), False),
             '获取Excel': (lambda x: self.gain_excel_function(x), False),
             '获取对话框': (lambda x: self.get_dialog_function(x), False),
+            '变量判断': (lambda x: self.contrast_variables_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -205,44 +212,64 @@ class Na(QWidget, Ui_navigation):
             '指令类型': tab_title
         }
 
-    def find_images(self, ins_name: str) -> None:
-        """选择图像文件夹并返回文件夹名称
-        :param ins_name: 指令名称"""
-        combox_folder, combox_file_name = self.combo_image_preview.get(ins_name)
-        folder_path = combox_folder.currentText()
-        try:
-            # List all files in folder_path
-            images_name = [f for f in os.listdir(folder_path) if f.endswith('.png')]
-            # Sort files by modification time
-            images_name.sort(key=lambda x: os.path.getmtime(os.path.join(folder_path, x)), reverse=True)
-        except FileNotFoundError:
-            images_name = []
-        # 清空combox_2中的所有元素
-        combox_file_name.clear()
-        # 将images_name中的所有元素添加到combox_2中
-        combox_file_name.addItems(images_name)
-        self.label_3.setText(self.comboBox_8.currentText())
-        QApplication.processEvents()
+    def find_controls(self, type_, ins_name: str) -> None:
+        """加载不同的控件变量
+        :param type_: 加载类型（图像、excel、分支）
+        :param ins_name: 指令的名称"""
 
-    def find_excel_sheet_name(self, ins_name: str) -> None:
-        """获取excel表格中的所有sheet名称
-        :param ins_name:指令名称"""
-        comboBox_before, comboBox_after = self.combo_excel_preview.get(ins_name)
-        excel_path = comboBox_before.currentText()
-        try:
-            # 用openpyxl获取excel表格中的所有sheet名称
-            excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
-        except FileNotFoundError:
-            excel_sheet_name = []
-        except InvalidFileException:
-            excel_sheet_name = []
-        except PermissionError:
-            QMessageBox.critical(self, "错误", "当前文件被占用，请关闭文件后重试！")
-            excel_sheet_name = []
-        # 清空combox_13中的所有元素
-        comboBox_after.clear()
-        # 将excel_sheet_name中的所有元素添加到combox_13中
-        comboBox_after.addItems(excel_sheet_name)
+        def find_images() -> None:
+            """选择图像文件夹并返回文件夹名称"""
+            combox_folder, combox_file_name = self.combo_image_preview.get(ins_name)
+            folder_path = combox_folder.currentText()
+            try:
+                # List all files in folder_path
+                images_name = [f for f in os.listdir(folder_path) if f.endswith('.png')]
+                # Sort files by modification time
+                images_name.sort(key=lambda x: os.path.getmtime(os.path.join(folder_path, x)), reverse=True)
+            except FileNotFoundError:
+                images_name = []
+            # 清空combox_2中的所有元素
+            combox_file_name.clear()
+            # 将images_name中的所有元素添加到combox_2中
+            combox_file_name.addItems(images_name)
+            self.label_3.setText(self.comboBox_8.currentText())
+            QApplication.processEvents()
+
+        def find_excel_sheet_name() -> None:
+            """获取excel表格中的所有sheet名称"""
+            comboBox_before, comboBox_after = self.combo_excel_preview.get(ins_name)
+            excel_path = comboBox_before.currentText()
+            try:
+                # 用openpyxl获取excel表格中的所有sheet名称
+                excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
+            except FileNotFoundError:
+                excel_sheet_name = []
+            except InvalidFileException:
+                excel_sheet_name = []
+            except PermissionError:
+                QMessageBox.critical(self, "错误", "当前文件被占用，请关闭文件后重试！")
+                excel_sheet_name = []
+            # 清空combox_13中的所有元素
+            comboBox_after.clear()
+            # 将excel_sheet_name中的所有元素添加到combox_13中
+            comboBox_after.addItems(excel_sheet_name)
+
+        def find_branch_count() -> None:
+            """当分支表名改变时，加载分支中的命令序号"""
+            comboBox_branch_name, comboBox_branch_order = self.branch_jump_control.get(ins_name)
+            count_record_ = get_branch_count(comboBox_branch_name.currentText())
+            comboBox_branch_order.clear()
+            # 加载分支中的命令序号
+            branch_order_ = [str(i) for i in range(1, count_record_ + 1)]
+            if len(branch_order_) != 0:
+                comboBox_branch_order.addItems(branch_order_)
+
+        if type_ == '图像':
+            find_images()
+        elif type_ == 'excel':
+            find_excel_sheet_name()
+        elif type_ == '分支':
+            find_branch_count()
 
     def mouseMoveEvent(self, event):
         self.merge_additional_functions('get_mouse_position')
@@ -298,6 +325,9 @@ class Na(QWidget, Ui_navigation):
                 self.mouse_position_function = '结束拖拽'
             elif pars_1 == '坐标点击':
                 self.mouse_position_function = '坐标点击'
+        elif function_name == '打开变量池':
+            variable_pool = VariablePool_Win(self)
+            variable_pool.exec_()
 
     def exception_handling_judgment_type(self, type_):
         """判断异常护理选项并调整控件
@@ -322,23 +352,9 @@ class Na(QWidget, Ui_navigation):
                     disable_combobox(True)
                     self.comboBox_10.addItems(extract_global_parameter('分支表名'))
                     self.comboBox_10.setCurrentIndex(0)
-                    # 获取分支表名中的指令数量
-                    count_record = get_branch_count(self.comboBox_10.currentText())
-                    # 加载分支中的命令序号
-                    branch_order = [str(i) for i in range(1, count_record + 1)]
-                    if len(branch_order) == 0:
-                        self.comboBox_10.setCurrentIndex(0)
-                    else:
-                        self.comboBox_11.addItems(branch_order)
+                    self.find_controls('分支', '功能区参数')
             elif type_ == '分支名称':  # 分支表名下拉列表变化触发
-                count_record = get_branch_count(self.comboBox_10.currentText())
-                self.comboBox_11.clear()
-                # 加载分支中的命令序号
-                branch_order = [str(i) for i in range(1, count_record + 1)]
-                if len(branch_order) == 0:
-                    QMessageBox.warning(self, '警告', '该分支下没有指令，请先添加！', QMessageBox.Yes)
-                else:
-                    self.comboBox_11.addItems(branch_order)
+                self.find_controls('分支', '功能区参数')
         except sqlite3.OperationalError:
             pass
 
@@ -364,7 +380,7 @@ class Na(QWidget, Ui_navigation):
                 # 刷新图像文件夹
                 QApplication.processEvents()
                 current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
-                self.find_images(current_title)
+                self.find_controls('图像', current_title)
                 self.show_image_to_label(current_title)
 
         elif judge == '打开文件夹':
@@ -491,13 +507,8 @@ class Na(QWidget, Ui_navigation):
         if current_title in self.combo_image_preview:
             self.show_image_to_label(current_title, judge)
             if judge == '删除':
-                self.find_images(current_title)
+                self.find_controls('图像', current_title)
                 self.show_image_to_label(current_title)
-
-    def open_value_pool(self):
-        """打开变量池窗口"""
-        variable_pool = VariablePool_Win(self)
-        variable_pool.exec_()
 
     def write_value_to_textedit(self, value: str) -> None:
         """将变量池中的值写入到文本框中"""
@@ -507,9 +518,10 @@ class Na(QWidget, Ui_navigation):
             # 使textEdit显示不同的文本
             current_title_ = self.tabWidget.tabText(self.tabWidget.currentIndex())
             textEdit = self.variable_input_control.get(current_title_)
-            textEdit.insertHtml('☾')
-            textEdit.insertHtml((errorFormat_.format(new_text)))
-            textEdit.insertHtml('☽')
+            if textEdit.isEnabled():
+                textEdit.insertHtml('☾')
+                textEdit.insertHtml((errorFormat_.format(new_text)))
+                textEdit.insertHtml('☽')
 
         if value:
             append_textedit(value)
@@ -572,7 +584,7 @@ class Na(QWidget, Ui_navigation):
             )
             # 加载下拉列表数据
             self.comboBox_8.activated.connect(
-                lambda: self.find_images('图像点击')
+                lambda: self.find_controls('图像', '图像点击')
             )
             # 元素预览
             self.comboBox.activated.connect(
@@ -599,7 +611,7 @@ class Na(QWidget, Ui_navigation):
             # 加载图像文件夹路径
             self.comboBox_8.clear()
             self.comboBox_8.addItems(extract_global_parameter('资源文件夹路径'))
-            self.find_images('图像点击')
+            self.find_controls('图像', '图像点击')
             self.show_image_to_label('图像点击')
 
     def scroll_wheel_function(self, type_):
@@ -782,7 +794,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 下拉列表数据
             self.comboBox_17.activated.connect(
-                lambda: self.find_images('图像等待')
+                lambda: self.find_controls('图像', '图像等待')
             )
             # 元素预览
             self.comboBox_18.activated.connect(
@@ -819,7 +831,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_17.clear()
             self.comboBox_18.clear()
             self.comboBox_17.addItems(extract_global_parameter('资源文件夹路径'))
-            self.find_images('图像等待')
+            self.find_controls('图像', '图像等待')
             self.show_image_to_label('图像等待')
 
     def move_mouse_function(self, type_):
@@ -935,11 +947,11 @@ class Na(QWidget, Ui_navigation):
             )
             # 信息录入窗口的excel功能
             self.comboBox_12.activated.connect(
-                lambda: self.find_excel_sheet_name('信息录入')
+                lambda: self.find_controls('excel', '信息录入')
             )
             # 加载下拉列表数据
             self.comboBox_14.activated.connect(
-                lambda: self.find_images('信息录入')
+                lambda: self.find_controls('图像', '信息录入')
             )
             # 图像预览
             self.comboBox_15.activated.connect(
@@ -982,9 +994,9 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_13.clear()
             self.comboBox_14.clear()
             self.comboBox_14.addItems(extract_global_parameter('资源文件夹路径'))
-            self.find_images('信息录入')
+            self.find_controls('图像', '信息录入')
             self.show_image_to_label('信息录入')
-            self.find_excel_sheet_name('信息录入')
+            self.find_controls('excel', '信息录入')
 
     def open_web_page_function(self, type_):
         """打开网址的窗口功能"""
@@ -1065,7 +1077,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 网页信息录入的excel功能
             self.comboBox_20.activated.connect(
-                lambda: self.find_excel_sheet_name('网页录入')
+                lambda: self.find_controls('excel', '网页录入')
             )
         elif type_ == '写入参数':
             parameter_4 = None
@@ -1098,7 +1110,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_20.clear()
             self.comboBox_20.addItems(extract_excel_from_global_parameter())
             self.comboBox_23.clear()
-            self.find_excel_sheet_name('网页录入')
+            self.find_controls('excel', '网页录入')
 
     def mouse_drag_function(self, type_):
         """鼠标拖拽窗口的功能"""
@@ -1474,9 +1486,6 @@ class Na(QWidget, Ui_navigation):
             parameter_2_ = f'{self.lineEdit_6.text()}' or '示例'
             parameter_3_ = f'{self.spinBox_25.value()}'
             # # 检查参数是否有异常
-            # if parameter_1_ == '' or parameter_2_ == '':
-            #     QMessageBox.critical(self, "错误", "信息未填写！")
-            #     raise ValueError
             return parameter_1_, parameter_2_, parameter_3_
 
         def test():
@@ -1572,7 +1581,8 @@ class Na(QWidget, Ui_navigation):
                 self.comboBox_38.addItems(branch_order_)
 
         if type_ == '按钮功能':
-            self.comboBox_37.activated.connect(set_branch_count)
+            # self.comboBox_37.activated.connect(set_branch_count)
+            self.comboBox_37.activated.connect(lambda: self.find_controls('分支', '跳转分支'))
 
         elif type_ == '写入参数':
             parameter_1, parameter_2 = get_parameters()
@@ -1590,13 +1600,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_37.addItems(extract_global_parameter('分支表名'))
             self.comboBox_37.setCurrentIndex(0)
             # 获取分支表名中的指令数量
-            count_record = get_branch_count(self.comboBox_37.currentText())
-            # 加载分支中的命令序号
-            branch_order = [str(i) for i in range(1, count_record + 1)]
-            if len(branch_order) == 0:
-                self.comboBox_37.setCurrentIndex(0)
-            else:
-                self.comboBox_38.addItems(branch_order)
+            self.find_controls('分支', '跳转分支')
 
     def termination_process_function(self, type_):
         """终止流程的功能
@@ -1700,15 +1704,6 @@ class Na(QWidget, Ui_navigation):
                 raise ValueError
             return parameter_1_, parameter_2_, parameter_3_
 
-        def set_branch_count():
-            """当分支表名改变时，加载分支中的命令序号"""
-            count_record_ = get_branch_count(self.comboBox_41.currentText())
-            self.comboBox_42.clear()
-            # 加载分支中的命令序号
-            branch_order_ = [str(i) for i in range(1, count_record_ + 1)]
-            if len(branch_order_) != 0:
-                self.comboBox_42.addItems(branch_order_)
-
         def set_branch_name():
             """当选择跳转分支功能时，加载分支表名"""
             disable_control(True)
@@ -1726,7 +1721,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             self.radioButton_21.toggled.connect(set_branch_name)
             self.radioButton_22.toggled.connect(lambda: disable_control(False))
-            self.comboBox_41.activated.connect(set_branch_count)
+            self.comboBox_41.activated.connect(lambda: self.find_controls('分支', '按键等待'))
 
         elif type_ == '写入参数':
             parameter_1, parameter_2, exception_handling_ = get_parameters()
@@ -1772,7 +1767,7 @@ class Na(QWidget, Ui_navigation):
                 self.out_mes.out_mes(f'指令错误请重试！', True)
 
         if type_ == '按钮功能':
-            self.pushButton_33.clicked.connect(self.open_value_pool)
+            self.pushButton_33.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
             self.pushButton_34.clicked.connect(test)
 
         elif type_ == '写入参数':
@@ -1847,9 +1842,9 @@ class Na(QWidget, Ui_navigation):
             self.lineEdit_23.setValidator(QRegExpValidator(QRegExp("[a-zA-Z0-9]{16}"), self))
             self.checkBox_9.clicked.connect(line_number_increasing)
             self.comboBox_45.activated.connect(
-                lambda: self.find_excel_sheet_name('获取Excel')
+                lambda: self.find_controls('excel', '获取Excel')
             )
-            self.pushButton_35.clicked.connect(self.open_value_pool)
+            self.pushButton_35.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
             self.pushButton_36.clicked.connect(test)
             # 打开工作簿
             self.pushButton_29.clicked.connect(lambda: os.startfile(self.comboBox_45.currentText()))
@@ -1870,7 +1865,7 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_45.clear()
             self.comboBox_45.addItems(extract_excel_from_global_parameter())  # 加载全局参数中的excel文件路径
-            self.find_excel_sheet_name('获取Excel')
+            self.find_controls('excel', '获取Excel')
 
             self.comboBox_47.clear()
             self.comboBox_47.addItems(get_variable_info('list'))
@@ -1897,10 +1892,10 @@ class Na(QWidget, Ui_navigation):
             return parameter_1_, parameter_2_, parameter_3_
 
         if type_ == '按钮功能':
-            self.pushButton_37.clicked.connect(self.open_value_pool)
+            self.pushButton_37.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
 
         elif type_ == '写入参数':
-            parameter_1, parameter_2, parameter_3,  = get_parameters()
+            parameter_1, parameter_2, parameter_3, = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1914,3 +1909,67 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_48.clear()
             self.comboBox_48.addItems(get_variable_info('list'))
+
+    def contrast_variables_function(self, type_):
+        """变量比较的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = (
+                f'{self.comboBox_49.currentText()}-{self.comboBox_51.currentText()}'
+            )  # 变量1-变量2
+            parameter_2_ = (
+                f'{self.comboBox_50.currentText()}-{self.comboBox_55.currentText()}'
+            )  # 比较符-变量类型
+            exception_handling_ = (
+                f'{self.comboBox_52.currentText()}'
+                f'-{self.comboBox_53.currentText()}'
+            )  # 分支表名-分支序号
+            # 检查参数是否有异常
+            if (self.comboBox_49.currentText() == ''
+                    or self.comboBox_50.currentText() == ''
+                    or self.comboBox_51.currentText() == ''):
+                QMessageBox.critical(self, "错误", "变量未设置！")
+                raise ValueError
+            if (self.comboBox_52.currentText() == ''
+                    or self.comboBox_53.currentText() == ''):
+                QMessageBox.critical(self, "错误", "分支未设置！")
+                raise ValueError
+            return parameter_1_, parameter_2_, exception_handling_
+
+        def sync_combo_boxes(sender):
+            if sender == self.comboBox_54:
+                self.comboBox_55.setCurrentIndex(self.comboBox_54.currentIndex())
+            else:
+                self.comboBox_54.setCurrentIndex(self.comboBox_55.currentIndex())
+
+        if type_ == '按钮功能':
+            self.comboBox_52.activated.connect(  # 当分支表名改变时，加载分支中的命令序号
+                lambda: self.find_controls('分支', '变量判断'))
+            self.pushButton_38.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
+            self.comboBox_54.currentIndexChanged.connect(lambda: sync_combo_boxes(self.comboBox_54))
+            self.comboBox_55.currentIndexChanged.connect(lambda: sync_combo_boxes(self.comboBox_55))
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, exception_handling = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=exception_handling,
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_49.clear()
+            self.comboBox_49.addItems(get_variable_info('list'))
+            self.comboBox_51.clear()
+            self.comboBox_51.addItems(get_variable_info('list'))
+            self.comboBox_52.clear()
+            self.comboBox_52.addItems(extract_global_parameter('分支表名'))
+            self.comboBox_52.setCurrentIndex(0)
+            # 获取分支表名中的指令数量
+            self.find_controls('分支', '变量判断')

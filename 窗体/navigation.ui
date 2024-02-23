@@ -115,6 +115,11 @@
           </property>
           <item>
            <property name="text">
+            <string>变量判断</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>获取时间</string>
            </property>
           </item>
@@ -287,7 +292,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>31</number>
+          <number>32</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -13188,12 +13193,181 @@ p, li { white-space: pre-wrap; }
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="tab_36">
+          <attribute name="title">
+           <string>变量判断</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_79">
+           <item>
+            <widget class="QGroupBox" name="groupBox_48">
+             <property name="title">
+              <string>如果</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_78">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_53">
+                <item row="1" column="2">
+                 <widget class="QComboBox" name="comboBox_51"/>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_143">
+                  <property name="text">
+                   <string>变量1：</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="label_144">
+                  <property name="text">
+                   <string>变量2：</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QComboBox" name="comboBox_49"/>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QComboBox" name="comboBox_50">
+                  <item>
+                   <property name="text">
+                    <string>=</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>≠</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>&gt;</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>&lt;</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>包含</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QPushButton" name="pushButton_38">
+                  <property name="font">
+                   <font>
+                    <family>微软雅黑</family>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>设置变量</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QComboBox" name="comboBox_54">
+                  <item>
+                   <property name="text">
+                    <string>字符串</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>数字</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>日期或时间</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QComboBox" name="comboBox_55">
+                  <item>
+                   <property name="text">
+                    <string>字符串</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>数字</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>日期或时间</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_49">
+             <property name="title">
+              <string>则跳转分支：</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,1,1,1">
+              <item>
+               <widget class="QLabel" name="label_146">
+                <property name="text">
+                 <string>分支名称：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_52"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_145">
+                <property name="text">
+                 <string>开始位置：</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_53"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_31">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>270</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_20">
           <attribute name="title">

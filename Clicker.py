@@ -26,7 +26,7 @@ from system_hotkey import SystemHotkey
 
 from icon import Icon
 from main_work import CommandThread
-from navigation import Na
+from 导航窗口 import Na
 from 功能类 import close_browser
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -57,7 +57,8 @@ from 选择窗体 import Branch_exe_win
 # done: 对话框指令集
 # todo: excel指令集
 # todo: 调试模式
-# todo: 变量比较指令
+# todo: 动作录制功能
+# done: 变量比较指令
 # done: 指令搜索功能
 # done: 使变量可以特殊显示
 # done: 按键等待指令
