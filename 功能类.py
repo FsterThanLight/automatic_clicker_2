@@ -22,7 +22,8 @@ import winsound
 from PyQt5.QtWidgets import QApplication
 from dateutil.parser import parse
 
-from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value
+from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value, \
+    line_number_increment
 from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
@@ -720,7 +721,7 @@ class InformationEntry:
             list_dic.get('工作簿路径'),
             list_dic.get('工作表名称'),
             list_dic.get('单元格位置'),
-            bool(list_dic.get('行号递增')),
+            eval(list_dic.get('行号递增')),
             self.cycle_number
         )
         self.image_click.execute_click(
@@ -741,7 +742,6 @@ class InformationEntry:
         :param cell_position: 单元格位置
         :param line_number_increment: 行号递增
         :param number: 循环次数"""
-        print('正在获取单元格值')
         cell_value = None
         try:
             # 打开excel表格
@@ -1662,3 +1662,96 @@ class GetTimeValue:
             return int(time.time())
         else:
             return time.strftime(allowed_formats[format_], time.localtime())
+
+
+class GetExcelCellValue:
+    """从excel表格中获取单元格的值"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+        print('cycle_number', self.cycle_number)
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '工作簿路径': self.ins_dic.get('图像路径').split('-')[0],
+            '工作表名称': self.ins_dic.get('图像路径').split('-')[1],
+            '单元格位置': self.ins_dic.get('参数1（键鼠指令）'),
+            '变量名称': self.ins_dic.get('参数2'),
+            '行号递增': eval(self.ins_dic.get('参数3'))
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        list_dic = self.parsing_ins_dic()
+        cell_position = list_dic.get('单元格位置')
+
+        if list_dic.get('行号递增'):  # 递增行号
+            cell_position = line_number_increment(cell_position, self.cycle_number - 1)
+
+        cell_value = self.get_value_from_excel(
+            list_dic.get('工作簿路径'),
+            list_dic.get('工作表名称'),
+            cell_position
+        )
+        self.send_out_message(cell_value, list_dic)
+
+    def send_out_message(self, cell_value, list_dic):
+        if not self.is_test:
+            set_variable_value(list_dic.get('变量名称'), cell_value)
+            self.out_mes.out_mes(f'已获取单元格的值并赋值给变量：{list_dic.get("变量名称")}', self.is_test)
+        else:
+            self.out_mes.out_mes(f'已获取单元格的值：{cell_value}', self.is_test)
+
+    @staticmethod
+    def get_value_from_excel(file_path, sheet_name, cell='A1'):
+        """从excel中获取数据"""
+        try:
+            wb = openpyxl.load_workbook(file_path)
+            sheet = wb[sheet_name]
+            value = sheet[cell].value
+            return value
+        except Exception as e:
+            print(e)
+            return None
+
+
+class GetDialogValue:
+    """从对话框中获取值"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '对话框标题': self.ins_dic.get('参数1（键鼠指令）'),
+            '变量名称': self.ins_dic.get('参数2'),
+            '对话框提示信息': self.ins_dic.get('参数3')
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        ins_dic = self.parsing_ins_dic()  # 解析指令字典
+        text = self.gets_text_from_dialog(ins_dic)
+        set_variable_value(ins_dic.get('变量名称'), text)
+        self.out_mes.out_mes(f'已获取对话框的值并赋值给变量：{ins_dic.get("变量名称")}', self.is_test)
+
+    @staticmethod
+    def gets_text_from_dialog(ins_dic):
+        return pymsgbox.prompt(
+            ins_dic.get('对话框提示信息'),
+            ins_dic.get('对话框标题')
+        )

@@ -151,6 +151,8 @@ class CommandThread(QThread):
                         "窗口控制": (WindowControl, self.out_mes, dic_),
                         "按键等待": (KeyWait, self.out_mes, dic_),
                         "获取时间": (GetTimeValue, self.out_mes, dic_),
+                        "获取Excel": (GetExcelCellValue, self.out_mes, dic_, self.number),
+                        "获取对话框": (GetDialogValue, self.out_mes, dic_),
                     }
                     # 根据命令类型执行相应操作
                     if cmd_type in command_mapping:

@@ -11,7 +11,6 @@
 from __future__ import print_function
 
 import os.path
-import re
 import shutil
 
 import openpyxl
@@ -55,9 +54,11 @@ from 选择窗体 import Branch_exe_win
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
 # todo: win通知指令
-# todo: 对话框指令集
+# done: 对话框指令集
 # todo: excel指令集
-# todo: 指令搜索功能
+# todo: 调试模式
+# todo: 变量比较指令
+# done: 指令搜索功能
 # done: 使变量可以特殊显示
 # done: 按键等待指令
 # done: 流程控制指令（转分支、终止流程）
@@ -899,12 +900,19 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
 
     def thread_finished(self, message):
-        """任务结束"""
-        # 获取当前时间
-        now_time = time.time()
-        # 换算为毫秒
-        elapsed_time = round((now_time - self.start_time) * 1000, 2)
-        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}，耗时{elapsed_time}毫秒。')
+
+        def send_elapsed_time():
+            """发送耗时"""
+            elapsed_time = time.time() - self.start_time
+            # 将秒转换为毫秒或者保留两位小数的秒数
+            if elapsed_time < 1:
+                elapsed_time_ms = round(elapsed_time * 1000)  # 毫秒
+                return f"{elapsed_time_ms}毫秒"
+            else:
+                elapsed_time_sec = round(elapsed_time, 2)  # 秒，保留两位小数
+                return f"{elapsed_time_sec}秒"
+
+        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}，耗时{send_elapsed_time()}。')
         if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
             QApplication.processEvents()
