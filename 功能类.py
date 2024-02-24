@@ -1,4 +1,5 @@
 import io
+import os
 import random
 import re
 import sys
@@ -1891,3 +1892,35 @@ class RunPython:
         except Exception as e:
             print(e)
             self.out_mes.out_mes(f'运行失败：{e}', self.is_test)
+
+
+class RunExternalFile:
+    """运行外部文件"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return self.ins_dic.get('图像路径')
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        file_path = self.parsing_ins_dic()
+        self.run_external_file(file_path)
+
+    def run_external_file(self, file_path):
+        """运行外部文件"""
+        try:
+            os.startfile(file_path)
+            self.out_mes.out_mes(f'已运行外部文件：{file_path}', self.is_test)
+        except Exception as e:
+            print(e)
+            self.out_mes.out_mes(f'运行失败：{e}', self.is_test)
+            raise ValueError(f'打开文件失败')

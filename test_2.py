@@ -1,17 +1,15 @@
-xxx = 1
-python_code = ("import time\n"
-               "'xxx'.replace(',','')\n"  # 执行代码
-               "")  # 返回result变量的值
+import os
 
-if __name__ == '__main__':
-    # 1. 使用exec()执行python代码
+
+def run_external_file(file_path):
+    """运行外部文件"""
     try:
-        # 定义全局命名空间字典
-        globals_dict = {}
-        # 在执行代码时，将结果保存到全局命名空间中
-        exec(python_code, globals_dict)
-        # 从全局命名空间中获取结果
-        result = globals_dict.get('result', None)
-        print("Result:", result)  # 输出结果
+        os.startfile(file_path)
+        print(f'运行成功：{file_path}')
     except Exception as e:
         print(e)
+
+
+if __name__ == '__main__':
+    file_1 = r'D:\待看影视\黑色孤儿 第四季\黑色孤儿第四季08.mp'
+    run_external_file(file_1)

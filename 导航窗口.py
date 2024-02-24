@@ -11,7 +11,7 @@ import pyautogui
 from PyQt5.QtCore import Qt, QUrl, QRegExp
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator
 from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QButtonGroup, QApplication, QTreeWidgetItemIterator
+    QMessageBox, QButtonGroup, QApplication, QTreeWidgetItemIterator, QFileDialog
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 from pygments import highlight
@@ -19,7 +19,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
-    WindowControl, GetTimeValue, GetExcelCellValue, RunPython
+    WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
@@ -55,24 +55,24 @@ class Na(QWidget, Ui_navigation):
         # 调整异常处理选项时，控制窗口控件的状态
         self.comboBox_9.activated.connect(lambda: self.exception_handling_judgment_type('报错处理'))
         self.comboBox_10.activated.connect(lambda: self.exception_handling_judgment_type('分支名称'))
-        self.combo_image_preview = {  # 图像预览功能
+        self.combo_image_preview = {  # 需要图像预览功能
             '图像点击': (self.comboBox_8, self.comboBox),
             '图像等待': (self.comboBox_17, self.comboBox_18),
             '信息录入': (self.comboBox_14, self.comboBox_15),
         }
-        self.combo_excel_preview = {  # excel表格加载功能
+        self.combo_excel_preview = {  # 需要加载excel表格的功能
             '信息录入': (self.comboBox_12, self.comboBox_13),
             '网页录入': (self.comboBox_20, self.comboBox_23),
             '获取Excel': (self.comboBox_45, self.comboBox_46),
         }
-        self.variable_input_control = {  # 插入变量的控件
+        self.variable_input_control = {  # 需要插入变量的控件
             '文本输入': self.textEdit,
             '元素控制': self.textEdit_3,
             '发送消息': self.textEdit_2,
             '提示音': self.textEdit_4,
             '运行Python': self.textEdit_5,
         }
-        self.branch_jump_control = {  # 分支跳转功能
+        self.branch_jump_control = {  # 需要分支跳转的功能
             '功能区参数': (self.comboBox_10, self.comboBox_11),
             '跳转分支': (self.comboBox_37, self.comboBox_38),
             '变量判断': (self.comboBox_52, self.comboBox_53),
@@ -122,6 +122,7 @@ class Na(QWidget, Ui_navigation):
             '获取对话框': (lambda x: self.get_dialog_function(x), False),
             '变量判断': (lambda x: self.contrast_variables_function(x), False),
             '运行Python': (lambda x: self.run_python_function(x), False),
+            '运行外部文件': (lambda x: self.run_external_file_function(x), True),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -129,7 +130,7 @@ class Na(QWidget, Ui_navigation):
         # 加载第一个功能窗口的控件信息
         self.function_mapping[self.tabWidget.tabText(0)][0]('加载信息')
         self.tabWidget_2.setCurrentIndex(0)  # 设置到功能页面到预览页
-        # 设置窗口的flag
+        # 设置窗口的flag，否则加载异常
         flags = self.windowFlags()
         self.setWindowFlags(flags | Qt.Window)
 
@@ -1578,15 +1579,6 @@ class Na(QWidget, Ui_navigation):
             parameter_2_ = self.comboBox_38.currentText()  # 分支序号
             return parameter_1_, parameter_2_
 
-        def set_branch_count():
-            """当分支表名改变时，加载分支中的命令序号"""
-            count_record_ = get_branch_count(self.comboBox_37.currentText())
-            self.comboBox_38.clear()
-            # 加载分支中的命令序号
-            branch_order_ = [str(i) for i in range(1, count_record_ + 1)]
-            if len(branch_order_) != 0:
-                self.comboBox_38.addItems(branch_order_)
-
         if type_ == '按钮功能':
             # self.comboBox_37.activated.connect(set_branch_count)
             self.comboBox_37.activated.connect(lambda: self.find_controls('分支', '跳转分支'))
@@ -2049,3 +2041,60 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_56.clear()
             self.comboBox_56.addItems(get_variable_info('list'))
+
+    def run_external_file_function(self, type_):
+        """运行外部文件的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            image_ = self.lineEdit_27.text()  # 文件路径
+            # 检查参数是否有异常
+            if image_ is None or image_ == '':
+                QMessageBox.critical(self, "错误", "文件路径未设置！")
+                raise ValueError
+            return image_
+
+        def test():
+            """测试功能"""
+            try:
+                image_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         image_=image_)
+
+                # 测试用例
+                test_class = RunExternalFile(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+            except Exception as e:
+                print(e)
+
+        def get_file_and_folder():
+            """获取文件名和文件夹路径"""
+            # 打开选择文件对话框
+            file_path, _ = QFileDialog.getOpenFileName(
+                parent=self,
+                caption="选择文件",
+                directory=os.path.join(os.path.expanduser("~"), 'Desktop'),
+            )
+            if file_path != '':  # 获取文件名称
+                # 设置文件路径
+                self.lineEdit_27.setText(os.path.normpath(file_path))
+
+        if type_ == '按钮功能':
+            self.pushButton_43.clicked.connect(get_file_and_folder)  # 打开文件选择窗口
+            self.pushButton_42.clicked.connect(test)  # 测试按钮
+
+        elif type_ == '写入参数':
+            image = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            pass
