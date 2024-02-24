@@ -1,40 +1,17 @@
-from dateutil.parser import parse
-
-
-def comparison_variable(variable1, comparison_symbol, variable2, variable_type):
-    """比较变量"""
-
-    def try_parse_date(variable):
-        """尝试将变量解析为日期时间对象"""
-        try:
-            return parse(variable)
-        except ValueError:
-            return None
-
-    variable1_ = variable1
-    variable2_ = variable2
-    if variable_type == '日期或时间':
-        variable1_ = try_parse_date(variable1)
-        variable2_ = try_parse_date(variable2)
-    elif variable_type == '数字':
-        variable1_ = eval(variable1)
-        variable2_ = eval(variable2)
-    elif variable_type == '字符串':
-        variable1_ = str(variable1)
-        variable2_ = str(variable2)
-
-    if comparison_symbol == '=':
-        return variable1_ == variable2_
-    elif comparison_symbol == '≠':
-        return variable1_ != variable2_
-    elif comparison_symbol == '>':
-        return variable1_ > variable2_
-    elif comparison_symbol == '<':
-        return variable1_ < variable2_
-    elif comparison_symbol == '包含':
-        return variable1_ in variable2_
-
+xxx = 1
+python_code = ("import time\n"
+               "'xxx'.replace(',','')\n"  # 执行代码
+               "")  # 返回result变量的值
 
 if __name__ == '__main__':
-    xx = comparison_variable('2024-02-23 23:45:2', '>', '2024-02-23 23:45:21', '日期或时间')
-    print(xx)
+    # 1. 使用exec()执行python代码
+    try:
+        # 定义全局命名空间字典
+        globals_dict = {}
+        # 在执行代码时，将结果保存到全局命名空间中
+        exec(python_code, globals_dict)
+        # 从全局命名空间中获取结果
+        result = globals_dict.get('result', None)
+        print("Result:", result)  # 输出结果
+    except Exception as e:
+        print(e)

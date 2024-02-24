@@ -14,9 +14,12 @@ from PyQt5.QtWidgets import QWidget, \
     QMessageBox, QButtonGroup, QApplication, QTreeWidgetItemIterator
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import PythonLexer
 
 from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
-    WindowControl, GetTimeValue, GetExcelCellValue
+    WindowControl, GetTimeValue, GetExcelCellValue, RunPython
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
@@ -62,11 +65,12 @@ class Na(QWidget, Ui_navigation):
             '网页录入': (self.comboBox_20, self.comboBox_23),
             '获取Excel': (self.comboBox_45, self.comboBox_46),
         }
-        self.variable_input_control = {  # 变量控制功能
+        self.variable_input_control = {  # 插入变量的控件
             '文本输入': self.textEdit,
             '元素控制': self.textEdit_3,
             '发送消息': self.textEdit_2,
             '提示音': self.textEdit_4,
+            '运行Python': self.textEdit_5,
         }
         self.branch_jump_control = {  # 分支跳转功能
             '功能区参数': (self.comboBox_10, self.comboBox_11),
@@ -117,6 +121,7 @@ class Na(QWidget, Ui_navigation):
             '获取Excel': (lambda x: self.gain_excel_function(x), False),
             '获取对话框': (lambda x: self.get_dialog_function(x), False),
             '变量判断': (lambda x: self.contrast_variables_function(x), False),
+            '运行Python': (lambda x: self.run_python_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -328,6 +333,8 @@ class Na(QWidget, Ui_navigation):
         elif function_name == '打开变量池':
             variable_pool = VariablePool_Win(self)
             variable_pool.exec_()
+        elif function_name == '打开变量选择':
+            self.variable_sel_win.show()
 
     def exception_handling_judgment_type(self, type_):
         """判断异常护理选项并调整控件
@@ -658,7 +665,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             # 检查输入的数据是否合法
             self.checkBox_2.clicked.connect(check_text_type)
-            self.pushButton_28.clicked.connect(lambda: self.variable_sel_win.show())
+            self.pushButton_28.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
             # 文本输入的内容
@@ -1048,7 +1055,7 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             Lock_control()
             self.comboBox_22.activated.connect(Lock_control)
-            self.pushButton_31.clicked.connect(lambda: self.variable_sel_win.show())
+            self.pushButton_31.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
             element_type = self.comboBox_21.currentText()
@@ -1349,7 +1356,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_33.activated.connect(Lock_control)
             self.comboBox_34.activated.connect(Lock_control)
             self.pushButton_15.clicked.connect(test)
-            self.pushButton_30.clicked.connect(lambda: self.variable_sel_win.show())
+            self.pushButton_30.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
             parameter_1 = self.comboBox_33.currentText() \
@@ -1461,7 +1468,7 @@ class Na(QWidget, Ui_navigation):
             buttonGroup_4.addButton(self.radioButton_20)
             # 测试按钮
             self.pushButton_24.clicked.connect(test)
-            self.pushButton_31.clicked.connect(lambda: self.variable_sel_win.show())
+            self.pushButton_31.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
             parameter_1, parameter_2, parameter_3 = get_parameters()
@@ -1973,3 +1980,72 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_52.setCurrentIndex(0)
             # 获取分支表名中的指令数量
             self.find_controls('分支', '变量判断')
+
+    def run_python_function(self, type_):
+        """运行python代码的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.lineEdit_26.text()  # 返回名称
+            parameter_2_ = self.comboBox_56.currentText()  # 变量名称
+            parameter_3_ = self.textEdit_5.toPlainText()  # 代码
+            # 检查参数是否有异常
+            if parameter_3_ == '':
+                QMessageBox.critical(self, "错误", "代码未编写！")
+                raise ValueError
+            return parameter_1_, parameter_2_, parameter_3_
+
+        def test():
+            """测试功能"""
+            highlight_python_code()
+            try:
+                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_,
+                                         parameter_3_=parameter_3_)
+                # 测试用例
+                test_class = RunPython(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        def highlight_python_code():
+            """运行python代码"""
+
+            def highlight_text(text):
+                lexer = PythonLexer()
+                formatter = HtmlFormatter(style='colorful')
+                html = highlight(text, lexer, formatter)
+                css = formatter.get_style_defs('.highlight')
+                self.textEdit_5.setHtml("<style>" + css + "</style>" + html)
+
+            code = self.textEdit_5.toPlainText()
+            highlight_text(code)
+
+        if type_ == '按钮功能':
+            # 自动代码高亮
+            self.pushButton_40.clicked.connect(test)
+            self.pushButton_39.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
+            self.pushButton_41.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2, parameter_3 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 parameter_3_=parameter_3,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_56.clear()
+            self.comboBox_56.addItems(get_variable_info('list'))

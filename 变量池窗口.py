@@ -38,11 +38,13 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
     def load_data(self):
         model = QStandardItemModel(self)  # 创建一个 QStandardItemModel 作为数据模型
         # 设置模型的表头
-        model.setHorizontalHeaderLabels(['变量名称', '备注'])
+        model.setHorizontalHeaderLabels(['变量名称', '备注', '值'])
         variable_list = get_value_from_variable_table()  # 从数据库中获取数据
         # 添加数据到模型中
         for variable_tuple in variable_list:
-            items = [QStandardItem(str(variable_tuple[0])), QStandardItem(str(variable_tuple[1]))]
+            items = [QStandardItem(str(variable_tuple[0])),
+                     QStandardItem(str(variable_tuple[1])),
+                     QStandardItem(str(variable_tuple[2]))]
             model.appendRow(items)
         # 将模型设置到 TableView 中
         self.tableView.setModel(model)
@@ -91,7 +93,8 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
         for row in range(row_count):
             variable_name = model.index(row, 0).data()
             variable_remark = model.index(row, 1).data()
-            variable_list.append((variable_name, variable_remark))
+            variable_value = model.index(row, 2).data()
+            variable_list.append((variable_name, variable_remark, variable_value))
         # 保存数据到数据库
         set_value_to_variable_table(variable_list)
 

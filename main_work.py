@@ -154,6 +154,7 @@ class CommandThread(QThread):
                         "获取Excel": (GetExcelCellValue, self.out_mes, dic_, self.number),
                         "获取对话框": (GetDialogValue, self.out_mes, dic_),
                         "变量判断": (ContrastVariables, self.out_mes, dic_),
+                        "运行Python": (RunPython, self.out_mes, dic_),
                     }
                     # 根据命令类型执行相应操作
                     if cmd_type in command_mapping:

@@ -1841,3 +1841,53 @@ class ContrastVariables:
             return variable1_ < variable2_
         elif comparison_symbol == '包含':
             return variable1_ in variable2_
+
+
+class RunPython:
+    """运行python脚本"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '返回名称': self.ins_dic.get('参数1（键鼠指令）'),
+            '变量名称': self.ins_dic.get('参数2'),
+            '代码': self.ins_dic.get('参数3')
+        }
+
+    @staticmethod
+    def sub_variable_2(text: str):
+        """将text中的变量替换为变量值"""
+        new_text = text
+        if ('☾' in text) and ('☽' in text):
+            variable_dic = get_variable_info('dict')
+            for key, value in variable_dic.items():
+                new_text = new_text.replace(f'☾{key}☽', str(f'"{value}"'))
+        return new_text
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        ins_dic = self.parsing_ins_dic()
+        try:
+            # 定义全局命名空间字典
+            globals_dict = {}
+            python_code = self.sub_variable_2(ins_dic.get('代码'))
+            # 在执行代码时，将结果保存到全局命名空间中
+            exec(python_code, globals_dict)
+            # 从全局命名空间中获取结果
+            result = globals_dict.get(ins_dic.get('返回名称'), None)
+            if result is not None:
+                if not self.is_test:  # 不是测试时,将结果赋值给变量
+                    set_variable_value(ins_dic.get('变量名称'), result)
+            self.out_mes.out_mes(f'已执行Python，返回：{result}', self.is_test)
+        except Exception as e:
+            print(e)
+            self.out_mes.out_mes(f'运行失败：{e}', self.is_test)

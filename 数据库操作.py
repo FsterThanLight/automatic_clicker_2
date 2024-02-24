@@ -367,7 +367,7 @@ def get_value_from_variable_table():
     """从设置表中获取指定设置类型的值
     :return: 设置类型的值"""
     cursor, con = sqlitedb()
-    cursor.execute('SELECT 变量名称, 备注 FROM 变量池')
+    cursor.execute('SELECT * FROM 变量池')
     result = cursor.fetchall()
     close_database(cursor, con)
     return result
@@ -375,7 +375,7 @@ def get_value_from_variable_table():
 
 def set_value_to_variable_table(variable_list: list):
     """将指定设置类型的值写入变量池窗口的表格
-    :param variable_list: 将要写入的变量列表（变量名称、备注）"""
+    :param variable_list: 将要写入的变量列表（变量名称、备注、变量值）"""
     if len(variable_list) != 0:
         cursor, con = sqlitedb()
         # 查询数据库中的现有值
@@ -383,19 +383,28 @@ def set_value_to_variable_table(variable_list: list):
             cursor.execute('SELECT * FROM 变量池')
             existing_values = cursor.fetchall()
             # 将现有值存储为字典，便于比较
-            existing_values_dict = {row[0]: row[1] for row in existing_values}
+            existing_values_dict = {row[0]: (row[1], row[2]) for row in existing_values}
             # 遍历传入的变量列表
-            for variable_name, remark in variable_list:
+            for variable_name, remark, value in variable_list:
                 # 如果变量名称在数据库中已存在且对应的备注值不等于传入值，则更新备注值
-                if variable_name in existing_values_dict and existing_values_dict[variable_name] != remark:
-                    cursor.execute('UPDATE 变量池 SET 备注 = ? WHERE 变量名称 = ?', (remark, variable_name))
+                if variable_name in existing_values_dict:
+                    cursor.execute(
+                        'UPDATE 变量池 SET 备注 = ?, 值 = ? WHERE 变量名称 = ?',
+                        (remark, value, variable_name))
                 # 如果变量名称不在数据库中，则插入新的记录
                 elif variable_name not in existing_values_dict:
-                    cursor.execute('INSERT INTO 变量池(变量名称, 备注) VALUES (?, ?)', (variable_name, remark))
+                    cursor.execute(
+                        'INSERT INTO 变量池(变量名称, 备注, 值) VALUES (?, ?, ?)',
+                        (variable_name, remark, value))
+                    cursor.execute(
+                        'UPDATE 变量池 SET 值 = ? WHERE 变量名称 = ?',
+                        (value, variable_name))
             # 检查变量池中是否有未在传入变量列表中的变量，如果有，则删除这些记录
             for variable_name in existing_values_dict:
                 if variable_name not in [v[0] for v in variable_list]:
-                    cursor.execute('DELETE FROM 变量池 WHERE 变量名称 = ?', (variable_name,))
+                    cursor.execute(
+                        'DELETE FROM 变量池 WHERE 变量名称 = ?',
+                        (variable_name,))
             con.commit()
         except sqlite3.IntegrityError:
             print("An error occurred: 数据库中已存在该变量名称")

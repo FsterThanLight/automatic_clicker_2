@@ -48,7 +48,7 @@ from 选择窗体 import Branch_exe_win
 # todo: 指令可编译为python代码
 # done: 播放语言功能
 # done: 右键菜单新增转到分支
-# todo: 运行python代码功能
+# done: 运行python代码功能
 # todo: 运行外部程序功能
 # done: 文本输入功能无法按下ctrl+v
 # todo: 从微信获取变量
@@ -534,81 +534,84 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 return get_file_and_folder('excel')
 
         # 判断是否为另存为,如果不是则自动判断文件类型
-        print('保存数据', judge)
-        judge_ = None
-        if judge != '自动保存':
-            file_name, folder_path = get_file_and_folder(judge)  # 获取文件名和文件夹路径
-            judge_ = judge
-        else:
-            file_name, folder_path = get_file_and_folder_from_setting()  # 如果存在最近打开的文件路径
-            if (file_name != '') and (file_name is not None):
-                judge_ = 'excel' if file_name.endswith('.xlsx') else 'db'
-        # 开始保存数据
-        if (file_name is not None) and (folder_path is not None):
-            if judge_ == 'db':
-                # 连接数据库
-                cursor, con = sqlitedb()
-                # 获取数据库文件路径
-                db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
-                close_database(cursor, con)
-                # 将数据库文件复制到指定文件夹下
-                save_path = os.path.normpath(os.path.join(folder_path, file_name))
-                shutil.copy(db_file, save_path)
-                # 提示保存成功
-                if judge != '自动保存':
-                    QMessageBox.information(self, "提示", "指令数据保存成功！")
-                self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
-            elif judge_ == 'excel':
-                # 使用openpyxl模块创建Excel文件
-                wb = openpyxl.Workbook()
-                # 获取全局参数表中的资源文件夹路径
-                branch_table_list = extract_global_parameter('分支表名')
-                # 将sheet名设置为分支表名
-                for branch_name in branch_table_list:
-                    wb.create_sheet(branch_name)  # 创建所有分支sheet
-                    # 向分支sheet中写入数据
-                    sheet = wb[branch_name]
-                    # 设置表头
-                    sheet['A1'] = 'ID'
-                    sheet['B1'] = '图像名称'
-                    sheet['C1'] = '指令类型'
-                    sheet['D1'] = '参数1'
-                    sheet['E1'] = '参数2'
-                    sheet['F1'] = '参数3'
-                    sheet['G1'] = '参数4'
-                    sheet['H1'] = '重复次数'
-                    sheet['I1'] = '异常处理'
-                    sheet['J1'] = '备注'
-                    sheet['K1'] = '隶属分支'
-                    # 写入数据
-                    branch_list_instructions = extracted_ins_from_database(branch_name)
-                    for ins in range(len(branch_list_instructions)):
-                        for i_ in range(len(branch_list_instructions[ins])):
-                            sheet.cell(row=ins + 2, column=i_ + 1, value=branch_list_instructions[ins][i_])
-                    # 自适应列宽
-                    for col in range(1, sheet.max_column + 1):
-                        max_length = 0
-                        for cell in sheet[get_column_letter(col)]:
-                            cell_length = 0.7 * len(re.findall('([\u4e00-\u9fa5])',
-                                                               str(cell.value))) + len(str(cell.value))
-                            max_length = max(max_length, cell_length)
-                        sheet.column_dimensions[get_column_letter(col)].width = max_length + 5
+        try:
+            print('保存数据', judge)
+            judge_ = None
+            if judge != '自动保存':
+                file_name, folder_path = get_file_and_folder(judge)  # 获取文件名和文件夹路径
+                judge_ = judge
+            else:
+                file_name, folder_path = get_file_and_folder_from_setting()  # 如果存在最近打开的文件路径
+                if (file_name != '') and (file_name is not None):
+                    judge_ = 'excel' if file_name.endswith('.xlsx') else 'db'
+            # 开始保存数据
+            if (file_name is not None) and (folder_path is not None):
+                if judge_ == 'db':
+                    # 连接数据库
+                    cursor, con = sqlitedb()
+                    # 获取数据库文件路径
+                    db_file = con.execute('PRAGMA database_list').fetchall()[0][2]
+                    close_database(cursor, con)
+                    # 将数据库文件复制到指定文件夹下
+                    save_path = os.path.normpath(os.path.join(folder_path, file_name))
+                    shutil.copy(db_file, save_path)
+                    # 提示保存成功
+                    if judge != '自动保存':
+                        QMessageBox.information(self, "提示", "指令数据保存成功！")
+                    self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
+                elif judge_ == 'excel':
+                    # 使用openpyxl模块创建Excel文件
+                    wb = openpyxl.Workbook()
+                    # 获取全局参数表中的资源文件夹路径
+                    branch_table_list = extract_global_parameter('分支表名')
+                    # 将sheet名设置为分支表名
+                    for branch_name in branch_table_list:
+                        wb.create_sheet(branch_name)  # 创建所有分支sheet
+                        # 向分支sheet中写入数据
+                        sheet = wb[branch_name]
+                        # 设置表头
+                        sheet['A1'] = 'ID'
+                        sheet['B1'] = '图像名称'
+                        sheet['C1'] = '指令类型'
+                        sheet['D1'] = '参数1'
+                        sheet['E1'] = '参数2'
+                        sheet['F1'] = '参数3'
+                        sheet['G1'] = '参数4'
+                        sheet['H1'] = '重复次数'
+                        sheet['I1'] = '异常处理'
+                        sheet['J1'] = '备注'
+                        sheet['K1'] = '隶属分支'
+                        # 写入数据
+                        branch_list_instructions = extracted_ins_from_database(branch_name)
+                        for ins in range(len(branch_list_instructions)):
+                            for i_ in range(len(branch_list_instructions[ins])):
+                                sheet.cell(row=ins + 2, column=i_ + 1, value=branch_list_instructions[ins][i_])
+                        # 自适应列宽
+                        for col in range(1, sheet.max_column + 1):
+                            max_length = 0
+                            for cell in sheet[get_column_letter(col)]:
+                                cell_length = 0.7 * len(re.findall('([\u4e00-\u9fa5])',
+                                                                   str(cell.value))) + len(str(cell.value))
+                                max_length = max(max_length, cell_length)
+                            sheet.column_dimensions[get_column_letter(col)].width = max_length + 5
 
-                wb.remove(wb['Sheet'])  # 删除默认的sheet
-                # 保存Excel文件
-                save_path = os.path.normpath(os.path.join(folder_path, file_name))
-                wb.save(save_path)
-                # 提示保存成功，是否打开文件夹
-                if judge != '自动保存':
-                    choice__ = QMessageBox.question(self,
-                                                    '提示',
-                                                    '指令数据保存成功！是否打开文件夹？',
-                                                    QMessageBox.Yes | QMessageBox.No,
-                                                    QMessageBox.No
-                                                    )
-                    if choice__ == QMessageBox.Yes:
-                        os.startfile(save_path)
-                self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
+                    wb.remove(wb['Sheet'])  # 删除默认的sheet
+                    # 保存Excel文件
+                    save_path = os.path.normpath(os.path.join(folder_path, file_name))
+                    wb.save(save_path)
+                    # 提示保存成功，是否打开文件夹
+                    if judge != '自动保存':
+                        choice__ = QMessageBox.question(self,
+                                                        '提示',
+                                                        '指令数据保存成功！是否打开文件夹？',
+                                                        QMessageBox.Yes | QMessageBox.No,
+                                                        QMessageBox.No
+                                                        )
+                        if choice__ == QMessageBox.Yes:
+                            os.startfile(save_path)
+                    self.statusBar.showMessage(f'指令数据已保存至{save_path}。', 3000)
+        except PermissionError:
+            QMessageBox.critical(self, "错误", "保存失败，文件被占用！")
 
     def closeEvent(self, event):
         """关闭窗口事件"""
@@ -747,7 +750,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.command_thread.start()
             # 记录开始时间的时间戳
             self.start_time = time.time()
-            print('开始时间：', self.start_time)
 
     def exporting_operation_logs(self):
         """导出操作日志"""
