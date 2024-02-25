@@ -14,6 +14,7 @@ import os.path
 import shutil
 
 import openpyxl
+import qdarkstyle
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
@@ -26,8 +27,8 @@ from system_hotkey import SystemHotkey
 
 from icon import Icon
 from main_work import CommandThread
-from 导航窗口 import Na
 from 功能类 import close_browser
+from 导航窗口 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.info import Ui_Form
@@ -49,7 +50,7 @@ from 选择窗体 import Branch_exe_win
 # done: 播放语言功能
 # done: 右键菜单新增转到分支
 # done: 运行python代码功能
-# todo: 运行外部程序功能
+# done: 运行外部程序功能
 # done: 文本输入功能无法按下ctrl+v
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
@@ -957,12 +958,32 @@ class Info(QDialog, Ui_Form):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
 
 
+class QSSLoader:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def read_qss_file(qss_file_name):
+        """从文件中读取qss的静态方法"""
+        with open(qss_file_name, "r", encoding="UTF-8") as file:
+            return file.read()
+
+
 if __name__ == "__main__":
     # 自适应高分辨率
     # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication([])
     main_win = Main_window()  # 创建主窗体
+
+    # 设置窗体样式
+    style_name = 'Combinear'
+    style_file = r"./窗体/flatwhite/{}.qss".format(style_name)
+    style_sheet = QSSLoader.read_qss_file(style_file)
+    main_win.setStyleSheet(style_sheet)
+
     main_win.show()  # 显示窗体，并根据设置检查更新
+    # apply_stylesheet(app, theme='dark_yellow.xml')  # 设置主题
+    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())  # 设置主题
     sys.exit(app.exec_())
 
     # def is_admin():
