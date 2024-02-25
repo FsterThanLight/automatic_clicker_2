@@ -21,6 +21,7 @@ class Ui_VariablePool(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(VariablePool)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tableView = QtWidgets.QTableView(VariablePool)
+        self.tableView.setAlternatingRowColors(False)
         self.tableView.setObjectName("tableView")
         self.verticalLayout.addWidget(self.tableView)
 

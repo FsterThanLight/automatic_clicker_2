@@ -1,5 +1,33 @@
 <RCC>
   <qresource prefix="按钮图标">
+    <file>窗体/qss_icons/branch-end.png</file>
+    <file>窗体/qss_icons/branch-end.png</file>
+    <file>窗体/qss_icons/branch-end.png</file>
+    <file>窗体/qss_icons/add_bottom.png</file>
+    <file>窗体/qss_icons/add_left.png</file>
+    <file>窗体/qss_icons/add_right.png</file>
+    <file>窗体/qss_icons/add_top.png</file>
+    <file>窗体/qss_icons/branch_close.png</file>
+    <file>窗体/qss_icons/branch_open.png</file>
+    <file>窗体/qss_icons/branch-closed.png</file>
+    <file>窗体/qss_icons/branch-end.png</file>
+    <file>窗体/qss_icons/branch-more.png</file>
+    <file>窗体/qss_icons/branch-open.png</file>
+    <file>窗体/qss_icons/calendar_nextmonth.png</file>
+    <file>窗体/qss_icons/branch_close.png</file>
+    <file>窗体/qss_icons/branch_open.png</file>
+    <file>窗体/qss_icons/calendar_prevmonth.png</file>
+    <file>窗体/qss_icons/checkbox_checked.png</file>
+    <file>窗体/qss_icons/checkbox_checked_disable.png</file>
+    <file>窗体/qss_icons/checkbox_parcial.png</file>
+    <file>窗体/qss_icons/checkbox_parcial_disable.png</file>
+    <file>窗体/qss_icons/checkbox_unchecked.png</file>
+    <file>窗体/qss_icons/checkbox_unchecked_disable.png</file>
+    <file>窗体/qss_icons/radiobutton_checked.png</file>
+    <file>窗体/qss_icons/radiobutton_checked_disable.png</file>
+    <file>窗体/qss_icons/radiobutton_unchecked.png</file>
+    <file>窗体/qss_icons/radiobutton_unchecked_disable.png</file>
+    <file>窗体/qss_icons/vline.png</file>
     <file>窗体/res/gitee.png</file>
     <file>窗体/res/github.png</file>
     <file>窗体/res/清除.png</file>

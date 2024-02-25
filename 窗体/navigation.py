@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_navigation(object):
     def setupUi(self, navigation):
         navigation.setObjectName("navigation")
-        navigation.resize(699, 770)
+        navigation.resize(699, 863)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setBold(False)
@@ -50,32 +50,7 @@ class Ui_navigation(object):
         font.setUnderline(False)
         font.setWeight(75)
         self.treeWidget.setFont(font)
-        self.treeWidget.setStyleSheet("QTreeView {\n"
-"    show-decoration-selected: 1;\n"
-"}\n"
-"\n"
-"QTreeView::item {\n"
-"     border: 1px solid #d9d9d9;\n"
-"    border-top-color: transparent;\n"
-"    border-bottom-color: transparent;\n"
-"}\n"
-"\n"
-"QTreeView::item:hover {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);\n"
-"    border: 1px solid #bfcde4;\n"
-"}\n"
-"\n"
-"QTreeView::item:selected {\n"
-"    border: 1px solid #567dbc;\n"
-"}\n"
-"\n"
-"QTreeView::item:selected:active{\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);\n"
-"}\n"
-"\n"
-"QTreeView::item:selected:!active {\n"
-"    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);\n"
-"}")
+        self.treeWidget.setStyleSheet("")
         self.treeWidget.setObjectName("treeWidget")
         item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
         item_1 = QtWidgets.QTreeWidgetItem(item_0)
@@ -402,6 +377,7 @@ class Ui_navigation(object):
         self.label_31.setObjectName("label_31")
         self.verticalLayout_62.addWidget(self.label_31)
         self.groupBox_28 = QtWidgets.QGroupBox(self.tab_5)
+        self.groupBox_28.setStyleSheet("")
         self.groupBox_28.setFlat(False)
         self.groupBox_28.setCheckable(False)
         self.groupBox_28.setObjectName("groupBox_28")

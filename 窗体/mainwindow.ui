@@ -848,6 +848,15 @@ color: rgb(255, 255, 255);</string>
                </color>
               </brush>
              </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>240</red>
+                <green>240</green>
+                <blue>240</blue>
+               </color>
+              </brush>
+             </colorrole>
              <colorrole role="PlaceholderText">
               <brush brushstyle="NoBrush">
                <color alpha="128">
@@ -865,6 +874,15 @@ color: rgb(255, 255, 255);</string>
                 <red>0</red>
                 <green>0</green>
                 <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>240</red>
+                <green>240</green>
+                <blue>240</blue>
                </color>
               </brush>
              </colorrole>
@@ -888,6 +906,15 @@ color: rgb(255, 255, 255);</string>
                </color>
               </brush>
              </colorrole>
+             <colorrole role="AlternateBase">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>240</red>
+                <green>240</green>
+                <blue>240</blue>
+               </color>
+              </brush>
+             </colorrole>
              <colorrole role="PlaceholderText">
               <brush brushstyle="NoBrush">
                <color alpha="128">
@@ -908,6 +935,12 @@ color: rgb(255, 255, 255);</string>
             <bold>false</bold>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">QTableWidget {
+    alternate-background-color: #f0f0f0; /* 设置交替行的背景色 */
+}
+</string>
+          </property>
           <property name="autoScrollMargin">
            <number>16</number>
           </property>
@@ -915,7 +948,7 @@ color: rgb(255, 255, 255);</string>
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
           <property name="alternatingRowColors">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::SingleSelection</enum>

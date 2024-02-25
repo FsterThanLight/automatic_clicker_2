@@ -26,7 +26,6 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
         """设置窗体样式"""
         # 设置表格风格
         self.tableView.horizontalHeader().setStretchLastSection(True)  # 设置最后一列拉伸至最大
-        self.tableView.setAlternatingRowColors(True)  # 交替颜色
         self.tableView.setStyleSheet("QHeaderView::section{background:red;}")  # 设置表头背景色
         # 设置标题字体粗体
         self.tableView.horizontalHeader().setStyleSheet(

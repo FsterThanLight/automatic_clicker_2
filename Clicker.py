@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction)
 from openpyxl.utils import get_column_letter
+from qt_material import apply_stylesheet
 from system_hotkey import SystemHotkey
 
 from icon import Icon
