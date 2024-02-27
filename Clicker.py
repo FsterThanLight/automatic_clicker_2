@@ -14,7 +14,6 @@ import os.path
 import shutil
 
 import openpyxl
-import qdarkstyle
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
@@ -23,7 +22,6 @@ from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction)
 from openpyxl.utils import get_column_letter
-from qt_material import apply_stylesheet
 from system_hotkey import SystemHotkey
 
 from icon import Icon
@@ -32,7 +30,6 @@ from 功能类 import close_browser
 from 导航窗口 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
-from 窗体.info import Ui_Form
 from 窗体.mainwindow import Ui_MainWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
@@ -952,11 +949,11 @@ class About(QDialog, Ui_About):
         save_window_size((self.width(), self.height()), self.windowTitle())
 
 
-class Info(QDialog, Ui_Form):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+# class Info(QDialog, Ui_Form):
+#     def __init__(self, parent=None):
+#         super().__init__(parent)
+#         self.setupUi(self)
+#         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
 
 
 class QSSLoader:
@@ -977,14 +974,15 @@ if __name__ == "__main__":
     main_win = Main_window()  # 创建主窗体
 
     # 设置窗体样式
-    style_name = 'Combinear'
-    style_file = r"./窗体/flatwhite/{}.qss".format(style_name)
-    style_sheet = QSSLoader.read_qss_file(style_file)
-    main_win.setStyleSheet(style_sheet)
+    try:
+        style_name = 'Combinear'
+        style_file = r"./flat/{}.qss".format(style_name)
+        style_sheet = QSSLoader.read_qss_file(style_file)
+        main_win.setStyleSheet(style_sheet)
+    except FileNotFoundError:
+        pass
 
     main_win.show()  # 显示窗体，并根据设置检查更新
-    # apply_stylesheet(app, theme='dark_yellow.xml')  # 设置主题
-    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())  # 设置主题
     sys.exit(app.exec_())
 
     # def is_admin():

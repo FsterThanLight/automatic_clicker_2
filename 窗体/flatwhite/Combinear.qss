@@ -3,6 +3,12 @@
 /*    font-family: "Arial";*/
 }
 
+/* 标题栏设置 */
+QMainWindow::title {
+    color: #000000; /* 黑色 */
+    background-color: #000000; /* 黑色 */
+}
+
 /*-----QWidget-----*/
 QWidget
 {
@@ -924,4 +930,15 @@ QTableWidget::item:selected:!focus {
     background-color: #5A5E2F; /* 未聚焦的选中区为浅金色 */
     color: white; /* 字体颜色为白色 */
 }
+
+/*-----plainTextEdit*-----*/
+QPlainTextEdit {
+    background-color: #131313;
+    color: #00ff00; /* 绿色 */
+    border: 1px solid #343434;
+    border-radius: 2px;
+    padding: 3px;
+    padding-left: 5px;
+}
+
 
