@@ -64,6 +64,7 @@ class Na(QWidget, Ui_navigation):
             '信息录入': (self.comboBox_12, self.comboBox_13),
             '网页录入': (self.comboBox_20, self.comboBox_23),
             '获取Excel': (self.comboBox_45, self.comboBox_46),
+            '写入单元格': (self.comboBox_57, self.comboBox_58),
         }
         self.variable_input_control = {  # 需要插入变量的控件
             '文本输入': self.textEdit,
@@ -71,6 +72,7 @@ class Na(QWidget, Ui_navigation):
             '发送消息': self.textEdit_2,
             '提示音': self.textEdit_4,
             '运行Python': self.textEdit_5,
+            '写入单元格': self.textEdit_6,
         }
         self.branch_jump_control = {  # 需要分支跳转的功能
             '功能区参数': (self.comboBox_10, self.comboBox_11),
@@ -123,6 +125,7 @@ class Na(QWidget, Ui_navigation):
             '变量判断': (lambda x: self.contrast_variables_function(x), False),
             '运行Python': (lambda x: self.run_python_function(x), False),
             '运行外部文件': (lambda x: self.run_external_file_function(x), True),
+            '写入单元格': (lambda x: self.input_cell_function(x), True),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -2098,3 +2101,52 @@ class Na(QWidget, Ui_navigation):
         elif type_ == '加载信息':
             # 当t导航业显示时，加载信息到控件
             pass
+
+    def input_cell_function(self, type_):
+        """输入到excel单元格的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            image_ = f'{self.comboBox_57.currentText()}-{self.comboBox_58.currentText()}'  # Excel路径-工作表
+            parameter_1_ = f'{self.lineEdit_28.text()}-{self.checkBox_10.isChecked()}'  # 单元格-是否行号递增
+            parameter_2_ = f'{self.textEdit_6.toPlainText()}'  # 内容
+            # 检查参数是否有异常
+            if image_ == '':
+                QMessageBox.critical(self, "错误", "Excel路径未设置！")
+                raise ValueError
+            if parameter_1_ == '':
+                QMessageBox.critical(self, "错误", "单元格未设置！")
+                raise ValueError
+            if parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "输出内容未设置！")
+                raise ValueError
+
+            return image_, parameter_1_, parameter_2_
+
+        if type_ == '按钮功能':
+            self.pushButton_44.clicked.connect(lambda: os.startfile(self.comboBox_57.currentText()))
+            self.pushButton_45.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
+            # 禁用中文输入
+            self.lineEdit_28.setValidator(QRegExpValidator(QRegExp("[a-zA-Z0-9]{16}"), self))
+            self.comboBox_57.activated.connect(
+                lambda: self.find_controls('excel', '写入单元格')
+            )
+
+        elif type_ == '写入参数':
+            image, parameter_1, parameter_2 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_57.clear()
+            self.comboBox_57.addItems(extract_excel_from_global_parameter())
+            self.find_controls('excel', '写入单元格')

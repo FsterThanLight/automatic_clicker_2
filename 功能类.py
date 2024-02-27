@@ -1680,7 +1680,6 @@ class GetExcelCellValue:
 
         self.is_test: bool = False  # 是否测试
         self.cycle_number: int = cycle_number  # 循环次数
-        print('cycle_number', self.cycle_number)
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
@@ -1924,3 +1923,67 @@ class RunExternalFile:
             print(e)
             self.out_mes.out_mes(f'运行失败：{e}', self.is_test)
             raise ValueError(f'打开文件失败')
+
+
+class InputCellExcel:
+    """输入到excel单元格的功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '工作簿路径': self.ins_dic.get('图像路径').split('-')[0],
+            '工作表名称': self.ins_dic.get('图像路径').split('-')[1],
+            '单元格位置': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
+            '是否递增': eval(self.ins_dic.get('参数1（键鼠指令）').split('-')[1]),
+            '输入内容': self.ins_dic.get('参数2')
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        # 解析指令字典
+        list_dic = self.parsing_ins_dic()
+        excel_path = list_dic.get('工作簿路径')
+        sheet_name = list_dic.get('工作表名称')
+        cell_position = list_dic.get('单元格位置')
+
+        if list_dic.get('是否递增'):
+            cell_position = line_number_increment(cell_position, self.cycle_number - 1)
+
+        # 输入到excel单元格
+        self.input_to_excel(
+            excel_path,
+            sheet_name,
+            cell_position,
+            sub_variable(list_dic.get('输入内容'))
+        )
+
+    def input_to_excel(self,
+                       file_path,
+                       sheet_name,
+                       cell_position,
+                       input_content
+                       ):
+        """输入到excel单元格
+        :param file_path: 文件路径
+        :param sheet_name: 表名
+        :param cell_position: 单元格位置
+        :param input_content: 输入内容"""
+        try:
+            wb = openpyxl.load_workbook(file_path)
+            sheet = wb[sheet_name]
+            sheet[cell_position] = input_content
+            wb.save(file_path)
+            self.out_mes.out_mes(f'已将"{input_content}"输入到单元格"{cell_position}"', self.is_test)
+        except Exception as e:
+            print(e)
+            self.out_mes.out_mes(f'输入失败：{e}', self.is_test)
+            raise ValueError(f'输入失败')

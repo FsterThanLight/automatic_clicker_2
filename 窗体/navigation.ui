@@ -126,6 +126,16 @@
          </item>
          <item>
           <property name="text">
+           <string>Excel指令</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>写入单元格</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
            <string>获取变量</string>
           </property>
           <item>
@@ -317,7 +327,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>35</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -2399,7 +2409,7 @@
                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'微软雅黑','微软雅黑'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'黑体','黑体';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="placeholderText">
@@ -6916,8 +6926,8 @@ p, li { white-space: pre-wrap; }
                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cascadia Code'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cascadia Code','微软雅黑','微软雅黑';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cascadia Code','微软雅黑','微软雅黑'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="placeholderText">
                    <string>请编写pythond代码...</string>
@@ -7316,6 +7326,137 @@ p, li { white-space: pre-wrap; }
               <string>运行测试</string>
              </property>
             </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_39">
+          <attribute name="title">
+           <string>写入单元格</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_83">
+           <item>
+            <widget class="QGroupBox" name="groupBox_53">
+             <property name="title">
+              <string>从Excel单元格获取</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_57">
+              <item row="0" column="0" colspan="2">
+               <widget class="QLabel" name="label_150">
+                <property name="text">
+                 <string>Excel工作簿名称：</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QComboBox" name="comboBox_57"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_151">
+                <property name="text">
+                 <string>工作表名：</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QComboBox" name="comboBox_58"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_152">
+                <property name="text">
+                 <string>单元格：</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLineEdit" name="lineEdit_28">
+                <property name="placeholderText">
+                 <string>如：A1、B2...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="3">
+               <layout class="QHBoxLayout" name="horizontalLayout_21" stretch="0,0">
+                <item>
+                 <widget class="QCheckBox" name="checkBox_10">
+                  <property name="text">
+                   <string>单元格行号自动递增</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pushButton_44">
+                  <property name="font">
+                   <font>
+                    <family>微软雅黑</family>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>打开工作簿</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_54">
+             <property name="title">
+              <string>文本内容</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_58" columnstretch="1,1">
+              <item row="0" column="0" colspan="2">
+               <widget class="QTextEdit" name="textEdit_6">
+                <property name="placeholderText">
+                 <string>输入文本内容......</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>218</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="pushButton_45">
+                <property name="font">
+                 <font>
+                  <family>微软雅黑</family>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>插入变量</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_33">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>92</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
