@@ -35,39 +35,16 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
-# done: 新增提示音指令
-# done: 新增倒计时窗口功能
-# done: 快捷截图指令重新设计
-# done: 终止循环功能
 # todo: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
-# done: 变量池功能
-# todo: qss界面美化
 # todo: 指令可编译为python代码
-# done: 播放语言功能
-# done: 右键菜单新增转到分支
-# done: 运行python代码功能
-# done: 运行外部程序功能
-# done: 文本输入功能无法按下ctrl+v
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
 # todo: win通知指令
-# done: 对话框指令集
 # todo: excel指令集
 # todo: 调试模式
 # todo: 动作录制功能
-# done: 变量比较指令
-# done: 指令搜索功能
-# done: 使变量可以特殊显示
-# done: 按键等待指令
-# done: 流程控制指令（转分支、终止流程）
-# done: 应用控制指令（打开、关闭、最小化、最大化、置顶）
-# done: 快捷截图后自动设置为最新图像
-# done: 鼠标点击功能可设置按压时长
-# done: 鼠标移动、滚轮功能可设置随机移动
-# done: 图像识别增加灰度识别
-# done: 菜单栏增加最近打开选项
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
@@ -81,7 +58,9 @@ from 选择窗体 import Branch_exe_win
 # 3. 在导航页的treeWidget中添加指令的名称
 # 4. 在功能类中添加运行功能
 
-OUR_WEBSITE = 'https://gitee.com/automatic_clicker/automatic_clicker_2'
+CURRENT_VERSION = 'v0.21 Beta'
+OUR_WEBSITE = 'https://gitee.com/fasterthanlight/automatic_clicker/releases'
+QQ = '308994839'
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
@@ -93,7 +72,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 初始化窗体
         self.setupUi(self)
         # 窗口和信息
-        self.version = 'v0.21 Beta'  # 软件版本
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
         self.icon = Icon()  # 实例化图标
@@ -153,7 +131,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.hk_stop.register(('alt', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
 
         # 设置状态栏信息
-        self.statusBar.showMessage(f'软件版本：{self.version}准备就绪...', 3000)
+        self.statusBar.showMessage(f'软件版本：{CURRENT_VERSION}准备就绪...', 3000)
 
     def add_recent_to_fileMenu(self):
         """将最近文件添加到菜单中"""
@@ -932,13 +910,10 @@ class About(QDialog, Ui_About):
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
+        self.label_2.setText(f'版本：{CURRENT_VERSION}')  # 设置版本号
+        self.label_7.setText(f'{QQ}')  # 设置QQ
         # 绑定事件
-        self.github.clicked.connect(self.show_github)
         self.gitee.clicked.connect(self.show_gitee)
-
-    def show_github(self):
-        # 弹出对话框显示“暂无信息”
-        QMessageBox.information(self, '提醒', '暂无信息')
 
     @staticmethod
     def show_gitee():
@@ -949,14 +924,9 @@ class About(QDialog, Ui_About):
         save_window_size((self.width(), self.height()), self.windowTitle())
 
 
-# class Info(QDialog, Ui_Form):
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.setupUi(self)
-#         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
-
-
 class QSSLoader:
+    """QSS皮肤加载器"""
+
     def __init__(self):
         pass
 
