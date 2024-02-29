@@ -53,15 +53,19 @@ from 选择窗体 import Branch_exe_win
 # pyinstaller -D -i clicker.ico Clicker.py
 # pyinstaller -F -i clicker.ico Clicker.py
 
+# nuitka --standalone --onefile --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico
+# --include-package=pygments --include-package=pyttsx4 --include-package-data=selenium Clicker.py
+
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
 # 2. 在导航页的页面中添加指令的处理函数
 # 3. 在导航页的treeWidget中添加指令的名称
 # 4. 在功能类中添加运行功能
 
-CURRENT_VERSION = 'v0.21 Beta'
+
 OUR_WEBSITE = 'https://gitee.com/fasterthanlight/automatic_clicker/releases'
 QQ = '308994839'
+CURRENT_VERSION = 'v0.25 Beta'
 
 
 class Main_window(QMainWindow, Ui_MainWindow):
@@ -126,10 +130,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.toolBar.setVisible(judge)
         self.actiong.setChecked(judge)
         # 注册全局快捷键
-        self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
-        self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
-        self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
-        self.hk_stop.register(('alt', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
+        try:
+            self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
+            self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
+            self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
+            self.hk_stop.register(('alt', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
+        except Exception as e:
+            print(e)
+            QMessageBox.critical(self, "错误", "全局快捷键已失效！")
+            sys.exit()
 
         # 设置状态栏信息
         self.statusBar.showMessage(f'软件版本：{CURRENT_VERSION}准备就绪...', 3000)
@@ -947,11 +956,12 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     splash = QSplashScreen(QPixmap(r'./flat/开屏.png'))  # 创建启动界面
-    splash.showMessage( # 初始文本
+    splash.showMessage(  # 初始文本
         "加载中......", QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom, QtCore.Qt.green
     )
-    splash.setFont(QFont('微软雅黑', 10))  # 设置字体
+    splash.setFont(QFont('微软雅黑', 15))  # 设置字体
     splash.show()  # 显示启动界面
+    time.sleep(0.5)  # 延时1秒
 
     main_win = Main_window()  # 创建主窗体
 
