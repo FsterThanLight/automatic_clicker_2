@@ -14,13 +14,13 @@ import os.path
 import shutil
 
 import openpyxl
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtGui import QDesktopServices, QPixmap, QFont
 from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
-                             QAction)
+                             QAction, QSplashScreen)
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
@@ -45,12 +45,13 @@ from 选择窗体 import Branch_exe_win
 # todo: excel指令集
 # todo: 调试模式
 # todo: 动作录制功能
+# todo: 使用将指定标题的窗口正常显示后会出现菜单栏阴影的问题
 
 # activate clicker
 # pyinstaller -F -w -i clicker.ico Clicker.py
 # pyinstaller -D -w -i clicker.ico Clicker.py
 # pyinstaller -D -i clicker.ico Clicker.py
-# pyinstaller -D -i clicker.ico Clicker.py
+# pyinstaller -F -i clicker.ico Clicker.py
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
@@ -149,6 +150,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 if file == current_file_path:
                     file_action.setChecked(True)
                 self.menuzv.addAction(file_action)
+        # 关闭菜单栏
+        self.menuzv.close()
 
     def open_recent_file(self, file_path):
         """打开最近打开的文件
@@ -940,7 +943,16 @@ class QSSLoader:
 if __name__ == "__main__":
     # 自适应高分辨率
     # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    app = QApplication([])
+    # app = QApplication([])
+    app = QtWidgets.QApplication(sys.argv)
+
+    splash = QSplashScreen(QPixmap(r'./flat/开屏.png'))  # 创建启动界面
+    splash.showMessage( # 初始文本
+        "加载中......", QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom, QtCore.Qt.green
+    )
+    splash.setFont(QFont('微软雅黑', 10))  # 设置字体
+    splash.show()  # 显示启动界面
+
     main_win = Main_window()  # 创建主窗体
 
     # 设置窗体样式
@@ -953,6 +965,10 @@ if __name__ == "__main__":
         pass
 
     main_win.show()  # 显示窗体，并根据设置检查更新
+
+    splash.finish(main_win)  # 隐藏启动界面
+    splash.deleteLater()
+
     sys.exit(app.exec_())
 
     # def is_admin():

@@ -1017,7 +1017,11 @@ class Na(QWidget, Ui_navigation):
             if judge == '测试':
                 url = self.lineEdit_19.text()
                 web_option = WebOption(self.out_mes)
-                web_option.web_open_test(url)
+                is_succeed, str_info = web_option.web_open_test(url)  # 测试网页是否能打开
+                if is_succeed:
+                    QMessageBox.information(self, '提示', '连接成功！', QMessageBox.Yes)
+                else:
+                    QMessageBox.critical(self, "错误", str_info)
 
             elif judge == '安装浏览器':
                 url = 'https://google.cn/chrome/'

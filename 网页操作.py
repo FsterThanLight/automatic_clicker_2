@@ -2,7 +2,6 @@ import random
 import time
 
 import pandas as pd
-from PyQt5.QtWidgets import QMessageBox, QApplication
 from selenium import webdriver
 from selenium.common import NoSuchElementException, TimeoutException
 from selenium.webdriver import ActionChains
@@ -30,7 +29,9 @@ class WebOption:
         self.is_test = False
 
     def web_open_test(self, url):
-        """打开网页"""
+        """打开网页
+        :param url: 网址
+        :return: 打开网页是否成功，成功返回True，失败返回False。"""
         url = 'https://www.cn.bing.com/' if url == '' else \
             ('http://' + url) if not url.startswith(('http://', 'https://')) else url
 
@@ -38,24 +39,29 @@ class WebOption:
         try:
             self.driver.get(url)
             time.sleep(1)
-            self.driver.quit()
-            QMessageBox.information(None, '提示', '连接成功。', QMessageBox.Yes)
+            # self.driver.quit()
+            return True, '打开网页成功。'
         except Exception as e:
             # 弹出错误提示
             print(e)
-            QMessageBox.warning(None, '警告', '连接失败，请重试。系统故障、网络故障或网址错误。',
-                                QMessageBox.Yes)
+            return False, e
+
+    def output_message(self, mes):
+        """输出信息
+        :param mes: 信息内容"""
+        if self.out_mes is not None:
+            self.out_mes.out_mes(mes, self.is_test)
 
     def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
         try:
-            self.out_mes.out_mes('正在安装谷歌浏览器驱动...', self.is_test)
+            self.output_message(f'正在安装谷歌浏览器驱动...等待中...')
             service = ChromeService(executable_path=ChromeDriverManager().install())
             driver_ = webdriver.Chrome(service=service)
             driver_.quit()
-            self.out_mes.out_mes('浏览器驱动安装成功。', self.is_test)
+            self.output_message('浏览器驱动安装成功。')
         except ConnectionError:
-            QMessageBox.warning(None, '警告', '驱动安装失败，请重试。', QMessageBox.Yes)
+            self.output_message('浏览器驱动安装失败，请重试。')
 
     def close_browser(self):
         """关闭浏览器驱动"""
@@ -82,7 +88,7 @@ class WebOption:
             return locators.get(element_type, By.XPATH)
 
         try:
-            print('正在查找元素' + element_value_)
+            self.output_message(f'正在查找元素{element_value_}。')
             locator = get_locator(element_type_)  # 获取定位器
             target_ele = WebDriverWait(self.driver, timeout_type_).until(
                 EC.presence_of_element_located((locator, element_value_))
@@ -131,9 +137,7 @@ class WebOption:
         # 查找元素(元素类型、超时错误)
         target_ele = self.lookup_element(element_value_, element_type_, timeout_type_)
         if target_ele is not None:
-            print('找到网页元素，执行鼠标操作。')
-            self.out_mes.out_mes('找到网页元素，执行鼠标操作。', self.is_test)
-            QApplication.processEvents()
+            self.output_message('找到网页元素，执行鼠标操作。')
             if action == '左键单击':
                 ActionChains(self.driver).click(target_ele).perform()
             elif action == '左键双击':
@@ -146,7 +150,8 @@ class WebOption:
                 if not read_only:
                     target_ele.send_keys(self.text)
                 else:
-                    print('元素为只读属性，正在移除只读属性。')
+                    # print('元素为只读属性，正在移除只读属性。')
+                    self.output_message('元素为只读属性，正在移除只读属性。')
                     self.driver.execute_script("arguments[0].removeAttribute('readonly');", target_ele)
                     target_ele.click()
                     target_ele.clear()
@@ -200,12 +205,13 @@ class WebOption:
 
 if __name__ == '__main__':
     web_option = WebOption()
-    XXX = web_option.open_driver('https://www.baidu.com/', True)
-
-    xxx_option = WebOption()
-    xxx_option.driver = XXX
-    xxx_option.text = '百度'
-    xxx_option.single_shot_operation(action='输入内容',
-                                     element_type_='xpath定位',
-                                     element_value_='//*[@id="kw"]',
-                                     timeout_type_=15)
+    web_option.web_open_test(url='https://www.baidu.com/')
+    # XXX = web_option.open_driver('https://www.baidu.com/', True)
+    #
+    # xxx_option = WebOption()
+    # xxx_option.driver = XXX
+    # xxx_option.text = '百度'
+    # xxx_option.single_shot_operation(action='输入内容',
+    #                                  element_type_='xpath定位',
+    #                                  element_value_='//*[@id="kw"]',
+    #                                  timeout_type_=15)

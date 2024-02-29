@@ -795,6 +795,7 @@ class OpenWeb:
         url = self.ins_dic.get('图像路径')
         global DRIVER
         DRIVER = self.web_option.open_driver(url, True)
+        self.out_mes.out_mes('已打开网页', self.is_test)
 
 
 class EleControl:
@@ -830,6 +831,7 @@ class EleControl:
                                               element_value_=list_ins_.get('元素值'),
                                               element_type_=list_ins_.get('元素类型'),
                                               timeout_type_=list_ins_.get('超时类型'))
+        self.out_mes.out_mes('已执行元素控制', self.is_test)
 
 
 class WebEntry:
@@ -874,11 +876,13 @@ class WebEntry:
         global DRIVER
         self.web_option.driver = DRIVER
         self.web_option.text = cell_value
+        self.out_mes.out_mes('已获取到单元格值', self.is_test)
         self.web_option.single_shot_operation(action='输入内容',
                                               element_value_=list_ins_.get('元素值'),
                                               element_type_=list_ins_.get('元素类型'),
                                               timeout_type_=list_ins_.get('超时类型')
                                               )
+        self.out_mes.out_mes('已执行信息录入', self.is_test)
 
 
 class MouseDrag:
@@ -960,6 +964,7 @@ class SaveForm:
                                               element_type_=list_ins_.get('元素类型'),
                                               timeout_type_=list_ins_.get('超时类型')
                                               )
+        self.out_mes.out_mes('已执行保存网页表格', self.is_test)
 
 
 class ToggleFrame:
@@ -993,6 +998,7 @@ class ToggleFrame:
             iframe_value=list_ins_.get('frame值'),
             switch_type=list_ins_.get('切换类型')
         )
+        self.out_mes.out_mes('已执行切换frame', self.is_test)
 
 
 class SwitchWindow:
@@ -1024,6 +1030,7 @@ class SwitchWindow:
             window_type=list_ins_.get('切换类型'),
             window_value=list_ins_.get('窗口值')
         )
+        self.out_mes.out_mes('已执行切换窗口', self.is_test)
 
 
 class DragWebElements:
@@ -1066,6 +1073,7 @@ class DragWebElements:
                                               element_type_=list_ins_.get('元素类型'),
                                               timeout_type_=list_ins_.get('超时类型')
                                               )
+        self.out_mes.out_mes('已执行拖拽网页元素', self.is_test)
 
 
 class FullScreenCapture:

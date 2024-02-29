@@ -132,13 +132,14 @@ class ScreenCapture:
             self.region = (self.region[0] + self.region[2], self.region[1], -self.region[2], self.region[3])
         if self.region[3] < 0:
             self.region = (self.region[0], self.region[1] + self.region[3], self.region[2], -self.region[3])
+
         self.pic = pyautogui.screenshot(region=self.region)
 
     def show_preview(self):
         """显示截图预览"""
         # 保存截图到内存
         im_bytes = io.BytesIO()
-        self.pic.save(im_bytes, format='PNG')
+        self.pic.save(im_bytes, format='png')
         im_b = im_bytes.getvalue()
         # 显示截图
         image_preview = ImagePreview(im_bytes, im_b)

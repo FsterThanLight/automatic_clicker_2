@@ -59,8 +59,13 @@ def show_normal_window_with_specified_title(title):
             if t == title:
                 try:
                     time.sleep(0.5)
+                    # # 设置窗口样式为可见、不透明
+                    # win32gui.SetWindowLong(
+                    #     h, win32con.GWL_EXSTYLE,
+                    #     win32gui.GetWindowLong(h, win32con.GWL_EXSTYLE) & ~win32con.WS_EX_LAYERED
+                    # )
                     win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
-                    win32gui.SetForegroundWindow(h)
+                    # win32gui.SetForegroundWindow(h)
                 except Exception as e:
                     print(f"主窗口显示出现错误: {e}")
                 break
