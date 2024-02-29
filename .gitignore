@@ -23,3 +23,6 @@ bin-release/
 build/
 dist/
 images/!/test.png
+!/Clicker.build/
+!/Clicker.onefile-build/
+!/Clicker.dist/

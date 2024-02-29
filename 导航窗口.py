@@ -1026,6 +1026,7 @@ class Na(QWidget, Ui_navigation):
             elif judge == '安装浏览器':
                 url = 'https://google.cn/chrome/'
                 QDesktopServices.openUrl(QUrl(url))
+
             elif judge == '安装浏览器驱动':
                 # 弹出选择提示框
                 x = QMessageBox.information(
@@ -1033,9 +1034,9 @@ class Na(QWidget, Ui_navigation):
                 )
                 if x == QMessageBox.Yes:
                     print('下载浏览器驱动')
+                    self.tabWidget_2.setCurrentIndex(2)
                     web_option = WebOption(self.out_mes)
                     web_option.install_browser_driver()
-                    QMessageBox.information(self, '提示', '浏览器驱动安装完成！', QMessageBox.Yes)
 
         if type_ == '按钮功能':
             self.pushButton_18.clicked.connect(lambda: web_functional_testing('测试'))

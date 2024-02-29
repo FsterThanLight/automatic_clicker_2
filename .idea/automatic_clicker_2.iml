@@ -5,6 +5,8 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/Clicker.build/static_src" />
+      <excludeFolder url="file://$MODULE_DIR$/Clicker.onefile-build/static_src" />
     </content>
     <orderEntry type="jdk" jdkName="clicker" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

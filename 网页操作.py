@@ -35,16 +35,15 @@ class WebOption:
         url = 'https://www.cn.bing.com/' if url == '' else \
             ('http://' + url) if not url.startswith(('http://', 'https://')) else url
 
-        self.driver = webdriver.Chrome()
         try:
+            self.driver = webdriver.Chrome()
             self.driver.get(url)
             time.sleep(1)
-            # self.driver.quit()
             return True, '打开网页成功。'
         except Exception as e:
             # 弹出错误提示
             print(e)
-            return False, e
+            return False, str(type(e))
 
     def output_message(self, mes):
         """输出信息
@@ -55,13 +54,13 @@ class WebOption:
     def install_browser_driver(self):
         """安装谷歌浏览器的驱动"""
         try:
-            self.output_message(f'正在安装谷歌浏览器驱动...等待中...')
+            self.out_mes.out_mes('正在安装谷歌浏览器驱动...等待中...', True)
             service = ChromeService(executable_path=ChromeDriverManager().install())
             driver_ = webdriver.Chrome(service=service)
             driver_.quit()
-            self.output_message('浏览器驱动安装成功。')
-        except ConnectionError:
-            self.output_message('浏览器驱动安装失败，请重试。')
+            self.out_mes.out_mes('浏览器驱动安装成功。', True)
+        except Exception as e:
+            self.out_mes.out_mes(f'浏览器驱动安装失败，请重试，错误信息：{e}。', True)
 
     def close_browser(self):
         """关闭浏览器驱动"""

@@ -5,6 +5,7 @@ import string
 import tkinter as tk
 
 import pyautogui
+from PIL import Image
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
