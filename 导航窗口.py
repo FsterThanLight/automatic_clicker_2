@@ -1337,28 +1337,31 @@ class Na(QWidget, Ui_navigation):
                 self.textEdit_2.setEnabled(False)
                 self.textEdit_2.clear()
 
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.comboBox_33.currentText() \
+                if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
+            parameter_2_ = self.comboBox_34.currentText() \
+                if self.comboBox_34.currentText() != '自定义消息内容' else self.textEdit_2.toPlainText()
+            if parameter_1_ == '' or parameter_2_ == '':
+                QMessageBox.critical(self, "错误", "联系人或消息内容不能为空！")
+                raise ValueError
+            return parameter_1_, parameter_2_
+
         def test():
             """测试"""
-            # 设置到功能页面的测试页
-            self.tabWidget_2.setCurrentIndex(3)
-            # 获取联系人
-            if self.comboBox_33.currentText() == '自定义联系人':
-                parameter_1_ = self.lineEdit_17.text()
-            else:
-                parameter_1_ = self.comboBox_33.currentText()
-            # 获取消息内容
-            if self.comboBox_34.currentText() == '自定义消息内容':
-                parameter_2_ = self.textEdit_2.toPlainText()
-            else:
-                parameter_2_ = self.comboBox_34.currentText()
-            # 测试
-            ins_dic = {
-                '参数1（键鼠指令）': parameter_1_,
-                '参数2': parameter_2_,
-            }
-            wechat_option = SendWeChat(self.out_mes, ins_dic)
-            wechat_option.is_test = True
-            wechat_option.send_message_to_wechat(parameter_1_, parameter_2_, int(self.spinBox.value()))
+            try:
+                parameter_1_, parameter_2_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_)
+                # 测试用例
+                test_class = SendWeChat(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
 
         if type_ == '按钮功能':
             Lock_control()
@@ -1368,13 +1371,7 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_30.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
-            parameter_1 = self.comboBox_33.currentText() \
-                if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
-            parameter_2 = self.comboBox_34.currentText() \
-                if self.comboBox_34.currentText() != '自定义消息内容' else self.textEdit_2.toPlainText()
-            if parameter_1 == '' or parameter_2 == '':
-                QMessageBox.critical(self, "错误", "联系人或消息内容不能为空！")
-                return
+            parameter_1, parameter_2 = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -2020,7 +2017,7 @@ class Na(QWidget, Ui_navigation):
 
             def highlight_text(text):
                 lexer = PythonLexer()
-                formatter = HtmlFormatter(style='colorful')
+                formatter = HtmlFormatter(style='monokai')
                 html = highlight(text, lexer, formatter)
                 css = formatter.get_style_defs('.highlight')
                 self.textEdit_5.setHtml("<style>" + css + "</style>" + html)

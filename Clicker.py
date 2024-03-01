@@ -46,15 +46,18 @@ from 选择窗体 import Branch_exe_win
 # todo: 调试模式
 # todo: 动作录制功能
 # todo: 使用将指定标题的窗口正常显示后会出现菜单栏阴影的问题
+# todo: 输出信息用绿色和红色区分开时间和内容
 
 # activate clicker
+
 # pyinstaller -F -w -i clicker.ico Clicker.py
 # pyinstaller -D -w -i clicker.ico Clicker.py
 # pyinstaller -D -i clicker.ico Clicker.py
 # pyinstaller -F -i clicker.ico Clicker.py
 
-# nuitka --standalone --onefile --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico
-# --include-package=pygments --include-package=pyttsx4 --include-package-data=selenium Clicker.py
+# nuitka --standalone --windows-disable-console --enable-plugin=pyqt5 --plugin-enable=tk-inter
+# --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4
+# --include-package-data=selenium –-remove-output Clicker.py
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
