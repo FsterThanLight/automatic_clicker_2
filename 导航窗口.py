@@ -1474,7 +1474,7 @@ class Na(QWidget, Ui_navigation):
             buttonGroup_4.addButton(self.radioButton_20)
             # 测试按钮
             self.pushButton_24.clicked.connect(test)
-            self.pushButton_31.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
+            self.pushButton_32.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
 
         elif type_ == '写入参数':
             parameter_1, parameter_2, parameter_3 = get_parameters()
