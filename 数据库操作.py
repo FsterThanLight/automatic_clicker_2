@@ -452,7 +452,20 @@ def set_variable_value(variable_name, new_value) -> None:
         close_database(cursor, conn)
 
 
+def get_ocr_info():
+    """从数据库中获取百度OCR的API信息"""
+    cursor, conn = sqlitedb()
+    try:
+        cursor.execute("SELECT 设置类型, 值 FROM 设置 WHERE 设置类型 IN ('appId', 'secretKey', 'apiKey')")
+        results = cursor.fetchall()
+        api_info = {row[0]: row[1] for row in results}
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        api_info = None
+    finally:
+        close_database(cursor, conn)
+    return api_info
+
+
 if __name__ == '__main__':
-    print(get_variable_info('list'))
-    print(get_variable_info('dict'))
-    # set_variable_value('xx', 'ji')
+    print(get_ocr_info())

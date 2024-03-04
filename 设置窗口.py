@@ -1,8 +1,11 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QDialog
 
 from 数据库操作 import update_settings_in_database, get_setting_data_from_db, set_window_size, save_window_size
 from 窗体.setting import Ui_Setting
+
+BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
 
 
 class Setting(QDialog, Ui_Setting):
@@ -17,6 +20,7 @@ class Setting(QDialog, Ui_Setting):
         # 绑定事件
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
+        self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))
         self.radioButton_2.clicked.connect(lambda: self.change_mode('极速模式'))  # 开启极速模式
         self.radioButton.clicked.connect(lambda: self.change_mode('普通模式'))  # 切换普通模式
         self.load_setting_data()  # 加载设置数据
@@ -36,7 +40,10 @@ class Setting(QDialog, Ui_Setting):
             启动检查更新=str(True if self.checkBox.isChecked() else False),
             退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False),
             系统提示音=str(True if self.checkBox_3.isChecked() else False),
-            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False)
+            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False),
+            appId=str(self.lineEdit.text()),
+            apiKey=str(self.lineEdit_2.text()),
+            secretKey=str(self.lineEdit_3.text())
         )
 
     def save_setting(self):
@@ -66,7 +73,10 @@ class Setting(QDialog, Ui_Setting):
             '启动检查更新',
             '退出提醒清空指令',
             '系统提示音',
-            '任务完成后显示主窗口'
+            '任务完成后显示主窗口',
+            'appId',
+            'apiKey',
+            'secretKey'
         )
         self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
@@ -85,6 +95,11 @@ class Setting(QDialog, Ui_Setting):
         self.checkBox_3.setChecked(eval(setting_data_dic['系统提示音']))
         self.checkBox_4.setChecked(eval(setting_data_dic['任务完成后显示主窗口']))
 
+        # 填入OCR API信息
+        self.lineEdit.setText(setting_data_dic['appId'])
+        self.lineEdit_2.setText(setting_data_dic['apiKey'])
+        self.lineEdit_3.setText(setting_data_dic['secretKey'])
+
     def change_mode(self, mode: str):
         """切换模式
         :param mode: 模式（极速模式、普通模式）"""
@@ -100,6 +115,11 @@ class Setting(QDialog, Ui_Setting):
             self.horizontalSlider_4.setEnabled(True)
             self.pushButton_3.setEnabled(True)
             self.restore_default()
+
+    @staticmethod
+    def open_link(url):
+        """打开网页"""
+        QDesktopServices.openUrl(QUrl(url))
 
     def closeEvent(self, event):
         # 窗口大小

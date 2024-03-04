@@ -1,25 +1,15 @@
 import datetime
-import io
-import os
-import random
-import re
 import sqlite3
 
-import ddddocr
-import openpyxl
-import pyautogui
-from PyQt5.QtCore import Qt, QUrl, QRegExp
+from PyQt5.QtCore import QUrl, QRegExp
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator
-from PyQt5.QtWidgets import QWidget, \
-    QMessageBox, QButtonGroup, QApplication, QTreeWidgetItemIterator, QFileDialog
-from dateutil.parser import parse
+from PyQt5.QtWidgets import QMessageBox, QButtonGroup, QTreeWidgetItemIterator, QFileDialog
 from openpyxl.utils.exceptions import InvalidFileException
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from 功能类 import SendWeChat, ImageClick, OutputMessage, CoordinateClick, PlayVoice, WaitWindow, DialogWindow, \
-    WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile
+from 功能类 import *
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
@@ -46,6 +36,7 @@ class Na(QWidget, Ui_navigation):
         self.treeWidget.expandAll()  # treeWidget全部展开
         self.variable_sel_win = Branch_exe_win(self, '变量选择')  # 变量选择窗口
         self.lineEdit_22.textChanged.connect(self.on_find_item)  # 指令搜索功能
+        self.transparent_window = TransparentWindow()  # 框选窗口
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
@@ -126,6 +117,7 @@ class Na(QWidget, Ui_navigation):
             '运行Python': (lambda x: self.run_python_function(x), False),
             '运行外部文件': (lambda x: self.run_external_file_function(x), True),
             '写入单元格': (lambda x: self.input_cell_function(x), True),
+            'OCR识别': (lambda x: self.ocr_recognition_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -146,6 +138,8 @@ class Na(QWidget, Ui_navigation):
 
     def closeEvent(self, a0) -> None:
         """关闭窗口时,触发的动作"""
+        if self.transparent_window.isVisible():  # 关闭框选窗口
+            self.transparent_window.close()
         self.main_window.get_data(self.modify_row)
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
@@ -303,7 +297,9 @@ class Na(QWidget, Ui_navigation):
             current_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
             disable_control = self.function_mapping.get(current_title)[1]
             control_status(disable_control)  # 控制控件的状态
-            # 加载功能窗口的按钮功能
+            if self.transparent_window.isVisible():  # 关闭框选窗口
+                self.transparent_window.close()
+                # 加载功能窗口的按钮功能
             self.function_mapping[current_title][0]('加载信息')
             self.tabWidget_2.setCurrentIndex(0)
         except TypeError:
@@ -2152,3 +2148,77 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_57.clear()
             self.comboBox_57.addItems(extract_excel_from_global_parameter())
             self.find_controls('excel', '写入单元格')
+
+    def ocr_recognition_function(self, type_):
+        """ocr的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_1_ = self.label_153.text()  # 识别区域
+            parameter_2_ = self.comboBox_59.currentText()  # 写入变量
+            # 检查参数是否有异常
+            if parameter_1_ == '(0,0,0,0)' or parameter_2_ == '':
+                QMessageBox.warning(self, '警告', '参数不能为空！')
+                raise Exception
+            return parameter_1_, parameter_2_
+
+        def open_setting_window():
+            """打开图像点击设置窗口"""
+            setting_win = Setting(self)  # 设置窗体
+            setting_win.tabWidget.setCurrentIndex(1)  # 切换到第2页
+            setting_win.setModal(True)
+            setting_win.exec_()
+
+        def set_the_screenshot_area():
+            """设置截图区域"""
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()
+            self.label_153.setText(str(screen_capture.region))
+            # 显示区域边框
+            self.transparent_window.setGeometry(*screen_capture.region)
+            self.transparent_window.show()
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_, parameter_2_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_1_,
+                                         parameter_2_=parameter_2_)
+
+                # 测试用例
+                client_info = get_ocr_info()
+                if client_info['appId'] != '':
+                    test_class = TextRecognition(self.out_mes, dic_)
+                    test_class.is_test = True
+                    test_class.start_execute()
+                else:
+                    QMessageBox.warning(self, '提示', 'OCR未设置！')
+                    open_setting_window()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_48.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
+            self.pushButton_46.clicked.connect(set_the_screenshot_area)
+            self.pushButton_49.clicked.connect(open_setting_window)  # 打开百度ocr设置
+            self.pushButton_47.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            parameter_1, parameter_2 = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 parameter_2_=parameter_2,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_59.clear()
+            self.comboBox_59.addItems(get_variable_info('list'))

@@ -20,11 +20,14 @@ import win32con
 import win32gui
 import win32process
 import winsound
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtWidgets import QApplication, QWidget
+from aip import AipOcr
 from dateutil.parser import parse
 
 from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value, \
-    line_number_increment
+    line_number_increment, get_ocr_info
 from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
@@ -66,6 +69,26 @@ def sub_variable(text: str):
         for key, value in variable_dic.items():
             new_text = new_text.replace(f'☾{key}☽', str(value))
     return new_text
+
+
+class TransparentWindow(QWidget):
+    """显示框选区域的窗口"""
+
+    def __init__(self):
+        """pos(x,y, width, height)"""
+        super().__init__()
+        # 设置无边框窗口
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.setWindowOpacity(0.5)  # 设置透明度
+        self.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
+        # self.setGeometry(pos[0], pos[1], pos[2], pos[3])  # 设置窗口大小
+
+    def paintEvent(self, event):
+        # 绘制边框
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(QPen(QColor(255, 0, 0), 5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        painter.drawRect(self.rect())
 
 
 class OutputMessage:
@@ -1995,3 +2018,66 @@ class InputCellExcel:
             print(e)
             self.out_mes.out_mes(f'输入失败：{e}', self.is_test)
             raise ValueError(f'输入失败')
+
+
+class TextRecognition:
+    """文字识别功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+        self.transparent_window = TransparentWindow()  # 框选窗口
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return {
+            '重复次数': self.ins_dic.get('重复次数'),
+            '截图区域': self.ins_dic.get('参数1（键鼠指令）'),
+            '变量名称': self.ins_dic.get('参数2')
+        }
+
+    def start_execute(self):
+        """开始执行事件"""
+        list_dic = self.parsing_ins_dic()
+        ocr_text = self.ocr_pic(list_dic['截图区域'])  # 识别图片中的文字
+        # 显示识别结果
+        if (ocr_text is not None) and (ocr_text != ''):
+            self.out_mes.out_mes(f'OCR识别结果：{ocr_text}', self.is_test)
+            if not self.is_test:  # 如果不是测试
+                set_variable_value(list_dic['变量名称'], ocr_text)
+                self.out_mes.out_mes(
+                    f'已将OCR识别结果赋值给变量：{list_dic["变量名称"]}', self.is_test
+                )
+        else:
+            self.out_mes.out_mes('OCR识别失败！检查网络或查看OCR信息是否设置正确。', self.is_test)
+
+    @staticmethod
+    def ocr_pic(reigon):
+        """文字识别
+        :param reigon: 识别区域"""
+
+        def get_result_from_text(text):
+            """从识别结果中提取文字信息"""
+            return '\n'.join(i['words'] for i in text.get('words_result', []))
+
+        im = pyautogui.screenshot(region=eval(reigon))
+        # 将截图数据存储在内存中
+        im_bytes = io.BytesIO()
+        im.save(im_bytes, format='PNG')
+        im_b = im_bytes.getvalue()
+        # 返回百度api识别文字信息
+        try:
+            client_info = get_ocr_info()  # 获取百度api信息
+            client = AipOcr(client_info['appId'], client_info['apiKey'], client_info['secretKey'])
+            return get_result_from_text(client.basicGeneral(im_b))
+        except Exception as e:
+            print(f'Error: {e} 网络错误识别失败')
+            return None
+        finally:  # 释放内存
+            del im
+            del im_bytes

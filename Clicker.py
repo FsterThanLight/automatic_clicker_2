@@ -35,7 +35,7 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
-# todo: OCR识别功能
+# done: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
 # todo: 指令可编译为python代码
@@ -964,7 +964,7 @@ if __name__ == "__main__":
     )
     splash.setFont(QFont('微软雅黑', 15))  # 设置字体
     splash.show()  # 显示启动界面
-    time.sleep(0.5)  # 延时1秒
+    time.sleep(0.25)  # 延时1秒
 
     main_win = Main_window()  # 创建主窗体
 

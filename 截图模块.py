@@ -110,7 +110,6 @@ class ScreenCapture:
 
         def on_release(event):
             self.x_3, self.y_3 = event.x, event.y
-            # print('鼠标释放位置为：', self.x_3, self.y_3)
             canvas.delete(self.rect)
             canvas.destroy()
             root.destroy()
@@ -149,6 +148,26 @@ class ScreenCapture:
         # 释放内存
         del im_bytes
         del im_b
+
+    # def ocr_pic(self, reigon):
+    #     """文字识别
+    #     :param reigon: 识别区域"""
+    #
+    #     def get_result_from_text(text):
+    #         """从识别结果中提取文字信息"""
+    #         return '\n'.join(i['words'] for i in text.get('words_result', []))
+    #
+    #     im = pyautogui.screenshot(region=eval(reigon))
+    #     # 将截图数据存储在内存中
+    #     im_bytes = io.BytesIO()
+    #     im.save(im_bytes, format='PNG')
+    #     im_b = im_bytes.getvalue()
+    #     # 返回百度api识别文字信息
+    #     try:
+    #         return get_result_from_text(self.client.basicGeneral(im_b))
+    #     except Exception as e:
+    #         print(f'Error: {e} 网络错误识别失败')
+    #         return None
 
 
 if __name__ == '__main__':
