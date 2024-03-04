@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>347</width>
-    <height>370</height>
+    <height>398</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -275,8 +275,14 @@
        </item>
        <item>
         <widget class="QLabel" name="label_7">
+         <property name="styleSheet">
+          <string notr="true">color: red; text-decoration: underline</string>
+         </property>
          <property name="text">
           <string>308994839</string>
+         </property>
+         <property name="openExternalLinks">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

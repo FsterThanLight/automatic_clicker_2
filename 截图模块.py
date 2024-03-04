@@ -5,34 +5,14 @@ import string
 import tkinter as tk
 
 import pyautogui
-from PIL import Image
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from 数据库操作 import extract_global_parameter
 from 窗体.image_preview import Ui_Image
 
-
-# class TransparentWindow(QWidget):
-#     """显示框选区域的窗口"""
-#
-#     def __init__(self, pos):
-#         """pos(x,y, width, height)"""
-#         super().__init__()
-#         # 设置无边框窗口
-#         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
-#         self.setWindowOpacity(0.5)  # 设置透明度
-#         self.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
-#         self.setGeometry(pos[0], pos[1], pos[2], pos[3])  # 设置窗口大小
-#
-#     def paintEvent(self, event):
-#         # 绘制边框
-#         painter = QPainter(self)
-#         painter.setRenderHint(QPainter.Antialiasing)
-#         painter.setPen(QPen(QColor(255, 0, 0), 5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-#         painter.drawRect(self.rect())
 
 class ImagePreview(QDialog, Ui_Image):
     def __init__(self, im_bytes, im_b, parent=None):
@@ -66,13 +46,16 @@ class ImagePreview(QDialog, Ui_Image):
     def save_image(self):
         """保存图片"""
         folder_path = self.comboBox.currentText()  # 选择的文件夹路径
-        file_name_ = self.lineEdit.text().strip()
-        file_name = file_name_ if file_name_.endswith('.png') else file_name_ + '.png'
-        # 拼接文件路径
-        file_path = os.path.join(folder_path, file_name)
-        # 保存图片
-        with open(file_path, 'wb') as f:
-            f.write(self.im_bytes.getvalue())
+        if os.path.exists(folder_path):  # 如果文件路径存在
+            file_name_ = self.lineEdit.text().strip()
+            file_name = file_name_ if file_name_.endswith('.png') else file_name_ + '.png'
+            # 拼接文件路径
+            file_path = os.path.join(folder_path, file_name)
+            # 保存图片
+            with open(file_path, 'wb') as f:
+                f.write(self.im_bytes.getvalue())
+        else:
+            QMessageBox.warning(self, '警告', '文件夹路径不存在，保存失败！')
         # 关闭窗口
         self.accept()
 
@@ -148,26 +131,6 @@ class ScreenCapture:
         # 释放内存
         del im_bytes
         del im_b
-
-    # def ocr_pic(self, reigon):
-    #     """文字识别
-    #     :param reigon: 识别区域"""
-    #
-    #     def get_result_from_text(text):
-    #         """从识别结果中提取文字信息"""
-    #         return '\n'.join(i['words'] for i in text.get('words_result', []))
-    #
-    #     im = pyautogui.screenshot(region=eval(reigon))
-    #     # 将截图数据存储在内存中
-    #     im_bytes = io.BytesIO()
-    #     im.save(im_bytes, format='PNG')
-    #     im_b = im_bytes.getvalue()
-    #     # 返回百度api识别文字信息
-    #     try:
-    #         return get_result_from_text(self.client.basicGeneral(im_b))
-    #     except Exception as e:
-    #         print(f'Error: {e} 网络错误识别失败')
-    #         return None
 
 
 if __name__ == '__main__':

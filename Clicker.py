@@ -35,7 +35,6 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
-# done: OCR识别功能
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
 # todo: 指令可编译为python代码
@@ -68,6 +67,7 @@ from 选择窗体 import Branch_exe_win
 
 OUR_WEBSITE = 'https://gitee.com/fasterthanlight/automatic_clicker/releases'
 QQ = '308994839'
+QQ_GROUP = 'https://qm.qq.com/q/3ih3PE16Mg'
 CURRENT_VERSION = 'v0.25 Beta'
 
 
@@ -926,7 +926,7 @@ class About(QDialog, Ui_About):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.label_2.setText(f'版本：{CURRENT_VERSION}')  # 设置版本号
-        self.label_7.setText(f'{QQ}')  # 设置QQ
+        self.label_7.setText('<a href="{}">{}</a>'.format(QQ_GROUP, QQ))
         # 绑定事件
         self.gitee.clicked.connect(self.show_gitee)
 
