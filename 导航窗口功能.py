@@ -1,20 +1,29 @@
 import datetime
+import io
+import os
+import random
+import re
 import sqlite3
 
-from PyQt5.QtCore import QUrl, QRegExp
+import ddddocr
+import openpyxl
+import pyautogui
+from PyQt5.QtCore import QUrl, QRegExp, Qt
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator
-from PyQt5.QtWidgets import QMessageBox, QButtonGroup, QTreeWidgetItemIterator, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QButtonGroup, QTreeWidgetItemIterator, QFileDialog, QWidget, QApplication
+from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from 功能类 import *
+from 功能类 import OutputMessage, TransparentWindow, ImageClick, CoordinateClick, SendWeChat, PlayVoice, WaitWindow, \
+    DialogWindow, WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile, TextRecognition
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
-    sqlitedb, close_database, set_window_size, save_window_size, get_variable_info
-from 窗体.navigation import Ui_navigation
+    sqlitedb, close_database, set_window_size, save_window_size, get_variable_info, get_ocr_info
+from 窗体.导航窗口 import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
 from 选择窗体 import Branch_exe_win

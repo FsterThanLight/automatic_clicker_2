@@ -27,7 +27,7 @@ from system_hotkey import SystemHotkey
 from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
-from 导航窗口 import Na
+from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.mainwindow import Ui_MainWindow
