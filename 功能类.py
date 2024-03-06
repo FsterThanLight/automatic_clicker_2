@@ -8,7 +8,6 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
 
-import ddddocr
 import keyboard
 import mouse
 import openpyxl
@@ -1238,58 +1237,58 @@ class SendWeChat:
             self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'), re_try)
 
 
-class VerificationCode:
-
-    def __init__(self, outputmessage, ins_dic, cycle_number=1):
-        # 主窗口
-        self.out_mes = outputmessage
-        # 指令字典
-        self.ins_dic = ins_dic
-        # 网页控制的部分功能
-        self.web_option = WebOption(self.out_mes)
-        # 是否是测试
-        self.is_test = False
-        self.cycle_number = cycle_number
-
-    def parsing_ins_dic(self):
-        """解析指令字典"""
-        return {
-            '截图区域': self.ins_dic.get('参数1（键鼠指令）'),
-            '元素类型': self.ins_dic.get('参数2'),
-            '元素值': self.ins_dic.get('图像路径'),
-        }
-
-    def ver_input(self, region, element_type, element_value):
-        """截图区域，识别验证码，输入验证码"""
-        im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
-        im_bytes = io.BytesIO()
-        im.save(im_bytes, format='PNG')
-        im_b = im_bytes.getvalue()
-        ocr = ddddocr.DdddOcr()
-        res = ocr.classification(im_b)
-        self.out_mes.out_mes(f'识别出的验证码为：{res}', self.is_test)
-        # 释放资源
-        del im
-        del im_bytes
-        # 执行网页操作
-        global DRIVER
-        self.web_option.driver = DRIVER
-        self.web_option.text = res
-        self.web_option.single_shot_operation(action='输入内容',
-                                              element_value_=element_value,
-                                              element_type_=element_type,
-                                              timeout_type_=10)
-
-    def start_execute(self):
-        """执行重复次数"""
-        list_dic = self.parsing_ins_dic()
-        verification_code_region = eval(list_dic.get('截图区域'))
-        # 执行验证码输入
-        self.ver_input(
-            verification_code_region,
-            list_dic.get('元素类型'),
-            list_dic.get('元素值')
-        )
+# class VerificationCode:
+#
+#     def __init__(self, outputmessage, ins_dic, cycle_number=1):
+#         # 主窗口
+#         self.out_mes = outputmessage
+#         # 指令字典
+#         self.ins_dic = ins_dic
+#         # 网页控制的部分功能
+#         self.web_option = WebOption(self.out_mes)
+#         # 是否是测试
+#         self.is_test = False
+#         self.cycle_number = cycle_number
+#
+#     def parsing_ins_dic(self):
+#         """解析指令字典"""
+#         return {
+#             '截图区域': self.ins_dic.get('参数1（键鼠指令）'),
+#             '元素类型': self.ins_dic.get('参数2'),
+#             '元素值': self.ins_dic.get('图像路径'),
+#         }
+#
+#     def ver_input(self, region, element_type, element_value):
+#         """截图区域，识别验证码，输入验证码"""
+#         im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
+#         im_bytes = io.BytesIO()
+#         im.save(im_bytes, format='PNG')
+#         im_b = im_bytes.getvalue()
+#         ocr = ddddocr.DdddOcr()
+#         res = ocr.classification(im_b)
+#         self.out_mes.out_mes(f'识别出的验证码为：{res}', self.is_test)
+#         # 释放资源
+#         del im
+#         del im_bytes
+#         # 执行网页操作
+#         global DRIVER
+#         self.web_option.driver = DRIVER
+#         self.web_option.text = res
+#         self.web_option.single_shot_operation(action='输入内容',
+#                                               element_value_=element_value,
+#                                               element_type_=element_type,
+#                                               timeout_type_=10)
+#
+#     def start_execute(self):
+#         """执行重复次数"""
+#         list_dic = self.parsing_ins_dic()
+#         verification_code_region = eval(list_dic.get('截图区域'))
+#         # 执行验证码输入
+#         self.ver_input(
+#             verification_code_region,
+#             list_dic.get('元素类型'),
+#             list_dic.get('元素值')
+#         )
 
 
 class PlayVoice:

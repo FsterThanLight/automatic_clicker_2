@@ -6,6 +6,7 @@ import requests
 
 
 class YdmVerify(object):
+
     _custom_url = "http://api.jfbym.com/api/YmServer/customApi"
     _token = ""
     _headers = {

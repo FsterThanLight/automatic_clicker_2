@@ -23,22 +23,7 @@
     <normaloff>:/按钮图标/窗体/res/图标.png</normaloff>:/按钮图标/窗体/res/图标.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">QSlider::groove:horizontal {
-            border: none;
-            height: 2px;
-            background-color: lightgray;
-        }
-
-        QSlider::handle:horizontal {
-            background-color: #2f77cb;
-            width: 8px;
-            margin: -9px 0px -9px 0px;
-            border-radius: 4px;
-        }
-
-        QSlider::sub-page:horizontal {
-            background-color: #4898ec;
-        }</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>

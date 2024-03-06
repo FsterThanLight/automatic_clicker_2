@@ -1,11 +1,9 @@
 import datetime
-import io
 import os
 import random
 import re
 import sqlite3
 
-import ddddocr
 import openpyxl
 import pyautogui
 from PyQt5.QtCore import QUrl, QRegExp, Qt
@@ -111,7 +109,7 @@ class Na(QWidget, Ui_navigation):
             '全屏截图': (lambda x: self.full_screen_capture_function(x), False),
             '切换窗口': (lambda x: self.switch_window_function(x), False),
             '发送消息': (lambda x: self.wechat_function(x), False),
-            '数字验证码': (lambda x: self.verification_code_function(x), True),
+            # '数字验证码': (lambda x: self.verification_code_function(x), True),
             '提示音': (lambda x: self.play_voice_function(x), False),
             '倒计时窗口': (lambda x: self.wait_window_function(x), False),
             '提示窗口': (lambda x: self.dialog_window_function(x), False),
@@ -261,9 +259,7 @@ class Na(QWidget, Ui_navigation):
             except PermissionError:
                 QMessageBox.critical(self, "错误", "当前文件被占用，请关闭文件后重试！")
                 excel_sheet_name = []
-            # 清空combox_13中的所有元素
             comboBox_after.clear()
-            # 将excel_sheet_name中的所有元素添加到combox_13中
             comboBox_after.addItems(excel_sheet_name)
 
         def find_branch_count() -> None:
@@ -484,14 +480,17 @@ class Na(QWidget, Ui_navigation):
         """获取4个参数命令，并保存至数据库"""
         # 当前页的index
         tab_title = self.tabWidget.tabText(self.tabWidget.currentIndex())
-        func_selected = self.function_mapping.get(tab_title)[0]  # 获取当前页的功能
-        # 根据功能获取参数
-        if func_selected:
-            try:
-                func_selected('写入参数')
-                self.close()
-            except Exception as e:
-                print(e)
+        try:
+            func_selected = self.function_mapping.get(tab_title)[0]  # 获取当前页的功能
+            # 根据功能获取参数
+            if func_selected:
+                try:
+                    func_selected('写入参数')
+                    self.close()
+                except Exception as e:
+                    print(e)
+        except TypeError:
+            pass
 
     def show_image_to_label(self, ins_name: str, judge='显示'):
         """将图像显示到label中,图像预览的功能
@@ -1248,6 +1247,10 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = '自动跳过'
             elif not self.radioButton_13.isChecked() and self.radioButton_12.isChecked():
                 parameter_2 = self.spinBox_9.value()
+            # 检查参数是否有异常
+            if not self.lineEdit_12.text():
+                QMessageBox.critical(self, "错误", "元素未填写！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1276,6 +1279,13 @@ class Na(QWidget, Ui_navigation):
                 parameter_2 = '自动跳过'
             elif not self.radioButton_15.isChecked() and self.radioButton_14.isChecked():
                 parameter_2 = self.spinBox_12.value()
+            # 判断参数是否有异常
+            if not self.lineEdit_14.text():
+                QMessageBox.critical(self, "错误", "元素未填写！")
+                raise ValueError
+            if parameter_1 == '0-0':
+                QMessageBox.critical(self, "错误", "拖动距离未设置！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1293,9 +1303,10 @@ class Na(QWidget, Ui_navigation):
         elif type_ == '写入参数':
             folder_path = self.comboBox_31.currentText()
             image_name = self.lineEdit_16.text()
+            # 检查参数是否有异常
             if image_name == '':
                 QMessageBox.critical(self, "错误", "图像名称未填！")
-                return
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1316,6 +1327,10 @@ class Na(QWidget, Ui_navigation):
             parameter_1 = self.comboBox_32.currentText().replace('：', '')
             # 获取窗口
             parameter_2 = self.lineEdit_15.text()
+            # 检查参数是否有异常
+            if parameter_2 == '':
+                QMessageBox.critical(self, "错误", "窗口未设置！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -1386,51 +1401,51 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
-    def verification_code_function(self, type_):
-        """数字验证码功能"""
-
-        def test():
-            """测试"""
-            # 设置到功能页面的测试页
-            self.tabWidget_2.setCurrentIndex(3)
-            region = eval(self.label_85.text())
-            if region == (0, 0, 0, 0):
-                self.textBrowser.append('请先设置区域！')
-            else:
-                im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
-                im_bytes = io.BytesIO()
-                im.save(im_bytes, format='PNG')
-                im_b = im_bytes.getvalue()
-                ocr = ddddocr.DdddOcr()
-                res = ocr.classification(im_b)
-                self.textBrowser.append('识别出的验证码为：' + res)
-                # 释放资源
-                del im
-                del im_bytes
-
-        def set_region():
-            """设置区域"""
-            screen_capture = ScreenCapture()
-            screen_capture.screenshot_area()
-            self.label_85.setText(str(screen_capture.region))
-
-        if type_ == '按钮功能':
-            self.pushButton_16.clicked.connect(set_region)
-            # 测试按钮
-            self.pushButton_17.clicked.connect(test)
-        elif type_ == '写入参数':
-            image = self.lineEdit_18.text()
-            parameter_1 = self.label_85.text()
-            parameter_2 = self.comboBox_25.currentText().replace('：', '')
-            # 将命令写入数据库
-            func_info_dic = self.get_func_info()
-            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
-                                                 repeat_number_=func_info_dic.get('重复次数'),
-                                                 exception_handling_=func_info_dic.get('异常处理'),
-                                                 image_=image,
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
-                                                 remarks_=func_info_dic.get('备注'))
+    # def verification_code_function(self, type_):
+    #     """数字验证码功能"""
+    #
+    #     def test():
+    #         """测试"""
+    #         # 设置到功能页面的测试页
+    #         self.tabWidget_2.setCurrentIndex(3)
+    #         region = eval(self.label_85.text())
+    #         if region == (0, 0, 0, 0):
+    #             self.textBrowser.append('请先设置区域！')
+    #         else:
+    #             im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
+    #             im_bytes = io.BytesIO()
+    #             im.save(im_bytes, format='PNG')
+    #             im_b = im_bytes.getvalue()
+    #             ocr = ddddocr.DdddOcr()
+    #             res = ocr.classification(im_b)
+    #             self.textBrowser.append('识别出的验证码为：' + res)
+    #             # 释放资源
+    #             del im
+    #             del im_bytes
+    #
+    #     def set_region():
+    #         """设置区域"""
+    #         screen_capture = ScreenCapture()
+    #         screen_capture.screenshot_area()
+    #         self.label_85.setText(str(screen_capture.region))
+    #
+    #     if type_ == '按钮功能':
+    #         self.pushButton_16.clicked.connect(set_region)
+    #         # 测试按钮
+    #         self.pushButton_17.clicked.connect(test)
+    #     elif type_ == '写入参数':
+    #         image = self.lineEdit_18.text()
+    #         parameter_1 = self.label_85.text()
+    #         parameter_2 = self.comboBox_25.currentText().replace('：', '')
+    #         # 将命令写入数据库
+    #         func_info_dic = self.get_func_info()
+    #         self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+    #                                              repeat_number_=func_info_dic.get('重复次数'),
+    #                                              exception_handling_=func_info_dic.get('异常处理'),
+    #                                              image_=image,
+    #                                              parameter_1_=parameter_1,
+    #                                              parameter_2_=parameter_2,
+    #                                              remarks_=func_info_dic.get('备注'))
 
     def play_voice_function(self, type_):
         """播放语音的功能"""

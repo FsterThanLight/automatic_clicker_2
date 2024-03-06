@@ -35,6 +35,9 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
+# import collections
+# collections.Iterable = collections.abc.Iterable
+
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
 # todo: 指令可编译为python代码
@@ -53,10 +56,6 @@ from 选择窗体 import Branch_exe_win
 # pyinstaller -D -w -i clicker.ico Clicker.py
 # pyinstaller -D -i clicker.ico Clicker.py
 # pyinstaller -F -i clicker.ico Clicker.py
-
-# nuitka --standalone --windows-disable-console --enable-plugin=pyqt5 --plugin-enable=tk-inter
-# --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4
-# --include-package-data=selenium –-remove-output Clicker.py
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
