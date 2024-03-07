@@ -38,7 +38,7 @@ class CommandThread(QThread):
         # 读取配置文件
         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
         self.image_folder_path = extract_global_parameter('资源文件夹路径')
-        self.branch_table_name = extract_global_parameter('分支表名')
+        self.branch_table_name: list = []
         # 互斥锁,用于暂停线程
         self.mutex = QMutex()
         self.condition = QWaitCondition()
@@ -223,6 +223,7 @@ class CommandThread(QThread):
                         self.show_message(f'转到分支：{exception_handling}')
                         target_branch_name = exception_handling.split('-')[0]  # 分支表名
                         # 目标分支表名在分支表名中的索引
+                        self.branch_table_name = extract_global_parameter('分支表名')
                         branch_table_name_index = self.branch_table_name.index(target_branch_name)
                         # 分支表中要跳转的指令索引
                         branch_ins_index = exception_handling.split('-')[1]

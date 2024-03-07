@@ -7,7 +7,7 @@
 - [ ] 编译为python功能
 
 ```text
-nuitka --standalone --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package-data=selenium --include-package-data=webdriver-manager --remove-output Clicker.py
+nuitka --standalone --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package-data=webdriver-manager --include-package-data=selenium --remove-output Clicker.py
 ```
 
 ```text
