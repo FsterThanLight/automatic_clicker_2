@@ -11,11 +11,9 @@ webdriver_manager
 pillow
 openpyxl
 requests
-pyqt5-tools
 system_hotkey
 pygments
 opencv-python
-pyqt5-tools
 baidu-aip
 chardet
 system_hotkey

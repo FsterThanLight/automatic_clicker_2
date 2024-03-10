@@ -35,8 +35,8 @@ from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
-# import collections
-# collections.Iterable = collections.abc.Iterable
+import collections
+collections.Iterable = collections.abc.Iterable
 
 # todo：RGB颜色检测功能
 # todo: 验证码指令使用云码平台
@@ -52,10 +52,8 @@ from 选择窗体 import Branch_exe_win
 
 # activate clicker
 
-# pyinstaller -F -w -i clicker.ico Clicker.py
-# pyinstaller -D -w -i clicker.ico Clicker.py
-# pyinstaller -D -i clicker.ico Clicker.py
-# pyinstaller -F -i clicker.ico Clicker.py
+# pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers
+# pyinstaller -D -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件

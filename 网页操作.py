@@ -3,7 +3,7 @@ import time
 
 import pandas as pd
 from selenium import webdriver
-from selenium.common import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -93,11 +93,8 @@ class WebOption:
                 EC.presence_of_element_located((locator, element_value_))
             )
             return target_ele
-        except TimeoutException:
-            return None
-        except NoSuchElementException:
-            return None
-        except AttributeError:
+        except Exception as e:
+            print(e)
             return None
 
     def switch_to_frame(self, iframe_type, iframe_value, switch_type):
