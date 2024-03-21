@@ -89,6 +89,7 @@ class Ui_branch(object):
         self.listView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.listView.setFlow(QtWidgets.QListView.TopToBottom)
         self.listView.setViewMode(QtWidgets.QListView.ListMode)
+        self.listView.setSelectionRectVisible(True)
         self.listView.setObjectName("listView")
         self.verticalLayout.addWidget(self.listView, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
         self.pushButton = QtWidgets.QPushButton(branch)

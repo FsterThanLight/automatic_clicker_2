@@ -15,7 +15,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from 功能类 import OutputMessage, TransparentWindow, ImageClick, CoordinateClick, SendWeChat, PlayVoice, WaitWindow, \
+from 功能类 import OutputMessage, TransparentWindow, ImageClick, CoordinateClick, PlayVoice, WaitWindow, \
     DialogWindow, WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile, TextRecognition
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
@@ -1340,66 +1340,66 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
 
-    def wechat_function(self, type_):
-        """微信发送消息的功能"""
-
-        def Lock_control():
-            """锁定控件"""
-            if self.comboBox_33.currentText() == '自定义联系人':
-                self.lineEdit_17.setEnabled(True)
-            else:
-                self.lineEdit_17.setEnabled(False)
-                self.lineEdit_17.clear()
-
-            if self.comboBox_34.currentText() == '自定义消息内容':
-                self.textEdit_2.setEnabled(True)
-            else:
-                self.textEdit_2.setEnabled(False)
-                self.textEdit_2.clear()
-
-        def get_parameters():
-            """从tab页获取参数"""
-            parameter_1_ = self.comboBox_33.currentText() \
-                if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
-            parameter_2_ = self.comboBox_34.currentText() \
-                if self.comboBox_34.currentText() != '自定义消息内容' else self.textEdit_2.toPlainText()
-            if parameter_1_ == '' or parameter_2_ == '':
-                QMessageBox.critical(self, "错误", "联系人或消息内容不能为空！")
-                raise ValueError
-            return parameter_1_, parameter_2_
-
-        def test():
-            """测试"""
-            try:
-                parameter_1_, parameter_2_ = get_parameters()
-                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
-                                         parameter_1_=parameter_1_,
-                                         parameter_2_=parameter_2_)
-                # 测试用例
-                test_class = SendWeChat(self.out_mes, dic_)
-                test_class.is_test = True
-                test_class.start_execute()
-            except Exception as e:
-                print(e)
-                self.out_mes.out_mes(f'指令错误请重试！', True)
-
-        if type_ == '按钮功能':
-            Lock_control()
-            self.comboBox_33.activated.connect(Lock_control)
-            self.comboBox_34.activated.connect(Lock_control)
-            self.pushButton_15.clicked.connect(test)
-            self.pushButton_30.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
-
-        elif type_ == '写入参数':
-            parameter_1, parameter_2 = get_parameters()
-            # 将命令写入数据库
-            func_info_dic = self.get_func_info()
-            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
-                                                 repeat_number_=func_info_dic.get('重复次数'),
-                                                 exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
-                                                 remarks_=func_info_dic.get('备注'))
+    # def wechat_function(self, type_):
+    #     """微信发送消息的功能"""
+    #
+    #     def Lock_control():
+    #         """锁定控件"""
+    #         if self.comboBox_33.currentText() == '自定义联系人':
+    #             self.lineEdit_17.setEnabled(True)
+    #         else:
+    #             self.lineEdit_17.setEnabled(False)
+    #             self.lineEdit_17.clear()
+    #
+    #         if self.comboBox_34.currentText() == '自定义消息内容':
+    #             self.textEdit_2.setEnabled(True)
+    #         else:
+    #             self.textEdit_2.setEnabled(False)
+    #             self.textEdit_2.clear()
+    #
+    #     def get_parameters():
+    #         """从tab页获取参数"""
+    #         parameter_1_ = self.comboBox_33.currentText() \
+    #             if self.comboBox_33.currentText() == '文件传输助手' else self.lineEdit_17.text()
+    #         parameter_2_ = self.comboBox_34.currentText() \
+    #             if self.comboBox_34.currentText() != '自定义消息内容' else self.textEdit_2.toPlainText()
+    #         if parameter_1_ == '' or parameter_2_ == '':
+    #             QMessageBox.critical(self, "错误", "联系人或消息内容不能为空！")
+    #             raise ValueError
+    #         return parameter_1_, parameter_2_
+    #
+    #     def test():
+    #         """测试"""
+    #         try:
+    #             parameter_1_, parameter_2_ = get_parameters()
+    #             dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+    #                                      parameter_1_=parameter_1_,
+    #                                      parameter_2_=parameter_2_)
+    #             # 测试用例
+    #             test_class = SendWeChat(self.out_mes, dic_)
+    #             test_class.is_test = True
+    #             test_class.start_execute()
+    #         except Exception as e:
+    #             print(e)
+    #             self.out_mes.out_mes(f'指令错误请重试！', True)
+    #
+    #     if type_ == '按钮功能':
+    #         Lock_control()
+    #         self.comboBox_33.activated.connect(Lock_control)
+    #         self.comboBox_34.activated.connect(Lock_control)
+    #         self.pushButton_15.clicked.connect(test)
+    #         self.pushButton_30.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
+    #
+    #     elif type_ == '写入参数':
+    #         parameter_1, parameter_2 = get_parameters()
+    #         # 将命令写入数据库
+    #         func_info_dic = self.get_func_info()
+    #         self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+    #                                              repeat_number_=func_info_dic.get('重复次数'),
+    #                                              exception_handling_=func_info_dic.get('异常处理'),
+    #                                              parameter_1_=parameter_1,
+    #                                              parameter_2_=parameter_2,
+    #                                              remarks_=func_info_dic.get('备注'))
 
     # def verification_code_function(self, type_):
     #     """数字验证码功能"""

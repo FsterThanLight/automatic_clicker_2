@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QCursor
 from PyQt5.QtWidgets import QDialog
@@ -18,6 +19,7 @@ class Branch_exe_win(QDialog, Ui_branch):
         self.modes = modes
         # 根据不同的模式设置窗体样式
         self.set_window_style(self.modes)
+        self.listView.installEventFilter(self)  # 安装事件过滤器,重新设置表格的快捷键
 
     def set_window_style(self, modes):
         """根据不同的模式设置窗体样式"""
@@ -44,6 +46,8 @@ class Branch_exe_win(QDialog, Ui_branch):
             model = QStandardItemModel()
             listview.setModel(model)
             for item in list_:
+                # item前面加上数字序号
+                item = str(list_.index(item) + 1) + '. ' + item
                 model.appendRow(QStandardItem(item))
 
         if modes == '分支选择':
@@ -57,12 +61,19 @@ class Branch_exe_win(QDialog, Ui_branch):
         """打开选中的listview中的文件夹路径"""
         try:
             indexes = self.listView.selectedIndexes()
-            value = self.listView.model().itemFromIndex(indexes[0]).text()  # 获取选中的值
-            self.parent().comboBox.setCurrentText(value)  # 设置分支
-            self.parent().start()  # 执行分支
-            self.close()
+            if indexes:
+                selected_text = indexes[0].data().split('. ')[1]  # 直接获取选中项的文本值
+                self.parent().comboBox.setCurrentText(selected_text)  # 设置分支
+                self.parent().start()  # 执行分支
+                self.close()
         except Exception as e:
             print(e)
+
+    def trigger_using_number_keys(self, number):
+        """设置到对应的行"""
+        if number <= self.listView.model().rowCount():
+            self.listView.setCurrentIndex(self.listView.model().index(number - 1, 0))
+            self.open_select_option()  # 触发双击事件
 
     def write_to_textedit(self):
         """将选中的值写入textedit，用于写入变量的模式"""
@@ -92,12 +103,33 @@ class Branch_exe_win(QDialog, Ui_branch):
         # 移动窗口到鼠标位置
         cursor_pos = QCursor.pos()
         # 移动窗口使窗口中心与鼠标位置重合
-        self.move(cursor_pos.x() - self.width() / 2, cursor_pos.y() - self.height() / 2)
+        self.move(cursor_pos.x() - int(self.width() / 2), cursor_pos.y() - int(self.height() / 2))
         self.load_lists(self.modes)  # 加载设置
 
     def closeEvent(self, event):
         # 保存窗体大小
         save_window_size((self.width(), self.height()), self.windowTitle())
+
+    def eventFilter(self, obj, event):
+        # 重写self.tableWidget的快捷键事件
+        if obj == self.listView:
+            if event.type() == 6:  # 键盘按下事件
+                key_to_row = {  # 数字键对应的行
+                    Qt.Key_1: 1,
+                    Qt.Key_2: 2,
+                    Qt.Key_3: 3,
+                    Qt.Key_4: 4,
+                    Qt.Key_5: 5,
+                    Qt.Key_6: 6,
+                    Qt.Key_7: 7,
+                    Qt.Key_8: 8,
+                    Qt.Key_9: 9,
+                }
+                # 检查事件的键是否在字典中
+                if event.key() in key_to_row:
+                    row_number = key_to_row[event.key()]
+                    self.trigger_using_number_keys(row_number)  # 使用数字键触发对应的行
+        return super().eventFilter(obj, event)
 
 
 if __name__ == '__main__':

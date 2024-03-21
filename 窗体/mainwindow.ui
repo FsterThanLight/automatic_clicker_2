@@ -1086,7 +1086,7 @@ color: rgb(255, 255, 255);</string>
        <item row="1" column="0" colspan="2">
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>选择分支运行（Alt+1）</string>
+          <string>选择分支运行（shift+1）</string>
          </property>
         </widget>
        </item>

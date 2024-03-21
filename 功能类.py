@@ -29,9 +29,9 @@ from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_vari
     line_number_increment, get_ocr_info
 from 网页操作 import WebOption
 
-sys.coinit_flags = 2  # STA
-from pywinauto import Application
-from pywinauto.findwindows import ElementNotFoundError
+# sys.coinit_flags = 2  # STA
+# from pywinauto import Application
+# from pywinauto.findwindows import ElementNotFoundError
 
 # dic_ = {
 #                     'ID': elem_[0],
@@ -1125,116 +1125,116 @@ class FullScreenCapture:
         self.out_mes.out_mes('已执行全屏截图', self.is_test)
 
 
-class SendWeChat:
-    """发送微信消息"""
-
-    def __init__(self, outputmessage, ins_dic, cycle_number=1):
-        # 设置参数
-        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
-        self.out_mes = outputmessage
-        # 指令字典
-        self.ins_dic = ins_dic
-        # 是否是测试
-        self.is_test = False
-        self.cycle_number = cycle_number
-
-    def parsing_ins_dic(self):
-        """解析指令字典"""
-        return {
-            '联系人': self.ins_dic.get('参数1（键鼠指令）'),
-            '消息内容': sub_variable(self.ins_dic.get('参数2')),
-        }
-
-    @staticmethod
-    def check_course(title_):
-        """检查软件是否正在运行
-        :param title_: 窗口标题"""
-
-        def get_all_window_title():
-            """获取所有窗口句柄和窗口标题"""
-            hwnd_title_ = dict()
-
-            def get_all_hwnd(hwnd_, mouse):
-                # print(mouse)
-                if win32gui.IsWindow(hwnd_) and win32gui.IsWindowEnabled(hwnd_) and win32gui.IsWindowVisible(hwnd_):
-                    hwnd_title_.update({hwnd_: win32gui.GetWindowText(hwnd_)})
-
-            win32gui.EnumWindows(get_all_hwnd, 0)
-            return hwnd_title_
-
-        hwnd_title = get_all_window_title()
-        for h, t in hwnd_title.items():
-            if t == title_:
-                return h
-
-    def send_message_to_wechat(self, contact_person, message, repeat_times=1):
-        """向微信好友发送消息
-        :param contact_person: 联系人
-        :param message: 消息内容
-        :param repeat_times: 重复次数"""
-
-        def get_process_id(hwnd_):
-            thread_id, process_id_ = win32process.GetWindowThreadProcessId(hwnd_)
-            return process_id_
-
-        def get_correct_message():
-            """获取正确的窗口句柄"""
-            if message == '从剪切板粘贴':
-                return pyperclip.paste()
-            elif message == '当前日期时间':
-                return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-            else:
-                return message
-
-        def output_info(judge, message_=None, failure_info=None):
-            """向主窗口或na输出提示信息
-            :param failure_info:失败信息
-            :param judge: （成功、失败）
-            :param message_: 消息内容，可选"""
-            output_message = None
-            if judge == '成功':
-                output_message = f'微信已发送消息：{message_}' if message_ else f'已发送消息'
-            elif judge == '失败':
-                output_message = f'{failure_info}'
-            self.out_mes.out_mes(output_message, self.is_test)
-
-        pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
-        hwnd = self.check_course('微信')
-        new_message = get_correct_message()
-        try:
-            if hwnd:
-                process_id = get_process_id(hwnd)  # 获取微信进程id
-                # 连接到wx
-                wx_app = Application(backend='uia').connect(process=process_id)
-                # 定位到主窗口
-                wx_win = wx_app.window(class_name='WeChatMainWndForPC')
-                wx_chat_win = wx_win.child_window(title=contact_person, control_type="ListItem")
-                # 聚焦到所需的对话框
-                wx_chat_win.click_input()
-
-                for i in range(repeat_times):  # 重复次数
-                    pyperclip.copy(new_message)  # 将消息内容复制到剪切板
-                    pyautogui.hotkey('ctrl', 'v')
-                    pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
-                    time.sleep(self.time_sleep)
-
-                win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
-                output_info('成功', new_message)  # 向主窗口输出提示信息
-            else:
-                output_info('失败', new_message, '未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
-        except ElementNotFoundError:
-            win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
-            output_info('失败', new_message, '未找到联系人，发送失败。')  # 向主窗口输出提示信息
-
-    def start_execute(self):
-        """执行重复次数"""
-        list_ins_ = self.parsing_ins_dic()
-        re_try = self.ins_dic.get('重复次数')
-        # 执行滚轮滑动
-        if re_try == 1:
-            self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'))
-        elif re_try > 1:
-            self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'), re_try)
+# class SendWeChat:
+#     """发送微信消息"""
+#
+#     def __init__(self, outputmessage, ins_dic, cycle_number=1):
+#         # 设置参数
+#         self.time_sleep = float(get_setting_data_from_db('暂停时间'))
+#         self.out_mes = outputmessage
+#         # 指令字典
+#         self.ins_dic = ins_dic
+#         # 是否是测试
+#         self.is_test = False
+#         self.cycle_number = cycle_number
+#
+#     def parsing_ins_dic(self):
+#         """解析指令字典"""
+#         return {
+#             '联系人': self.ins_dic.get('参数1（键鼠指令）'),
+#             '消息内容': sub_variable(self.ins_dic.get('参数2')),
+#         }
+#
+#     @staticmethod
+#     def check_course(title_):
+#         """检查软件是否正在运行
+#         :param title_: 窗口标题"""
+#
+#         def get_all_window_title():
+#             """获取所有窗口句柄和窗口标题"""
+#             hwnd_title_ = dict()
+#
+#             def get_all_hwnd(hwnd_, mouse):
+#                 # print(mouse)
+#                 if win32gui.IsWindow(hwnd_) and win32gui.IsWindowEnabled(hwnd_) and win32gui.IsWindowVisible(hwnd_):
+#                     hwnd_title_.update({hwnd_: win32gui.GetWindowText(hwnd_)})
+#
+#             win32gui.EnumWindows(get_all_hwnd, 0)
+#             return hwnd_title_
+#
+#         hwnd_title = get_all_window_title()
+#         for h, t in hwnd_title.items():
+#             if t == title_:
+#                 return h
+#
+#     def send_message_to_wechat(self, contact_person, message, repeat_times=1):
+#         """向微信好友发送消息
+#         :param contact_person: 联系人
+#         :param message: 消息内容
+#         :param repeat_times: 重复次数"""
+#
+#         def get_process_id(hwnd_):
+#             thread_id, process_id_ = win32process.GetWindowThreadProcessId(hwnd_)
+#             return process_id_
+#
+#         def get_correct_message():
+#             """获取正确的窗口句柄"""
+#             if message == '从剪切板粘贴':
+#                 return pyperclip.paste()
+#             elif message == '当前日期时间':
+#                 return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+#             else:
+#                 return message
+#
+#         def output_info(judge, message_=None, failure_info=None):
+#             """向主窗口或na输出提示信息
+#             :param failure_info:失败信息
+#             :param judge: （成功、失败）
+#             :param message_: 消息内容，可选"""
+#             output_message = None
+#             if judge == '成功':
+#                 output_message = f'微信已发送消息：{message_}' if message_ else f'已发送消息'
+#             elif judge == '失败':
+#                 output_message = f'{failure_info}'
+#             self.out_mes.out_mes(output_message, self.is_test)
+#
+#         pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
+#         hwnd = self.check_course('微信')
+#         new_message = get_correct_message()
+#         try:
+#             if hwnd:
+#                 process_id = get_process_id(hwnd)  # 获取微信进程id
+#                 # 连接到wx
+#                 wx_app = Application(backend='uia').connect(process=process_id)
+#                 # 定位到主窗口
+#                 wx_win = wx_app.window(class_name='WeChatMainWndForPC')
+#                 wx_chat_win = wx_win.child_window(title=contact_person, control_type="ListItem")
+#                 # 聚焦到所需的对话框
+#                 wx_chat_win.click_input()
+#
+#                 for i in range(repeat_times):  # 重复次数
+#                     pyperclip.copy(new_message)  # 将消息内容复制到剪切板
+#                     pyautogui.hotkey('ctrl', 'v')
+#                     pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
+#                     time.sleep(self.time_sleep)
+#
+#                 win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
+#                 output_info('成功', new_message)  # 向主窗口输出提示信息
+#             else:
+#                 output_info('失败', new_message, '未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
+#         except ElementNotFoundError:
+#             win32gui.ShowWindow(hwnd, win32con.SW_SHOWMINIMIZED)  # 最小化窗口
+#             output_info('失败', new_message, '未找到联系人，发送失败。')  # 向主窗口输出提示信息
+#
+#     def start_execute(self):
+#         """执行重复次数"""
+#         list_ins_ = self.parsing_ins_dic()
+#         re_try = self.ins_dic.get('重复次数')
+#         # 执行滚轮滑动
+#         if re_try == 1:
+#             self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'))
+#         elif re_try > 1:
+#             self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'), re_try)
 
 
 # class VerificationCode:

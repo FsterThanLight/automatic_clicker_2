@@ -218,6 +218,9 @@
      <property name="viewMode">
       <enum>QListView::ListMode</enum>
      </property>
+     <property name="selectionRectVisible">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>

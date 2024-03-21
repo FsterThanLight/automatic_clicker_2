@@ -50,6 +50,19 @@ collections.Iterable = collections.abc.Iterable
 # todo: 使用将指定标题的窗口正常显示后会出现菜单栏阴影的问题
 # todo: 输出信息用绿色和红色区分开时间和内容
 
+# 用户需求
+# todo: 自动获取uac权限
+# todo: 时间等待允许输入小数
+# todo: 鼠标点击和鼠标拖拽可同时可按下键盘
+# todo: 绑定窗口指令
+# todo: 图像识别可使用区域识别
+# todo: 设置资源文件夹路径自动禁止使用中文字符
+# todo: 快捷导入指令，拖动文件到窗口导入指令
+# done: 执行分支窗口可使用数字键选择分支
+# todo: 参数显示重新设计
+# todo: bug: 分支删除后，指令表格中的分支指令没有删除
+# todo: 功能快捷键可自定义
+
 # activate clicker
 
 # pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers
@@ -134,7 +147,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
             self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
             self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
-            self.hk_stop.register(('alt', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
+            self.hk_stop.register(('shift', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
         except Exception as e:
             print(e)
             QMessageBox.critical(self, "错误", "全局快捷键已失效！")
@@ -406,6 +419,18 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 "Shift+↓：\t下移指令\n"
                 "Ctrl+↑：\t\t切换到上个分支\n"
                 "Ctrl+↓：\t\t切换到下个分支\n"
+                "Ctrl+G：\t\t转到分支\n"
+                "Ctrl+Y：\t\t修改指令\n"
+                "\n"
+                "F10：\t\t开始任务\n"
+                "F11：\t\t终止任务\n"
+                "Alt+F11：\t暂停和恢复任务\n"
+                "Alt+Space：\t弹出分支选择窗口\n"
+                "选择窗口数字键：\t选择分支\n"
+                "\n"
+                "Ctrl+D：\t\t导入指令\n"
+                "Ctrl+S：\t\t保存指令\n"
+                "Ctrl+Alt+S：\t另存为Excel\n"
             )
 
     def get_data(self, row=None):
@@ -882,6 +907,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         elif i_str == "弹出分支选择窗口":
             self.show_windows('分支选择')
+            # 将焦点切换到分支选择窗口
+            self.branch_win.activateWindow()
 
     def sendkeyevent(self, i_str):
         """发送热键信号,将外部信号，转化成qt信号,用于全局热键"""
@@ -961,7 +988,7 @@ if __name__ == "__main__":
     )
     splash.setFont(QFont('微软雅黑', 15))  # 设置字体
     splash.show()  # 显示启动界面
-    time.sleep(0.25)  # 延时1秒
+    time.sleep(0.1)  # 延时1秒
 
     main_win = Main_window()  # 创建主窗体
 

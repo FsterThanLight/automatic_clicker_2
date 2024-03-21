@@ -7,9 +7,19 @@
 - [ ] 编译为python功能
 
 ```text
-nuitka --standalone --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package-data=webdriver_manager --include-package-data=selenium --remove-output Clicker.py
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+pip config set install.trusted-host mirrors.aliyun.com
+```
+
+```text
+nuitka --standalone --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package-data=selenium --remove-output Clicker.py
 ```
 
 ```text
 nuitka --standalone --onefile --windows-disable-console --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package-data=selenium --remove-output Clicker.py
 ```
+
+```text
+nuitka --standalone --onefile --enable-plugin=pyqt5 --plugin-enable=tk-inter --windows-icon-from-ico=clicker.ico --include-package=pygments --include-package=pyttsx4 --include-package=webdriver_manager --include-package-data=selenium --remove-output Clicker.py
+```
+
