@@ -26,6 +26,11 @@ QLabel
 	color: #fff;
 }
 
+QLabel:disabled {
+    color: #888; /* 设置失效状态下的文字颜色 */
+}
+
+
 
 /*-----QMenuBar-----*/
 QMenuBar
@@ -472,6 +477,12 @@ QGroupBox::title {
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 }
+
+QGroupBox::unchecked {
+    border-color: black;
+}
+
+/* proceed with styling just like QCheckBox */
 
 /* proceed with styling just like QCheckBox */
 

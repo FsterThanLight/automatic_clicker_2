@@ -62,6 +62,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 参数显示重新设计
 # todo: bug: 分支删除后，指令表格中的分支指令没有删除
 # todo: 功能快捷键可自定义
+# todo: 设置中提高延迟上限
 
 # activate clicker
 
@@ -147,11 +148,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.hk_stop.register(('f11',), callback=lambda x: self.sendkeyevent("终止线程"))
             self.hk_stop.register(('f10',), callback=lambda x: self.sendkeyevent("开始线程"))
             self.hk_stop.register(('alt', 'f11',), callback=lambda x: self.sendkeyevent("暂停和恢复线程"))
-            self.hk_stop.register(('shift', '1',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
+            self.hk_stop.register(('f9',), callback=lambda x: self.sendkeyevent("弹出分支选择窗口"))
         except Exception as e:
             print(e)
             QMessageBox.critical(self, "错误", "全局快捷键已失效！")
-            sys.exit()
 
         # 设置状态栏信息
         self.statusBar.showMessage(f'软件版本：{CURRENT_VERSION}准备就绪...', 3000)
@@ -758,12 +758,13 @@ class Main_window(QMainWindow, Ui_MainWindow):
             if self.checkBox_2.isChecked():
                 self.hide()
 
-        if not self.command_thread.isRunning():  # 如果线程未运行,则执行
-            operation_before_execution()
-            self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
-            self.command_thread.start()
-            # 记录开始时间的时间戳
-            self.start_time = time.time()
+        if self.command_thread.isRunning():  # 如果线程正在运行,则终止
+            self.command_thread.terminate()
+        operation_before_execution()
+        self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+        self.command_thread.start()
+        # 记录开始时间的时间戳
+        self.start_time = time.time()
 
     def exporting_operation_logs(self):
         """导出操作日志"""

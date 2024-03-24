@@ -108,7 +108,7 @@ class Na(QWidget, Ui_navigation):
             '拖动元素': (lambda x: self.drag_element_function(x), True),
             '全屏截图': (lambda x: self.full_screen_capture_function(x), False),
             '切换窗口': (lambda x: self.switch_window_function(x), False),
-            '发送消息': (lambda x: self.wechat_function(x), False),
+            # '发送消息': (lambda x: self.wechat_function(x), False),
             # '数字验证码': (lambda x: self.verification_code_function(x), True),
             '提示音': (lambda x: self.play_voice_function(x), False),
             '倒计时窗口': (lambda x: self.wait_window_function(x), False),
@@ -370,12 +370,12 @@ class Na(QWidget, Ui_navigation):
         except sqlite3.OperationalError:
             pass
 
-    def quick_screenshot(self, combox_folder, judge):
+    def quick_screenshot(self, control_name, judge):
         """截图功能
-        :param combox_folder: 图像文件夹下拉列表
+        :param control_name: 需要的控件
         :param judge: 功能选择（快捷截图、打开文件夹）"""
         if judge == '快捷截图':
-            if combox_folder.currentText() == '':
+            if control_name.currentText() == '':
                 QMessageBox.warning(self, '警告', '未选择图像文件夹！', QMessageBox.Yes)
             else:
                 # 隐藏主窗口
@@ -396,8 +396,20 @@ class Na(QWidget, Ui_navigation):
                 self.show_image_to_label(current_title)
 
         elif judge == '打开文件夹':
-            if combox_folder.currentText() != '':
-                os.startfile(os.path.normpath(combox_folder.currentText()))
+            if control_name.currentText() != '':
+                os.startfile(os.path.normpath(control_name.currentText()))
+
+        elif judge == '设置区域':
+            # 隐藏主窗口
+            self.hide()
+            self.main_window.hide()
+            # 截图
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()  # 设置截图区域
+            control_name.setText(str(screen_capture.region))
+            # 显示主窗口
+            self.show()
+            self.main_window.show()
 
     def writes_commands_to_the_database(self,
                                         instruction_,
@@ -555,21 +567,29 @@ class Na(QWidget, Ui_navigation):
                 parameter_2_ = '自动略过'
             elif self.radioButton_4.isChecked():
                 parameter_2_ = self.spinBox_4.value()
+            if self.groupBox_57.isChecked():
+                parameter_4_ = self.label_155.text()
+            else:
+                parameter_4_ = '(0,0,0,0)'
             # 检查参数是否有异常
             if (os.path.isdir(image_)) or (not os.path.exists(image_)):
                 QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
                 raise FileNotFoundError
-            return image_, parameter_1_, parameter_2_
+            if self.groupBox_57.isChecked() and self.label_155.text() == '(0,0,0,0)':
+                QMessageBox.critical(self, "错误", "未设置识别区域！")
+                raise FileNotFoundError
+            return image_, parameter_1_, parameter_2_, parameter_4_
 
         def test():
             """测试功能"""
             try:
-                image_, parameter_1_, parameter_2_ = get_parameters()
+                image_, parameter_1_, parameter_2_, parameter_4_ = get_parameters()
                 dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
                                          image_=image_,
                                          parameter_1_=parameter_1_,
                                          parameter_2_=parameter_2_,
                                          parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
+                                         parameter_4_=parameter_4_  # 识别区域
                                          )
                 # 测试用例
                 try:
@@ -597,6 +617,10 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_7.clicked.connect(
                 lambda: self.quick_screenshot(self.comboBox_8, '打开文件夹')
             )
+            # 设置区域
+            self.pushButton_50.clicked.connect(
+                lambda: self.quick_screenshot(self.label_155, '设置区域')
+            )
             # 加载下拉列表数据
             self.comboBox_8.activated.connect(
                 lambda: self.find_controls('图像', '图像点击')
@@ -611,7 +635,7 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_11.clicked.connect(open_setting_window)
 
         elif type_ == '写入参数':
-            image, parameter_1, parameter_2 = get_parameters()
+            image, parameter_1, parameter_2, parameter_4 = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -621,6 +645,7 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
+                                                 parameter_4_=parameter_4,
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 加载图像文件夹路径
@@ -851,13 +876,22 @@ class Na(QWidget, Ui_navigation):
 
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
+
+        def select_groupBox(selected_groupBox, all_groupBoxes):
+            """选择groupBox"""
+            for groupBox in all_groupBoxes:
+                groupBox.setChecked(groupBox == selected_groupBox)
+
         if type_ == '按钮功能':
-            # 将不同的单选按钮添加到同一个按钮组
-            buttonGroup_2 = QButtonGroup(self)
-            buttonGroup_2.addButton(self.radioButton_19)
-            buttonGroup_2.addButton(self.radioButton_ran)
+            all_groupBoxes_ = [self.groupBox_28, self.groupBox_30, self.groupBox_59]
+            for groupBox_ in all_groupBoxes_:
+                groupBox_.clicked.connect(lambda _, gb=groupBox_: select_groupBox(gb, all_groupBoxes_))
+
             # 限制输入框只能输入数字
             self.lineEdit.setValidator(QIntValidator())
+            self.lineEdit_29.setValidator(QIntValidator())
+            self.lineEdit_30.setValidator(QIntValidator())
+
         elif type_ == '写入参数':
             parameter_1 = None
             parameter_2 = None
@@ -881,6 +915,11 @@ class Na(QWidget, Ui_navigation):
                                                  parameter_1_=parameter_1,
                                                  parameter_2_=parameter_2,
                                                  remarks_=func_info_dic.get('备注'))
+
+        elif type_ == '加载信息':
+            # 加载下拉列表数据
+            self.comboBox_61.clear()
+            self.comboBox_61.addItems(get_variable_info('list'))
 
     def press_keyboard_function(self, type_):
         """按下键盘识别窗口的功能"""
