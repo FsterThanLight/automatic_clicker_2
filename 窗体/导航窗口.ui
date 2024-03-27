@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>30</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -1119,7 +1119,7 @@
             <item row="0" column="0">
              <widget class="QRadioButton" name="radioButton_23">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="text">
                <string>指定位置：</string>
@@ -1173,7 +1173,7 @@
             <item row="1" column="0">
              <widget class="QRadioButton" name="radioButton_24">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="text">
                <string>使用坐标变量：</string>

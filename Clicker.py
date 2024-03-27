@@ -63,6 +63,10 @@ collections.Iterable = collections.abc.Iterable
 # todo: bug: 分支删除后，指令表格中的分支指令没有删除
 # todo: 功能快捷键可自定义
 # todo: 设置中提高延迟上限
+# todo: 按下键盘增加按压时长、按键释放等功能
+# todo: 指定时间去除年月日，只保留时分秒
+# todo: 获取鼠标位置功能，移动到指定位置功能
+# todo: 窗口焦点等待功能
 
 # activate clicker
 

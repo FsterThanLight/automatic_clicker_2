@@ -2093,3 +2093,37 @@ class TextRecognition:
         finally:  # 释放内存
             del im
             del im_bytes
+
+
+class GetMousePositon:
+    """获取鼠标位置功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        return eval(self.ins_dic.get('参数1（键鼠指令）'))
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        para_dic = self.parsing_ins_dic()
+        var = para_dic.get('变量')
+        # 获取当前鼠标位置
+        mouse_position = (pyautogui.position().x, pyautogui.position().y)
+        self.out_mes.out_mes(
+            f'当前鼠标位置：{mouse_position}', self.is_test
+        )
+        self.out_mes.out_mes(
+            f'已将当前鼠标位置赋值给变量：{var}', self.is_test
+        )
+        # 设置变量池中的值
+        set_variable_value(var, str(mouse_position))
+
+

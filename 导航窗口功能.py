@@ -125,6 +125,7 @@ class Na(QWidget, Ui_navigation):
             '运行外部文件': (lambda x: self.run_external_file_function(x), True),
             '写入单元格': (lambda x: self.input_cell_function(x), True),
             'OCR识别': (lambda x: self.ocr_recognition_function(x), False),
+            '获取鼠标位置': (lambda x: self.get_mouse_position_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -2285,3 +2286,38 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_59.clear()
             self.comboBox_59.addItems(get_variable_info('list'))
+
+    def get_mouse_position_function(self, type_):
+        """获取鼠标位置的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            # parameter_1_ = self.comboBox_60.currentText()
+            # parameter_2_ = None
+            # parameter_3_ = None
+            # parameter_4_ = None
+            parameter_dic = {
+                '变量': self.comboBox_60.currentText()
+            }
+            # 检查参数是否有异常
+
+            return parameter_dic
+
+        if type_ == '按钮功能':
+            self.pushButton_51.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
+
+        elif type_ == '写入参数':
+            parameter_1 = str(get_parameters())
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_1,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_60.clear()
+            self.comboBox_60.addItems(get_variable_info('list'))
