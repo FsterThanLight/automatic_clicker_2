@@ -146,9 +146,11 @@ class ImageClick:
         img = self.ins_dic.get('图像路径')
         # 取重复次数
         re_try = self.ins_dic.get('重复次数')
-        skip = self.ins_dic.get('参数2')  # 是否跳过参数
-        gray_recognition = eval(self.ins_dic.get('参数3'))  # 是否灰度识别
-        area_identification = eval(self.ins_dic.get('参数4'))  # 是否区域识别
+        # 获取其他参数
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        skip = parameter_dic_.get('异常')  # 是否跳过参数
+        gray_recognition = eval(parameter_dic_.get('灰度'))  # 是否灰度识别
+        area_identification = eval(parameter_dic_.get('区域'))  # 是否区域识别
         if area_identification == (0, 0, 0, 0):
             area_identification = None  # 如果没有区域识别则设置为None
         click_map = {
@@ -158,7 +160,7 @@ class ImageClick:
             '右键双击': [2, 'right', img, skip],
             '仅移动鼠标': [0, 'left', img, skip]
         }
-        list_ins = click_map.get(self.ins_dic.get('参数1（键鼠指令）'))
+        list_ins = click_map.get(parameter_dic_.get('动作'))
         # 返回重复次数，点击次数，左键右键，图片名称，是否跳过
         return re_try, gray_recognition, area_identification, list_ins[0], list_ins[1], list_ins[2], list_ins[3]
 

@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import random
 import re
@@ -554,6 +555,14 @@ class Na(QWidget, Ui_navigation):
         if value:
             append_textedit(value)
 
+    @staticmethod
+    def formatted_dic(parameter_dic_):
+        # 使用json.dumps()格式化输出
+        formatted_dict = json.dumps(
+            {k: str(v).capitalize() if isinstance(v, bool) else v for k, v in parameter_dic_.items()}, indent=4,
+            ensure_ascii=False)
+        return formatted_dict
+
     def image_click_function(self, type_):
         """图像点击识别窗口的功能
         :param type_: 功能名称（按钮功能、主要功能）"""
@@ -572,6 +581,13 @@ class Na(QWidget, Ui_navigation):
                 parameter_4_ = self.label_155.text()
             else:
                 parameter_4_ = '(0,0,0,0)'
+            # 从tab页获取参数
+            parameter_dic_ = {
+                '动作': parameter_1_,
+                '异常': parameter_2_,
+                '区域': parameter_4_,
+                '灰度': self.checkBox.isChecked()
+            }
             # 检查参数是否有异常
             if (os.path.isdir(image_)) or (not os.path.exists(image_)):
                 QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
@@ -579,27 +595,25 @@ class Na(QWidget, Ui_navigation):
             if self.groupBox_57.isChecked() and self.label_155.text() == '(0,0,0,0)':
                 QMessageBox.critical(self, "错误", "未设置识别区域！")
                 raise FileNotFoundError
-            return image_, parameter_1_, parameter_2_, parameter_4_
+
+            return image_, self.formatted_dic(parameter_dic_)
 
         def test():
             """测试功能"""
             try:
-                image_, parameter_1_, parameter_2_, parameter_4_ = get_parameters()
+                image_, parameter_1_ = get_parameters()
                 dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
                                          image_=image_,
-                                         parameter_1_=parameter_1_,
-                                         parameter_2_=parameter_2_,
-                                         parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
-                                         parameter_4_=parameter_4_  # 识别区域
+                                         parameter_1_=parameter_1_
                                          )
                 # 测试用例
-                try:
-                    image_click = ImageClick(self.out_mes, dic_)
-                    image_click.is_test = True
-                    image_click.start_execute()
-                except Exception as e:
-                    print(e)
-                    self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+                # try:
+                image_click = ImageClick(self.out_mes, dic_)
+                image_click.is_test = True
+                image_click.start_execute()
+                # except Exception as e:
+                #     print(e)
+                #     self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
             except FileNotFoundError:
                 self.out_mes.out_mes(f'图像文件未设置！', True)
 
@@ -636,7 +650,7 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_11.clicked.connect(open_setting_window)
 
         elif type_ == '写入参数':
-            image, parameter_1, parameter_2, parameter_4 = get_parameters()
+            image, parameter_1 = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
@@ -644,9 +658,6 @@ class Na(QWidget, Ui_navigation):
                                                  exception_handling_=func_info_dic.get('异常处理'),
                                                  image_=image,
                                                  parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
-                                                 parameter_3_=str(self.checkBox.isChecked()),  # 灰度识别
-                                                 parameter_4_=parameter_4,
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 加载图像文件夹路径
@@ -2294,15 +2305,9 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            # parameter_1_ = self.comboBox_60.currentText()
-            # parameter_2_ = None
-            # parameter_3_ = None
-            # parameter_4_ = None
             parameter_dic = {
                 '变量': self.comboBox_60.currentText()
             }
-            # 检查参数是否有异常
-
             return parameter_dic
 
         if type_ == '按钮功能':

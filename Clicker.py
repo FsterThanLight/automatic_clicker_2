@@ -10,6 +10,7 @@
 # See the Mulan PSL v2 for more details.
 from __future__ import print_function
 
+import collections
 import os.path
 import shutil
 
@@ -22,6 +23,9 @@ from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction, QSplashScreen)
 from openpyxl.utils import get_column_letter
+from pygments import highlight
+from pygments.formatters.html import HtmlFormatter
+from pygments.lexers.python import PythonLexer
 from system_hotkey import SystemHotkey
 
 from icon import Icon
@@ -31,11 +35,11 @@ from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.mainwindow import Ui_MainWindow
+from 窗体.参数窗口 import Ui_Param
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 from 选择窗体 import Branch_exe_win
 
-import collections
 collections.Iterable = collections.abc.Iterable
 
 # todo：RGB颜色检测功能
@@ -279,6 +283,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
 
+    def open_params(self):
+        """打开参数修改窗口"""
+        row = self.tableWidget.currentRow()
+        params = self.tableWidget.item(row, 4).text()  # 参数
+        param_win = Param(self)  # 设置窗体
+        param_win.setModal(True)
+        param_win.textEdit.setText(params)
+        param_win.highlight_python_code()
+        param_win.exec_()
+
     def generateMenu(self, pos):
         """生成右键菜单"""
 
@@ -316,6 +330,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
             refresh = menu.addAction("刷新")
             refresh.setIcon(self.style().standardIcon(QStyle.SP_BrowserReload))  # 设置图标
+
+            modify_params = menu.addAction("修改参数")
+            modify_params.setIcon(self.style().standardIcon(QStyle.SP_DirIcon))  # 设置图标
 
             up_ins = menu.addAction("上移")
             up_ins.setShortcut('Shift+↑')
@@ -363,6 +380,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 各项操作
         if action == copy_ins:
             self.copy_data()  # 复制指令
+        if action == modify_params:
+            self.open_params()  # 修改指令参数
         elif action == del_ins:
             self.delete_data()  # 删除指令
         elif action == up_ins:
@@ -457,10 +476,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 self.tableWidget.insertRow(i_)
                 for j in range(len(list_order[i_])):
                     self.tableWidget.setItem(i_, j, QTableWidgetItem(str(list_order[i_][j])))
-            # 自适应列宽（排除第一列）
+            # 自适应列宽（排除第一列和第四列）
             header = self.tableWidget.horizontalHeader()
-            for col in range(1, header.count()):
-                header.setSectionResizeMode(col, QHeaderView.ResizeToContents)
+            for col in range(header.count()):
+                if col != 0 and col != 4:
+                    header.setSectionResizeMode(col, QHeaderView.ResizeToContents)
             # 设置焦点
             if row is not None:
                 self.tableWidget.setCurrentCell(int(row), 0)
@@ -962,6 +982,41 @@ class About(QDialog, Ui_About):
     @staticmethod
     def show_gitee():
         QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
+
+    def closeEvent(self, event):
+        # 保存窗体大小
+        save_window_size((self.width(), self.height()), self.windowTitle())
+
+
+class Param(QDialog, Ui_Param):
+    """参数设置窗口"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # 初始化窗体
+        self.setupUi(self)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+        set_window_size(self)  # 获取上次退出时的窗口大小
+        self.pushButton.clicked.connect(self.modify_param)
+
+    def highlight_python_code(self):
+        """运行python代码"""
+
+        def highlight_text(text):
+            lexer = PythonLexer()
+            formatter = HtmlFormatter(style='monokai')
+            html = highlight(text, lexer, formatter)
+            css = formatter.get_style_defs('.highlight')
+            self.textEdit.setHtml("<style>" + css + "</style>" + html)
+
+        code = self.textEdit.toPlainText()
+        highlight_text(code)
+
+    def modify_param(self):
+        """修改参数"""
+
+        param = self.textEdit.toPlainText()
+        print(param)
 
     def closeEvent(self, event):
         # 保存窗体大小
