@@ -149,7 +149,7 @@ class ImageClick:
         # 获取其他参数
         parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         skip = parameter_dic_.get('异常')  # 是否跳过参数
-        gray_recognition = eval(parameter_dic_.get('灰度'))  # 是否灰度识别
+        gray_recognition = parameter_dic_.get('灰度')  # 是否灰度识别
         area_identification = eval(parameter_dic_.get('区域'))  # 是否区域识别
         if area_identification == (0, 0, 0, 0):
             area_identification = None  # 如果没有区域识别则设置为None

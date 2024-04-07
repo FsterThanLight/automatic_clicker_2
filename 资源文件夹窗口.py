@@ -2,7 +2,7 @@ import os
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QDialog, QFileDialog
+from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter, set_window_size, \
     save_window_size
@@ -34,6 +34,10 @@ class Global_s(QDialog, Ui_Global):
             directory=os.path.expanduser("~")
         )
         if fil_path != '':
+            # 检查路径中是否有中文
+            if any('\u4e00' <= char <= '\u9fff' for char in fil_path):
+                QMessageBox.critical(self, '警告', '资源文件夹路径中暂不允许含有中文字符，请重新选择！')
+                return
             global_write_to_database('资源文件夹路径', os.path.normpath(fil_path))
         self.refresh_listview()
 

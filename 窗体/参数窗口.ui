@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>282</width>
-    <height>336</height>
+    <width>264</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,12 +26,8 @@
        <pointsize>11</pointsize>
       </font>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>修改参数</string>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

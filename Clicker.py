@@ -11,6 +11,7 @@
 from __future__ import print_function
 
 import collections
+import json
 import os.path
 import shutil
 
@@ -23,9 +24,6 @@ from PyQt5.QtWidgets import (QMainWindow, QTableWidgetItem, QHeaderView,
                              QDialog, QInputDialog, QMenu, QFileDialog, QStyle, QStatusBar, QMessageBox, QApplication,
                              QAction, QSplashScreen)
 from openpyxl.utils import get_column_letter
-from pygments import highlight
-from pygments.formatters.html import HtmlFormatter
-from pygments.lexers.python import PythonLexer
 from system_hotkey import SystemHotkey
 
 from icon import Icon
@@ -59,18 +57,19 @@ collections.Iterable = collections.abc.Iterable
 # todo: 时间等待允许输入小数
 # todo: 鼠标点击和鼠标拖拽可同时可按下键盘
 # todo: 绑定窗口指令
-# todo: 图像识别可使用区域识别
-# todo: 设置资源文件夹路径自动禁止使用中文字符
+# done: 图像识别可使用区域识别
+# done: 设置资源文件夹路径自动禁止使用中文字符
 # todo: 快捷导入指令，拖动文件到窗口导入指令
 # done: 执行分支窗口可使用数字键选择分支
 # todo: 参数显示重新设计
-# todo: bug: 分支删除后，指令表格中的分支指令没有删除
+# done: bug: 分支删除后，指令表格中的分支指令没有删除
 # todo: 功能快捷键可自定义
 # todo: 设置中提高延迟上限
 # todo: 按下键盘增加按压时长、按键释放等功能
 # todo: 指定时间去除年月日，只保留时分秒
 # todo: 获取鼠标位置功能，移动到指定位置功能
 # todo: 窗口焦点等待功能
+# todo: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 
 # activate clicker
 
@@ -279,18 +278,30 @@ class Main_window(QMainWindow, Ui_MainWindow):
             navigation.pushButton_2.setText('修改指令')
             navigation.modify_id = id_
             navigation.show()
-            navigation.switch_navigation_page(ins_type)
+            # 获取参数元组：(图像路径，参数，重复次数，异常处理，备注)
+            restore_parameters = (
+                self.tableWidget.item(row, 0).text(),
+                self.tableWidget.item(row, 4).text(),
+                self.tableWidget.item(row, 6).text(),
+                self.tableWidget.item(row, 2).text(),
+                self.tableWidget.item(row, 3).text()
+            )
+            navigation.switch_navigation_page(ins_type, restore_parameters)
         except AttributeError:
             QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
 
-    def open_params(self):
-        """打开参数修改窗口"""
+    def open_params_win(self):
+        """打开参数窗口"""
         row = self.tableWidget.currentRow()
-        params = self.tableWidget.item(row, 4).text()  # 参数
-        param_win = Param(self)  # 设置窗体
+        params = self.tableWidget.item(row, 4).text()  # parameters
+        # 格式化字典
+        formatted_dict = json.dumps(
+            {k: str(v).capitalize() if isinstance(v, bool) else v for k, v in eval(params).items()}, indent=4,
+            ensure_ascii=False)
+        # 显示参数窗口
+        param_win = Param(self)  # create a new window
         param_win.setModal(True)
-        param_win.textEdit.setText(params)
-        param_win.highlight_python_code()
+        param_win.textEdit.setText(formatted_dict)
         param_win.exec_()
 
     def generateMenu(self, pos):
@@ -331,7 +342,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             refresh = menu.addAction("刷新")
             refresh.setIcon(self.style().standardIcon(QStyle.SP_BrowserReload))  # 设置图标
 
-            modify_params = menu.addAction("修改参数")
+            modify_params = menu.addAction("查看参数")
             modify_params.setIcon(self.style().standardIcon(QStyle.SP_DirIcon))  # 设置图标
 
             up_ins = menu.addAction("上移")
@@ -381,7 +392,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if action == copy_ins:
             self.copy_data()  # 复制指令
         if action == modify_params:
-            self.open_params()  # 修改指令参数
+            self.open_params_win()  # 修改指令参数
         elif action == del_ins:
             self.delete_data()  # 删除指令
         elif action == up_ins:
@@ -848,7 +859,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 将combox显示的名称切换为命令
             self.comboBox.setCurrentIndex(0)
             cursor, con = sqlitedb()
-            cursor.execute('delete from 全局参数 where 分支表名=?', (text,))  # 删除分支名称
+            cursor.execute('delete from 全局参数 where 分支表名=?', (text,))  # 从全局参数中删除分支名称
+            cursor.execute('delete from 命令 where 隶属分支=?', (text,))  # 从命令表中删除分支指令
             con.commit()
             close_database(cursor, con)  # 关闭数据库连接
             QMessageBox.information(self, "提示", "分支删除成功！")
@@ -898,7 +910,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     self.go_to_branch()  # 转到分支
                 # 如果按下ctrl+x键
                 if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Y:
-                    self.modify_parameters()  # 修改指令
+                    self.show_parameters()  # 修改指令
         return super().eventFilter(obj, event)
 
         # 热键处理函数
@@ -997,26 +1009,6 @@ class Param(QDialog, Ui_Param):
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
-        self.pushButton.clicked.connect(self.modify_param)
-
-    def highlight_python_code(self):
-        """运行python代码"""
-
-        def highlight_text(text):
-            lexer = PythonLexer()
-            formatter = HtmlFormatter(style='monokai')
-            html = highlight(text, lexer, formatter)
-            css = formatter.get_style_defs('.highlight')
-            self.textEdit.setHtml("<style>" + css + "</style>" + html)
-
-        code = self.textEdit.toPlainText()
-        highlight_text(code)
-
-    def modify_param(self):
-        """修改参数"""
-
-        param = self.textEdit.toPlainText()
-        print(param)
 
     def closeEvent(self, event):
         # 保存窗体大小

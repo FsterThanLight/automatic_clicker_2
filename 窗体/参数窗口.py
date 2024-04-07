@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Param(object):
     def setupUi(self, Param):
         Param.setObjectName("Param")
-        Param.resize(282, 336)
+        Param.resize(264, 199)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Param.setWindowIcon(icon)
@@ -25,11 +25,9 @@ class Ui_Param(object):
         font.setFamily("微软雅黑")
         font.setPointSize(11)
         self.textEdit.setFont(font)
+        self.textEdit.setReadOnly(True)
         self.textEdit.setObjectName("textEdit")
         self.verticalLayout.addWidget(self.textEdit)
-        self.pushButton = QtWidgets.QPushButton(Param)
-        self.pushButton.setObjectName("pushButton")
-        self.verticalLayout.addWidget(self.pushButton)
 
         self.retranslateUi(Param)
         QtCore.QMetaObject.connectSlotsByName(Param)
@@ -37,5 +35,4 @@ class Ui_Param(object):
     def retranslateUi(self, Param):
         _translate = QtCore.QCoreApplication.translate
         Param.setWindowTitle(_translate("Param", "指令参数"))
-        self.pushButton.setText(_translate("Param", "修改参数"))
 import images_rc

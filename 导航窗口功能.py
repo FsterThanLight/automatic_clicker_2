@@ -1,5 +1,4 @@
 import datetime
-import json
 import os
 import random
 import re
@@ -48,6 +47,8 @@ class Na(QWidget, Ui_navigation):
         # 添加保存按钮事件
         self.modify_id = None
         self.modify_row = None
+        self.image_path = None
+        self.parameter_1 = None  # 用于存储参数
         self.pushButton_2.clicked.connect(lambda: self.save_data())
         # 获取鼠标位置参数
         self.mouse_position_function = None
@@ -167,13 +168,45 @@ class Na(QWidget, Ui_navigation):
                 it.value().setHidden(True)
             it += 1
 
-    def switch_navigation_page(self, name):
+    def switch_navigation_page(self, name, restore_parameters=None):
         """弹出窗口自动选择对应功能页
-        :param name: 功能页名称"""
-        # print('选择功能页：', name)
+        :param name: 功能页名称
+        :param restore_parameters: 恢复参数，元组：(图像路径，参数，重复次数，异常处理，备注)"""
+
+        def reverse_exception_handling_judgment(exception_handling_text):
+            """将异常处理方式还原到窗体控件"""
+            # 判断异常处理方式
+            if exception_handling_text in {'自动跳过', '提示异常并暂停', '提示异常并停止'}:
+                self.comboBox_9.setCurrentText(exception_handling_text)
+            elif '-' in exception_handling_text:
+                # 处理跳转分支的情况
+                select_branch_table_name, branch_index = exception_handling_text.split('-')
+                self.comboBox_9.setCurrentText('跳转分支')
+                # 解除异常处理方式的禁用，加载分支表名
+                self.comboBox_10.addItems(extract_global_parameter('分支表名'))
+                self.find_controls('分支', '功能区参数')
+                self.comboBox_10.setEnabled(True)
+                self.comboBox_11.setEnabled(True)
+                # 设置分支表名和分支序号
+                self.comboBox_10.setCurrentText(select_branch_table_name)
+                self.comboBox_11.setCurrentText(branch_index)
+
         try:
             tab_index = self.tab_title_list.index(name)
             self.tabWidget.setCurrentIndex(tab_index)
+            if restore_parameters:  # 如果有恢复参数
+                self.lineEdit_5.setText(restore_parameters[4])
+                self.spinBox.setValue(int(restore_parameters[2]))
+                # 恢复参数
+                self.image_path = restore_parameters[0]
+                self.parameter_1 = eval(restore_parameters[1])
+                func_selected = self.function_mapping.get(name)[0]  # 获取当前页的功能
+                try:
+                    reverse_exception_handling_judgment(restore_parameters[3])  # 恢复异常处理参数
+                    func_selected('还原参数')
+                    self.show_image_to_label(name)  # 显示图像
+                except Exception as e:
+                    print(e)
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
 
@@ -190,7 +223,7 @@ class Na(QWidget, Ui_navigation):
         return {
             'ID': None,
             '图像路径': image_,
-            '参数1（键鼠指令）': parameter_1_,
+            '参数1（键鼠指令）': str(parameter_1_),
             '参数2': parameter_2_,
             '参数3': parameter_3_,
             '参数4': parameter_4_,
@@ -430,7 +463,7 @@ class Na(QWidget, Ui_navigation):
             branch_name = self.main_window.comboBox.currentText()
 
             query_params = (
-                image_, instruction_, parameter_1_, parameter_2_, parameter_3_, parameter_4_, repeat_number_,
+                image_, instruction_, str(parameter_1_), parameter_2_, parameter_3_, parameter_4_, repeat_number_,
                 exception_handling_, remarks_, branch_name
             )
             if self.pushButton_2.text() == '添加指令':
@@ -555,14 +588,6 @@ class Na(QWidget, Ui_navigation):
         if value:
             append_textedit(value)
 
-    @staticmethod
-    def formatted_dic(parameter_dic_):
-        # 使用json.dumps()格式化输出
-        formatted_dict = json.dumps(
-            {k: str(v).capitalize() if isinstance(v, bool) else v for k, v in parameter_dic_.items()}, indent=4,
-            ensure_ascii=False)
-        return formatted_dict
-
     def image_click_function(self, type_):
         """图像点击识别窗口的功能
         :param type_: 功能名称（按钮功能、主要功能）"""
@@ -596,7 +621,44 @@ class Na(QWidget, Ui_navigation):
                 QMessageBox.critical(self, "错误", "未设置识别区域！")
                 raise FileNotFoundError
 
-            return image_, self.formatted_dic(parameter_dic_)
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到窗体控件"""
+            # 将图像路径设置回对应的comboBox
+            image_folder, image_file = os.path.split(image_)
+            image_folder_index = self.comboBox_8.findText(image_folder)
+            if image_folder_index != -1:
+                self.comboBox_8.setCurrentIndex(image_folder_index)
+            else:
+                # 如果路径不存在，则添加路径
+                self.comboBox_8.addItem(image_folder)
+                self.comboBox_8.setCurrentIndex(self.comboBox_8.findText(image_folder))
+
+            image_file_index = self.comboBox.findText(image_file)
+            if image_file_index != -1:
+                self.comboBox.setCurrentIndex(image_file_index)
+            else:
+                # 如果文件不存在，则添加文件
+                self.comboBox.addItem(image_file)
+                self.comboBox.setCurrentIndex(self.comboBox.findText(image_file))
+
+            # 将其他参数设置回对应的控件
+            self.comboBox_2.setCurrentText(parameter_dic_['动作'])
+
+            if parameter_dic_['异常'] == '自动略过':
+                self.radioButton_2.setChecked(True)
+            else:
+                self.radioButton_4.setChecked(True)
+                self.spinBox_4.setValue(parameter_dic_['异常'])
+
+            if parameter_dic_['区域'] == '(0,0,0,0)':
+                self.groupBox_57.setChecked(False)
+            else:
+                self.groupBox_57.setChecked(True)
+                self.label_155.setText(parameter_dic_['区域'])
+
+            self.checkBox.setChecked(parameter_dic_['灰度'])
 
         def test():
             """测试功能"""
@@ -607,13 +669,14 @@ class Na(QWidget, Ui_navigation):
                                          parameter_1_=parameter_1_
                                          )
                 # 测试用例
-                # try:
-                image_click = ImageClick(self.out_mes, dic_)
-                image_click.is_test = True
-                image_click.start_execute()
-                # except Exception as e:
-                #     print(e)
-                #     self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+                try:
+                    image_click = ImageClick(self.out_mes, dic_)
+                    image_click.is_test = True
+                    image_click.start_execute()
+                except Exception as e:
+                    print(e)
+                    self.out_mes.out_mes(f'未找到目标图像，测试结束', True)
+
             except FileNotFoundError:
                 self.out_mes.out_mes(f'图像文件未设置！', True)
 
@@ -659,6 +722,10 @@ class Na(QWidget, Ui_navigation):
                                                  image_=image,
                                                  parameter_1_=parameter_1,
                                                  remarks_=func_info_dic.get('备注'))
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
+
         elif type_ == '加载信息':
             # 加载图像文件夹路径
             self.comboBox_8.clear()
