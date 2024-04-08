@@ -69,7 +69,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 指定时间去除年月日，只保留时分秒
 # todo: 获取鼠标位置功能，移动到指定位置功能
 # todo: 窗口焦点等待功能
-# todo: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
+# done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 
 # activate clicker
 
@@ -923,7 +923,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             if self.command_thread.isRunning():
                 self.command_thread.terminate()  # 终止线程
                 # 获取当前时间
-                self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务终止！')
+                self.send_message('任务终止！')
                 if self.checkBox_2.isChecked():
                     self.show()
                 QApplication.processEvents()
@@ -931,15 +931,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         elif i_str == "开始线程":
             self.start()  # 执行主任务
-            self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务开始！')
+            self.send_message('任务开始！')
 
         elif i_str == "暂停和恢复线程":
             if self.command_thread.isRunning():
                 if self.command_thread.is_paused:
-                    self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务恢复！')
+                    self.send_message('任务恢复！')
                     self.command_thread.resume()
                 else:
-                    self.plainTextEdit.appendPlainText(f'{get_str_now_time()} 任务暂停！')
+                    self.send_message('任务暂停！')
                     self.command_thread.pause()
 
         elif i_str == "弹出分支选择窗口":

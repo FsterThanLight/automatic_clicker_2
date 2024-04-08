@@ -26,7 +26,7 @@ from aip import AipOcr
 from dateutil.parser import parse
 
 from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value, \
-    line_number_increment, get_ocr_info
+    line_number_increment, get_ocr_info, extract_global_parameter
 from 网页操作 import WebOption
 
 # sys.coinit_flags = 2  # STA
@@ -68,6 +68,33 @@ def sub_variable(text: str):
         for key, value in variable_dic.items():
             new_text = new_text.replace(f'☾{key}☽', str(value))
     return new_text
+
+
+def get_available_path(image_name_: str, out_mes):
+    """组合图片路径，返回可以打开的图片路径，如果路径不存在则重新匹配
+    :param out_mes: 用于输出信息
+    :param image_name_: 图片路径或者图片名称
+    :return: 可以打开的图片路径，如果仍然不存在则返回None"""
+
+    def search_image_in_folders(image_name_only_, folders):
+        for folder_path in folders:
+            image_path = os.path.join(folder_path, image_name_only_)
+            if os.path.exists(image_path):
+                return image_path
+        return None
+
+    if os.path.isabs(image_name_):
+        if os.path.exists(image_name_):
+            return image_name_
+        else:
+            out_mes.out_mes('原图片路径不存在，已重新匹配。', False)
+            image_name_only = os.path.basename(image_name_)
+            res_folder_path = extract_global_parameter('资源文件夹路径')
+            return search_image_in_folders(image_name_only, res_folder_path)
+
+    else:
+        res_folder_path = extract_global_parameter('资源文件夹路径')
+        return search_image_in_folders(image_name_, res_folder_path)
 
 
 class TransparentWindow(QWidget):
@@ -143,7 +170,8 @@ class ImageClick:
         """从指令字典中解析出指令参数
         :return: 指令参数列表，重复次数"""
         # 读取图像名称
-        img = self.ins_dic.get('图像路径')
+        img = get_available_path(self.ins_dic.get('图像路径'), self.out_mes)
+        print('img:', img)
         # 取重复次数
         re_try = self.ins_dic.get('重复次数')
         # 获取其他参数
@@ -226,6 +254,9 @@ class ImageClick:
         except OSError:
             self.out_mes.out_mes('文件下未找到png图像，请检查文件是否存在！', self.is_test)
             raise FileNotFoundError
+        except TypeError:
+            self.out_mes.out_mes('图像路径不存在！', self.is_test)
+            raise TypeError
 
 
 class CoordinateClick:
@@ -2127,5 +2158,3 @@ class GetMousePositon:
         )
         # 设置变量池中的值
         set_variable_value(var, str(mouse_position))
-
-
