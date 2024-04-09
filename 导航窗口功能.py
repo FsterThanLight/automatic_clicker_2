@@ -168,6 +168,12 @@ class Na(QWidget, Ui_navigation):
                 it.value().setHidden(True)
             it += 1
 
+    @staticmethod
+    def select_groupBox(selected_groupBox, all_groupBoxes):
+        """选择groupBox，当tab命令页中的groupBox被选中时，其他groupBox不被选中"""
+        for groupBox in all_groupBoxes:
+            groupBox.setChecked(groupBox == selected_groupBox)
+
     def switch_navigation_page(self, name, restore_parameters=None):
         """弹出窗口自动选择对应功能页
         :param name: 功能页名称
@@ -206,7 +212,7 @@ class Na(QWidget, Ui_navigation):
                     func_selected('还原参数')
                     self.show_image_to_label(name)  # 显示图像
                 except Exception as e:
-                    print(e)
+                    print('还原参数错误', e)
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
 
@@ -543,23 +549,26 @@ class Na(QWidget, Ui_navigation):
         """将图像显示到label中,图像预览的功能
         :param ins_name: 指令名称
         :param judge: 显示、删除、查看"""
-        comboBox_folder, comboBox_image = self.combo_image_preview.get(ins_name)
-        image_path = os.path.normpath(
-            os.path.join(comboBox_folder.currentText(), comboBox_image.currentText())
-        )
-        if (os.path.exists(image_path)) and (os.path.isfile(image_path)):  # 判断图像是否存在
-            if judge == '显示':
-                # 将图像转换为QImage对象
-                image_ = QImage(image_path)
-                image = image_.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
-                self.label_43.setPixmap(QPixmap.fromImage(image))
-            elif judge == '删除':
-                os.remove(image_path)
-            elif judge == '查看':
-                os.startfile(image_path)
-        else:
-            self.label_43.setText('暂无')
-        self.tabWidget_2.setCurrentIndex(1)  # 设置到功能页面到预览页
+        try:
+            comboBox_folder, comboBox_image = self.combo_image_preview.get(ins_name)
+            image_path = os.path.normpath(
+                os.path.join(comboBox_folder.currentText(), comboBox_image.currentText())
+            )
+            if (os.path.exists(image_path)) and (os.path.isfile(image_path)):  # 判断图像是否存在
+                if judge == '显示':
+                    # 将图像转换为QImage对象
+                    image_ = QImage(image_path)
+                    image = image_.scaled(self.label_43.width(), self.label_43.height(), Qt.KeepAspectRatio)
+                    self.label_43.setPixmap(QPixmap.fromImage(image))
+                elif judge == '删除':
+                    os.remove(image_path)
+                elif judge == '查看':
+                    os.startfile(image_path)
+            else:
+                self.label_43.setText('暂无')
+            self.tabWidget_2.setCurrentIndex(1)  # 设置到功能页面到预览页
+        except TypeError:
+            pass
 
     def on_button_clicked(self, judge: str) -> None:
         """按钮点击事件,用于图像预览的按钮事件
@@ -735,33 +744,61 @@ class Na(QWidget, Ui_navigation):
 
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""
+
+        def put_parameters(parameter_dic__):
+            """将参数还原到窗体控件"""
+            parameter_1_ = self.parameter_1['类型']
+            if parameter_1_ == '随机滚轮滑动':
+                self.groupBox_29.setChecked(True)
+                self.groupBox_22.setChecked(False)
+                self.spinBox_16.setValue(parameter_dic__['最小距离'])
+                self.spinBox_17.setValue(parameter_dic__['最大距离'])
+            elif parameter_1_ == '滚轮滑动':
+                self.groupBox_22.setChecked(True)
+                self.groupBox_29.setChecked(False)
+                self.comboBox_5.setCurrentText(parameter_dic__['方向'])
+                self.lineEdit_3.setText(parameter_dic__['距离'])
+
         if type_ == '按钮功能':
             # 将不同的单选按钮添加到同一个按钮组
-            buttonGroup_3 = QButtonGroup(self)
-            buttonGroup_3.addButton(self.radioButton_gun)
-            buttonGroup_3.addButton(self.radioButton_sv)
+            all_groupBoxes_ = [self.groupBox_22, self.groupBox_29]
+            for groupBox_ in all_groupBoxes_:
+                groupBox_.clicked.connect(lambda _, gb=groupBox_: self.select_groupBox(gb, all_groupBoxes_))
             self.lineEdit_3.setValidator(QIntValidator())  # 设置只能输入数字
+
         elif type_ == '写入参数':
+            parameter_dic_ = None
             parameter_1 = None
-            parameter_2 = None
-            if self.radioButton_gun.isChecked():
+            if self.groupBox_22.isChecked():
                 parameter_1 = '滚轮滑动'
-                parameter_2 = f'{self.comboBox_5.currentText()},{self.lineEdit_3.text()}'  # 鼠标滚轮滑动的方向
-            elif self.radioButton_sv.isChecked():
+            elif self.groupBox_29.isChecked():
                 parameter_1 = '随机滚轮滑动'
-                parameter_2 = f'{self.spinBox_16.value()},{self.spinBox_17.value()}'
             # 检查参数是否有异常
-            if not self.lineEdit_3.text().isdigit() and self.radioButton_gun.isChecked():
+            if not self.lineEdit_3.text().isdigit() and self.groupBox_22.isChecked():
                 QMessageBox.critical(self, "错误", "滚动的距离未输入！")
                 raise ValueError
+            # 参数字典
+            if parameter_1 == '随机滚轮滑动':
+                parameter_dic_ = {
+                    '类型': parameter_1,
+                    '最小距离': self.spinBox_16.value(),
+                    '最大距离': self.spinBox_17.value()
+                }
+            elif parameter_1 == '滚轮滑动':
+                parameter_dic_ = {
+                    '类型': parameter_1,
+                    '方向': self.comboBox_5.currentText(),
+                    '距离': self.lineEdit_3.text()
+                }
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
                                                  remarks_=func_info_dic.get('备注'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2)
+                                                 parameter_1_=parameter_dic_)
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
 
     def text_input_function(self, type_):
         """文本输入窗口的功能"""
@@ -956,15 +993,10 @@ class Na(QWidget, Ui_navigation):
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
 
-        def select_groupBox(selected_groupBox, all_groupBoxes):
-            """选择groupBox"""
-            for groupBox in all_groupBoxes:
-                groupBox.setChecked(groupBox == selected_groupBox)
-
         if type_ == '按钮功能':
             all_groupBoxes_ = [self.groupBox_28, self.groupBox_30, self.groupBox_59]
             for groupBox_ in all_groupBoxes_:
-                groupBox_.clicked.connect(lambda _, gb=groupBox_: select_groupBox(gb, all_groupBoxes_))
+                groupBox_.clicked.connect(lambda _, gb=groupBox_: self.select_groupBox(gb, all_groupBoxes_))
 
             # 限制输入框只能输入数字
             self.lineEdit.setValidator(QIntValidator())

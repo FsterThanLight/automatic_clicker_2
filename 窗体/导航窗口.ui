@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>7</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -2328,17 +2328,10 @@
            <property name="title">
             <string>滑轮滚动</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
-             <widget class="QRadioButton" name="radioButton_gun">
-              <property name="text">
-               <string>滚轮滚动</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_4" columnstretch="4,4,1">
               <item row="1" column="0">
@@ -2395,14 +2388,13 @@
            <property name="title">
             <string>随机滚动</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
-            <item>
-             <widget class="QRadioButton" name="radioButton_sv">
-              <property name="text">
-               <string>随机滚动</string>
-              </property>
-             </widget>
-            </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_36" columnstretch="4,4,1">
               <item row="0" column="1">

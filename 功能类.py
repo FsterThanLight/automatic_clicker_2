@@ -437,16 +437,18 @@ class RollerSlide:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
 
-    def parsing_ins_dic(self, type_):
+    @staticmethod
+    def parsing_ins_dic(parameter_dic_):
         """解析指令字典"""
+        type_ = parameter_dic_.get('类型')
         if type_ == '滚轮滑动':
-            scroll_direction = str(self.ins_dic.get('参数2').split(',')[0])
-            scroll_distance_ = int(self.ins_dic.get('参数2').split(',')[1])
+            scroll_direction = str(parameter_dic_.get('方向'))
+            scroll_distance_ = int(parameter_dic_.get('距离'))
             scroll_distance = scroll_distance_ if scroll_direction == '↑' else -scroll_distance_
             return scroll_direction, scroll_distance
         elif type_ == '随机滚轮滑动':
-            min_distance = int(self.ins_dic.get('参数2').split(',')[0])
-            max_distance = int(self.ins_dic.get('参数2').split(',')[1])
+            min_distance = int(parameter_dic_.get('最小距离'))
+            max_distance = int(parameter_dic_.get('最大距离'))
             scroll_direction = random.choice(['↑', '↓'])
             scroll_distance_ = random.randint(min_distance, max_distance)
             scroll_distance = scroll_distance_ if scroll_direction == '↑' else -scroll_distance_
@@ -454,9 +456,10 @@ class RollerSlide:
 
     def start_execute(self):
         """执行重复次数"""
-        type_ = self.ins_dic.get('参数1（键鼠指令）')
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        type_ = parameter_dic_.get('类型')
         re_try = self.ins_dic.get('重复次数')
-        scroll_direction, scroll_distance = self.parsing_ins_dic(type_)
+        scroll_direction, scroll_distance = self.parsing_ins_dic(parameter_dic_)
         # 执行滚轮滑动
         if re_try == 1:
             self.wheel_slip(scroll_direction, scroll_distance, type_)
