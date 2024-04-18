@@ -1,3 +1,5 @@
+import time
+
 import psutil
 import pyautogui
 import uiautomation as auto
@@ -20,4 +22,6 @@ if __name__ == "__main__":
     wei_xin = auto.WindowControl(searchDepth=1, ClassName='WeChatMainWndForPC')
     print(wei_xin)
     wx_chat_win = wei_xin.ListItemControl(searchDepth=10, Name='文件传输助手')
-    wx_chat_win.Click()
+    wx_chat_win.Click(simulateMove=False)
+    time.sleep(1)
+    wei_xin.Minimize()
