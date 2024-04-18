@@ -1,4 +1,5 @@
 import datetime
+import io
 import os
 import random
 import re
@@ -16,7 +17,8 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 from 功能类 import OutputMessage, TransparentWindow, ImageClick, CoordinateClick, PlayVoice, WaitWindow, \
-    DialogWindow, WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile, TextRecognition
+    DialogWindow, WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile, TextRecognition, \
+    VerificationCode
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
@@ -111,7 +113,7 @@ class Na(QWidget, Ui_navigation):
             '全屏截图': (lambda x: self.full_screen_capture_function(x), False),
             '切换窗口': (lambda x: self.switch_window_function(x), False),
             # '发送消息': (lambda x: self.wechat_function(x), False),
-            # '数字验证码': (lambda x: self.verification_code_function(x), True),
+            '数字验证码': (lambda x: self.verification_code_function(x), True),
             '提示音': (lambda x: self.play_voice_function(x), False),
             '倒计时窗口': (lambda x: self.wait_window_function(x), False),
             '提示窗口': (lambda x: self.dialog_window_function(x), False),
@@ -1551,51 +1553,91 @@ class Na(QWidget, Ui_navigation):
     #                                              parameter_2_=parameter_2,
     #                                              remarks_=func_info_dic.get('备注'))
 
-    # def verification_code_function(self, type_):
-    #     """数字验证码功能"""
-    #
-    #     def test():
-    #         """测试"""
-    #         # 设置到功能页面的测试页
-    #         self.tabWidget_2.setCurrentIndex(3)
-    #         region = eval(self.label_85.text())
-    #         if region == (0, 0, 0, 0):
-    #             self.textBrowser.append('请先设置区域！')
-    #         else:
-    #             im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
-    #             im_bytes = io.BytesIO()
-    #             im.save(im_bytes, format='PNG')
-    #             im_b = im_bytes.getvalue()
-    #             ocr = ddddocr.DdddOcr()
-    #             res = ocr.classification(im_b)
-    #             self.textBrowser.append('识别出的验证码为：' + res)
-    #             # 释放资源
-    #             del im
-    #             del im_bytes
-    #
-    #     def set_region():
-    #         """设置区域"""
-    #         screen_capture = ScreenCapture()
-    #         screen_capture.screenshot_area()
-    #         self.label_85.setText(str(screen_capture.region))
-    #
-    #     if type_ == '按钮功能':
-    #         self.pushButton_16.clicked.connect(set_region)
-    #         # 测试按钮
-    #         self.pushButton_17.clicked.connect(test)
-    #     elif type_ == '写入参数':
-    #         image = self.lineEdit_18.text()
-    #         parameter_1 = self.label_85.text()
-    #         parameter_2 = self.comboBox_25.currentText().replace('：', '')
-    #         # 将命令写入数据库
-    #         func_info_dic = self.get_func_info()
-    #         self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
-    #                                              repeat_number_=func_info_dic.get('重复次数'),
-    #                                              exception_handling_=func_info_dic.get('异常处理'),
-    #                                              image_=image,
-    #                                              parameter_1_=parameter_1,
-    #                                              parameter_2_=parameter_2,
-    #                                              remarks_=func_info_dic.get('备注'))
+    def verification_code_function(self, type_):
+        """数字验证码功能"""
+
+        def test():
+            """测试功能"""
+            try:
+                image_, parameter_1_ = get_parameters(True)
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         image_=image_,
+                                         parameter_1_=parameter_1_
+                                         )
+                # 测试用例
+                verification_code = VerificationCode(self.out_mes, dic_)
+                verification_code.is_test = True
+                verification_code.start_execute()
+            except Exception as e:
+                self.out_mes.out_mes(f'识别失败，错误信息：{type(e)}', True)
+
+        def set_region():
+            """设置区域"""
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()
+            self.label_85.setText(str(screen_capture.region))
+
+        def open_setting_window():
+            """打开图像点击设置窗口"""
+            setting_win = Setting(self)  # 设置窗体
+            setting_win.tabWidget.setCurrentIndex(1)  # 切换到第2页
+            setting_win.setModal(True)
+            setting_win.exec_()
+
+        def get_parameters(is_test: bool = False):
+            """从tab页获取参数"""
+            image_ = self.lineEdit_18.text()  # 输入框元素的定位
+            parameter_1_ = self.label_85.text()  # 截图区域
+            parameter_2_ = self.comboBox_25.currentText().replace('：', '')  # 元素类型
+            parameter_3_ = self.comboBox_62.currentText()  # 验证码类型
+            # 检查参数是否有异常
+            if image_ == '' and not is_test:
+                QMessageBox.critical(self, "错误", "元素未设置！")
+                raise ValueError
+            if parameter_1_ == '(0,0,0,0)':
+                QMessageBox.critical(self, "错误", "验证码识别区域未设置！")
+                raise ValueError
+            # 返回参数字典
+            parameter_dic_ = {
+                '区域': parameter_1_,
+                '元素类型': parameter_2_,
+                '验证码类型': parameter_3_,
+            }
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到tab页"""
+            # 设置输入框元素的定位
+            self.lineEdit_18.setText(image_)
+            # 设置截图区域
+            self.label_85.setText(parameter_dic_['区域'])
+            # 设置元素类型
+            index = self.comboBox_25.findText(parameter_dic_['元素类型'] + '：')
+            if index >= 0:
+                self.comboBox_25.setCurrentIndex(index)
+            # 设置验证码类型
+            index = self.comboBox_62.findText(parameter_dic_['验证码类型'])
+            if index >= 0:
+                self.comboBox_62.setCurrentIndex(index)
+
+        if type_ == '按钮功能':
+            self.pushButton_16.clicked.connect(set_region)
+            self.pushButton_53.clicked.connect(open_setting_window)
+            # 测试按钮
+            self.pushButton_17.clicked.connect(test)
+        elif type_ == '写入参数':
+            image, parameter_dic = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 parameter_1_=parameter_dic,
+                                                 remarks_=func_info_dic.get('备注'))
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
 
     def play_voice_function(self, type_):
         """播放语音的功能"""

@@ -1,33 +1,23 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtWidgets import QWidget
+import psutil
+import pyautogui
+import uiautomation as auto
 
 
-class TransparentWindow(QWidget):
-    """显示框选区域的窗口"""
-
-    def __init__(self, pos):
-        """pos(x,y, width, height)"""
-        super().__init__()
-        # 设置无边框窗口
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
-        self.setWindowOpacity(0.5)  # 设置透明度
-        self.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
-        self.setGeometry(pos[0], pos[1], pos[2], pos[3])  # 设置窗口大小
-
-    def paintEvent(self, event):
-        # 绘制边框
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setPen(QPen(QColor(255, 0, 0), 5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-        painter.drawRect(self.rect())
+def get_pid(name):
+    """  
+    作用：根据进程名获取进程pid
+    返回：返回匹配第一个进程的pid
+    """
+    pids = psutil.process_iter()
+    for pid in pids:
+        if pid.name() == name:
+            return pid.pid
 
 
 if __name__ == "__main__":
-    import sys
-    from PyQt5.QtWidgets import QApplication
-
-    app = QApplication(sys.argv)
-    window = TransparentWindow((100, 100, 400, 400))
-    window.show()
-    sys.exit(app.exec_())
+    print(get_pid('WeChat.exe'))
+    pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
+    wei_xin = auto.WindowControl(searchDepth=1, ClassName='WeChatMainWndForPC')
+    print(wei_xin)
+    wx_chat_win = wei_xin.ListItemControl(searchDepth=10, Name='文件传输助手')
+    wx_chat_win.Click()

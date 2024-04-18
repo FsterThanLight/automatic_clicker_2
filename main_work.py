@@ -142,7 +142,7 @@ class CommandThread(QThread):
                         "全屏截图": (FullScreenCapture, self.out_mes, dic_),
                         "切换窗口": (SwitchWindow, self.out_mes, dic_),
                         # "发送消息": (SendWeChat, self.out_mes, dic_),
-                        # "数字验证码": (VerificationCode, self.out_mes, dic_),
+                        "数字验证码": (VerificationCode, self.out_mes, dic_),
                         "提示音": (PlayVoice, self.out_mes, dic_),
                         "倒计时窗口": (WaitWindow, self.out_mes, dic_),
                         "提示窗口": (DialogWindow, self.out_mes, dic_),

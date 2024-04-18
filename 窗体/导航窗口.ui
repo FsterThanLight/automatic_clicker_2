@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>7</number>
+        <number>19</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -3553,17 +3553,17 @@ p, li { white-space: pre-wrap; }
                <widget class="QComboBox" name="comboBox_21">
                 <item>
                  <property name="text">
+                  <string>xpath定位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>元素ID</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>元素名称</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>xpath定位</string>
                  </property>
                 </item>
                </widget>
@@ -3828,17 +3828,17 @@ p, li { white-space: pre-wrap; }
                <widget class="QComboBox" name="comboBox_24">
                 <item>
                  <property name="text">
+                  <string>xpath定位：</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>元素ID：</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>元素名称：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>xpath定位：</string>
                  </property>
                 </item>
                </widget>
@@ -4064,17 +4064,17 @@ p, li { white-space: pre-wrap; }
                <widget class="QComboBox" name="comboBox_28">
                 <item>
                  <property name="text">
+                  <string>xpath定位：</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>元素ID：</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>元素名称：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>xpath定位：</string>
                  </property>
                 </item>
                </widget>
@@ -4260,17 +4260,17 @@ p, li { white-space: pre-wrap; }
                <widget class="QComboBox" name="comboBox_30">
                 <item>
                  <property name="text">
+                  <string>xpath定位：</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>元素ID：</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>元素名称：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>xpath定位：</string>
                  </property>
                 </item>
                </widget>
@@ -4408,7 +4408,7 @@ p, li { white-space: pre-wrap; }
         <attribute name="title">
          <string>数字验证码</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_53">
+        <layout class="QVBoxLayout" name="verticalLayout_16">
          <item>
           <widget class="QLabel" name="label_97">
            <property name="sizePolicy">
@@ -4418,7 +4418,7 @@ p, li { white-space: pre-wrap; }
             </sizepolicy>
            </property>
            <property name="text">
-            <string>操作说明：该功能开发中......</string>
+            <string>操作说明：暂无</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -4440,29 +4440,112 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="groupBox_19">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="title">
             <string>设置验证码截图位置：</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_51">
+           <layout class="QGridLayout" name="gridLayout_64">
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="label_85">
+              <property name="text">
+               <string>(0,0,0,0)</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPushButton" name="pushButton_53">
+              <property name="text">
+               <string>设置Token</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_16">
+              <property name="text">
+               <string>设置识别位置</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_60">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="title">
+            <string>验证码类型：</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_53">
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_50">
-              <item>
-               <widget class="QLabel" name="label_85">
-                <property name="text">
-                 <string>(0,0,0,0)</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_16">
-                <property name="text">
-                 <string>设置截图区域</string>
-                </property>
+             <layout class="QGridLayout" name="gridLayout_63">
+              <item row="0" column="0">
+               <widget class="QComboBox" name="comboBox_62">
+                <item>
+                 <property name="text">
+                  <string>通用数英1-4位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用数英5-8位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用数英9~11位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用数英12位及以上</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用数英1~6位plus</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>定制-数英5位~qcs</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用中文字符1~2位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用中文字符 3~5位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用中文字符6~8位</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用中文字符9位及以上</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用数字计算题</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>通用中文计算题</string>
+                 </property>
+                </item>
                </widget>
               </item>
              </layout>
@@ -4473,7 +4556,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="groupBox_20">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="title">
             <string>验证码输入框位置：</string>
@@ -4485,17 +4568,17 @@ p, li { white-space: pre-wrap; }
                <widget class="QComboBox" name="comboBox_25">
                 <item>
                  <property name="text">
+                  <string>xpath定位：</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
                   <string>元素ID：</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
                   <string>元素名称：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>xpath定位：</string>
                  </property>
                 </item>
                </widget>
@@ -4528,7 +4611,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QPushButton" name="pushButton_17">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="palette">
             <palette>

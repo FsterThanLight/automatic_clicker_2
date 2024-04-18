@@ -6,6 +6,7 @@ from 数据库操作 import update_settings_in_database, get_setting_data_from_d
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
+YUN_CODE = 'https://www.jfbym.com'
 
 
 class Setting(QDialog, Ui_Setting):
@@ -20,7 +21,8 @@ class Setting(QDialog, Ui_Setting):
         # 绑定事件
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
-        self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))
+        self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))  # 打开百度OCR链接
+        self.pushButton_4.clicked.connect(lambda: self.open_link(YUN_CODE))  # 打开云码链接
         self.radioButton_2.clicked.connect(lambda: self.change_mode('极速模式'))  # 开启极速模式
         self.radioButton.clicked.connect(lambda: self.change_mode('普通模式'))  # 切换普通模式
         self.load_setting_data()  # 加载设置数据
@@ -43,7 +45,8 @@ class Setting(QDialog, Ui_Setting):
             任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False),
             appId=str(self.lineEdit.text()),
             apiKey=str(self.lineEdit_2.text()),
-            secretKey=str(self.lineEdit_3.text())
+            secretKey=str(self.lineEdit_3.text()),
+            云码Token=str(self.lineEdit_6.text())
         )
 
     def save_setting(self):
@@ -76,7 +79,8 @@ class Setting(QDialog, Ui_Setting):
             '任务完成后显示主窗口',
             'appId',
             'apiKey',
-            'secretKey'
+            'secretKey',
+            '云码Token'
         )
         self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
@@ -99,6 +103,9 @@ class Setting(QDialog, Ui_Setting):
         self.lineEdit.setText(setting_data_dic['appId'])
         self.lineEdit_2.setText(setting_data_dic['apiKey'])
         self.lineEdit_3.setText(setting_data_dic['secretKey'])
+
+        # 填入云码Token
+        self.lineEdit_6.setText(setting_data_dic['云码Token'])
 
     def change_mode(self, mode: str):
         """切换模式

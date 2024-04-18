@@ -1,4 +1,6 @@
+import base64
 import io
+import json
 import os
 import random
 import re
@@ -15,6 +17,7 @@ import pyautogui
 import pymsgbox
 import pyperclip
 import pyttsx4
+import requests
 import win32con
 import win32gui
 import win32process
@@ -107,7 +110,6 @@ class TransparentWindow(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         self.setWindowOpacity(0.5)  # 设置透明度
         self.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
-        # self.setGeometry(pos[0], pos[1], pos[2], pos[3])  # 设置窗口大小
 
     def paintEvent(self, event):
         # 绘制边框
@@ -171,7 +173,6 @@ class ImageClick:
         :return: 指令参数列表，重复次数"""
         # 读取图像名称
         img = get_available_path(self.ins_dic.get('图像路径'), self.out_mes)
-        print('img:', img)
         # 取重复次数
         re_try = self.ins_dic.get('重复次数')
         # 获取其他参数
@@ -1286,58 +1287,103 @@ class FullScreenCapture:
 #             self.send_message_to_wechat(list_ins_.get('联系人'), list_ins_.get('消息内容'), re_try)
 
 
-# class VerificationCode:
-#
-#     def __init__(self, outputmessage, ins_dic, cycle_number=1):
-#         # 主窗口
-#         self.out_mes = outputmessage
-#         # 指令字典
-#         self.ins_dic = ins_dic
-#         # 网页控制的部分功能
-#         self.web_option = WebOption(self.out_mes)
-#         # 是否是测试
-#         self.is_test = False
-#         self.cycle_number = cycle_number
-#
-#     def parsing_ins_dic(self):
-#         """解析指令字典"""
-#         return {
-#             '截图区域': self.ins_dic.get('参数1（键鼠指令）'),
-#             '元素类型': self.ins_dic.get('参数2'),
-#             '元素值': self.ins_dic.get('图像路径'),
-#         }
-#
-#     def ver_input(self, region, element_type, element_value):
-#         """截图区域，识别验证码，输入验证码"""
-#         im = pyautogui.screenshot(region=(region[0], region[1], region[2], region[3]))
-#         im_bytes = io.BytesIO()
-#         im.save(im_bytes, format='PNG')
-#         im_b = im_bytes.getvalue()
-#         ocr = ddddocr.DdddOcr()
-#         res = ocr.classification(im_b)
-#         self.out_mes.out_mes(f'识别出的验证码为：{res}', self.is_test)
-#         # 释放资源
-#         del im
-#         del im_bytes
-#         # 执行网页操作
-#         global DRIVER
-#         self.web_option.driver = DRIVER
-#         self.web_option.text = res
-#         self.web_option.single_shot_operation(action='输入内容',
-#                                               element_value_=element_value,
-#                                               element_type_=element_type,
-#                                               timeout_type_=10)
-#
-#     def start_execute(self):
-#         """执行重复次数"""
-#         list_dic = self.parsing_ins_dic()
-#         verification_code_region = eval(list_dic.get('截图区域'))
-#         # 执行验证码输入
-#         self.ver_input(
-#             verification_code_region,
-#             list_dic.get('元素类型'),
-#             list_dic.get('元素值')
-#         )
+class VerificationCode:
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 主窗口
+        self.out_mes = outputmessage
+        # 指令字典
+        self.ins_dic = ins_dic
+        # 网页控制的部分功能
+        self.web_option = WebOption(self.out_mes)
+        # 是否是测试
+        self.is_test = False
+        self.cycle_number = cycle_number
+        # 云码平台
+        self._custom_url = "http://api.jfbym.com/api/YmServer/customApi"
+        self._token = get_setting_data_from_db('云码Token')
+        self._headers = {
+            'Content-Type': 'application/json'
+        }
+
+    def parsing_ins_dic(self):
+        """解析指令字典"""
+        image = self.ins_dic.get('图像路径')  # 网页元素定位
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        return {
+            '区域': eval(parameter_dic_.get('区域')),
+            '元素类型': parameter_dic_.get('元素类型'),
+            '元素值': image,
+            '验证码类型': parameter_dic_.get('验证码类型')
+        }
+
+    def common_verify(self, image, verify_type="通用数英1-4位"):
+        verification_code_types = {
+            "通用数英1-4位": 10110,
+            "通用数英5-8位": 10111,
+            "通用数英9~11位": 10112,
+            "通用数英12位及以上": 10113,
+            "通用数英1~6位plus": 10103,
+            "定制-数英5位~qcs": 9001,
+            "定制-纯数字4位": 193,
+            "通用中文字符1~2位": 10114,
+            "通用中文字符3~5位": 10115,
+            "通用中文字符6~8位": 10116,
+            "通用中文字符9位及以上": 10117,
+            "定制-XX西游苦行中文字符": 10107,
+            "通用数字计算题": 50100,
+            "通用中文计算题": 50101
+        }
+        # 将verify_type转换为对应的数字
+        verify_type_int = verification_code_types.get(verify_type)
+        payload = {
+            "image": base64.b64encode(image).decode(),
+            "token": self._token,
+            "type": str(verify_type_int)
+        }
+        resp = requests.post(self._custom_url, headers=self._headers, data=json.dumps(payload))
+        code = int(resp.json()['code'])
+        try:
+            result = resp.json()['data']['data']
+        except Exception as e:
+            print(e)
+            result = ''
+        return code, result
+
+    def ver_input(self, region, element_type, element_value, verify_type_):
+        """截图区域，识别验证码，输入验证码"""
+        im = pyautogui.screenshot(region=region)
+        im_path = os.path.join(os.getcwd(), 'ver.png')
+        im.save(os.path.join(os.getcwd(), 'ver.png'))
+        # 使用base64编码
+        im_base64 = open(im_path, 'rb').read()
+        code_, res = self.common_verify(image=im_base64, verify_type=verify_type_)
+        if code_ == 10000:
+            self.out_mes.out_mes(f'识别出的验证码为：{res}', self.is_test)
+        elif code_ == 10001:
+            self.out_mes.out_mes('识别验证码失败，账户错误！请设置Token。', self.is_test)
+        # 释放资源
+        os.remove(im_path)
+        if not self.is_test:  # 非测试模式下
+            # 执行网页操作
+            global DRIVER
+            self.web_option.driver = DRIVER
+            self.web_option.text = res
+            self.web_option.single_shot_operation(action='输入内容',
+                                                  element_value_=element_value,
+                                                  element_type_=element_type,
+                                                  timeout_type_=10)
+
+    def start_execute(self):
+        """执行重复次数"""
+        list_dic = self.parsing_ins_dic()
+        # 执行验证码输入
+        self.ver_input(
+            list_dic.get('区域'),
+            list_dic.get('元素类型'),
+            list_dic.get('元素值'),
+            list_dic.get('验证码类型')
+        )
 
 
 class PlayVoice:
