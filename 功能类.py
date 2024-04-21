@@ -392,7 +392,7 @@ class ImageWaiting:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number
 
-    def wait_to_image(self, image, wait_instruction_type, timeout_period):
+    def wait_to_image(self, image, wait_instruction_type, timeout_period, region=None):
         """执行图片等待"""
         if wait_instruction_type == '等待到指定图像出现':
             self.out_mes.out_mes('正在等待指定图像出现中...', self.is_test)
@@ -400,7 +400,8 @@ class ImageWaiting:
             location = pyautogui.locateCenterOnScreen(
                 image=image,
                 confidence=0.8,
-                minSearchTime=timeout_period
+                minSearchTime=timeout_period,
+                region=region
             )
             if location:
                 self.out_mes.out_mes('目标图像已经出现，等待结束', self.is_test)
@@ -412,7 +413,8 @@ class ImageWaiting:
                     pyautogui.locateCenterOnScreen(
                         image=image,
                         confidence=0.8,
-                        minSearchTime=1
+                        minSearchTime=1,
+                        region=region
                     )
                 except pyautogui.ImageNotFoundException:
                     self.out_mes.out_mes('目标图像已经消失，等待结束', self.is_test)
@@ -424,9 +426,13 @@ class ImageWaiting:
     def start_execute(self):
         """执行图片等待"""
         image_path = self.ins_dic.get('图像路径')
-        wait_instruction_type = self.ins_dic.get('参数1（键鼠指令）')
-        timeout_period = float(self.ins_dic.get('参数2'))
-        self.wait_to_image(image_path, wait_instruction_type, timeout_period)
+        # 获取其他参数
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        wait_instruction_type = parameter_dic_.get('等待类型')
+        timeout_period = int(parameter_dic_.get('超时时间'))
+        area_identification = None if eval(parameter_dic_.get('区域')) == (0, 0, 0, 0) else eval(
+            parameter_dic_.get('区域'))
+        self.wait_to_image(image_path, wait_instruction_type, timeout_period, area_identification)
 
 
 class RollerSlide:

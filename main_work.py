@@ -98,7 +98,6 @@ class CommandThread(QThread):
         """执行接受到的操作指令"""
         # 读取指令
         while current_index < len(list_instructions_[current_list_index]) and not self.check_mutex():
-            # while current_index < len(list_instructions_[current_list_index]):
             try:
                 elem_ = list_instructions_[current_list_index][current_index]
                 # print('elem_:', elem_)

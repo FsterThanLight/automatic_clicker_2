@@ -644,7 +644,7 @@ class Na(QWidget, Ui_navigation):
                 # 如果路径不存在，则添加路径
                 self.comboBox_8.addItem(image_folder)
                 self.comboBox_8.setCurrentIndex(self.comboBox_8.findText(image_folder))
-
+            self.find_controls('图像', '图像点击')
             image_file_index = self.comboBox.findText(image_file)
             if image_file_index != -1:
                 self.comboBox.setCurrentIndex(image_file_index)
@@ -669,6 +669,8 @@ class Na(QWidget, Ui_navigation):
                 self.label_155.setText(parameter_dic_['区域'])
 
             self.checkBox.setChecked(parameter_dic_['灰度'])
+
+            self.show_image_to_label('图像点击')
 
         def test():
             """测试功能"""
@@ -948,6 +950,63 @@ class Na(QWidget, Ui_navigation):
 
     def image_waiting_function(self, type_):
         """图像等待识别窗口的功能"""
+
+        def get_parameters():
+            """获取参数"""
+            image_ = os.path.normpath(os.path.join(self.comboBox_17.currentText(), self.comboBox_18.currentText()))
+            parameter_1_ = self.comboBox_19.currentText()  # 图像消失类型
+            parameter_2_ = self.spinBox_6.value()  # 超时等待时间
+            if self.groupBox_61.isChecked():
+                parameter_3 = self.label_160.text()  # 区域
+            else:
+                parameter_3 = '(0,0,0,0)'
+            # 从tab页获取参数
+            parameter_dic_ = {
+                '等待类型': parameter_1_,
+                '超时时间': parameter_2_,
+                '区域': parameter_3
+            }
+            # 检查参数是否有异常
+            if (os.path.isdir(image_)) or (not os.path.exists(image_)):
+                QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
+                raise FileNotFoundError
+            if self.groupBox_61.isChecked() and self.label_160.text() == '(0,0,0,0)':
+                QMessageBox.critical(self, "错误", "未设置识别区域！")
+                raise FileNotFoundError
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到控件中"""
+            # 还原图像路径到comboBox_17和comboBox_18
+            image_path, image_file = os.path.split(image_)
+
+            image_index_17 = self.comboBox_17.findText(image_path)
+            if image_index_17 != -1:
+                self.comboBox_17.setCurrentIndex(image_index_17)
+            else:
+                self.comboBox_17.addItem(image_path)
+                self.comboBox_17.setCurrentIndex(self.comboBox_17.findText(image_path))
+            self.find_controls('图像', '图像等待')  # 加载图像
+            image_index_18 = self.comboBox_18.findText(image_file)
+            if image_index_18 != -1:
+                self.comboBox_18.setCurrentIndex(image_index_18)
+            else:
+                self.comboBox_18.addItem(image_file)
+                self.comboBox_18.setCurrentIndex(self.comboBox_18.findText(image_file))
+            # 还原等待类型到comboBox_19
+            wait_type_index = self.comboBox_19.findText(parameter_dic_['等待类型'])
+            self.comboBox_19.setCurrentIndex(wait_type_index)
+            # 还原超时时间到spinBox_6
+            self.spinBox_6.setValue(parameter_dic_['超时时间'])
+            # 还原区域到label_160
+            if parameter_dic_['区域'] != '(0,0,0,0)':
+                self.groupBox_61.setChecked(True)
+                self.label_160.setText(parameter_dic_['区域'])
+            else:
+                self.groupBox_61.setChecked(False)
+                self.label_160.setText('(0,0,0,0)')
+            self.show_image_to_label('图像等待')  # 将图像显示到预览中
+
         if type_ == '按钮功能':
             # 下拉列表数据
             self.comboBox_17.activated.connect(
@@ -965,11 +1024,13 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_22.clicked.connect(
                 lambda: self.quick_screenshot(self.comboBox_17, '打开文件夹')
             )
+            # 设置区域
+            self.pushButton_54.clicked.connect(
+                lambda: self.quick_screenshot(self.label_160, '设置区域')
+            )
         elif type_ == '写入参数':
             # 获取参数
-            image = os.path.normpath(os.path.join(self.comboBox_8.currentText(), self.comboBox.currentText()))
-            parameter_1 = self.comboBox_19.currentText()
-            parameter_2 = self.spinBox_6.value()
+            image, parameter_dic = get_parameters()
             # 检查参数是否有异常
             if (os.path.isdir(image)) or (not os.path.exists(image)):
                 QMessageBox.critical(self, "错误", "图像文件不存在，请检查图像文件是否存在！")
@@ -981,8 +1042,7 @@ class Na(QWidget, Ui_navigation):
                                                  exception_handling_=func_info_dic.get('异常处理'),
                                                  remarks_=func_info_dic.get('备注'),
                                                  image_=image,
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2)
+                                                 parameter_1_=parameter_dic)
         elif type_ == '加载信息':
             # 加载图像文件夹路径
             self.comboBox_17.clear()
@@ -990,6 +1050,9 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_17.addItems(extract_global_parameter('资源文件夹路径'))
             self.find_controls('图像', '图像等待')
             self.show_image_to_label('图像等待')
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
 
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
