@@ -1256,6 +1256,10 @@ class Na(QWidget, Ui_navigation):
                     web_option = WebOption(self.out_mes)
                     web_option.install_browser_driver()
 
+        def put_parameters(image_):
+            """将参数还原到窗体控件"""
+            self.lineEdit_19.setText(image_)
+
         if type_ == '按钮功能':
             self.pushButton_18.clicked.connect(lambda: web_functional_testing('测试'))
             self.pushButton_19.clicked.connect(lambda: web_functional_testing('安装浏览器'))
@@ -1268,6 +1272,9 @@ class Na(QWidget, Ui_navigation):
                                                  remarks_=func_info_dic.get('备注'),
                                                  image_=self.lineEdit_19.text())
 
+        elif type_ == '还原参数':
+            put_parameters(self.image_path)
+
     def ele_control_function(self, type_):
         """网页元素控制的窗口功能"""
 
@@ -1279,65 +1286,127 @@ class Na(QWidget, Ui_navigation):
                 self.textEdit_3.clear()
                 self.textEdit_3.setEnabled(False)
 
-        if type_ == '按钮功能':
-            Lock_control()
-            self.comboBox_22.activated.connect(Lock_control)
-            self.pushButton_31.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
-
-        elif type_ == '写入参数':
-            element_type = self.comboBox_21.currentText()
-            element_value = self.lineEdit_7.text()
-            text = self.textEdit_3.toPlainText()
-            action = self.comboBox_22.currentText()
+        def get_parameters():
+            """获取参数"""
+            image_ = self.lineEdit_7.text()
             # 判断其他参数
             timeout_type = None
             if self.radioButton_6.isChecked() and not self.radioButton_7.isChecked():
                 timeout_type = '自动跳过'
             elif not self.radioButton_6.isChecked() and self.radioButton_7.isChecked():
                 timeout_type = self.spinBox_7.value()
+            # 获取参数字典
+            parameter_dic_ = {
+                '元素类型': self.comboBox_21.currentText(),
+                '文本': self.textEdit_3.toPlainText(),
+                '操作': self.comboBox_22.currentText(),
+                '超时类型': timeout_type
+            }
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到控件中"""
+            # 还原图像路径到lineEdit_7
+            self.lineEdit_7.setText(image_)
+            # 还原元素类型到comboBox_21
+            element_type_index = self.comboBox_21.findText(parameter_dic_['元素类型'])
+            self.comboBox_21.setCurrentIndex(element_type_index)
+            # 还原文本到textEdit_3
+            self.textEdit_3.setText(parameter_dic_['文本'])
+            # 还原操作到comboBox_22
+            operation_index = self.comboBox_22.findText(parameter_dic_['操作'])
+            self.comboBox_22.setCurrentIndex(operation_index)
+            # 还原超时类型到radioButton_6和radioButton_7
+            if self.comboBox_22.currentText() == '输入内容':
+                self.textEdit_3.setEnabled(True)
+            else:
+                self.textEdit_3.clear()
+                self.textEdit_3.setEnabled(False)
+            # 还原超时类型到radioButton_6和radioButton_7
+            if parameter_dic_['超时类型'] == '自动跳过':
+                self.radioButton_6.setChecked(True)
+                self.radioButton_7.setChecked(False)
+            else:
+                self.radioButton_6.setChecked(False)
+                self.radioButton_7.setChecked(True)
+                self.spinBox_7.setValue(parameter_dic_['超时类型'])
+
+        if type_ == '按钮功能':
+            Lock_control()
+            self.comboBox_22.activated.connect(Lock_control)
+            self.pushButton_31.clicked.connect(lambda: self.merge_additional_functions('打开变量选择'))
+
+        elif type_ == '写入参数':
+            image, parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
                                                  remarks_=func_info_dic.get('备注'),
-                                                 image_=element_type + '-' + element_value,
-                                                 parameter_1_=action,
-                                                 parameter_2_=text,
-                                                 parameter_3_=timeout_type)
+                                                 image_=image,
+                                                 parameter_1_=parameter_dic)
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
 
     def web_entry_function(self, type_):
         """网页录入的窗口功能"""
+
+        def get_parameters():
+            """获取参数"""
+            parameter_4_ = None
+            # 判断其他参数
+            if self.radioButton_10.isChecked() and not self.radioButton_11.isChecked():
+                parameter_4_ = '自动跳过'
+            elif not self.radioButton_10.isChecked() and self.radioButton_11.isChecked():
+                parameter_4_ = self.spinBox_8.value()
+            # 获取参数值
+            image_path_ = self.comboBox_20.currentText()
+            parameter_dic_ = {
+                '元素类型': self.comboBox_24.currentText().replace('：', ''),
+                '元素值': self.lineEdit_10.text(),
+                '工作表': self.comboBox_23.currentText(),
+                '单元格': self.lineEdit_9.text(),
+                '行号递增': str(self.checkBox_6.isChecked()),
+                '超时类型': parameter_4_
+            }
+            return image_path_, parameter_dic_
+
+        def put_parameters(image_path_, parameter_dic_):
+            """Restore parameters to the widget"""
+            # Split the image path into two parts and set the comboBox texts
+            self.comboBox_20.setCurrentIndex(self.comboBox_20.findText(image_path_))
+            self.find_controls('excel', '网页录入')
+            self.comboBox_23.setCurrentIndex(self.comboBox_23.findText(parameter_dic_['工作表']))
+            # Set the text of the comboBox and lineEdits
+            self.comboBox_24.setCurrentText(parameter_dic_['元素类型'] + '：')
+            self.lineEdit_10.setText(parameter_dic_['元素值'])
+            self.lineEdit_9.setText(parameter_dic_['单元格'])
+            # Set the checked state of the checkBox
+            self.checkBox_6.setChecked(parameter_dic_['行号递增'] == 'True')
+            # Set the checked state of the radioButtons and the value of the spinBox
+            if parameter_dic_['超时类型'] == '自动跳过':
+                self.radioButton_10.setChecked(True)
+                self.radioButton_11.setChecked(False)
+            else:
+                self.radioButton_10.setChecked(False)
+                self.radioButton_11.setChecked(True)
+                self.spinBox_8.setValue(int(parameter_dic_['超时类型']))
+
         if type_ == '按钮功能':
             # 网页信息录入的excel功能
             self.comboBox_20.activated.connect(
                 lambda: self.find_controls('excel', '网页录入')
             )
         elif type_ == '写入参数':
-            parameter_4 = None
-            # 获取excel工作簿路径和工作表名称
-            parameter_1 = self.comboBox_20.currentText() + "-" + self.comboBox_23.currentText()
-            # 获取元素类型和元素
-            image = self.comboBox_24.currentText().replace('：', '') + '-' + self.lineEdit_10.text()
-            # 获取单元格值
-            parameter_2 = self.lineEdit_9.text()
-            # 判断是否递增行号和特殊控件输入
-            parameter_3 = str(self.checkBox_6.isChecked())
-            # 判断其他参数
-            if self.radioButton_10.isChecked() and not self.radioButton_11.isChecked():
-                parameter_4 = '自动跳过'
-            elif not self.radioButton_10.isChecked() and self.radioButton_11.isChecked():
-                parameter_4 = self.spinBox_8.value()
+            image_path, parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
-                                                 parameter_3_=parameter_3,
-                                                 parameter_4_=parameter_4,
-                                                 image_=image,
+                                                 parameter_1_=parameter_dic,
+                                                 image_=image_path,
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 加载文件路径
@@ -1345,6 +1414,9 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_20.addItems(extract_excel_from_global_parameter())
             self.comboBox_23.clear()
             self.find_controls('excel', '网页录入')
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
 
     def mouse_drag_function(self, type_):
         """鼠标拖拽窗口的功能"""

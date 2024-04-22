@@ -71,8 +71,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 按下键盘的部分组合键失效
-# todo: bug: 选择变量窗口，变量名带序号
+# done: bug: 选择变量窗口，变量名带序号
 # done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
+# todo: 自动切换工作簿路径
 
 # activate clicker
 

@@ -260,6 +260,9 @@ class ImageClick:
         except TypeError:
             self.out_mes.out_mes('图像路径不存在！', self.is_test)
             raise TypeError
+        except pyautogui.ImageNotFoundException:
+            self.out_mes.out_mes('未找到匹配图像', self.is_test)
+            raise FileNotFoundError
 
 
 class CoordinateClick:
@@ -873,6 +876,7 @@ class OpenWeb:
     def start_execute(self):
         """执行重复次数"""
         url = self.ins_dic.get('图像路径')
+        self.out_mes.out_mes('正在打开网页...', self.is_test)
         global DRIVER
         DRIVER = self.web_option.open_driver(url, True)
         self.out_mes.out_mes('已打开网页', self.is_test)
@@ -891,12 +895,14 @@ class EleControl:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        image_path = self.ins_dic.get('图像路径')
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         list_dic = {
-            '元素类型': self.ins_dic.get('图像路径').split('-')[0],
-            '元素值': self.ins_dic.get('图像路径').split('-')[1],
-            '操作类型': self.ins_dic.get('参数1（键鼠指令）'),
-            '文本内容': sub_variable(self.ins_dic.get('参数2')),
-            '超时类型': self.ins_dic.get('参数3')
+            '元素类型': parameter_dic_.get('元素类型'),
+            '元素值': image_path,
+            '操作类型': parameter_dic_.get('操作'),
+            '文本内容': parameter_dic_.get('文本'),
+            '超时类型': parameter_dic_.get('超时类型')
         }
         return list_dic
 
@@ -930,14 +936,16 @@ class WebEntry:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        image_path = self.ins_dic.get('图像路径')
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         list_dic = {
-            '工作簿路径': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
-            '工作表名称': self.ins_dic.get('参数1（键鼠指令）').split('-')[1],
-            '元素类型': self.ins_dic.get('图像路径').split('-')[0],
-            '元素值': self.ins_dic.get('图像路径').split('-')[1],
-            '单元格位置': self.ins_dic.get('参数2'),
-            '行号递增': self.ins_dic.get('参数3'),
-            '超时类型': self.ins_dic.get('参数4')
+            '工作簿路径': image_path,
+            '工作表名称': parameter_dic_.get('工作表'),
+            '元素类型': parameter_dic_.get('元素类型'),
+            '元素值': parameter_dic_.get('元素值'),
+            '单元格位置': parameter_dic_.get('单元格'),
+            '行号递增': eval(parameter_dic_.get('行号递增')),
+            '超时类型': parameter_dic_.get('超时类型')
         }
         return list_dic
 
@@ -949,7 +957,7 @@ class WebEntry:
             list_ins_.get('工作簿路径'),
             list_ins_.get('工作表名称'),
             list_ins_.get('单元格位置'),
-            bool(list_ins_.get('行号递增')),
+            list_ins_.get('行号递增'),
             self.cycle_number
         )
         # 执行网页操作

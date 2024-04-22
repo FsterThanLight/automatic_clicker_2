@@ -79,7 +79,7 @@ class Branch_exe_win(QDialog, Ui_branch):
         """将选中的值写入textedit，用于写入变量的模式"""
         try:
             indexes = self.listView.selectedIndexes()
-            value = self.listView.model().itemFromIndex(indexes[0]).text()  # 获取选中的值
+            value = self.listView.model().itemFromIndex(indexes[0]).text().split('. ')[1]  # 获取选中的值
             self.parent().write_value_to_textedit(value)  # 设置分支
             self.close()
         except Exception as e:
