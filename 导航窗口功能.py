@@ -1720,9 +1720,8 @@ class Na(QWidget, Ui_navigation):
         def test():
             """测试功能"""
             try:
-                image_, parameter_1_ = get_parameters(True)
+                parameter_1_ = get_parameters()
                 dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
-                                         image_=image_,
                                          parameter_1_=parameter_1_
                                          )
                 # 测试用例
@@ -1745,37 +1744,31 @@ class Na(QWidget, Ui_navigation):
             setting_win.setModal(True)
             setting_win.exec_()
 
-        def get_parameters(is_test: bool = False):
+        def get_parameters():
             """从tab页获取参数"""
-            image_ = self.lineEdit_18.text()  # 输入框元素的定位
             parameter_1_ = self.label_85.text()  # 截图区域
-            parameter_2_ = self.comboBox_25.currentText().replace('：', '')  # 元素类型
+            parameter_2_ = self.comboBox_63.currentText()  # 变量
             parameter_3_ = self.comboBox_62.currentText()  # 验证码类型
             # 检查参数是否有异常
-            if image_ == '' and not is_test:
-                QMessageBox.critical(self, "错误", "元素未设置！")
-                raise ValueError
             if parameter_1_ == '(0,0,0,0)':
                 QMessageBox.critical(self, "错误", "验证码识别区域未设置！")
                 raise ValueError
             # 返回参数字典
             parameter_dic_ = {
                 '区域': parameter_1_,
-                '元素类型': parameter_2_,
+                '变量': parameter_2_,
                 '验证码类型': parameter_3_,
             }
-            return image_, parameter_dic_
+            return parameter_dic_
 
-        def put_parameters(image_, parameter_dic_):
+        def put_parameters(parameter_dic_):
             """将参数还原到tab页"""
-            # 设置输入框元素的定位
-            self.lineEdit_18.setText(image_)
             # 设置截图区域
             self.label_85.setText(parameter_dic_['区域'])
-            # 设置元素类型
-            index = self.comboBox_25.findText(parameter_dic_['元素类型'] + '：')
+            # 设置变量
+            index = self.comboBox_63.findText(parameter_dic_['变量'])
             if index >= 0:
-                self.comboBox_25.setCurrentIndex(index)
+                self.comboBox_63.setCurrentIndex(index)
             # 设置验证码类型
             index = self.comboBox_62.findText(parameter_dic_['验证码类型'])
             if index >= 0:
@@ -1784,21 +1777,25 @@ class Na(QWidget, Ui_navigation):
         if type_ == '按钮功能':
             self.pushButton_16.clicked.connect(set_region)
             self.pushButton_53.clicked.connect(open_setting_window)
+            self.pushButton_55.clicked.connect(lambda: self.merge_additional_functions('打开变量池'))
             # 测试按钮
             self.pushButton_17.clicked.connect(test)
         elif type_ == '写入参数':
-            image, parameter_dic = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 image_=image,
                                                  parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
 
         elif type_ == '还原参数':
-            put_parameters(self.image_path, self.parameter_1)
+            put_parameters(self.parameter_1)
+
+        elif type_ == '加载信息':
+            self.comboBox_63.clear()
+            self.comboBox_63.addItems(get_variable_info('list'))
 
     def play_voice_function(self, type_):
         """播放语音的功能"""

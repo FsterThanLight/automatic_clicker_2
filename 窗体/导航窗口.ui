@@ -162,6 +162,11 @@
         </item>
         <item>
          <property name="text">
+          <string>数字验证码</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>OCR识别</string>
          </property>
         </item>
@@ -228,11 +233,6 @@
         <item>
          <property name="text">
           <string>切换窗口</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>数字验证码</string>
          </property>
         </item>
        </item>
@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>36</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -4491,14 +4491,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QPushButton" name="pushButton_53">
-              <property name="text">
-               <string>设置Token</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
+            <item row="1" column="0" colspan="2">
              <widget class="QPushButton" name="pushButton_16">
               <property name="text">
                <string>设置识别位置</string>
@@ -4589,43 +4582,44 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="groupBox_20">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QGroupBox" name="groupBox_62">
            <property name="title">
-            <string>验证码输入框位置：</string>
+            <string>将识别结果写入变量：</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_52">
-            <item>
-             <layout class="QGridLayout" name="gridLayout_31">
-              <item row="0" column="0">
-               <widget class="QComboBox" name="comboBox_25">
-                <item>
-                 <property name="text">
-                  <string>xpath定位：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>元素ID：</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>元素名称：</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEdit_18">
-                <property name="placeholderText">
-                 <string>输入元素...</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+           <layout class="QGridLayout" name="gridLayout_65" columnstretch="1,1">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBox_63"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_161">
+              <property name="text">
+               <string>变量名称：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="pushButton_55">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>设置变量</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QPushButton" name="pushButton_53">
+              <property name="text">
+               <string>设置Token</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -7665,7 +7659,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="groupBox_53">
            <property name="title">
-            <string>从Excel单元格获取</string>
+            <string>目标Excel单元格位置</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_57">
             <item row="0" column="0" colspan="2">
@@ -7733,7 +7727,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="groupBox_54">
            <property name="title">
-            <string>文本内容</string>
+            <string>写入的文本内容</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_58" columnstretch="1,1">
             <item row="0" column="0" colspan="2">

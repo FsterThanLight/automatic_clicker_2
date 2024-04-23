@@ -19,16 +19,15 @@ import pymsgbox
 import pyperclip
 import pyttsx4
 import requests
+import uiautomation as auto
 import win32con
 import win32gui
-import win32process
 import winsound
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget
 from aip import AipOcr
 from dateutil.parser import parse
-import uiautomation as auto
 
 from 数据库操作 import get_setting_data_from_db, get_str_now_time, get_variable_info, set_variable_value, \
     line_number_increment, get_ocr_info, extract_global_parameter
@@ -253,7 +252,7 @@ class ImageClick:
                 image_match_click(location_, spend_time_)
             elif not location_:  # 如果未找到图像
                 self.out_mes.out_mes('未找到匹配图像', self.is_test)
-            QApplication.processEvents()
+                raise FileNotFoundError
         except OSError:
             self.out_mes.out_mes('文件下未找到png图像，请检查文件是否存在！', self.is_test)
             raise FileNotFoundError
@@ -1305,12 +1304,10 @@ class VerificationCode:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        image = self.ins_dic.get('图像路径')  # 网页元素定位
         parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         return {
             '区域': eval(parameter_dic_.get('区域')),
-            '元素类型': parameter_dic_.get('元素类型'),
-            '元素值': image,
+            '变量': parameter_dic_.get('变量'),
             '验证码类型': parameter_dic_.get('验证码类型')
         }
 
@@ -1347,7 +1344,7 @@ class VerificationCode:
             result = ''
         return code, result
 
-    def ver_input(self, region, element_type, element_value, verify_type_):
+    def ver_input(self, region, verify_type_, variable_name):
         """截图区域，识别验证码，输入验证码"""
         im = pyautogui.screenshot(region=region)
         im_path = os.path.join(os.getcwd(), 'ver.png')
@@ -1362,14 +1359,9 @@ class VerificationCode:
         # 释放资源
         os.remove(im_path)
         if not self.is_test:  # 非测试模式下
-            # 执行网页操作
-            global DRIVER
-            self.web_option.driver = DRIVER
-            self.web_option.text = res
-            self.web_option.single_shot_operation(action='输入内容',
-                                                  element_value_=element_value,
-                                                  element_type_=element_type,
-                                                  timeout_type_=10)
+            # 执行变量写入
+            set_variable_value(variable_name, res)
+            self.out_mes.out_mes(f'已将识别结果写入变量：{variable_name}', self.is_test)
 
     def start_execute(self):
         """执行重复次数"""
@@ -1377,9 +1369,8 @@ class VerificationCode:
         # 执行验证码输入
         self.ver_input(
             list_dic.get('区域'),
-            list_dic.get('元素类型'),
-            list_dic.get('元素值'),
-            list_dic.get('验证码类型')
+            list_dic.get('验证码类型'),
+            list_dic.get('变量')
         )
 
 
