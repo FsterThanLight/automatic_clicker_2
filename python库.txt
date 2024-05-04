@@ -20,3 +20,5 @@ system_hotkey
 nuitka
 pyinstaller
 python-dateutil
+psutil
+uiautomation

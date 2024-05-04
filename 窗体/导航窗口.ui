@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>36</number>
+        <number>1</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -737,7 +737,7 @@
              <item row="0" column="0" colspan="2">
               <widget class="QPushButton" name="pushButton_4">
                <property name="text">
-                <string>获取坐标</string>
+                <string>获取坐标（按住拖动）</string>
                </property>
               </widget>
              </item>

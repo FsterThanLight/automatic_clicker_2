@@ -70,10 +70,12 @@ collections.Iterable = collections.abc.Iterable
 # todo: 获取鼠标位置功能，移动到指定位置功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
+# todo: 成功和失败改变变量值
 # todo: 按下键盘的部分组合键失效
 # done: bug: 选择变量窗口，变量名带序号
 # done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 # todo: 自动切换工作簿路径
+# https://blog.csdn.net/qq_41567921/article/details/134813496
 
 # activate clicker
 
@@ -914,7 +916,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     self.go_to_branch()  # 转到分支
                 # 如果按下ctrl+x键
                 if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Y:
-                    self.show_parameters()  # 修改指令
+                    self.modify_parameters()  # 修改指令
         return super().eventFilter(obj, event)
 
         # 热键处理函数

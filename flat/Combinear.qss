@@ -226,22 +226,42 @@ QLineEdit
 	border-radius: 2px;
 	padding: 3px;
 	padding-left: 5px;
+}
+/* 激活状态 */
+QLineEdit:enabled {
+    background-color: #131313;
+    color: #eee;
+    border: 1px solid #343434;
+}
 
+/* 非激活状态 */
+QLineEdit:disabled {
+    background-color: #555;
+    color: #aaa;
+    border: 1px solid #888;
 }
 
 
-/*-----QPlainTExtEdit-----*/
-QPlainTextEdit
-{
-	background-color: #131313;
-	color : #eee;
-	border: 1px solid #343434;
-	border-radius: 2px;
-	padding: 3px;
-	padding-left: 5px;
-
+/*-----QTextEdit-----*/
+QTextEdit {
+    background-color: #131313;
+    border: 1px solid #343434;
+    border-radius: 2px;
+    padding: 3px;
+    padding-left: 5px;
 }
-
+/* 激活状态 */
+QTextEdit:enabled {
+    background-color: #131313;
+    color: #eee;
+    border: 1px solid #343434;
+}
+/* 非激活状态 */
+QTextEdit:disabled {
+    background-color: #555;
+    color: #aaa;
+    border: 1px solid #888;
+}
 
 /*-----QTabBar-----*/
 QTabBar::tab
@@ -377,7 +397,22 @@ QDateTimeEdit
 	padding: 3px;
 	padding-left: 5px;
     border-radius : 2px;
+}
 
+/* 激活状态 */
+QSpinBox:enabled,
+QDateTimeEdit:enabled {
+    background-color: #131313;
+    color: #eee;
+    border: 1px solid #343434;
+}
+
+/* 非激活状态 */
+QSpinBox:disabled,
+QDateTimeEdit:disabled {
+    background-color: #555;
+    color: #aaa;
+    border: 1px solid #888;
 }
 
 
@@ -951,5 +986,3 @@ QPlainTextEdit {
     padding: 3px;
     padding-left: 5px;
 }
-
-

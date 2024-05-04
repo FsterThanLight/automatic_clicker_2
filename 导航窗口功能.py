@@ -821,16 +821,22 @@ class Na(QWidget, Ui_navigation):
 
         elif type_ == '写入参数':
             # 文本输入的内容
-            parameter_1 = self.textEdit.toPlainText()
-            parameter_2 = str(self.checkBox_2.isChecked())
+            image = self.textEdit.toPlainText()
+            parameter_dic = {
+                '密码框输入': str(self.checkBox_2.isChecked())
+            }
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 image_=image,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
+        elif type_ == '还原参数':
+            # 将参数还原到窗体控件
+            self.textEdit.setText(self.image_path)
+            self.checkBox_2.setChecked(eval(self.parameter_1['密码框输入']))
 
     def coordinate_click_function(self, type_):
         """坐标点击识别窗口的功能
@@ -846,13 +852,24 @@ class Na(QWidget, Ui_navigation):
                 self.label_22.setEnabled(False)
                 self.spinBox_2.setValue(0)
 
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_dic_ = {
+                '动作': self.comboBox_3.currentText(),
+                '坐标': (self.label_9.text(), self.label_10.text()),
+                '自定义次数': self.spinBox_2.value()
+            }
+            # 检查参数是否有异常
+            if self.label_9.text() == '0' and self.label_10.text() == '0':
+                QMessageBox.critical(self, "错误", "未设置坐标，请设置坐标！")
+                raise ValueError
+            return parameter_dic_
+
         def test():
             """测试功能"""
-            parameter_1_ = self.comboBox_3.currentText()
-            parameter_2_ = f'{self.label_9.text()}-{self.label_10.text()}-{self.spinBox_2.value()}'
+            parameter_dic_ = get_parameters()
             dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
-                                     parameter_1_=parameter_1_,
-                                     parameter_2_=parameter_2_)
+                                     parameter_1_=parameter_dic_)
             # 测试用例
             try:
                 cor_click = CoordinateClick(self.out_mes, dic_)
@@ -875,20 +892,22 @@ class Na(QWidget, Ui_navigation):
             # 测试按钮
             self.pushButton_23.clicked.connect(test)
         elif type_ == '写入参数':
-            parameter_1 = self.comboBox_3.currentText()
-            parameter_2 = f'{self.label_9.text()}-{self.label_10.text()}-{self.spinBox_2.value()}'
-            # 检查参数是否有异常
-            if self.label_9.text() == '0' and self.label_10.text() == '0':
-                QMessageBox.critical(self, "错误", "未设置坐标，请设置坐标！")
-                raise ValueError
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
+
+        elif type_ == '还原参数':
+            # 将参数还原到窗体控件
+            self.comboBox_3.setCurrentText(self.parameter_1['动作'])
+            spinBox_2_enable()
+            self.label_9.setText(self.parameter_1['坐标'][0])
+            self.label_10.setText(self.parameter_1['坐标'][1])
+            self.spinBox_2.setValue(int(self.parameter_1['自定义次数']))
 
     def time_waiting_function(self, type_):
         """等待识别窗口的功能

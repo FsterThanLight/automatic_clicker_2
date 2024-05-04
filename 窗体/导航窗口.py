@@ -3500,7 +3500,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(36)
+        self.tabWidget.setCurrentIndex(1)
         self.comboBox_2.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.pushButton_3.clicked.connect(navigation.close) # type: ignore
@@ -3589,7 +3589,7 @@ class Ui_navigation(object):
         self.pushButton_6.setText(_translate("navigation", "找图测试"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("navigation", "图像点击"))
         self.label_6.setText(_translate("navigation", "操作说明：按住“获取坐标”按钮，并移动鼠标。"))
-        self.pushButton_4.setText(_translate("navigation", "获取坐标"))
+        self.pushButton_4.setText(_translate("navigation", "获取坐标（按住拖动）"))
         self.label_7.setText(_translate("navigation", "X："))
         self.label_9.setText(_translate("navigation", "0"))
         self.label_8.setText(_translate("navigation", "Y："))

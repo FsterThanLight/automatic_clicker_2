@@ -283,10 +283,11 @@ class CoordinateClick:
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
         re_try = self.ins_dic.get('重复次数')
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         # 取x,y坐标的值
-        x_ = int(self.ins_dic.get('参数2').split('-')[0])
-        y_ = int(self.ins_dic.get('参数2').split('-')[1])
-        z_ = int(self.ins_dic.get('参数2').split('-')[2])
+        x_ = int(parameter_dic_.get('坐标')[0])
+        y_ = int(parameter_dic_.get('坐标')[1])
+        z_ = int(parameter_dic_.get('自定义次数'))
         click_map = {
             '左键单击': [1, 'left', x_, y_],
             '左键双击': [2, 'left', x_, y_],
@@ -295,7 +296,7 @@ class CoordinateClick:
             '左键（自定义次数）': [z_, 'left', x_, y_],
             '仅移动鼠标': [0, 'left', x_, y_]
         }
-        list_ins = click_map.get(self.ins_dic.get('参数1（键鼠指令）'))
+        list_ins = click_map.get(parameter_dic_.get('动作'))
         # 返回重复次数，点击次数，左键右键，x坐标，y坐标
         return re_try, list_ins[0], list_ins[1], list_ins[2], list_ins[3]
 
@@ -503,8 +504,8 @@ class TextInput:
 
     def start_execute(self):
         """解析指令字典"""
-        input_value = sub_variable(self.ins_dic.get('参数1（键鼠指令）'))
-        special_control_judgment = eval(self.ins_dic.get('参数2'))
+        input_value = sub_variable(self.ins_dic.get('图像路径'))
+        special_control_judgment = eval(eval(self.ins_dic.get('参数1（键鼠指令）')).get('密码框输入'))
         # 执行文本输入
         self.text_input(input_value, special_control_judgment)
 
@@ -1252,22 +1253,23 @@ class SendWeChat:
         hwnd = self.get_pid('WeChat.exe')  # 获取微信的后台进程，检查微信是否在运行
         new_message = get_correct_message()
         try:
-            if hwnd is not None:
-                pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
-                wei_xin = auto.WindowControl(searchDepth=1, ClassName='WeChatMainWndForPC')
-                wx_chat_win = wei_xin.ListItemControl(searchDepth=10, Name=contact_person)
-                wx_chat_win.Click(simulateMove=False)
+            with auto.InitializeUIAutomationInCurrentThread():
+                if hwnd is not None:
+                    pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
+                    wei_xin = auto.WindowControl(searchDepth=1, ClassName='WeChatMainWndForPC')
+                    wx_chat_win = wei_xin.ListItemControl(searchDepth=10, Name=contact_person)
+                    wx_chat_win.Click(simulateMove=False)
 
-                for i in range(repeat_times):  # 重复次数
-                    pyperclip.copy(new_message)  # 将消息内容复制到剪切板
-                    pyautogui.hotkey('ctrl', 'v')
-                    pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
-                    time.sleep(self.time_sleep)
+                    for i in range(repeat_times):  # 重复次数
+                        pyperclip.copy(new_message)  # 将消息内容复制到剪切板
+                        pyautogui.hotkey('ctrl', 'v')
+                        pyautogui.press('enter')  # 模拟按下键盘enter键，发送消息
+                        time.sleep(self.time_sleep)
 
-                wei_xin.Minimize()  # 最小化窗口
-                output_info('成功', new_message)  # 向主窗口输出提示信息
-            else:
-                output_info('失败', new_message, '未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
+                    wei_xin.Minimize()  # 最小化窗口
+                    output_info('成功', new_message)  # 向主窗口输出提示信息
+                else:
+                    output_info('失败', new_message, '未找到微信窗口，发送失败。')  # 向主窗口输出提示信息
         except Exception as e:
             print(e)
             output_info('失败', new_message, '未找到联系人，发送失败。')  # 向主窗口输出提示信息
