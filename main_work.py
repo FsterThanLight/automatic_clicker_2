@@ -170,9 +170,9 @@ class CommandThread(QThread):
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                # except Exception as e:
-                except IndexError:
-                    e = 'test'
+                except Exception as e:
+                    # except IndexError:
+                    #     e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

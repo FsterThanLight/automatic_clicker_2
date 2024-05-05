@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_branch(object):
     def setupUi(self, branch):
         branch.setObjectName("branch")
-        branch.resize(222, 244)
+        branch.resize(300, 325)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         branch.setFont(font)
@@ -91,7 +91,7 @@ class Ui_branch(object):
         self.listView.setViewMode(QtWidgets.QListView.ListMode)
         self.listView.setSelectionRectVisible(True)
         self.listView.setObjectName("listView")
-        self.verticalLayout.addWidget(self.listView, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
+        self.verticalLayout.addWidget(self.listView)
         self.pushButton = QtWidgets.QPushButton(branch)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -100,8 +100,6 @@ class Ui_branch(object):
         self.pushButton.setFont(font)
         self.pushButton.setObjectName("pushButton")
         self.verticalLayout.addWidget(self.pushButton)
-        self.verticalLayout.setStretch(0, 1)
-        self.verticalLayout.setStretch(1, 9)
 
         self.retranslateUi(branch)
         QtCore.QMetaObject.connectSlotsByName(branch)

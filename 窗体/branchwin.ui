@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>222</width>
-    <height>244</height>
+    <width>300</width>
+    <height>325</height>
    </rect>
   </property>
   <property name="font">
@@ -18,7 +18,7 @@
   <property name="windowTitle">
    <string>分支执行</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,9,0">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label">
      <property name="palette">
@@ -128,7 +128,7 @@
      </property>
     </widget>
    </item>
-   <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+   <item>
     <widget class="QListView" name="listView">
      <property name="minimumSize">
       <size>
