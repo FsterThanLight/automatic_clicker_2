@@ -163,14 +163,16 @@ class CommandThread(QThread):
                     if cmd_type in command_mapping:
                         command_class, *args = command_mapping[cmd_type]
                         command_instance = command_class(*args)
+                        self.show_message('换行')
+                        self.show_message(f'执行ID为{str(dict(dic_)["ID"])}的指令：{cmd_type}')
                         command_instance.start_execute()
 
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                except Exception as e:
-                    # except IndexError:
-                    #     e = 'test'
+                # except Exception as e:
+                except IndexError:
+                    e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

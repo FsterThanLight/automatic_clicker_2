@@ -6,6 +6,7 @@ import sqlite3
 
 import openpyxl
 import pyautogui
+from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QRegExp, Qt
 from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator
 from PyQt5.QtWidgets import QMessageBox, QButtonGroup, QTreeWidgetItemIterator, QFileDialog, QWidget, QApplication
@@ -920,52 +921,101 @@ class Na(QWidget, Ui_navigation):
 
         def get_now_date_time():
             """将当前的时间和日期设置为dateTimeEdit的日期和时间"""
-            if self.radioButton_17.isChecked():
+            if self.groupBox_15.isChecked():
                 # 获取当前日期和时间
-                now_date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                now_date_time = datetime.datetime.now().strftime('%H:%M:%S')
                 # 将当前的时间和日期加10分钟
                 new_date_time = parse(now_date_time) + datetime.timedelta(minutes=10)
                 # 将dateTimeEdit的日期和时间设置为当前日期和时间
-                self.dateTimeEdit.setDateTime(new_date_time)
+                self.timeEdit.setDateTime(new_date_time)
+
+        def get_parameters():
+            """从tab页获取参数"""
+            parameter_dic_ = None
+            parameter_1_ = None
+            if self.groupBox.isChecked():
+                parameter_1_ = '时间等待'
+            elif self.groupBox_16.isChecked():
+                parameter_1_ = '随机等待'
+            elif self.groupBox_15.isChecked():
+                parameter_1_ = '定时等待'
+            # 参数字典
+            if parameter_1_ == '时间等待':
+                parameter_dic_ = {
+                    '类型': parameter_1_,
+                    '时长': self.spinBox_13.value(),
+                    '单位': self.comboBox_25.currentText()
+                }
+            elif parameter_1_ == '随机等待':
+                parameter_dic_ = {
+                    '类型': parameter_1_,
+                    '最小': f'{self.spinBox_14.value()}-{self.comboBox_64.currentText()}',
+                    '最大': f'{self.spinBox_15.value()}-{self.comboBox_65.currentText()}'
+                }
+            elif parameter_1_ == '定时等待':
+                parameter_dic_ = {
+                    '类型': parameter_1_,
+                    '时间': self.timeEdit.text(),
+                    '检测频率': self.comboBox_6.currentText()
+                }
+                if not time_judgment(parameter_dic_['时间']):
+                    QMessageBox.critical(self, "错误", "目标时间不能小于当前时间！时间已过。")
+                    raise ValueError
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            if parameter_dic_:
+                parameter_type = parameter_dic_.get('类型', None)
+                if parameter_type == '时间等待':
+                    # 设置 groupBox 的选中状态
+                    self.groupBox.setChecked(True)
+                    self.groupBox_16.setChecked(False)
+                    self.groupBox_15.setChecked(False)
+                    # 设置 spinBox_13 和 comboBox_25 的值
+                    self.spinBox_13.setValue(parameter_dic_.get('时长', 0))
+                    self.comboBox_25.setCurrentText(parameter_dic_.get('单位', '秒'))
+                elif parameter_type == '随机等待':
+                    # 设置 groupBox_16 的选中状态
+                    self.groupBox.setChecked(False)
+                    self.groupBox_16.setChecked(True)
+                    self.groupBox_15.setChecked(False)
+                    # 解析最小和最大值
+                    min_value, min_unit = parameter_dic_.get('最小', '0-秒').split('-')
+                    max_value, max_unit = parameter_dic_.get('最大', '0-秒').split('-')
+                    # 设置 spinBox_14 和 comboBox_64 的值
+                    self.spinBox_14.setValue(int(min_value))
+                    self.comboBox_64.setCurrentText(min_unit)
+                    # 设置 spinBox_15 和 comboBox_65 的值
+                    self.spinBox_15.setValue(int(max_value))
+                    self.comboBox_65.setCurrentText(max_unit)
+                elif parameter_type == '定时等待':
+                    # 设置 groupBox_15 的选中状态
+                    self.groupBox.setChecked(False)
+                    self.groupBox_16.setChecked(False)
+                    self.groupBox_15.setChecked(True)
+                    # 设置 dateTimeEdit 和 comboBox_6 的值
+                    self.timeEdit.setDateTime(
+                        QtCore.QDateTime.fromString(parameter_dic_.get('时间', ''), "HH:mm:ss"))
+                    self.comboBox_6.setCurrentText(parameter_dic_.get('检测频率', '秒'))
 
         if type_ == '按钮功能':
-            # 将不同的单选按钮添加到同一个按钮组
-            buttonGroup = QButtonGroup(self)
-            buttonGroup.addButton(self.radioButton_16)
-            buttonGroup.addButton(self.radioButton_18)
-            buttonGroup.addButton(self.radioButton_17)
+            all_groupBoxes_ = [self.groupBox, self.groupBox_16, self.groupBox_15]
+            for groupBox_ in all_groupBoxes_:
+                groupBox_.clicked.connect(lambda _, gb=groupBox_: self.select_groupBox(gb, all_groupBoxes_))
             # 设置当前日期和时间
-            self.radioButton_17.clicked.connect(get_now_date_time)
+            self.groupBox_15.clicked.connect(get_now_date_time)
         elif type_ == '写入参数':
-            # 如果checkBox没有被选中，则第一个参数为等待时间
-            parameter_1 = None
-            parameter_2 = None
-            # 时间等待
-            if self.radioButton_16.isChecked():
-                parameter_1 = "时间等待"
-                parameter_2 = self.spinBox_13.value()
-            # 等待到指定时间
-            elif self.radioButton_17.isChecked():
-                parameter_1 = "定时等待"
-                # 判断时间是否大于当前时间
-                parameter_2 = self.dateTimeEdit.text() + "+" + self.comboBox_6.currentText()
-                if not time_judgment(self.dateTimeEdit.text()):
-                    QMessageBox.critical(self, "错误", "定时时间小于当前系统时间，无效指令。")
-                    raise ValueError
-            # 随机等待
-            elif self.radioButton_18.isChecked():
-                parameter_1 = "随机等待"
-                min_time = self.spinBox_14.value()
-                max_time = self.spinBox_15.value()
-                parameter_2 = str(min_time) + "-" + str(max_time)
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
 
     def image_waiting_function(self, type_):
         """图像等待识别窗口的功能"""

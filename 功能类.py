@@ -131,7 +131,7 @@ class OutputMessage:
     def out_mes(self, message: str, is_test: bool = False):
         """输出信息,测试时输出到文本框，非测试时输出到主窗口"""
         if not is_test:
-            self.command_thread.show_message(message)
+            self.command_thread.show_message(f'----{message}')
         elif is_test:
             self.navigation.textBrowser.append(
                 f'{get_str_now_time()}\t{message}'
@@ -340,21 +340,43 @@ class TimeWaiting:
 
     def start_execute(self):
         """从指令字典中解析出指令参数"""
-        wait_type = self.ins_dic.get('参数1（键鼠指令）')
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        wait_type = parameter_dic_.get('类型')
         if wait_type == '时间等待':
-            wait_time = int(self.ins_dic.get('参数2'))
-            self.out_mes.out_mes('等待时长%d秒' % wait_time, self.is_test)
-            self.stop_time(wait_time)
+            wait_time = int(parameter_dic_.get('时长'))
+            unit = parameter_dic_.get('单位')
+            self.out_mes.out_mes(f'等待时长{wait_time}{unit}', self.is_test)
+            self.stop_time(wait_time, unit)
         elif wait_type == '定时等待':
-            target_time, interval_time = self.ins_dic.get('参数2').split('+')
+            target_time = parameter_dic_.get('时间')
+            interval_time = int(parameter_dic_.get('检测频率'))
             # 检查目标时间是否大于当前时间
-            if parse(target_time) > datetime.now():
-                self.wait_to_time(target_time, interval_time)
+            # if parse(target_time) > datetime.now():
+            self.wait_to_time(target_time, interval_time)
         elif wait_type == '随机等待':
-            min_time, max_time = self.ins_dic.get('参数2').split('-')
-            wait_time = random.randint(int(min_time), int(max_time))
-            self.out_mes.out_mes('随机等待时长%d秒' % wait_time, self.is_test)
-            self.stop_time(wait_time)
+            min_time, min_unit = parameter_dic_.get('最小').split('-')
+            max_time, max_unit = parameter_dic_.get('最大').split('-')
+            if min_unit != max_unit:  # 如果单位不一致则统一单位
+                # 统一单位，转换为毫秒，生成随机等待时间
+                min_time_u = self.unified_unit(int(min_time), min_unit)
+                max_time_u = self.unified_unit(int(max_time), max_unit)
+                wait_time = random.randint(min_time_u, max_time_u)
+                self.out_mes.out_mes(f'随机等待时间{wait_time}毫秒', self.is_test)
+                self.stop_time(wait_time, '毫秒')
+            elif min_unit == max_unit:
+                wait_time = random.randint(int(min_time), int(max_time))
+                self.out_mes.out_mes(f'随机等待时间{wait_time}{min_unit}', self.is_test)
+                self.stop_time(wait_time, min_unit)
+
+    @staticmethod
+    def unified_unit(time_, unit_):
+        """统一单位，转换为毫秒"""
+        if unit_ == '秒':
+            return time_ * 1000
+        elif unit_ == '分钟':
+            return time_ * 1000 * 60
+        elif unit_ == '毫秒':
+            return time_
 
     def wait_to_time(self, target_time, interval):
         """检查时间，指定时间则执行操作
@@ -366,22 +388,35 @@ class TimeWaiting:
         while True:
             now = datetime.now()
             if show_times == 1:
-                self.out_mes.out_mes('当前为：%s' % now.strftime('%Y/%m/%d %H:%M:%S'), self.is_test)
+                self.out_mes.out_mes('当前为：%s' % now.strftime('%H:%M:%S'), self.is_test)
                 self.out_mes.out_mes('等待至：%s' % target_time, self.is_test)
+                self.out_mes.out_mes('等待中......', self.is_test)
                 show_times = sleep_time
             if now >= parse(target_time):
-                self.out_mes.out_mes('退出等待', self.is_test)
+                self.out_mes.out_mes('时间已到，退出等待', self.is_test)
                 break
             # 时间暂停
             time.sleep(sleep_time)
             show_times += sleep_time
 
-    def stop_time(self, seconds):
-        """暂停时间"""
-        for i in range(seconds):
-            # 显示剩下等待时间
-            self.out_mes.out_mes('等待中...剩余%d秒' % (seconds - i), self.is_test)
-            time.sleep(1)
+    def stop_time(self, seconds, uint):
+        """暂停时间
+        :param seconds: 暂停时间
+        :param uint: 时间单位（秒、分钟、毫秒）"""
+
+        def wait_time(seconds_):
+            for i_ in range(seconds_):
+                # 显示剩下等待时间
+                self.out_mes.out_mes('等待中...剩余%d秒' % (seconds_ - i_), self.is_test)
+                time.sleep(1)
+
+        if uint == '秒':
+            wait_time(seconds)
+        elif uint == '分钟':
+            wait_time(seconds * 60)
+        elif uint == '毫秒':
+            self.out_mes.out_mes('等待中...共%d毫秒' % seconds, self.is_test)
+            time.sleep(seconds / 1000)
 
 
 class ImageWaiting:

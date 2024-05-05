@@ -959,7 +959,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
-        self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
+        if message != '换行':
+            self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}')
+        else:
+            self.plainTextEdit.appendPlainText('')
 
     def thread_finished(self, message):
 
@@ -974,6 +977,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 elapsed_time_sec = round(elapsed_time, 2)  # 秒，保留两位小数
                 return f"{elapsed_time_sec}秒"
 
+        self.plainTextEdit.appendPlainText('')
         self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}，耗时{send_elapsed_time()}。')
         if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
