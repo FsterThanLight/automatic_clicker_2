@@ -68,6 +68,7 @@ class CommandThread(QThread):
                     (loop_type == '有限循环' and self.number <= self.number_cycles):
                 # 执行指令集中的指令
                 self.execute_instructions(self.branch_name_index, 0, list_instructions)
+                self.show_message('换行')
                 self.show_message(f'完成第{self.number}次循环')
                 self.number += 1
                 time.sleep(self.time_sleep)

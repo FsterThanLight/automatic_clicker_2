@@ -389,6 +389,7 @@ QComboBox::down-arrow {
 
 /*-----QSpinBox & QDateTimeEdit-----*/
 QSpinBox,
+QDoubleSpinBox,
 QDateTimeEdit
 {
     background-color: #131313;
@@ -401,6 +402,7 @@ QDateTimeEdit
 
 /* 激活状态 */
 QSpinBox:enabled,
+QDoubleSpinBox:enabled,
 QDateTimeEdit:enabled {
     background-color: #131313;
     color: #eee;
@@ -409,6 +411,7 @@ QDateTimeEdit:enabled {
 
 /* 非激活状态 */
 QSpinBox:disabled,
+QDoubleSpinBox:disabled,
 QDateTimeEdit:disabled {
     background-color: #555;
     color: #aaa;
@@ -417,6 +420,7 @@ QDateTimeEdit:disabled {
 
 
 QSpinBox::up-button,
+QDoubleSpinBox::up-button,
 QDateTimeEdit::up-button
 {
 	border-top-right-radius:2px;
@@ -428,6 +432,7 @@ QDateTimeEdit::up-button
 
 
 QSpinBox::up-button:hover,
+QDoubleSpinBox::up-button:hover,
 QDateTimeEdit::up-button:hover
 {
 	background-color: #585858;
@@ -436,6 +441,7 @@ QDateTimeEdit::up-button:hover
 
 
 QSpinBox::up-button:pressed,
+QDoubleSpinBox::up-button:pressed,
 QDateTimeEdit::up-button:pressed
 {
 	background-color: #252525;
@@ -446,6 +452,7 @@ QDateTimeEdit::up-button:pressed
 
 
 QSpinBox::up-arrow,
+QDoubleSpinBox::up-arrow,
 QDateTimeEdit::up-arrow
 {
     image: url(:/按钮图标/窗体/qss_icons/branch_open.png);
@@ -456,6 +463,7 @@ QDateTimeEdit::up-arrow
 
 
 QSpinBox::down-button,
+QDoubleSpinBox::down-button,
 QDateTimeEdit::down-button
 {
 	border-bottom-right-radius:2px;
@@ -467,6 +475,7 @@ QDateTimeEdit::down-button
 
 
 QSpinBox::down-button:hover,
+QDoubleSpinBox::down-button:hover,
 QDateTimeEdit::down-button:hover
 {
 	background-color: #585858;
@@ -475,6 +484,7 @@ QDateTimeEdit::down-button:hover
 
 
 QSpinBox::down-button:pressed,
+QDoubleSpinBox::down-button:pressed,
 QDateTimeEdit::down-button:pressed
 {
 	background-color: #252525;
@@ -485,6 +495,7 @@ QDateTimeEdit::down-button:pressed
 
 
 QSpinBox::down-arrow,
+QDoubleSpinBox::down-arrow,
 QDateTimeEdit::down-arrow
 {
     image: url(:/按钮图标/窗体/qss_icons/branch_close.png);

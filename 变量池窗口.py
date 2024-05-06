@@ -95,7 +95,7 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
             variable_value = model.index(row, 2).data()
             variable_list.append((variable_name, variable_remark, variable_value))
         # 保存数据到数据库
-        print(variable_list)
+        # print(variable_list)
         set_value_to_variable_table(variable_list)
 
         # 父窗口加载数据

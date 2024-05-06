@@ -977,7 +977,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 elapsed_time_sec = round(elapsed_time, 2)  # 秒，保留两位小数
                 return f"{elapsed_time_sec}秒"
 
-        self.plainTextEdit.appendPlainText('')
+        # self.plainTextEdit.appendPlainText('')
         self.plainTextEdit.appendPlainText(f'{get_str_now_time()}\t{message}，耗时{send_elapsed_time()}。')
         if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
@@ -1019,10 +1019,15 @@ class Param(QDialog, Ui_Param):
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
+        self.pushButton.clicked.connect(self.modify_parameters)  # 保存参数
 
     def closeEvent(self, event):
         # 保存窗体大小
         save_window_size((self.width(), self.height()), self.windowTitle())
+
+    def modify_parameters(self):
+        self.parent().modify_parameters()
+        self.close()
 
 
 class QSSLoader:

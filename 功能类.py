@@ -573,42 +573,42 @@ class MoveMouse:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
 
-    def parsing_ins_dic(self, type_):
-        """解析指令字典"""
-        if type_ == '移动鼠标':
-            direction = self.ins_dic.get('参数2').split(',')[0]
-            distance = self.ins_dic.get('参数2').split(',')[1]
-            return direction, distance
-        elif type_ == '随机移动鼠标':
-            random_type = self.ins_dic.get('参数2')
-            return random_type
-
     def start_execute(self):
         """执行重复次数"""
         re_try = self.ins_dic.get('重复次数')
-        type_ = self.ins_dic.get('参数1（键鼠指令）')
         # 执行滚轮滑动
         if re_try == 1:
-            self.mouse_move_fun(type_)  # 执行鼠标移动
+            self.mouse_move_fun()  # 执行鼠标移动
         elif re_try > 1:
             i = 1
             while i < re_try + 1:
-                self.mouse_move_fun(type_)  # 执行鼠标移动
+                self.mouse_move_fun()  # 执行鼠标移动
                 i += 1
                 time.sleep(self.time_sleep)
 
-    def mouse_move_fun(self, type_: str) -> None:
-        """执行鼠标移动
-        :param type_: 鼠标移动类型"""
-        if type_ == '移动鼠标':
-            direction, distance = self.parsing_ins_dic(type_)
-            self.mouse_moves(direction, distance)
-        elif type_ == '随机移动鼠标':
-            random_type = self.parsing_ins_dic(type_)
+    def mouse_move_fun(self) -> None:
+        """执行鼠标移动"""
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        type_ = parameter_dic_.get('类型')
+        if type_ == '直线移动':
+            self.mouse_moves(
+                parameter_dic_.get('方向'),
+                parameter_dic_.get('距离')
+            )
+        elif type_ == '随机移动':
+            random_type = parameter_dic_.get('随机')
             if random_type == '类型1':
                 self.mouse_moves_random_1()
             elif random_type == '类型2':
                 self.mouse_moves_random_2()
+        elif type_ == '指定坐标':
+            x = int(parameter_dic_.get('坐标').split(',')[0])
+            y = int(parameter_dic_.get('坐标').split(',')[1])
+            duration = float(parameter_dic_.get('持续'))
+            self.move_mouse_to_coordinates(x, y, duration)
+        elif type_ == '变量坐标':
+            var_name = parameter_dic_.get('变量')
+            self.variable_coordinates(var_name)
 
     def mouse_moves(self, direction, distance):
         """鼠标移动事件"""
@@ -617,7 +617,7 @@ class MoveMouse:
         if direction in directions:
             x, y = directions.get(direction)
             pyautogui.moveRel(x * int(distance), y * int(distance), duration=self.duration)
-        self.out_mes.out_mes('移动鼠标%s%s像素距离' % (direction, distance), self.is_test)
+        self.out_mes.out_mes('直线移动鼠标%s%s像素距离' % (direction, distance), self.is_test)
 
     def mouse_moves_random_1(self):
         """鼠标移动事件"""
@@ -646,6 +646,24 @@ class MoveMouse:
                 self.out_mes.out_mes('随机移动鼠标', self.is_test)
             except pyautogui.FailSafeException:
                 pass
+
+    def move_mouse_to_coordinates(self, x: int, y: int, duration: float):
+        """移动鼠标到指定坐标"""
+        pyautogui.moveTo(x, y, duration=duration)
+        self.out_mes.out_mes(
+            f'移动鼠标到{x}:{y}，持续{round(duration, 2)}秒', self.is_test
+        )
+
+    def variable_coordinates(self, var_name):
+        """变量坐标"""
+        var_value = get_variable_info('dict').get(var_name)
+        try:
+            x, y = var_value.split(',')
+            pyautogui.moveTo(int(x), int(y), duration=0)
+            self.out_mes.out_mes(f'移动鼠标到变量：{var_name}，值为{x, y}', self.is_test)
+        except Exception as e:
+            print('移动鼠标到变量位置', e)
+            self.out_mes.out_mes('变量坐标值不符合坐标格式，移动失败！', self.is_test)
 
 
 class PressKeyboard:
@@ -2230,5 +2248,6 @@ class GetMousePositon:
         self.out_mes.out_mes(
             f'已将当前鼠标位置赋值给变量：{var}', self.is_test
         )
+        str_mouse_position = f'{mouse_position[0]}, {mouse_position[1]}'
         # 设置变量池中的值
-        set_variable_value(var, str(mouse_position))
+        set_variable_value(var, str_mouse_position)

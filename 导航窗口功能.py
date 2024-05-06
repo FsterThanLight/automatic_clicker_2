@@ -18,7 +18,7 @@ from pygments.lexers import PythonLexer
 
 from 功能类 import OutputMessage, TransparentWindow, ImageClick, CoordinateClick, PlayVoice, WaitWindow, \
     DialogWindow, WindowControl, GetTimeValue, GetExcelCellValue, RunPython, RunExternalFile, TextRecognition, \
-    VerificationCode, SendWeChat
+    VerificationCode, SendWeChat, MoveMouse
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import extract_global_parameter, extract_excel_from_global_parameter, get_branch_count, \
@@ -370,6 +370,9 @@ class Na(QWidget, Ui_navigation):
             elif self.mouse_position_function == '结束拖拽':
                 self.label_65.setText(str(x))
                 self.label_66.setText(str(y))
+            elif self.mouse_position_function == '指定坐标':
+                self.lineEdit_29.setText(str(x))
+                self.lineEdit_30.setText(str(y))
         elif function_name == 'change_get_mouse_position_function':
             # 改变获取鼠标位置功能
             if pars_1 == '开始拖拽':
@@ -378,6 +381,8 @@ class Na(QWidget, Ui_navigation):
                 self.mouse_position_function = '结束拖拽'
             elif pars_1 == '坐标点击':
                 self.mouse_position_function = '坐标点击'
+            elif pars_1 == '指定坐标':
+                self.mouse_position_function = '指定坐标'
         elif function_name == '打开变量池':
             variable_pool = VariablePool_Win(self)
             variable_pool.exec_()
@@ -1126,44 +1131,134 @@ class Na(QWidget, Ui_navigation):
     def move_mouse_function(self, type_):
         """鼠标移动识别窗口的功能"""
 
+        def get_parameters():
+            """获取参数"""
+
+            def check_coordinate(x: int, y: int):
+                """检查坐标是否超过屏幕"""
+                # 获取屏幕的宽和高
+                screen = QApplication.primaryScreen()
+                screen_size = screen.size()
+                x_, y_ = screen_size.width(), screen_size.height()
+                if x > x_ or y > y_:  # 如果坐标超过屏幕范围
+                    QMessageBox.critical(self, "错误", f"坐标超过当前屏幕范围{x_, y_}，请重新设置！")
+                    raise ValueError
+
+            parameter_dic_ = None
+            # 参数字典
+            if self.groupBox_28.isChecked():
+                parameter_dic_ = {
+                    '类型': '直线移动',
+                    '方向': self.comboBox_4.currentText(),
+                    '距离': self.lineEdit.text()
+                }
+                if not self.lineEdit.text():
+                    QMessageBox.critical(self, "错误", "未设置距离！")
+                    raise ValueError
+            # 参数字典
+            if self.groupBox_30.isChecked():
+                parameter_dic_ = {
+                    '类型': '随机移动',
+                    '随机': self.comboBox_16.currentText()
+                }
+            elif self.groupBox_59.isChecked():
+                parameter_dic_ = {
+                    '类型': '指定坐标',
+                    '坐标': f'{self.lineEdit_29.text()},{self.lineEdit_30.text()}',
+                    '持续': self.doubleSpinBox.value()
+                }
+                if not self.lineEdit_29.text() or not self.lineEdit_30.text():
+                    QMessageBox.critical(self, "错误", "未设置坐标！")
+                    raise ValueError
+                # 检查坐标的x和y是超过屏幕
+                check_coordinate(int(self.lineEdit_29.text()), int(self.lineEdit_30.text()))
+            elif self.groupBox_20.isChecked():
+                parameter_dic_ = {
+                    '类型': '变量坐标',
+                    '变量': self.comboBox_61.currentText()
+                }
+                if not self.comboBox_61.currentText():
+                    QMessageBox.critical(self, "错误", "未设置变量！")
+                    raise ValueError
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            if parameter_dic_:
+                parameter_type = parameter_dic_.get('类型', None)
+                ui_elements = {
+                    '直线移动': (self.groupBox_28, self.comboBox_4, self.lineEdit, '方向', '距离'),
+                    '随机移动': (self.groupBox_30, self.comboBox_16, None, '随机', None),
+                    '指定坐标': (self.groupBox_59, None, None, None, None),
+                    '变量坐标': (self.groupBox_20, self.comboBox_61, None, '变量', None)
+                }
+                for key, (group_box, combo_box, line_edit, combo_text, line_text) in ui_elements.items():
+                    group_box.setChecked(parameter_type == key)
+                    if combo_box:
+                        combo_box.setCurrentText(parameter_dic_.get(combo_text))
+                    if line_edit:
+                        line_edit.setText(parameter_dic_.get(line_text, '0'))
+                if parameter_type == '指定坐标':
+                    x, y = parameter_dic_.get('坐标', '0,0').split(',')
+                    self.lineEdit_29.setText(x)
+                    self.lineEdit_30.setText(y)
+                    self.doubleSpinBox.setValue(parameter_dic_.get('持续', 0))
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_dic_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    parameter_1_=parameter_dic_
+                )
+
+                # 测试用例
+                test_class = MoveMouse(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
         if type_ == '按钮功能':
-            all_groupBoxes_ = [self.groupBox_28, self.groupBox_30, self.groupBox_59]
+            all_groupBoxes_ = [self.groupBox_28, self.groupBox_30, self.groupBox_59, self.groupBox_20]
             for groupBox_ in all_groupBoxes_:
                 groupBox_.clicked.connect(lambda _, gb=groupBox_: self.select_groupBox(gb, all_groupBoxes_))
-
+            # 自动获取坐标按钮
+            self.pushButton_56.pressed.connect(
+                lambda: self.merge_additional_functions(
+                    'change_get_mouse_position_function', '指定坐标'
+                )
+            )
             # 限制输入框只能输入数字
             self.lineEdit.setValidator(QIntValidator())
             self.lineEdit_29.setValidator(QIntValidator())
             self.lineEdit_30.setValidator(QIntValidator())
+            # 测试按钮
+            self.pushButton_52.clicked.connect(test)
+            # 打开变量池
+            self.pushButton_57.clicked.connect(
+                lambda: self.merge_additional_functions('打开变量池')
+            )
 
         elif type_ == '写入参数':
-            parameter_1 = None
-            parameter_2 = None
-            # 鼠标移动
-            if self.radioButton_19.isChecked():
-                parameter_1 = '移动鼠标'
-                parameter_2 = f'{self.comboBox_4.currentText()},{self.lineEdit.text()}'
-            # 随机移动
-            elif self.radioButton_ran.isChecked():
-                parameter_1 = '随机移动鼠标'
-                parameter_2 = self.comboBox_16.currentText()
-            # 检查参数是否有异常
-            if not self.lineEdit.text().isdigit() and self.radioButton_19.isChecked():
-                QMessageBox.critical(self, "错误", "鼠标移动的距离未输入！")
-                raise ValueError
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
 
         elif type_ == '加载信息':
             # 加载下拉列表数据
             self.comboBox_61.clear()
             self.comboBox_61.addItems(get_variable_info('list'))
+
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
 
     def press_keyboard_function(self, type_):
         """按下键盘识别窗口的功能"""

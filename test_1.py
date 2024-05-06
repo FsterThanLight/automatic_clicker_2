@@ -1,27 +1,11 @@
-import time
-
-import psutil
 import pyautogui
-import uiautomation as auto
 
 
-def get_pid(name):
-    """  
-    作用：根据进程名获取进程pid
-    返回：返回匹配第一个进程的pid
-    """
-    pids = psutil.process_iter()
-    for pid in pids:
-        if pid.name() == name:
-            return pid.pid
+def move_mouse_to_coordinates(x: int, y: int):
+    print(f"Moving mouse to coordinates {x}, {y}")
+    # 使用pyautogui库实现鼠标移动
+    pyautogui.moveTo(x, y, duration=10)
 
 
 if __name__ == "__main__":
-    print(get_pid('WeChat.exe'))
-    pyautogui.hotkey('ctrl', 'alt', 'w')  # 打开微信窗口
-    wei_xin = auto.WindowControl(searchDepth=1, ClassName='WeChatMainWndForPC')
-    print(wei_xin)
-    wx_chat_win = wei_xin.ListItemControl(searchDepth=10, Name='文件传输助手')
-    wx_chat_win.Click(simulateMove=False)
-    time.sleep(1)
-    wei_xin.Minimize()
+    move_mouse_to_coordinates(4000, 100)
