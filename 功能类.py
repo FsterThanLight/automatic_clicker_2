@@ -540,7 +540,7 @@ class TextInput:
     def start_execute(self):
         """解析指令字典"""
         input_value = sub_variable(self.ins_dic.get('图像路径'))
-        special_control_judgment = eval(eval(self.ins_dic.get('参数1（键鼠指令）')).get('密码框输入'))
+        special_control_judgment = eval(eval(self.ins_dic.get('参数1（键鼠指令）')).get('手动输入'))
         # 执行文本输入
         self.text_input(input_value, special_control_judgment)
 
@@ -555,7 +555,7 @@ class TextInput:
             self.out_mes.out_mes('执行文本输入：%s' % input_value, self.is_test)
         elif special_control_judgment:
             pyautogui.typewrite(input_value, interval=self.interval)
-            self.out_mes.out_mes('执行特殊控件的文本输入%s' % input_value, self.is_test)
+            self.out_mes.out_mes('执行模拟手动文本输入%s' % input_value, self.is_test)
             time.sleep(self.time_sleep)
 
 

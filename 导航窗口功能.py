@@ -829,7 +829,7 @@ class Na(QWidget, Ui_navigation):
             # 文本输入的内容
             image = self.textEdit.toPlainText()
             parameter_dic = {
-                '密码框输入': str(self.checkBox_2.isChecked())
+                '手动输入': str(self.checkBox_2.isChecked())
             }
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
@@ -842,7 +842,7 @@ class Na(QWidget, Ui_navigation):
         elif type_ == '还原参数':
             # 将参数还原到窗体控件
             self.textEdit.setText(self.image_path)
-            self.checkBox_2.setChecked(eval(self.parameter_1['密码框输入']))
+            self.checkBox_2.setChecked(eval(self.parameter_1['手动输入']))
 
     def coordinate_click_function(self, type_):
         """坐标点击识别窗口的功能
