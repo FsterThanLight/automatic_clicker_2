@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>801</width>
-    <height>797</height>
+    <height>808</height>
    </rect>
   </property>
   <property name="font">
@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>30</number>
+        <number>33</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -1349,7 +1349,7 @@
         <attribute name="title">
          <string>鼠标点击</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_64">
+        <layout class="QVBoxLayout" name="verticalLayout_19">
          <item>
           <widget class="QLabel" name="label_87">
            <property name="sizePolicy">
@@ -1538,6 +1538,50 @@
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_63">
+           <property name="title">
+            <string>鼠标点击时同时按下：</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+            <item>
+             <widget class="QLabel" name="label_162">
+              <property name="text">
+               <string>按键：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_66">
+              <item>
+               <property name="text">
+                <string>ctrl</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>alt</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>shift</string>
+               </property>
+              </item>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -2518,7 +2562,7 @@
          <item row="2" column="0">
           <widget class="QCheckBox" name="checkBox_2">
            <property name="text">
-            <string>密码框输入</string>
+            <string>模拟手动输入</string>
            </property>
           </widget>
          </item>
@@ -7047,11 +7091,14 @@ p, li { white-space: pre-wrap; }
         <attribute name="title">
          <string>变量判断</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_79">
+        <layout class="QVBoxLayout" name="verticalLayout_41">
          <item>
           <widget class="QGroupBox" name="groupBox_48">
            <property name="title">
-            <string>如果</string>
+            <string>如果（变量比较）：</string>
+           </property>
+           <property name="checkable">
+            <bool>false</bool>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_78">
             <item>

@@ -48,7 +48,10 @@ class Global_s(QDialog, Ui_Global):
             value = self.listView.model().itemFromIndex(indexes[0]).text()
             os.startfile(value)
         except Exception as e:
+            # 删除不存在的文件夹路径
             print(e)
+            self.delete_listview()
+            QMessageBox.critical(self, '错误', '该文件夹路径不存在！已从列表中删除！')
 
     def delete_listview(self):
         """删除listview中选中的那行数据"""

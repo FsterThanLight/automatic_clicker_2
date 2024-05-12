@@ -555,7 +555,7 @@ class TextInput:
             self.out_mes.out_mes('执行文本输入：%s' % input_value, self.is_test)
         elif special_control_judgment:
             pyautogui.typewrite(input_value, interval=self.interval)
-            self.out_mes.out_mes('执行模拟手动文本输入%s' % input_value, self.is_test)
+            self.out_mes.out_mes('执行模拟手动文本输入：%s' % input_value, self.is_test)
             time.sleep(self.time_sleep)
 
 
@@ -771,36 +771,40 @@ class MouseClick:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        return self.ins_dic.get('参数1（键鼠指令）'), \
-            int(self.ins_dic.get('参数2').split('-')[0]), \
-            int(self.ins_dic.get('参数2').split('-')[1]) / 1000, \
-            int(self.ins_dic.get('参数2').split('-')[2]) / 1000
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        button_type = parameter_dic_.get('鼠标')
+        click_times = int(parameter_dic_.get('次数'))
+        duration = float(parameter_dic_.get('按压'))
+        interval = float(parameter_dic_.get('间隔'))
+        auxiliary = parameter_dic_.get('辅助键', '')
+        return button_type, click_times, duration, interval, auxiliary
 
     def start_execute(self):
-        """执行重复次数"""
-        button_type, click_times, duration, interval = self.parsing_ins_dic()
+        """Execute repetitions"""
+        button_type, click_times, duration, interval, auxiliary = self.parsing_ins_dic()
         re_try = self.ins_dic.get('重复次数')
-        # 执行
-        if re_try == 1:
-            self.simulated_mouse_click(click_times, button_type, duration, interval)
-        elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
-                self.simulated_mouse_click(click_times, button_type, duration, interval)
-                i += 1
-                time.sleep(self.time_sleep)
+        for _ in range(re_try):
+            self.simulated_mouse_click(click_times, button_type, duration, interval, auxiliary)
+            time.sleep(self.time_sleep)
 
-    def simulated_mouse_click(self, click_times, lOrR, duration, interval):
+    def simulated_mouse_click(self, click_times, lOrR, duration, interval, auxiliary):
         """模拟鼠标点击
-        :param duration:按压时长,单位：秒
-        :param interval:时间间隔,单位：秒
+        :param duration: 按压时长，单位：秒
+        :param interval: 时间间隔，单位：秒
         :param click_times: 点击次数
-        :param lOrR: (左键、右键)"""
+        :param lOrR: (左键、右键)
+        :param auxiliary: 辅助键，默认为空"""
         button = 'left' if lOrR == '左键' else 'right'
+        if auxiliary:
+            auxiliary = auxiliary.lower()
         for i in range(click_times):
+            if auxiliary:
+                keyboard.press(auxiliary)  # 按下辅助键
             mouse.press(button=button)
             time.sleep(duration)  # 将毫秒转换为秒
             mouse.release(button=button)
+            if auxiliary:
+                keyboard.release(auxiliary)  # 释放辅助键
             time.sleep(interval)
         self.out_mes.out_mes(f'鼠标在当前位置点击{click_times}次', self.is_test)
 
@@ -1943,11 +1947,12 @@ class ContrastVariables:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
         return {
-            '变量1': self.ins_dic.get('参数1（键鼠指令）').split('-')[0],
-            '比较符': self.ins_dic.get('参数2').split('-')[0],
-            '变量2': self.ins_dic.get('参数1（键鼠指令）').split('-')[1],
-            '变量类型': self.ins_dic.get('参数2').split('-')[1]
+            '变量1': parameter_dic_.get('变量1'),
+            '变量2': parameter_dic_.get('变量2'),
+            '比较符': parameter_dic_.get('比较符'),
+            '变量类型': parameter_dic_.get('类型1')
         }
 
     def start_execute(self):
@@ -2008,7 +2013,7 @@ class ContrastVariables:
         elif comparison_symbol == '<':
             return variable1_ < variable2_
         elif comparison_symbol == '包含':
-            return variable1_ in variable2_
+            return variable2_ in variable1_
 
 
 class RunPython:

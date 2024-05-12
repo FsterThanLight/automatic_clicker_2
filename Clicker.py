@@ -75,6 +75,7 @@ collections.Iterable = collections.abc.Iterable
 # done: bug: 选择变量窗口，变量名带序号
 # done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 # todo: 自动切换工作簿路径
+# todo: 读取excel指令，大写False变为小写false
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
 # activate clicker
@@ -754,7 +755,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         # 获取资源文件夹路径，如果不存在则使用用户的主目录
         if file_path == '资源文件夹路径':
-            resource_folder_path = extract_global_parameter('资源文件夹路径')[0]
+            resource_folder_path = next((item for item in extract_global_parameter('资源文件夹路径')), None)
             # 获取当前文件夹路径
             directory_path = resource_folder_path if \
                 resource_folder_path else os.path.expanduser("~")

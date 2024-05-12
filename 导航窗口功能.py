@@ -8,7 +8,7 @@ import openpyxl
 import pyautogui
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QRegExp, Qt
-from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator
+from PyQt5.QtGui import QDesktopServices, QImage, QPixmap, QIntValidator, QRegExpValidator, QKeySequence
 from PyQt5.QtWidgets import QMessageBox, QButtonGroup, QTreeWidgetItemIterator, QFileDialog, QWidget, QApplication
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
@@ -816,7 +816,7 @@ class Na(QWidget, Ui_navigation):
             # 检查文本输入类型
             text = self.textEdit.toPlainText()
             # 检查text中是否为英文大小写字母和数字
-            if re.search('[a-zA-Z0-9]', text) is None:
+            if (re.search('[a-zA-Z0-9]', text) is None) and (self.checkBox_2.isChecked()):
                 self.checkBox_2.setChecked(False)
                 QMessageBox.warning(self, '警告', '特殊控件的文本输入仅支持输入英文大小写字母和数字！', QMessageBox.Yes)
 
@@ -1301,20 +1301,46 @@ class Na(QWidget, Ui_navigation):
 
     def mouse_click_function(self, type_):
         """鼠标点击的窗口的功能"""
+
+        def get_parameters():
+            """获取参数"""
+            parameter_dic_ = {
+                '鼠标': self.comboBox_35.currentText().replace('（自定义次数）', ''),
+                '次数': self.spinBox_18.value(),
+                '间隔': self.spinBox_20.value(),
+                '按压': self.spinBox_19.value()
+            }
+            if self.groupBox_63.isChecked():
+                parameter_dic_['辅助键'] = self.comboBox_66.currentText()
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            mouse_index = self.comboBox_35.findText(parameter_dic_['鼠标'] + '（自定义次数）')
+            self.comboBox_35.setCurrentIndex(mouse_index)
+            self.spinBox_18.setValue(parameter_dic_['次数'])
+            self.spinBox_20.setValue(parameter_dic_['间隔'])
+            self.spinBox_19.setValue(parameter_dic_['按压'])
+            self.horizontalSlider_2.setValue(parameter_dic_['按压'])
+            self.horizontalSlider_3.setValue(parameter_dic_['间隔'])
+            if '辅助键' in parameter_dic_:  # 如果有辅助键
+                self.groupBox_63.setChecked(True)
+                self.comboBox_66.setCurrentText(parameter_dic_['辅助键'])
+
         if type_ == '按钮功能':
             pass
         elif type_ == '写入参数':
             # 获取鼠标当前位置的参数
-            parameter_1 = self.comboBox_35.currentText().replace('（自定义次数）', '')
-            parameter_2 = f'{self.spinBox_18.value()}-{self.spinBox_19.value()}-{self.spinBox_20.value()}'
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=func_info_dic.get('异常处理'),
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
 
     def information_entry_function(self, type_):
         """信息录入的窗口功能"""
@@ -2455,12 +2481,16 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = (
-                f'{self.comboBox_49.currentText()}-{self.comboBox_51.currentText()}'
-            )  # 变量1-变量2
-            parameter_2_ = (
-                f'{self.comboBox_50.currentText()}-{self.comboBox_55.currentText()}'
-            )  # 比较符-变量类型
+            parameter_dic_ = {
+                '变量1': self.comboBox_49.currentText(),
+                '类型1': self.comboBox_54.currentText(),
+                '比较符': self.comboBox_50.currentText(),
+                '变量2': self.comboBox_51.currentText(),
+                '类型2': self.comboBox_55.currentText(),
+                '分支': self.comboBox_52.currentText(),
+                '位置': self.comboBox_53.currentText(),
+            }
+            # 比较符-变量类型
             exception_handling_ = (
                 f'{self.comboBox_52.currentText()}'
                 f'-{self.comboBox_53.currentText()}'
@@ -2475,7 +2505,17 @@ class Na(QWidget, Ui_navigation):
                     or self.comboBox_53.currentText() == ''):
                 QMessageBox.critical(self, "错误", "分支未设置！")
                 raise ValueError
-            return parameter_1_, parameter_2_, exception_handling_
+            return parameter_dic_, exception_handling_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.comboBox_49.setCurrentText(parameter_dic_.get('变量1', ''))
+            self.comboBox_54.setCurrentText(parameter_dic_.get('类型1', ''))
+            self.comboBox_50.setCurrentText(parameter_dic_.get('比较符', ''))
+            self.comboBox_51.setCurrentText(parameter_dic_.get('变量2', ''))
+            self.comboBox_55.setCurrentText(parameter_dic_.get('类型2', ''))
+            self.comboBox_52.setCurrentText(parameter_dic_.get('分支', ''))
+            self.comboBox_53.setCurrentText(parameter_dic_.get('位置', ''))
 
         def sync_combo_boxes(sender):
             if sender == self.comboBox_54:
@@ -2491,14 +2531,13 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_55.currentIndexChanged.connect(lambda: sync_combo_boxes(self.comboBox_55))
 
         elif type_ == '写入参数':
-            parameter_1, parameter_2, exception_handling = get_parameters()
+            parameter_dic, exception_handling = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
                                                  exception_handling_=exception_handling,
-                                                 parameter_1_=parameter_1,
-                                                 parameter_2_=parameter_2,
+                                                 parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 当t导航业显示时，加载信息到控件
@@ -2511,6 +2550,8 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_52.setCurrentIndex(0)
             # 获取分支表名中的指令数量
             self.find_controls('分支', '变量判断')
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
 
     def run_python_function(self, type_):
         """运行python代码的功能
