@@ -1436,7 +1436,13 @@ class Na(QWidget, Ui_navigation):
             pass
         elif type_ == "写入参数":
             # 按下键盘的内容
-            parameter_1 = self.keySequenceEdit.keySequence().toString()
+            parameter_dic = {
+                "按键": self.keySequenceEdit.keySequence().toString(),
+                '按压时长': self.spinBox_27.value(),
+                }
+            if parameter_dic["按键"] == "":
+                QMessageBox.critical(self, "错误", "未设置按键，请设置按键！")
+                raise ValueError
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
@@ -1444,8 +1450,12 @@ class Na(QWidget, Ui_navigation):
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
                 remarks_=func_info_dic.get("备注"),
-                parameter_1_=parameter_1,
+                parameter_1_=parameter_dic,
             )
+        elif type_ == "还原参数":
+            # 将参数还原到窗体控件
+            self.keySequenceEdit.setKeySequence(self.parameter_1["按键"])
+            self.spinBox_27.setValue(int(self.parameter_1["按压时长"]))
 
     def middle_activation_function(self, type_):
         """中键激活的窗口功能"""

@@ -172,8 +172,8 @@ class CommandThread(QThread):
                     current_index += 1
 
                 except Exception as e:
-                    # except IndexError:
-                    #     e = 'test'
+                # except IndexError:
+                    # e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

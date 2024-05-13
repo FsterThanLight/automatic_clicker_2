@@ -681,27 +681,26 @@ class PressKeyboard:
     def parsing_ins_dic(self):
         """解析指令字典"""
         re_try = self.ins_dic.get('重复次数')
-        key = self.ins_dic.get('参数1（键鼠指令）')
-        return re_try, key
+        parameter_dic = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        keys = parameter_dic.get('按键')
+        duration = float(parameter_dic.get('按压时长'))
+        return re_try, keys, duration
 
     def start_execute(self):
         """执行重复次数"""
-        re_try, key = self.parsing_ins_dic()
-        # 执行滚轮滑动
-        if re_try == 1:
-            self.press_keyboard(key)
-        elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
-                self.press_keyboard(key)
-                i += 1
-                time.sleep(self.time_sleep)
+        re_try, keys, duration = self.parsing_ins_dic()
+        for _ in range(re_try):
+            self.press_keyboard(keys, duration)
+            time.sleep(self.time_sleep)
 
-    def press_keyboard(self, key):
+    def press_keyboard(self, key,duration):
         """鼠标移动事件
-        :param key: 按键列表"""
-        keyboard.press_and_release(key)
-        self.out_mes.out_mes('按下按键%s' % key, self.is_test)
+        :param key: 按键列表
+        :param duration: 按键持续时间(毫秒)"""
+        keyboard.press(key)
+        time.sleep(duration/1000)
+        keyboard.release(key)
+        self.out_mes.out_mes(f'按下按键：{key}，持续{duration}毫秒', self.is_test)
 
 
 class MiddleActivation:
