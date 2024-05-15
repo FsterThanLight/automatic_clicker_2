@@ -31,6 +31,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 from 功能类 import (
+    MouseDrag,
     OutputMessage,
     TransparentWindow,
     ImageClick,
@@ -1864,29 +1865,57 @@ class Na(QWidget, Ui_navigation):
             y_random = random.randint(*range_y) if range_y else 0
             return x_random, y_random
 
-        def drag_test():
-            # 开始拖拽，是否使用随机位置
-            if not self.checkBox_8.isChecked():
-                start_position = (int(self.label_59.text()), int(self.label_61.text()))
-            else:
-                x_offset, y_offset = get_random_offset((-100, 100))
-                start_position = (
-                    int(self.label_59.text()) + x_offset,
-                    int(self.label_61.text()) + y_offset,
+        def test():
+            """测试功能"""
+            try:
+                parameter_1_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    parameter_1_=parameter_1_,
                 )
-            # 结束拖拽，是否使用随机位置
-            if not self.checkBox_7.isChecked():
-                end_position = (int(self.label_65.text()), int(self.label_66.text()))
-            else:
-                x_offset, y_offset = get_random_offset((-200, 200), (-200, 200))
-                end_position = (
-                    int(self.label_65.text()) + x_offset,
-                    int(self.label_66.text()) + y_offset,
-                )
-            # 开始拖拽
-            pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
-            pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
+                # 测试用例
+                try:
+                    mouse_drag = MouseDrag(self.out_mes, dic_)
+                    mouse_drag.is_test = True
+                    mouse_drag.start_execute()
+                except Exception as e:
+                    print(e)
+                    self.out_mes.out_mes(f"参数错误请重试，测试结束", True)
 
+            except FileNotFoundError:
+                self.out_mes.out_mes(f"图像文件未设置！", True)
+
+        def get_parameters():
+            """获取参数"""
+            parameter_dic_ = {
+                "开始位置": f"{self.label_59.text()},{self.label_61.text()}",
+                "结束位置": f"{self.label_65.text()},{self.label_66.text()}",
+                "开始随机": str(self.checkBox_8.isChecked()),
+                "结束随机": str(self.checkBox_7.isChecked()),
+            }
+            if self.label_59.text() == "0" and self.label_61.text() == "0":
+                QMessageBox.critical(self, "错误", "未设置开始位置！")
+                raise ValueError
+            if self.label_65.text() == "0" and self.label_66.text() == "0":
+                QMessageBox.critical(self, "错误", "未设置结束位置！")
+                raise ValueError
+            return parameter_dic_
+        
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            # 还原开始位置
+            x, y = parameter_dic_["开始位置"].split(",")
+            self.label_59.setText(x)
+            self.label_61.setText(y)
+            # 还原结束位置
+            x, y = parameter_dic_["结束位置"].split(",")
+            self.label_65.setText(x)
+            self.label_66.setText(y)
+            # 还原开始随机
+            self.checkBox_8.setChecked(parameter_dic_["开始随机"] == "True")
+            # 还原结束随机
+            self.checkBox_7.setChecked(parameter_dic_["结束随机"] == "True")
+        
         if type_ == "按钮功能":
             # 鼠标拖拽
             self.pushButton_12.pressed.connect(
@@ -1895,6 +1924,7 @@ class Na(QWidget, Ui_navigation):
                 )
             )
             self.pushButton_12.clicked.connect(self.mouseMoveEvent)
+            
             self.pushButton_13.pressed.connect(
                 lambda: self.merge_additional_functions(
                     "change_get_mouse_position_function", "结束拖拽"
@@ -1902,27 +1932,20 @@ class Na(QWidget, Ui_navigation):
             )
             self.pushButton_13.clicked.connect(self.mouseMoveEvent)
             # 拖拽测试按钮
-            self.pushButton_14.clicked.connect(drag_test)
+            self.pushButton_14.clicked.connect(test)
         elif type_ == "写入参数":
-            # 获取开始位置
-            x_start = get_position(self.label_59.text())
-            y_start = get_position(self.label_61.text())
-            # 获取结束位置
-            x_end = get_position(self.label_65.text(), random_range=(-200, 200))
-            y_end = get_position(self.label_66.text(), random_range=(-200, 200))
-            # 保存位置
-            parameter_1 = f"{x_start},{y_start}"
-            parameter_2 = f"{x_end},{y_end}"
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def toggle_frame_function(self, type_):
         """切换frame窗口的功能"""
