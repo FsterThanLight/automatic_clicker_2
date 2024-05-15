@@ -1559,6 +1559,39 @@ class Na(QWidget, Ui_navigation):
                     "循环执行时，单元格行号会自动递增。",
                     QMessageBox.Ok,
                 )
+        
+        def get_parameters():
+            """获取参数"""
+            # 检查是否有异常
+            if not self.lineEdit_4.text():
+                QMessageBox.critical(self, "错误", "未设置单元格，请设置单元格！")
+                raise ValueError
+            if self.comboBox_12.currentText() == "" or self.comboBox_13.currentText() == "":
+                QMessageBox.critical(self, "错误", "未设置工作簿或工作表，请设置工作簿或工作表！")
+                raise ValueError
+            if self.comboBox_14.currentText() == "" or self.comboBox_15.currentText() == "":
+                QMessageBox.critical(self, "错误", "未设置图像，请设置图像！")
+                raise ValueError
+            # 图像路径
+            image_path = os.path.normpath(
+                os.path.join(
+                    self.comboBox_14.currentText(), self.comboBox_15.currentText()
+                )
+            )
+            # 异常处理
+            exception_ = "自动跳过" if self.radioButton_3.isChecked()\
+                and not self.radioButton_5.isChecked() else self.spinBox_5.value()
+            # 参数字典
+            parameter_dic_ = {
+                "工作簿": self.comboBox_12.currentText(),
+                "工作表": self.comboBox_13.currentText(),
+                "单元格": self.lineEdit_4.text(),
+                "图像": image_path,
+                "递增": str(self.checkBox_3.isChecked()),
+                "模拟输入": str(self.checkBox_4.isChecked()),
+                "异常": exception_,
+            }
+            return parameter_dic_
 
         if type_ == "按钮功能":
             # 行号自动递增提示
