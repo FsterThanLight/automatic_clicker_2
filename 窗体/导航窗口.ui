@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>9</number>
+        <number>10</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -2674,7 +2674,7 @@ p, li { white-space: pre-wrap; }
         <attribute name="title">
          <string>中键激活</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_14">
+        <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
           <widget class="QLabel" name="label_30">
            <property name="sizePolicy">
@@ -2704,26 +2704,92 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_27">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
           <widget class="QGroupBox" name="groupBox_23">
            <property name="title">
             <string>按下鼠标中键触发：</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_60" columnstretch="4,1,1">
+           <layout class="QGridLayout" name="gridLayout_60" columnstretch="0,0,0,0">
+            <item row="0" column="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,1">
+              <item>
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>当鼠标中键按下时，模拟鼠标左键点击</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+                <property name="wordWrap">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_3">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>999</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>次</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
             <item row="0" column="0">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="radioButton_zi">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="text">
+               <string>自定义：</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_29">
+              <property name="text">
+               <string>当鼠标中键按下时，自动执行该指令后的所有指令</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="wordWrap">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
              <widget class="QRadioButton" name="radioButton">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
               <property name="text">
                <string>模拟点击：</string>
               </property>
@@ -2733,60 +2799,43 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_27">
-              <property name="text">
-               <string>当鼠标中键按下时，模拟鼠标左键点击</string>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
               </property>
-              <property name="wordWrap">
-               <bool>false</bool>
-              </property>
-             </widget>
+             </spacer>
             </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="spinBox_3">
-              <property name="minimum">
-               <number>1</number>
+            <item row="0" column="3">
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="maximum">
-               <number>999</number>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
               </property>
-              <property name="value">
-               <number>10</number>
-              </property>
-             </widget>
+             </spacer>
             </item>
-            <item row="1" column="2">
-             <widget class="QLabel" name="label_28">
-              <property name="text">
-               <string>次</string>
+            <item row="1" column="3">
+             <spacer name="horizontalSpacer_12">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
               </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QRadioButton" name="radioButton_zi">
-              <property name="text">
-               <string>自定义：</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" colspan="3">
-             <widget class="QLabel" name="label_29">
-              <property name="text">
-               <string>当鼠标中键按下时，自动执行该指令后的所有指令</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="wordWrap">
-               <bool>false</bool>
-              </property>
-             </widget>
+             </spacer>
             </item>
            </layout>
           </widget>

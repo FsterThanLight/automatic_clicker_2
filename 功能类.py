@@ -577,14 +577,9 @@ class MoveMouse:
         """执行重复次数"""
         re_try = self.ins_dic.get('重复次数')
         # 执行滚轮滑动
-        if re_try == 1:
+        for _ in range(re_try):
             self.mouse_move_fun()  # 执行鼠标移动
-        elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
-                self.mouse_move_fun()  # 执行鼠标移动
-                i += 1
-                time.sleep(self.time_sleep)
+            time.sleep(self.time_sleep)
 
     def mouse_move_fun(self) -> None:
         """执行鼠标移动"""
@@ -718,18 +713,14 @@ class MiddleActivation:
 
     def start_execute(self):
         """执行重复次数"""
-        command_type = self.ins_dic.get('参数1（键鼠指令）')
-        click_count = int(self.ins_dic.get('参数2'))
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        command_type = parameter_dic_.get('类型')
+        click_count = int(parameter_dic_.get('次数', 1))
         re_try = self.ins_dic.get('重复次数')
         # 执行滚轮滑动
-        if re_try == 1:
+        for _ in range(re_try):
             self.middle_mouse_button(command_type, click_count)
-        elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
-                self.middle_mouse_button(command_type, click_count)
-                i += 1
-                time.sleep(self.time_sleep)
+            time.sleep(self.time_sleep)
 
     def middle_mouse_button(self, command_type, click_times):
         """中键点击事件"""
@@ -740,7 +731,7 @@ class MiddleActivation:
             if command_type == "模拟点击":
                 self.simulated_mouse_click(click_times, '左键')
                 self.out_mes.out_mes(f'执行鼠标点击{click_times}次', self.is_test)
-            elif command_type == "自定义":
+            elif command_type == "结束等待":
                 pass
         except OSError:
             # 弹出提示框。提示检查鼠标是否连接

@@ -1438,8 +1438,8 @@ class Na(QWidget, Ui_navigation):
             # 按下键盘的内容
             parameter_dic = {
                 "按键": self.keySequenceEdit.keySequence().toString(),
-                '按压时长': self.spinBox_27.value(),
-                }
+                "按压时长": self.spinBox_27.value(),
+            }
             if parameter_dic["按键"] == "":
                 QMessageBox.critical(self, "错误", "未设置按键，请设置按键！")
                 raise ValueError
@@ -1459,27 +1459,44 @@ class Na(QWidget, Ui_navigation):
 
     def middle_activation_function(self, type_):
         """中键激活的窗口功能"""
+
+        def get_parameters():
+            """获取参数"""
+            if self.radioButton.isChecked():
+                parameter_dic_ = {
+                    "类型": "模拟点击",
+                    "次数": self.spinBox_3.value(),
+                }
+            elif self.radioButton_zi.isChecked():
+                parameter_dic_ = {
+                    "类型": "结束等待",
+                }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            if parameter_dic_["类型"] == "模拟点击":
+                self.radioButton.setChecked(True)
+                self.spinBox_3.setValue(parameter_dic_["次数"])
+            elif parameter_dic_["类型"] == "结束等待":
+                self.radioButton_zi.setChecked(True)
+
         if type_ == "按钮功能":
             pass
         elif type_ == "写入参数":
             # 中键激活的内容
-            parameter_1 = None
-            parameter_2 = None
-            if self.radioButton.isChecked():
-                parameter_1 = "模拟点击"
-                parameter_2 = self.spinBox_3.value()
-            elif self.radioButton_zi.isChecked():
-                parameter_1 = "自定义"
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def mouse_click_function(self, type_):
         """鼠标点击的窗口的功能"""
