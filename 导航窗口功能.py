@@ -31,6 +31,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 from 功能类 import (
+    InformationEntry,
     MouseDrag,
     OutputMessage,
     TransparentWindow,
@@ -267,6 +268,7 @@ class Na(QWidget, Ui_navigation):
                     func_selected("还原参数")
                     self.show_image_to_label(name)  # 显示图像
                 except Exception as e:
+                    QMessageBox.warning(self, "警告", "该指令参数错误", QMessageBox.Yes)
                     print("还原参数错误", e)
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
@@ -509,6 +511,10 @@ class Na(QWidget, Ui_navigation):
         elif judge == "打开文件夹":
             if control_name.currentText() != "":
                 os.startfile(os.path.normpath(control_name.currentText()))
+            else:
+                QMessageBox.warning(
+                    self, "警告", "未设置资源文件夹，请前往主页设置！", QMessageBox.Yes
+                )
 
         elif judge == "设置区域":
             # 隐藏主窗口
@@ -1559,17 +1565,25 @@ class Na(QWidget, Ui_navigation):
                     "循环执行时，单元格行号会自动递增。",
                     QMessageBox.Ok,
                 )
-        
+
         def get_parameters():
             """获取参数"""
             # 检查是否有异常
             if not self.lineEdit_4.text():
                 QMessageBox.critical(self, "错误", "未设置单元格，请设置单元格！")
                 raise ValueError
-            if self.comboBox_12.currentText() == "" or self.comboBox_13.currentText() == "":
-                QMessageBox.critical(self, "错误", "未设置工作簿或工作表，请设置工作簿或工作表！")
+            if (
+                self.comboBox_12.currentText() == ""
+                or self.comboBox_13.currentText() == ""
+            ):
+                QMessageBox.critical(
+                    self, "错误", "未设置工作簿或工作表，请设置工作簿或工作表！"
+                )
                 raise ValueError
-            if self.comboBox_14.currentText() == "" or self.comboBox_15.currentText() == "":
+            if (
+                self.comboBox_14.currentText() == ""
+                or self.comboBox_15.currentText() == ""
+            ):
                 QMessageBox.critical(self, "错误", "未设置图像，请设置图像！")
                 raise ValueError
             # 图像路径
@@ -1579,23 +1593,65 @@ class Na(QWidget, Ui_navigation):
                 )
             )
             # 异常处理
-            exception_ = "自动跳过" if self.radioButton_3.isChecked()\
-                and not self.radioButton_5.isChecked() else self.spinBox_5.value()
+            exception_ = (
+                "自动跳过"
+                if self.radioButton_3.isChecked() and not self.radioButton_5.isChecked()
+                else self.spinBox_5.value()
+            )
             # 参数字典
             parameter_dic_ = {
                 "工作簿": self.comboBox_12.currentText(),
                 "工作表": self.comboBox_13.currentText(),
                 "单元格": self.lineEdit_4.text(),
-                "图像": image_path,
                 "递增": str(self.checkBox_3.isChecked()),
                 "模拟输入": str(self.checkBox_4.isChecked()),
                 "异常": exception_,
             }
-            return parameter_dic_
+            return parameter_dic_, image_path
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到控件中"""
+            # 还原图像路径
+            self.comboBox_14.setCurrentText(os.path.split(image_)[0])
+            self.find_controls("图像", "信息录入")
+            self.comboBox_15.setCurrentText(os.path.split(image_)[1])
+            # 还原工作簿
+            self.comboBox_12.setCurrentText(parameter_dic_["工作簿"])
+            self.find_controls("excel", "信息录入")
+            self.comboBox_13.setCurrentText(parameter_dic_["工作表"])
+            self.lineEdit_4.setText(parameter_dic_["单元格"])
+            self.checkBox_3.setChecked(eval(parameter_dic_["递增"]))
+            self.checkBox_4.setChecked(eval(parameter_dic_["模拟输入"]))
+            # 还原异常处理
+            if parameter_dic_["异常"] == "自动跳过":
+                self.radioButton_3.setChecked(True)
+                self.radioButton_5.setChecked(False)
+            else:
+                self.radioButton_3.setChecked(False)
+                self.radioButton_5.setChecked(True)
+                self.spinBox_5.setValue(int(parameter_dic_["异常"]))
+        
+        def test():
+            """测试功能"""
+            try:
+                parameter_dic_, image_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    parameter_1_=parameter_dic_,
+                    image_=image_,
+                )
+                # 测试用例
+                test_class = InformationEntry(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f"指令错误请重试！", True)
 
         if type_ == "按钮功能":
             # 行号自动递增提示
             self.checkBox_3.clicked.connect(line_number_increasing)
+            self.lineEdit_4.setValidator(QRegExpValidator(QRegExp("[A-Za-z0-9]+")))
             # 信息录入页面的快捷截图功能
             self.pushButton_5.clicked.connect(
                 lambda: self.quick_screenshot(self.comboBox_14, "快捷截图")
@@ -1615,45 +1671,17 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_15.activated.connect(
                 lambda: self.show_image_to_label("信息录入")
             )
+            # 测试按钮
+            self.pushButton_58.clicked.connect(test)
         elif type_ == "写入参数":
-            parameter_4 = None
-            # 获取excel工作簿路径和工作表名称
-            parameter_1 = (
-                self.comboBox_12.currentText() + "-" + self.comboBox_13.currentText()
-            )
-            # 获取图像文件路径
-            image = os.path.normpath(
-                self.comboBox_14.currentText() + "/" + self.comboBox_15.currentText()
-            )
-            # 获取单元格值
-            parameter_2 = self.lineEdit_4.text()
-            # 判断是否递增行号和特殊控件输入
-            parameter_3 = (
-                str(self.checkBox_3.isChecked())
-                + "-"
-                + str(self.checkBox_4.isChecked())
-            )
-            # 判断其他参数
-            if self.radioButton_3.isChecked() and not self.radioButton_5.isChecked():
-                parameter_4 = "自动跳过"
-            elif not self.radioButton_3.isChecked() and self.radioButton_5.isChecked():
-                parameter_4 = self.spinBox_5.value()
-            # 检查参数是否有异常
-            if (os.path.isdir(image)) or (not os.path.exists(image)):
-                QMessageBox.critical(
-                    self, "错误", "图像文件不存在，请检查图像文件是否存在！"
-                )
-                raise FileNotFoundError
+            parameter_dic, image = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
-                parameter_4_=parameter_4,
+                parameter_1_=parameter_dic,
                 image_=image,
                 remarks_=func_info_dic.get("备注"),
             )
@@ -1669,6 +1697,8 @@ class Na(QWidget, Ui_navigation):
             self.find_controls("图像", "信息录入")
             self.show_image_to_label("信息录入")
             self.find_controls("excel", "信息录入")
+        elif type_ == "还原参数":
+            put_parameters(self.image_path, self.parameter_1)
 
     def open_web_page_function(self, type_):
         """打开网址的窗口功能"""
@@ -1933,7 +1963,7 @@ class Na(QWidget, Ui_navigation):
                 QMessageBox.critical(self, "错误", "未设置结束位置！")
                 raise ValueError
             return parameter_dic_
-        
+
         def put_parameters(parameter_dic_):
             """将参数还原到控件中"""
             # 还原开始位置
@@ -1948,7 +1978,7 @@ class Na(QWidget, Ui_navigation):
             self.checkBox_8.setChecked(parameter_dic_["开始随机"] == "True")
             # 还原结束随机
             self.checkBox_7.setChecked(parameter_dic_["结束随机"] == "True")
-        
+
         if type_ == "按钮功能":
             # 鼠标拖拽
             self.pushButton_12.pressed.connect(
@@ -1957,7 +1987,7 @@ class Na(QWidget, Ui_navigation):
                 )
             )
             self.pushButton_12.clicked.connect(self.mouseMoveEvent)
-            
+
             self.pushButton_13.pressed.connect(
                 lambda: self.merge_additional_functions(
                     "change_get_mouse_position_function", "结束拖拽"

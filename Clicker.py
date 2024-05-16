@@ -111,7 +111,6 @@ CURRENT_VERSION = "v0.25 Beta"
 
 class Main_window(QMainWindow, Ui_MainWindow):
     """主窗口"""
-
     sigkeyhot = pyqtSignal(str, name="sigkeyhot")  # 自定义信号,用于快捷键
 
     def __init__(self):

@@ -3318,7 +3318,7 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QGroupBox" name="groupBox_67">
            <property name="title">
-            <string>Excel工作簿设置：</string>
+            <string>Excel工作簿：</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7" columnstretch="1,5">
             <item row="0" column="0">
@@ -3582,7 +3582,7 @@ p, li { white-space: pre-wrap; }
             </font>
            </property>
            <property name="text">
-            <string>找图测试</string>
+            <string>指令测试</string>
            </property>
           </widget>
          </item>

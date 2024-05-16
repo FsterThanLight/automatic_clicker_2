@@ -98,7 +98,7 @@ def get_available_path(image_name_: str, out_mes):
         if os.path.exists(image_name_):
             return image_name_
         else:
-            out_mes.out_mes("原图片路径不存在，已重新匹配。", False)
+            out_mes.out_mes("原资源文件路径不存在，已重新匹配。", False)
             image_name_only = os.path.basename(image_name_)
             res_folder_path = extract_global_parameter("资源文件夹路径")
             return search_image_in_folders(image_name_only, res_folder_path)
@@ -860,31 +860,31 @@ class InformationEntry:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        image_path = get_available_path(parameter_dic_.get("图像路径"))
+        excel_path = get_available_path(parameter_dic_.get("工作簿"))
         list_dic = {
-            "点击次数": 3,
+            "点击次数": 2,
             "按钮类型": "left",
-            "工作簿路径": self.ins_dic.get("参数1（键鼠指令）").split("-")[0],
-            "工作表名称": self.ins_dic.get("参数1（键鼠指令）").split("-")[1],
-            "图像路径": self.ins_dic.get("图像路径"),
-            "单元格位置": self.ins_dic.get("参数2"),
-            "行号递增": self.ins_dic.get("参数3").split("-")[0],
-            "特殊控件输入": self.ins_dic.get("参数3").split("-")[1],
-            "超时报错": self.ins_dic.get("参数4"),
+            "工作簿路径": excel_path,
+            "工作表名称": parameter_dic_.get("工作表"),
+            "图像路径": image_path,
+            "单元格位置": parameter_dic_.get("单元格"),
+            "行号递增": parameter_dic_.get("递增"),
+            "特殊控件输入": parameter_dic_.get("模拟输入"),
+            "超时报错": parameter_dic_.get("异常"),
             "异常处理": self.ins_dic.get("异常处理"),
         }
         return list_dic
+        
 
     def start_execute(self):
         """执行重复次数"""
         re_try = self.ins_dic.get("重复次数")
         # 执行滚轮滑动
-        if re_try == 1:
-            self.information_entry()
-        elif re_try > 1:
-            i = 1
-            while i < re_try + 1:
+        if re_try >= 1:
+            for _ in range(re_try):
                 self.information_entry()
-                i += 1
                 time.sleep(self.time_sleep)
 
     def information_entry(self):
