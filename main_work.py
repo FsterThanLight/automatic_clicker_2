@@ -172,6 +172,9 @@ class CommandThread(QThread):
                     current_index += 1
 
                 except Exception as e:
+                    info_e = str(e)
+                    if not info_e:
+                        info_e = str(type(e))
                 # except IndexError:
                     # e = 'test'
                     str_id = str(dict(dic_)['ID'])
@@ -187,7 +190,7 @@ class CommandThread(QThread):
                         self.show_message(f'ID为{str_id}的指令执行异常，已提示异常并暂停。')
                         # 弹出带有OK按钮的提示框
                         choice = pymsgbox.confirm(
-                            text=f'ID为{str_id}的指令执行异常！\n是否重试？\n\n错误类型：{str(type(e))}',
+                            text=f'ID为{str_id}的指令执行异常！\n是否重试？\n\n错误类型：{info_e}',
                             title='提示',
                             buttons=[pymsgbox.ABORT_TEXT, pymsgbox.RETRY_TEXT, pymsgbox.IGNORE_TEXT])
                         # 选择的按钮
@@ -205,7 +208,7 @@ class CommandThread(QThread):
                         self.show_message(f'ID为{str_id}的指令执行异常，已提示异常并停止。')
                         # 弹出提示框
                         pymsgbox.alert(
-                            text=f'ID为{str_id}的指令抛出异常！\n\n错误类型：{str(type(e))}',
+                            text=f'ID为{str_id}的指令抛出异常！\n\n错误类型：{info_e}',
                             title='提示',
                             icon=pymsgbox.STOP
                         )

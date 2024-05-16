@@ -81,7 +81,7 @@ def sub_variable(text: str):
     return new_text
 
 
-def get_available_path(image_name_: str, out_mes):
+def get_available_path(image_name_: str, out_mes, is_test=False):
     """组合图片路径，返回可以打开的图片路径，如果路径不存在则重新匹配
     :param out_mes: 用于输出信息
     :param image_name_: 图片路径或者图片名称
@@ -98,7 +98,7 @@ def get_available_path(image_name_: str, out_mes):
         if os.path.exists(image_name_):
             return image_name_
         else:
-            out_mes.out_mes("原资源文件路径不存在，已重新匹配。", False)
+            out_mes.out_mes("原资源文件路径不存在，已重新匹配。", is_test)
             image_name_only = os.path.basename(image_name_)
             res_folder_path = extract_global_parameter("资源文件夹路径")
             return search_image_in_folders(image_name_only, res_folder_path)
@@ -586,14 +586,15 @@ class TextInput:
         """文本输入事件
         :param input_value: 输入的文本
         :param special_control_judgment: 是否为特殊控件"""
+        value_str = str(input_value)
         if not special_control_judgment:
-            pyperclip.copy(input_value)
+            pyperclip.copy(value_str)
             pyautogui.hotkey("ctrl", "v")
             time.sleep(self.time_sleep)
-            self.out_mes.out_mes("执行文本输入：%s" % input_value, self.is_test)
+            self.out_mes.out_mes("执行文本输入：%s" % value_str, self.is_test)
         elif special_control_judgment:
-            pyautogui.typewrite(input_value, interval=self.interval)
-            self.out_mes.out_mes("执行模拟手动文本输入：%s" % input_value, self.is_test)
+            pyautogui.typewrite(value_str, interval=self.interval)
+            self.out_mes.out_mes("执行模拟手动文本输入：%s" % value_str, self.is_test)
             time.sleep(self.time_sleep)
 
 
@@ -861,22 +862,25 @@ class InformationEntry:
     def parsing_ins_dic(self):
         """解析指令字典"""
         parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
-        image_path = get_available_path(parameter_dic_.get("图像路径"))
-        excel_path = get_available_path(parameter_dic_.get("工作簿"))
+        image_path = get_available_path(
+            self.ins_dic.get("图像路径"), self.out_mes, self.is_test
+        )
+        excel_path = get_available_path(
+            parameter_dic_.get("工作簿"), self.out_mes, self.is_test
+        )
         list_dic = {
-            "点击次数": 2,
+            "点击次数": 3,
             "按钮类型": "left",
             "工作簿路径": excel_path,
             "工作表名称": parameter_dic_.get("工作表"),
             "图像路径": image_path,
             "单元格位置": parameter_dic_.get("单元格"),
-            "行号递增": parameter_dic_.get("递增"),
-            "特殊控件输入": parameter_dic_.get("模拟输入"),
+            "行号递增": eval(parameter_dic_.get("递增")),
+            "特殊控件输入": eval(parameter_dic_.get("模拟输入")),
             "超时报错": parameter_dic_.get("异常"),
             "异常处理": self.ins_dic.get("异常处理"),
         }
         return list_dic
-        
 
     def start_execute(self):
         """执行重复次数"""
@@ -895,9 +899,10 @@ class InformationEntry:
             list_dic.get("工作簿路径"),
             list_dic.get("工作表名称"),
             list_dic.get("单元格位置"),
-            eval(list_dic.get("行号递增")),
+            list_dic.get("行号递增"),
             self.cycle_number,
         )
+        self.image_click.is_test = self.is_test
         self.image_click.execute_click(
             click_times=list_dic.get("点击次数"),
             gray_rec=False,
@@ -905,8 +910,12 @@ class InformationEntry:
             img=list_dic.get("图像路径"),
             skip=list_dic.get("超时报错"),
         )
+        self.text_input.is_test = self.is_test
         self.text_input.text_input(cell_value, list_dic.get("特殊控件输入"))
-        self.out_mes.out_mes("已执行信息录入", self.is_test)
+        if self.is_test:
+            self.out_mes.out_mes("测试已完成！", self.is_test)
+        else:
+            self.out_mes.out_mes("已执行信息录入", self.is_test)
 
     def extra_excel_cell_value(
         self, excel_path, sheet_name, cell_position, line_number_increment_, number
@@ -942,17 +951,14 @@ class InformationEntry:
                 )
             return cell_value
         except FileNotFoundError:
-            print("没有找到工作簿")
             self.out_mes.out_mes("没有找到工作簿", self.is_test)
-            exit_main_work()
+            raise FileNotFoundError("没有找到工作簿")
         except KeyError:
-            print("没有找到工作表")
             self.out_mes.out_mes("没有找到工作表", self.is_test)
-            exit_main_work()
+            raise FileNotFoundError("没有找到工作表")
         except AttributeError:
-            print("没有找到单元格")
-            exit_main_work()
             self.out_mes.out_mes("没有找到单元格", self.is_test)
+            raise FileNotFoundError("没有找到单元格")
 
 
 class OpenWeb:
@@ -1110,10 +1116,7 @@ class MouseDrag:
 
     def start_execute(self):
         """执行重复次数"""
-        start_position, \
-        end_position, \
-        start_random, \
-        stop_random = self.parsing_ins_dic()
+        start_position, end_position, start_random, stop_random = self.parsing_ins_dic()
         # 设置随机坐标
         if start_random:
             start_position = self.random_position(start_position)
