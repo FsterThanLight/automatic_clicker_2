@@ -1,11 +1,9 @@
-import pyautogui
+from pandas import ExcelFile
 
-
-def move_mouse_to_coordinates(x: int, y: int):
-    print(f"Moving mouse to coordinates {x}, {y}")
-    # 使用pyautogui库实现鼠标移动
-    pyautogui.moveTo(x, y, duration=10)
 
 
 if __name__ == "__main__":
-    move_mouse_to_coordinates(4000, 100)
+    excel_path = r"C:\Users\Administrator\Desktop\personal_data\数据记录.xlsx"
+    xl = ExcelFile(excel_path)
+    sheet_names = xl.sheet_names
+    print(sheet_names)

@@ -5,6 +5,7 @@ import re
 import sqlite3
 
 import openpyxl
+from pandas import ExcelFile
 import pyautogui
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QRegExp, Qt
@@ -32,6 +33,7 @@ from pygments.lexers import PythonLexer
 
 from 功能类 import (
     InformationEntry,
+    InputCellExcel,
     MouseDrag,
     OutputMessage,
     TransparentWindow,
@@ -357,7 +359,8 @@ class Na(QWidget, Ui_navigation):
             excel_path = comboBox_before.currentText()
             try:
                 # 用openpyxl获取excel表格中的所有sheet名称
-                excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
+                # excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
+                excel_sheet_name = ExcelFile(excel_path).sheet_names
             except FileNotFoundError:
                 excel_sheet_name = []
             except InvalidFileException:
@@ -3151,26 +3154,56 @@ class Na(QWidget, Ui_navigation):
 
     def input_cell_function(self, type_):
         """输入到excel单元格的功能
-        :param self:
         :param type_: 功能名称（按钮功能、主要功能）"""
 
         def get_parameters():
             """从tab页获取参数"""
-            image_ = f"{self.comboBox_57.currentText()}-{self.comboBox_58.currentText()}"  # Excel路径-工作表
-            parameter_1_ = f"{self.lineEdit_28.text()}-{self.checkBox_10.isChecked()}"  # 单元格-是否行号递增
-            parameter_2_ = f"{self.textEdit_6.toPlainText()}"  # 内容
-            # 检查参数是否有异常
+            # excel路径
+            image_ = self.comboBox_57.currentText()
             if image_ == "":
                 QMessageBox.critical(self, "错误", "Excel路径未设置！")
                 raise ValueError
-            if parameter_1_ == "":
+            # 工作表
+            if self.comboBox_58.currentText() == "":
+                QMessageBox.critical(self, "错误", "工作表未设置！")
+                raise ValueError
+            if self.lineEdit_28.text() == "":
                 QMessageBox.critical(self, "错误", "单元格未设置！")
                 raise ValueError
-            if parameter_2_ == "":
-                QMessageBox.critical(self, "错误", "输出内容未设置！")
-                raise ValueError
-
-            return image_, parameter_1_, parameter_2_
+            # 参数字典
+            parameter_dic_ = {
+                "工作表": self.comboBox_58.currentText(),
+                "单元格": self.lineEdit_28.text(),
+                "递增": str(self.checkBox_10.isChecked()),
+                "文本": self.textEdit_6.toPlainText(),
+            }
+            return image_, parameter_dic_
+        
+        def put_parameters(image, parameter_dic_):
+            """将参数还原到控件"""
+            self.comboBox_57.setCurrentText(image)
+            self.find_controls("excel", "写入单元格")
+            self.comboBox_58.setCurrentText(parameter_dic_.get("工作表", ""))
+            self.lineEdit_28.setText(parameter_dic_.get("单元格", ""))
+            self.checkBox_10.setChecked(eval(parameter_dic_.get("递增", False)))
+            self.textEdit_6.setText(parameter_dic_.get("文本", ""))
+        
+        def test():
+            """测试功能"""
+            try:
+                image_, parameter_dic_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    image_=image_,
+                    parameter_1_=parameter_dic_,
+                )
+                # 测试用例
+                test_class = InputCellExcel(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+            except Exception as e:
+                print(e)
+                
 
         if type_ == "按钮功能":
             self.pushButton_44.clicked.connect(
@@ -3181,14 +3214,16 @@ class Na(QWidget, Ui_navigation):
             )
             # 禁用中文输入
             self.lineEdit_28.setValidator(
-                QRegExpValidator(QRegExp("[a-zA-Z0-9]{16}"), self)
-            )
+                QRegExpValidator(QRegExp("[A-Za-z0-9]+"))
+                )
             self.comboBox_57.activated.connect(
                 lambda: self.find_controls("excel", "写入单元格")
             )
+            # 测试按钮
+            self.pushButton_59.clicked.connect(test)
 
         elif type_ == "写入参数":
-            image, parameter_1, parameter_2 = get_parameters()
+            image, parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
@@ -3196,8 +3231,7 @@ class Na(QWidget, Ui_navigation):
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
                 image_=image,
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
@@ -3205,6 +3239,8 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_57.clear()
             self.comboBox_57.addItems(extract_excel_from_global_parameter())
             self.find_controls("excel", "写入单元格")
+        elif type_ == "还原参数":
+            put_parameters(self.image_path, self.parameter_1)
 
     def ocr_recognition_function(self, type_):
         """ocr的功能
@@ -3224,7 +3260,7 @@ class Na(QWidget, Ui_navigation):
                 "变量": self.comboBox_59.currentText(),
             }
             return parameter_dic_
-        
+
         def put_parameters(parameter_dic_):
             """将参数还原到控件"""
             self.label_153.setText(parameter_dic_.get("区域", "(0,0,0,0)"))

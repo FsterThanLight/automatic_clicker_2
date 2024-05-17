@@ -13,6 +13,7 @@ from tkinter import ttk
 import keyboard
 import mouse
 import openpyxl
+import pandas
 import psutil
 import pyautogui
 import pymsgbox
@@ -2201,12 +2202,14 @@ class InputCellExcel:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        excel_path = self.ins_dic.get("图像路径")
         return {
-            "工作簿路径": self.ins_dic.get("图像路径").split("-")[0],
-            "工作表名称": self.ins_dic.get("图像路径").split("-")[1],
-            "单元格位置": self.ins_dic.get("参数1（键鼠指令）").split("-")[0],
-            "是否递增": eval(self.ins_dic.get("参数1（键鼠指令）").split("-")[1]),
-            "输入内容": self.ins_dic.get("参数2"),
+            "工作簿路径": excel_path,
+            "工作表名称": parameter_dic.get("工作表"),
+            "单元格位置": parameter_dic.get("单元格"),
+            "是否递增": eval(parameter_dic.get("递增")),
+            "输入内容": parameter_dic.get("文本"),
         }
 
     def start_execute(self):
@@ -2239,13 +2242,14 @@ class InputCellExcel:
             sheet = wb[sheet_name]
             sheet[cell_position] = input_content
             wb.save(file_path)
+            wb.close()
             self.out_mes.out_mes(
-                f'已将"{input_content}"输入到单元格"{cell_position}"', self.is_test
+                f'已将"{input_content}"写入单元格"{cell_position}"', self.is_test
             )
         except Exception as e:
             print(e)
-            self.out_mes.out_mes(f"输入失败：{e}", self.is_test)
-            raise ValueError(f"输入失败")
+            self.out_mes.out_mes(f"写入单元格失败：{e}", self.is_test)
+            raise ValueError(f"写入单元格失败")
 
 
 class TextRecognition:
