@@ -3582,7 +3582,7 @@ p, li { white-space: pre-wrap; }
             </font>
            </property>
            <property name="text">
-            <string>指令测试</string>
+            <string>找图测试</string>
            </property>
           </widget>
          </item>

@@ -2263,28 +2263,31 @@ class TextRecognition:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "重复次数": self.ins_dic.get("重复次数"),
-            "截图区域": self.ins_dic.get("参数1（键鼠指令）"),
-            "变量名称": self.ins_dic.get("参数2"),
+            "截图区域": parameter_dic.get("区域", ""),
+            "变量名称": parameter_dic.get("变量", "")
         }
 
     def start_execute(self):
         """开始执行事件"""
         list_dic = self.parsing_ins_dic()
-        ocr_text = self.ocr_pic(list_dic["截图区域"])  # 识别图片中的文字
-        # 显示识别结果
-        if (ocr_text is not None) and (ocr_text != ""):
-            self.out_mes.out_mes(f"OCR识别结果：{ocr_text}", self.is_test)
-            if not self.is_test:  # 如果不是测试
-                set_variable_value(list_dic["变量名称"], ocr_text)
+        if list_dic["截图区域"] != "" or list_dic["变量名称"] != "":
+            ocr_text = self.ocr_pic(list_dic["截图区域"])  # 识别图片中的文字
+            # 显示识别结果
+            if ocr_text is not None: # 如果识别成功
+                self.out_mes.out_mes(f"OCR识别结果：{ocr_text}", self.is_test)
+                if not self.is_test:  # 如果不是测试
+                    set_variable_value(list_dic["变量名称"], ocr_text)
+                    self.out_mes.out_mes(
+                        f'已将OCR识别结果赋值给变量：{list_dic["变量名称"]}', self.is_test
+                    )
+            else:
                 self.out_mes.out_mes(
-                    f'已将OCR识别结果赋值给变量：{list_dic["变量名称"]}', self.is_test
+                    "OCR识别失败！检查网络或查看OCR信息是否设置正确。", self.is_test
                 )
         else:
-            self.out_mes.out_mes(
-                "OCR识别失败！检查网络或查看OCR信息是否设置正确。", self.is_test
-            )
+            raise ValueError("参数错误！")
 
     @staticmethod
     def ocr_pic(reigon):

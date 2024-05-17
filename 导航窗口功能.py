@@ -1630,7 +1630,7 @@ class Na(QWidget, Ui_navigation):
                 self.radioButton_3.setChecked(False)
                 self.radioButton_5.setChecked(True)
                 self.spinBox_5.setValue(int(parameter_dic_["异常"]))
-        
+
         def test():
             """测试功能"""
             try:
@@ -3213,13 +3213,22 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.label_153.text()  # 识别区域
-            parameter_2_ = self.comboBox_59.currentText()  # 写入变量
             # 检查参数是否有异常
-            if parameter_1_ == "(0,0,0,0)" or parameter_2_ == "":
+            if (self.label_153.text() == "(0,0,0,0)") or (
+                self.comboBox_59.currentText() == ""
+            ):
                 QMessageBox.warning(self, "警告", "参数不能为空！")
                 raise Exception
-            return parameter_1_, parameter_2_
+            parameter_dic_ = {
+                "区域": self.label_153.text(),
+                "变量": self.comboBox_59.currentText(),
+            }
+            return parameter_dic_
+        
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.label_153.setText(parameter_dic_.get("区域", "(0,0,0,0)"))
+            self.comboBox_59.setCurrentText(parameter_dic_.get("变量", ""))
 
         def open_setting_window():
             """打开图像点击设置窗口"""
@@ -3240,11 +3249,10 @@ class Na(QWidget, Ui_navigation):
         def test():
             """测试功能"""
             try:
-                parameter_1_, parameter_2_ = get_parameters()
+                parameter_dic = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
+                    parameter_1_=parameter_dic,
                 )
 
                 # 测试用例
@@ -3270,21 +3278,22 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_47.clicked.connect(test)
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
             # 当t导航业显示时，加载信息到控件
             self.comboBox_59.clear()
             self.comboBox_59.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def get_mouse_position_function(self, type_):
         """获取鼠标位置的功能
