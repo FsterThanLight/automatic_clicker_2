@@ -53,7 +53,7 @@ from 选择窗体 import Branch_exe_win
 collections.Iterable = collections.abc.Iterable
 
 # todo：RGB颜色检测功能
-# todo: 验证码指令使用云码平台
+# done: 验证码指令使用云码平台
 # todo: 指令可编译为python代码
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
@@ -66,8 +66,8 @@ collections.Iterable = collections.abc.Iterable
 
 # 用户需求
 # todo: 自动获取uac权限
-# todo: 时间等待允许输入小数
-# todo: 鼠标点击和鼠标拖拽可同时可按下键盘
+# done: 时间等待允许输入小数
+# done: 鼠标点击和鼠标拖拽可同时可按下键盘
 # todo: 绑定窗口指令
 # done: 图像识别可使用区域识别
 # done: 设置资源文件夹路径自动禁止使用中文字符
@@ -78,8 +78,8 @@ collections.Iterable = collections.abc.Iterable
 # todo: 功能快捷键可自定义
 # todo: 设置中提高延迟上限
 # todo: 按下键盘增加按压时长、按键释放等功能
-# todo: 指定时间去除年月日，只保留时分秒
-# todo: 获取鼠标位置功能，移动到指定位置功能
+# done: 指定时间去除年月日，只保留时分秒
+# done: 获取鼠标位置功能，移动到指定位置功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值
@@ -89,6 +89,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
 # todo: 文字识别功能，图像没有文字时，会报错
+# todo: 读取excel路径，会读取临时文件
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
 # activate clicker

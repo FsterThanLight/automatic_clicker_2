@@ -2205,7 +2205,9 @@ class InputCellExcel:
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
         parameter_dic = eval(self.ins_dic.get("参数1（键鼠指令）"))
-        excel_path = self.ins_dic.get("图像路径")
+        excel_path = get_available_path(
+            self.ins_dic.get("图像路径"), self.out_mes, self.is_test
+        )
         return {
             "工作簿路径": excel_path,
             "工作表名称": parameter_dic.get("工作表"),
