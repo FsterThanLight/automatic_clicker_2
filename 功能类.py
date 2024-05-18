@@ -2120,10 +2120,12 @@ class RunPython:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        image_path = self.ins_dic.get("图像路径")
         return {
-            "返回名称": self.ins_dic.get("参数1（键鼠指令）"),
-            "变量名称": self.ins_dic.get("参数2"),
-            "代码": self.ins_dic.get("参数3"),
+            "返回名称": parameter_dic_.get("返回值"),
+            "变量名称": parameter_dic_.get("变量"),
+            "代码": image_path,
         }
 
     @staticmethod

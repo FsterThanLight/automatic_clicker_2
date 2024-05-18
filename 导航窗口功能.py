@@ -3022,25 +3022,36 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.lineEdit_26.text()  # 返回名称
-            parameter_2_ = self.comboBox_56.currentText()  # 变量名称
-            parameter_3_ = self.textEdit_5.toPlainText()  # 代码
+            image_ = self.textEdit_5.toPlainText()  # 代码
             # 检查参数是否有异常
-            if parameter_3_ == "":
+            if image_ == "":
                 QMessageBox.critical(self, "错误", "代码未编写！")
                 raise ValueError
-            return parameter_1_, parameter_2_, parameter_3_
+            # 返回参数字典
+            parameter_dic_ = {
+                "返回值": self.lineEdit_26.text(),
+                "变量": self.comboBox_56.currentText(),
+            }
+            return image_, parameter_dic_
+        
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到tab页"""
+            self.textEdit_5.setPlainText(image_)
+            self.lineEdit_26.setText(parameter_dic_["返回值"])
+            index = self.comboBox_56.findText(parameter_dic_["变量"])
+            if index >= 0:
+                self.comboBox_56.setCurrentIndex(index)
+            
 
         def test():
             """测试功能"""
             highlight_python_code()
             try:
-                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                image_, parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
-                    parameter_3_=parameter_3_,
+                    image_=image_,
+                    parameter_1_=parameter_dic_,
                 )
                 # 测试用例
                 test_class = RunPython(self.out_mes, dic_)
@@ -3075,22 +3086,23 @@ class Na(QWidget, Ui_navigation):
             )
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2, parameter_3 = get_parameters()
+            image, parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                image_=image,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
             # 当t导航业显示时，加载信息到控件
             self.comboBox_56.clear()
             self.comboBox_56.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.image_path, self.parameter_1)
 
     def run_external_file_function(self, type_):
         """运行外部文件的功能
