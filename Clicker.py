@@ -89,7 +89,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
 # todo: 文字识别功能，图像没有文字时，会报错
-# todo: 读取excel路径，会读取临时文件
+# done: 读取excel路径，会读取临时文件
+# todo: 快捷键说明提示框没对齐
+
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
 # activate clicker

@@ -919,7 +919,7 @@ class InformationEntry:
             self.out_mes.out_mes("已执行信息录入", self.is_test)
 
     def extra_excel_cell_value(
-        self, excel_path, sheet_name, cell_position, line_number_increment_, number
+            self, excel_path, sheet_name, cell_position, line_number_increment_, number
     ):
         """获取excel表格中的值
         :param excel_path: excel表格路径
@@ -943,7 +943,7 @@ class InformationEntry:
                 # 获取行号递增的单元格的值
                 column_number = re.findall(r"[a-zA-Z]+", cell_position)[0]
                 line_number = (
-                    int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
+                        int(re.findall(r"\d+\.?\d*", cell_position)[0]) + number - 1
                 )
                 new_cell_position = column_number + str(line_number)
                 cell_value = sheet[new_cell_position].value
@@ -1577,7 +1577,7 @@ class PlayVoice:
 
     @staticmethod
     def sound_signal(
-        frequency: int, duration: int, times: int = 1, interval: int = 0
+            frequency: int, duration: int, times: int = 1, interval: int = 0
     ) -> None:
         """播放音频信号
         :param frequency: 频率(37~32767)
@@ -1803,7 +1803,7 @@ class WindowControl:
         )
 
     def show_normal_window_with_specified_title(
-        self, title, judge="最大化", is_error=True
+            self, title, judge="最大化", is_error=True
     ):
         """将指定标题的窗口置顶
         :param is_error: 是否报错
@@ -1816,9 +1816,9 @@ class WindowControl:
 
             def get_all_hwnd(hwnd, mouse):
                 if (
-                    win32gui.IsWindow(hwnd)
-                    and win32gui.IsWindowEnabled(hwnd)
-                    and win32gui.IsWindowVisible(hwnd)
+                        win32gui.IsWindow(hwnd)
+                        and win32gui.IsWindowEnabled(hwnd)
+                        and win32gui.IsWindowVisible(hwnd)
                 ):
                     hwnd_title_.update({hwnd: win32gui.GetWindowText(hwnd)})
 
@@ -2006,17 +2006,18 @@ class GetDialogValue:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "对话框标题": self.ins_dic.get("参数1（键鼠指令）"),
-            "变量名称": self.ins_dic.get("参数2"),
-            "对话框提示信息": self.ins_dic.get("参数3"),
+            "对话框标题": parameter_dic_.get("标题"),
+            "变量名称": parameter_dic_.get("变量"),
+            "对话框提示信息": parameter_dic_.get("提示"),
         }
 
     def start_execute(self):
         """开始执行鼠标点击事件"""
         ins_dic = self.parsing_ins_dic()  # 解析指令字典
         text = self.gets_text_from_dialog(ins_dic)
-        set_variable_value(ins_dic.get("变量名称"), text)
+        set_variable_value(ins_dic.get("变量名称"), text) # 执行变量写入
         self.out_mes.out_mes(
             f'已获取对话框的值并赋值给变量：{ins_dic.get("变量名称")}', self.is_test
         )
@@ -2250,6 +2251,9 @@ class InputCellExcel:
             self.out_mes.out_mes(
                 f'已将"{input_content}"写入单元格"{cell_position}"', self.is_test
             )
+        except PermissionError:
+            self.out_mes.out_mes("文件正在被占用或正在被打开，无法写入", self.is_test)
+            raise ValueError("文件被占用，无法写入")
         except Exception as e:
             print(e)
             self.out_mes.out_mes(f"写入单元格失败：{e}", self.is_test)
@@ -2283,7 +2287,7 @@ class TextRecognition:
         if list_dic["截图区域"] != "" or list_dic["变量名称"] != "":
             ocr_text = self.ocr_pic(list_dic["截图区域"])  # 识别图片中的文字
             # 显示识别结果
-            if ocr_text is not None: # 如果识别成功
+            if ocr_text is not None:  # 如果识别成功
                 self.out_mes.out_mes(f"OCR识别结果：{ocr_text}", self.is_test)
                 if not self.is_test:  # 如果不是测试
                     set_variable_value(list_dic["变量名称"], ocr_text)

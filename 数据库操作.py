@@ -190,7 +190,7 @@ def extract_excel_from_global_parameter():
         if os.path.exists(folder_path) and os.path.isdir(folder_path):
             for root, dirs, files in os.walk(folder_path):
                 for file in files:
-                    if file.endswith('.xlsx') or file.endswith('.xls'):
+                    if (file.endswith('.xlsx') or file.endswith('.xls')) and not file.startswith('~$'):
                         excel_files.append(os.path.normpath(os.path.join(root, file)))
     return excel_files
 

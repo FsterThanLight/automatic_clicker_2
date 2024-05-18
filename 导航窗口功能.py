@@ -4,8 +4,6 @@ import random
 import re
 import sqlite3
 
-import openpyxl
-from pandas import ExcelFile
 import pyautogui
 from PyQt5 import QtCore
 from PyQt5.QtCore import QUrl, QRegExp, Qt
@@ -15,7 +13,6 @@ from PyQt5.QtGui import (
     QPixmap,
     QIntValidator,
     QRegExpValidator,
-    QKeySequence,
 )
 from PyQt5.QtWidgets import (
     QMessageBox,
@@ -27,6 +24,7 @@ from PyQt5.QtWidgets import (
 )
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
+from pandas import ExcelFile
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
@@ -276,13 +274,13 @@ class Na(QWidget, Ui_navigation):
             pass
 
     def get_test_dic(
-        self,
-        repeat_number_,
-        image_=None,
-        parameter_1_=None,
-        parameter_2_=None,
-        parameter_3_=None,
-        parameter_4_=None,
+            self,
+            repeat_number_,
+            image_=None,
+            parameter_1_=None,
+            parameter_2_=None,
+            parameter_3_=None,
+            parameter_4_=None,
     ):
         """返回测试字典,用于测试按钮的功能"""
         self.tabWidget_2.setCurrentIndex(2)
@@ -359,7 +357,6 @@ class Na(QWidget, Ui_navigation):
             excel_path = comboBox_before.currentText()
             try:
                 # 用openpyxl获取excel表格中的所有sheet名称
-                # excel_sheet_name = openpyxl.load_workbook(excel_path).sheetnames
                 excel_sheet_name = ExcelFile(excel_path).sheet_names
             except FileNotFoundError:
                 excel_sheet_name = []
@@ -532,16 +529,16 @@ class Na(QWidget, Ui_navigation):
             self.main_window.show()
 
     def writes_commands_to_the_database(
-        self,
-        instruction_,
-        repeat_number_,
-        exception_handling_,
-        image_=None,
-        parameter_1_=None,
-        parameter_2_=None,
-        parameter_3_=None,
-        parameter_4_=None,
-        remarks_=None,
+            self,
+            instruction_,
+            repeat_number_,
+            exception_handling_,
+            image_=None,
+            parameter_1_=None,
+            parameter_2_=None,
+            parameter_3_=None,
+            parameter_4_=None,
+            remarks_=None,
     ):
         """向数据库写入命令"""
         try:
@@ -655,7 +652,7 @@ class Na(QWidget, Ui_navigation):
                 )
             )
             if (os.path.exists(image_path)) and (
-                os.path.isfile(image_path)
+                    os.path.isfile(image_path)
             ):  # 判断图像是否存在
                 if judge == "显示":
                     # 将图像转换为QImage对象
@@ -927,7 +924,7 @@ class Na(QWidget, Ui_navigation):
             text = self.textEdit.toPlainText()
             # 检查text中是否为英文大小写字母和数字
             if (re.search("[a-zA-Z0-9]", text) is None) and (
-                self.checkBox_2.isChecked()
+                    self.checkBox_2.isChecked()
             ):
                 self.checkBox_2.setChecked(False)
                 QMessageBox.warning(
@@ -1356,11 +1353,11 @@ class Na(QWidget, Ui_navigation):
                     ),
                 }
                 for key, (
-                    group_box,
-                    combo_box,
-                    line_edit,
-                    combo_text,
-                    line_text,
+                        group_box,
+                        combo_box,
+                        line_edit,
+                        combo_text,
+                        line_text,
                 ) in ui_elements.items():
                     group_box.setChecked(parameter_type == key)
                     if combo_box:
@@ -1576,16 +1573,16 @@ class Na(QWidget, Ui_navigation):
                 QMessageBox.critical(self, "错误", "未设置单元格，请设置单元格！")
                 raise ValueError
             if (
-                self.comboBox_12.currentText() == ""
-                or self.comboBox_13.currentText() == ""
+                    self.comboBox_12.currentText() == ""
+                    or self.comboBox_13.currentText() == ""
             ):
                 QMessageBox.critical(
                     self, "错误", "未设置工作簿或工作表，请设置工作簿或工作表！"
                 )
                 raise ValueError
             if (
-                self.comboBox_14.currentText() == ""
-                or self.comboBox_15.currentText() == ""
+                    self.comboBox_14.currentText() == ""
+                    or self.comboBox_15.currentText() == ""
             ):
                 QMessageBox.critical(self, "错误", "未设置图像，请设置图像！")
                 raise ValueError
@@ -1850,7 +1847,7 @@ class Na(QWidget, Ui_navigation):
             if self.radioButton_10.isChecked() and not self.radioButton_11.isChecked():
                 parameter_4_ = "自动跳过"
             elif (
-                not self.radioButton_10.isChecked() and self.radioButton_11.isChecked()
+                    not self.radioButton_10.isChecked() and self.radioButton_11.isChecked()
             ):
                 parameter_4_ = self.spinBox_8.value()
             # 获取参数值
@@ -2061,9 +2058,9 @@ class Na(QWidget, Ui_navigation):
             parameter_2 = None
             # 获取元素类型和元素
             image = (
-                self.comboBox_28.currentText().replace("：", "")
-                + "-"
-                + self.lineEdit_12.text()
+                    self.comboBox_28.currentText().replace("：", "")
+                    + "-"
+                    + self.lineEdit_12.text()
             )
             # 获取Excel工作簿路径和工作表名称
             parameter_1 = self.comboBox_29.currentText() + "-" + self.lineEdit_13.text()
@@ -2071,7 +2068,7 @@ class Na(QWidget, Ui_navigation):
             if self.radioButton_13.isChecked() and not self.radioButton_12.isChecked():
                 parameter_2 = "自动跳过"
             elif (
-                not self.radioButton_13.isChecked() and self.radioButton_12.isChecked()
+                    not self.radioButton_13.isChecked() and self.radioButton_12.isChecked()
             ):
                 parameter_2 = self.spinBox_9.value()
             # 检查参数是否有异常
@@ -2101,19 +2098,19 @@ class Na(QWidget, Ui_navigation):
             parameter_2 = None
             # 获取元素类型和元素
             image = (
-                self.comboBox_30.currentText().replace("：", "")
-                + "-"
-                + self.lineEdit_14.text()
+                    self.comboBox_30.currentText().replace("：", "")
+                    + "-"
+                    + self.lineEdit_14.text()
             )
             # 获取拖动距离
             parameter_1 = (
-                str(self.spinBox_10.value()) + "-" + str(self.spinBox_11.value())
+                    str(self.spinBox_10.value()) + "-" + str(self.spinBox_11.value())
             )
             # 判断其他参数
             if self.radioButton_15.isChecked() and not self.radioButton_14.isChecked():
                 parameter_2 = "自动跳过"
             elif (
-                not self.radioButton_15.isChecked() and self.radioButton_14.isChecked()
+                    not self.radioButton_15.isChecked() and self.radioButton_14.isChecked()
             ):
                 parameter_2 = self.spinBox_12.value()
             # 判断参数是否有异常
@@ -2676,8 +2673,8 @@ class Na(QWidget, Ui_navigation):
                 )
                 raise ValueError
             if self.radioButton_21.isChecked() and (
-                self.comboBox_41.currentText() == ""
-                or self.comboBox_42.currentText() == ""
+                    self.comboBox_41.currentText() == ""
+                    or self.comboBox_42.currentText() == ""
             ):
                 QMessageBox.critical(self, "错误", "分支异常，请先添加！")
                 raise ValueError
@@ -2787,8 +2784,8 @@ class Na(QWidget, Ui_navigation):
             parameter_3_ = str(self.checkBox_9.isChecked())  # 是否行号递增
             # 检查参数是否有异常
             if (
-                self.comboBox_45.currentText() == ""
-                or self.comboBox_46.currentText() == ""
+                    self.comboBox_45.currentText() == ""
+                    or self.comboBox_46.currentText() == ""
             ):
                 QMessageBox.critical(self, "错误", "Excel路径未设置！")
                 raise ValueError
@@ -2883,19 +2880,27 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.lineEdit_24.text()  # 输入框标题
-            parameter_2_ = self.comboBox_48.currentText()  # 变量名称
-            parameter_3_ = self.lineEdit_25.text()  # 提示信息
             # 检查参数是否有异常
-            if parameter_1_ == "":
-                parameter_1_ = "示例"
-            if parameter_3_ == "":
-                parameter_3_ = "示例"
-            if parameter_2_ == "":
+            if self.comboBox_48.currentText() == "":
                 QMessageBox.critical(self, "错误", "变量未设置！")
                 raise ValueError
+            # 参数字典
+            parameter_dic_ = {
+                "标题": self.lineEdit_24.text() if self.lineEdit_24.text() else "示例",
+                "变量": self.comboBox_48.currentText(),
+                "提示": self.lineEdit_25.text() if self.lineEdit_25.text() else "示例",
+            }
+            return parameter_dic_
 
-            return parameter_1_, parameter_2_, parameter_3_
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.lineEdit_24.setText(parameter_dic_.get("标题", ""))
+            if self.lineEdit_24.text() == "示例":
+                self.lineEdit_24.clear()
+            self.comboBox_48.setCurrentText(parameter_dic_.get("变量", ""))
+            self.lineEdit_25.setText(parameter_dic_.get("提示", ""))
+            if self.lineEdit_25.text() == "示例":
+                self.lineEdit_25.clear()
 
         if type_ == "按钮功能":
             self.pushButton_37.clicked.connect(
@@ -2903,26 +2908,22 @@ class Na(QWidget, Ui_navigation):
             )
 
         elif type_ == "写入参数":
-            (
-                parameter_1,
-                parameter_2,
-                parameter_3,
-            ) = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
             # 当t导航业显示时，加载信息到控件
             self.comboBox_48.clear()
             self.comboBox_48.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def contrast_variables_function(self, type_):
         """变量比较的功能
@@ -2946,15 +2947,15 @@ class Na(QWidget, Ui_navigation):
             )  # 分支表名-分支序号
             # 检查参数是否有异常
             if (
-                self.comboBox_49.currentText() == ""
-                or self.comboBox_50.currentText() == ""
-                or self.comboBox_51.currentText() == ""
+                    self.comboBox_49.currentText() == ""
+                    or self.comboBox_50.currentText() == ""
+                    or self.comboBox_51.currentText() == ""
             ):
                 QMessageBox.critical(self, "错误", "变量未设置！")
                 raise ValueError
             if (
-                self.comboBox_52.currentText() == ""
-                or self.comboBox_53.currentText() == ""
+                    self.comboBox_52.currentText() == ""
+                    or self.comboBox_53.currentText() == ""
             ):
                 QMessageBox.critical(self, "错误", "分支未设置！")
                 raise ValueError
@@ -3033,7 +3034,7 @@ class Na(QWidget, Ui_navigation):
                 "变量": self.comboBox_56.currentText(),
             }
             return image_, parameter_dic_
-        
+
         def put_parameters(image_, parameter_dic_):
             """将参数还原到tab页"""
             self.textEdit_5.setPlainText(image_)
@@ -3041,7 +3042,6 @@ class Na(QWidget, Ui_navigation):
             index = self.comboBox_56.findText(parameter_dic_["变量"])
             if index >= 0:
                 self.comboBox_56.setCurrentIndex(index)
-            
 
         def test():
             """测试功能"""
@@ -3101,6 +3101,12 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_56.clear()
             self.comboBox_56.addItems(get_variable_info("list"))
+            # 设置textEdit_5的说明信息
+            self.textEdit_5.setPlaceholderText(
+                "请编写python代码...已内置的第三方库："
+                "pyttsx4、pymsgbox、pyautogui、mouse、keyboard、pandas、selenium、"
+                "pillow、openpyxl、requests、python-dateutil、psutil、uiautomation。"
+            )
         elif type_ == "还原参数":
             put_parameters(self.image_path, self.parameter_1)
 
@@ -3190,7 +3196,7 @@ class Na(QWidget, Ui_navigation):
                 "文本": self.textEdit_6.toPlainText(),
             }
             return image_, parameter_dic_
-        
+
         def put_parameters(image, parameter_dic_):
             """将参数还原到控件"""
             self.comboBox_57.setCurrentText(image)
@@ -3199,7 +3205,7 @@ class Na(QWidget, Ui_navigation):
             self.lineEdit_28.setText(parameter_dic_.get("单元格", ""))
             self.checkBox_10.setChecked(eval(parameter_dic_.get("递增", False)))
             self.textEdit_6.setText(parameter_dic_.get("文本", ""))
-        
+
         def test():
             """测试功能"""
             try:
@@ -3215,7 +3221,6 @@ class Na(QWidget, Ui_navigation):
                 test_class.start_execute()
             except Exception as e:
                 print(e)
-                
 
         if type_ == "按钮功能":
             self.pushButton_44.clicked.connect(
@@ -3227,7 +3232,7 @@ class Na(QWidget, Ui_navigation):
             # 禁用中文输入
             self.lineEdit_28.setValidator(
                 QRegExpValidator(QRegExp("[A-Za-z0-9]+"))
-                )
+            )
             self.comboBox_57.activated.connect(
                 lambda: self.find_controls("excel", "写入单元格")
             )
@@ -3263,7 +3268,7 @@ class Na(QWidget, Ui_navigation):
             """从tab页获取参数"""
             # 检查参数是否有异常
             if (self.label_153.text() == "(0,0,0,0)") or (
-                self.comboBox_59.currentText() == ""
+                    self.comboBox_59.currentText() == ""
             ):
                 QMessageBox.warning(self, "警告", "参数不能为空！")
                 raise Exception
