@@ -2481,28 +2481,39 @@ class Na(QWidget, Ui_navigation):
             )
 
     def dialog_window_function(self, type_):
-        """xxx的功能
+        """弹出提示框的功能
         :param self:
         :param type_: 功能名称（按钮功能、主要功能）"""
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.lineEdit_8.text() or "提示框"  # 提示框标题
-            parameter_2_ = self.lineEdit_20.text() or "示例"  # 提示框内容
-            parameter_3_ = self.comboBox_36.currentText()  # icon类型
-            return parameter_1_, parameter_2_, parameter_3_
+            title = self.lineEdit_8.text() or "提示框"  # 提示框标题
+            info = self.lineEdit_20.text() or "示例"  # 提示框内容
+            icon_type = self.comboBox_36.currentText()  # icon类型
+            # 返回参数字典
+            parameter_dic_ = {
+                "标题": title,
+                "内容": info,
+                "图标": icon_type,
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.lineEdit_8.setText(parameter_dic_["标题"])
+            self.lineEdit_20.setText(parameter_dic_["内容"])
+            index = self.comboBox_36.findText(parameter_dic_["图标"])
+            if index >= 0:
+                self.comboBox_36.setCurrentIndex(index)
 
         def test():
             """测试功能"""
             try:
-                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
-                    parameter_3_=parameter_3_,
+                    parameter_1_=parameter_dic_,
                     repeat_number_=int(self.spinBox.value()),
                 )
-
                 # 测试用例
                 test_class = DialogWindow(self.out_mes, dic_)
                 test_class.is_test = True
@@ -2516,18 +2527,20 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_26.clicked.connect(test)
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2, parameter_3 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "加载信息":
+            pass
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def branch_jump_function(self, type_):
         """跳转分支的功能
@@ -2628,26 +2641,34 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.lineEdit_21.text()
-            parameter_2_ = (
-                f"{self.comboBox_40.currentText()}-{self.checkBox_5.isChecked()}"
-            )
             # 检查参数是否有异常
-            if parameter_1_ == "":
+            if self.lineEdit_21.text() == "":
                 QMessageBox.critical(self, "错误", "窗口标题未填！")
                 raise ValueError
-            return parameter_1_, parameter_2_
+            # 返回参数字典
+            parameter_dic_ = {
+                "标题包含": self.lineEdit_21.text(),
+                "操作": self.comboBox_40.currentText(),
+                "报错": str(self.checkBox_5.isChecked()),
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.lineEdit_21.setText(parameter_dic_["标题包含"])
+            index = self.comboBox_40.findText(parameter_dic_["操作"])
+            if index >= 0:
+                self.comboBox_40.setCurrentIndex(index)
+            self.checkBox_5.setChecked(eval(parameter_dic_["报错"]))
 
         def test():
             """测试功能"""
             try:
-                parameter_1_, parameter_2_ = get_parameters()
+                parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
+                    parameter_1_=parameter_dic_,
                 )
-
                 # 测试用例
                 test_class = WindowControl(self.out_mes, dic_)
                 test_class.is_test = True
@@ -2655,23 +2676,24 @@ class Na(QWidget, Ui_navigation):
 
             except Exception as e:
                 print(e)
-                # self.out_mes.out_mes(f'指令错误请重试！', True)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
 
         if type_ == "按钮功能":
             self.pushButton_27.clicked.connect(test)
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def key_wait_function(self, type_):
         """按键等待的功能

@@ -1704,10 +1704,11 @@ class DialogWindow:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "标题": self.ins_dic.get("参数1（键鼠指令）"),
-            "内容": self.ins_dic.get("参数2"),
-            "图标": self.ins_dic.get("参数3"),
+            "标题": parameter_dic_.get("标题"),
+            "内容": parameter_dic_.get("内容"),
+            "图标": parameter_dic_.get("图标"),
         }
 
     def start_execute(self):
@@ -1781,10 +1782,11 @@ class WindowControl:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "窗口标题": self.ins_dic.get("参数1（键鼠指令）"),
-            "操作类型": self.ins_dic.get("参数2").split("-")[0].replace("窗口", ""),
-            "是否报错": eval(self.ins_dic.get("参数2").split("-")[1]),
+            "窗口标题": parameter_dic_.get("标题包含"),
+            "操作类型": parameter_dic_.get("操作"),
+            "是否报错": eval(parameter_dic_.get("报错")),
         }
 
     def start_execute(self):
@@ -1820,13 +1822,15 @@ class WindowControl:
         hwnd_title = get_all_window_title()
         for h, t in hwnd_title.items():
             if title in t:
+                print(t)
+                print(judge)
                 if judge == "最大化":
                     win32gui.ShowWindow(h, win32con.SW_SHOWMAXIMIZED)  # 最大化显示窗口
                 elif judge == "最小化":
                     win32gui.ShowWindow(h, win32con.SW_SHOWMINIMIZED)
-                elif judge == "显示":
+                elif judge == "显示窗口":
                     win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 显示窗口
-                elif judge == "关闭":
+                elif judge == "关闭窗口":
                     win32gui.PostMessage(h, win32con.WM_CLOSE, 0, 0)
                 self.out_mes.out_mes(
                     f"已{judge}指定标题包含“{title}”的窗口", self.is_test
