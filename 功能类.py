@@ -1745,10 +1745,6 @@ class BranchJump:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
 
-    def parsing_ins_dic(self):
-        """从指令字典中解析出指令参数"""
-        return self.ins_dic.get("重复次数")
-
     def start_execute(self):
         """开始执行鼠标点击事件"""
         raise IndexError
@@ -1765,10 +1761,6 @@ class TerminationProcess:
 
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
-
-    def parsing_ins_dic(self):
-        """从指令字典中解析出指令参数"""
-        return self.ins_dic.get("重复次数")
 
     def start_execute(self):
         """开始执行鼠标点击事件"""

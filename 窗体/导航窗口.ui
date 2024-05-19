@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>29</number>
+        <number>27</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -6704,7 +6704,7 @@ p, li { white-space: pre-wrap; }
                <string>流程类型：</string>
               </property>
               <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>

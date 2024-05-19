@@ -2535,28 +2535,44 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.comboBox_37.currentText()  # 分支表名
-            parameter_2_ = self.comboBox_38.currentText()  # 分支序号
-            return parameter_1_, parameter_2_
+            # 检查参数是否有异常
+            if self.comboBox_37.currentText() == "" or self.comboBox_38.currentText() == "":
+                QMessageBox.critical(self, "错误", "分支参数错误！")
+                raise ValueError
+            # 返回参数字典
+            parameter_dic = {
+                "分支": f"{self.comboBox_37.currentText()}-{self.comboBox_38.currentText()}"
+            }
+            exception_handling = f"{self.comboBox_37.currentText()}-{self.comboBox_38.currentText()}"
+            return exception_handling, parameter_dic
+
+        def put_parameters(parameter_dic):
+            """将参数还原到控件"""
+            # 设置分支
+            branch = parameter_dic["分支"]
+            branch_name, branch_count = branch.split("-")
+            index = self.comboBox_37.findText(branch_name)
+            if index >= 0:
+                self.comboBox_37.setCurrentIndex(index)
+            # 设置跳转分支
+            index = self.comboBox_38.findText(branch_count)
+            if index >= 0:
+                self.comboBox_38.setCurrentIndex(index)
 
         if type_ == "按钮功能":
-            # self.comboBox_37.activated.connect(set_branch_count)
             self.comboBox_37.activated.connect(
                 lambda: self.find_controls("分支", "跳转分支")
             )
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2 = get_parameters()
-            # 检查参数是否有异常
-            if parameter_1 == "" or parameter_2 == "":
-                QMessageBox.critical(self, "错误", "分支为空，请先添加！")
-                raise ValueError
+            exception_handling_, parameter_dic_ = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
-                exception_handling_=f"{parameter_1}-{parameter_2}",
+                exception_handling_=exception_handling_,
+                parameter_1_=parameter_dic_,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
@@ -2564,6 +2580,8 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_37.setCurrentIndex(0)
             # 获取分支表名中的指令数量
             self.find_controls("分支", "跳转分支")
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def termination_process_function(self, type_):
         """终止流程的功能
@@ -2572,22 +2590,36 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.comboBox_39.currentText()
-            return parameter_1_
+            exception_handling = self.comboBox_39.currentText()
+            # 返回参数字典
+            parameter_dic = {
+                "终止类型": exception_handling,
+            }
+            return exception_handling, parameter_dic
+
+        def put_parameters(parameter_dic):
+            """将参数还原到控件"""
+            # 设置终止类型
+            index = self.comboBox_39.findText(parameter_dic["终止类型"])
+            if index >= 0:
+                self.comboBox_39.setCurrentIndex(index)
 
         if type_ == "按钮功能":
             pass
 
         elif type_ == "写入参数":
-            exception_handling_ = get_parameters()
+            exception_handling_, parameter_dic_ = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=exception_handling_,
+                parameter_1_=parameter_dic_,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def window_control_function(self, type_):
         """窗口控制的功能
