@@ -1640,7 +1640,7 @@ class WaitWindow:
         self.out_mes = outputmessage  # 用于输出信息
         self.ins_dic = ins_dic
         self.cycle_number = cycle_number
-        self.count = int(self.ins_dic.get("参数3"))
+        self.count = int(eval(self.ins_dic.get("参数1（键鼠指令）")).get("秒数"))
         self.update_label()
         self.is_test = False
         self.root.protocol("WM_DELETE_WINDOW", self.stop_win)  # 点击关闭按钮时执行
@@ -1662,10 +1662,11 @@ class WaitWindow:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         list_dic = {
-            "窗口标题": self.ins_dic.get("参数1（键鼠指令）"),
-            "提示信息": self.ins_dic.get("参数2"),
-            "等待时间": self.ins_dic.get("参数3"),
+            "窗口标题": parameter_dic_.get("标题"),
+            "提示信息": parameter_dic_.get("内容"),
+            "等待时间": int(parameter_dic_.get("秒数")),
         }
         return list_dic
 
@@ -1684,10 +1685,11 @@ class WaitWindow:
         self.out_mes.out_mes("已结束等待窗口", self.is_test)
 
     def start_execute(self):
+        """开始执行窗口等待"""
+        dict_ = self.parsing_ins_dic() # 解析指令字典
         self.out_mes.out_mes("正在运行等待窗口...", self.is_test)
-        self.root.title(self.ins_dic.get("参数1（键鼠指令）"))  # 窗口标题
-        self.count = int(self.ins_dic.get("参数3"))  # 等待时间
-        self.label.config(text=self.ins_dic.get("参数2"))
+        self.root.title(dict_.get("窗口标题"))
+        self.label.config(text=dict_.get("提示信息"))
         self.root.mainloop()
 
 

@@ -2446,19 +2446,27 @@ class Na(QWidget, Ui_navigation):
             parameter_1_ = f"{self.lineEdit_2.text()}" or "示例"
             parameter_2_ = f"{self.lineEdit_6.text()}" or "示例"
             parameter_3_ = f"{self.spinBox_25.value()}"
-            # # 检查参数是否有异常
-            return parameter_1_, parameter_2_, parameter_3_
+            # 返回参数字典
+            parameter_dic_ = {
+                "标题": parameter_1_,
+                "内容": parameter_2_,
+                "秒数": parameter_3_,
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.lineEdit_2.setText(parameter_dic_["标题"])
+            self.lineEdit_6.setText(parameter_dic_["内容"])
+            self.spinBox_25.setValue(int(parameter_dic_["秒数"]))
 
         def test():
             # """测试功能"""
-            parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+            parameter_dic_ = get_parameters()
             dic_ = self.get_test_dic(
                 repeat_number_=int(self.spinBox.value()),
-                parameter_1_=parameter_1_,
-                parameter_2_=parameter_2_,
-                parameter_3_=parameter_3_,
+                parameter_1_=parameter_dic_,
             )
-
             # 测试用例
             test_class = WaitWindow(self.out_mes, dic_)
             test_class.is_test = True
@@ -2467,18 +2475,20 @@ class Na(QWidget, Ui_navigation):
         if type_ == "按钮功能":
             self.pushButton_25.clicked.connect(test)
         elif type_ == "写入参数":
-            parameter_1, parameter_2, parameter_3 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "加载信息":
+            pass
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def dialog_window_function(self, type_):
         """弹出提示框的功能
