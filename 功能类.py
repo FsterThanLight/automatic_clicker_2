@@ -13,7 +13,6 @@ from tkinter import ttk
 import keyboard
 import mouse
 import openpyxl
-import pandas
 import psutil
 import pyautogui
 import pymsgbox
@@ -1352,7 +1351,7 @@ class SendWeChat:
             elif message == "当前日期时间":
                 return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             else:
-                return message
+                return sub_variable(message)
 
         def output_info(judge, message_=None, failure_info=None):
             """向主窗口或na输出提示信息
