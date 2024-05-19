@@ -12,7 +12,7 @@ from PyQt5.QtGui import (
     QImage,
     QPixmap,
     QIntValidator,
-    QRegExpValidator,
+    QRegExpValidator, QKeySequence,
 )
 from PyQt5.QtWidgets import (
     QMessageBox,
@@ -2648,29 +2648,13 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_2_ = None
-            parameter_3_ = None
-            parameter_1_ = self.keySequenceEdit_2.keySequence().toString()
-            if self.radioButton_22.isChecked():
-                parameter_2_ = "等待按键"
-                parameter_3_ = "自动跳过"
-            elif self.radioButton_21.isChecked():
-                parameter_2_ = "等待跳转分支"
-                parameter_3_ = (
-                    f"{self.comboBox_41.currentText()}-{self.comboBox_42.currentText()}"
-                )
-
             # 检查参数是否有异常
-            if parameter_1_ == "":
+            key_name = self.keySequenceEdit_2.keySequence().toString()
+            if key_name == "":
                 QMessageBox.critical(self, "错误", "按键未设置！")
                 raise ValueError
-            if parameter_1_.count("+") >= 1:
+            if key_name.count("+") >= 1:
                 QMessageBox.critical(self, "错误", "该功能暂不支持复合按键！")
-                raise ValueError
-            if parameter_1_.lower() in ["esc", "f10", "f11"]:
-                QMessageBox.critical(
-                    self, "错误", "该功能暂不支持设置为esc、f10、f11键！"
-                )
                 raise ValueError
             if self.radioButton_21.isChecked() and (
                     self.comboBox_41.currentText() == ""
@@ -2678,12 +2662,41 @@ class Na(QWidget, Ui_navigation):
             ):
                 QMessageBox.critical(self, "错误", "分支异常，请先添加！")
                 raise ValueError
-            return parameter_1_, parameter_2_, parameter_3_
+            # 返回参数字典
+            if self.radioButton_22.isChecked():  # 按键等待
+                parameter_dic_ = {
+                    "按键": key_name,
+                    "等待类型": "按键等待",
+                }
+                exception_handling = '提示异常并暂停'
+                return parameter_dic_, exception_handling
+            elif self.radioButton_21.isChecked():  # 跳转分支
+                parameter_dic_ = {
+                    "按键": key_name,
+                    "等待类型": "跳转分支",
+                    "分支": f"{self.comboBox_41.currentText()}-{self.comboBox_42.currentText()}",
+                }
+                exception_handling = f"{self.comboBox_41.currentText()}-{self.comboBox_42.currentText()}"
+                return parameter_dic_, exception_handling
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            # 设置按键
+            self.keySequenceEdit_2.setKeySequence(QKeySequence(parameter_dic_["按键"]))
+            # 设置等待类型
+            if parameter_dic_["等待类型"] == "按键等待":
+                self.radioButton_22.setChecked(True)
+            elif parameter_dic_["等待类型"] == "跳转分支":
+                self.radioButton_21.setChecked(True)
+                # 设置分支
+                self.comboBox_41.setCurrentText(parameter_dic_["分支"].split("-")[0])
+                self.comboBox_42.setCurrentText(parameter_dic_["分支"].split("-")[1])
 
         def set_branch_name():
             """当选择跳转分支功能时，加载分支表名"""
             disable_control(True)
             self.comboBox_41.addItems(extract_global_parameter("分支表名"))
+            self.find_controls("分支", "按键等待")
 
         def disable_control(judge_: bool):
             """禁用控件"""
@@ -2702,17 +2715,18 @@ class Na(QWidget, Ui_navigation):
             )
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2, exception_handling_ = get_parameters()
+            parameter_dic, exception_handling_ = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=exception_handling_,
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def gain_time_function(self, type_):
         """获取时间的功能
@@ -2721,22 +2735,34 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            parameter_1_ = self.comboBox_43.currentText()
-            parameter_2_ = self.comboBox_44.currentText()
             # 检查参数是否有异常
-            if parameter_2_ == "":
+            if self.comboBox_44.currentText() == "":
                 QMessageBox.critical(self, "错误", "变量未设置！")
                 raise ValueError
-            return parameter_1_, parameter_2_
+            # 返回参数字典
+            parameter_dic_ = {
+                "变量": self.comboBox_44.currentText(),
+                "时间格式": self.comboBox_43.currentText(),
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            # 设置变量
+            index = self.comboBox_44.findText(parameter_dic_["变量"])
+            if index >= 0:
+                self.comboBox_44.setCurrentIndex(index)
+            # 设置时间格式
+            index = self.comboBox_43.findText(parameter_dic_["时间格式"])
+            if index >= 0:
+                self.comboBox_43.setCurrentIndex(index)
 
         def test():
             """测试功能"""
             try:
-                parameter_1_, parameter_2_ = get_parameters()
+                parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
+                    parameter_1_=parameter_dic_,
                 )
 
                 # 测试用例
@@ -2755,21 +2781,22 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_34.clicked.connect(test)
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
             # 当t导航业显示时，加载信息到控件
             self.comboBox_44.clear()
             self.comboBox_44.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def gain_excel_function(self, type_):
         """从excel单元格中获取变量的功能

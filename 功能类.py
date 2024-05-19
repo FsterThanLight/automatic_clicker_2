@@ -1858,20 +1858,19 @@ class KeyWait:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
 
-        self.key: str = ""
-
     def start_execute(self):
         """开始执行鼠标点击事件"""
-        self.key = self.ins_dic.get("参数1（键鼠指令）")
-        type_ = self.ins_dic.get("参数2")
-        self.out_mes.out_mes(f"等待按键{self.key}按下中...", self.is_test)
-        if type_ == "等待按键":
-            keyboard.wait(self.key.lower())
-            self.out_mes.out_mes(f"按键{self.key}已被按下", self.is_test)
-        elif type_ == "等待跳转分支":
-            keyboard.wait(self.key.lower())
-            self.out_mes.out_mes(f"按键{self.key}已被按下！跳转分支。", self.is_test)
-            raise ValueError(f"按键{self.key}已被按下！")
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        key = parameter_dic_.get("按键")
+        type_ = parameter_dic_.get("等待类型")
+        self.out_mes.out_mes(f"等待按键{key}按下中...", self.is_test)
+        if type_ == "按键等待":
+            keyboard.wait(key.lower())
+            self.out_mes.out_mes(f"按键{key}已被按下", self.is_test)
+        elif type_ == "跳转分支":
+            keyboard.wait(key.lower())
+            self.out_mes.out_mes(f"按键{key}已被按下！跳转分支。", self.is_test)
+            raise ValueError(f"按键{key}已被按下！")
 
 
 class GetTimeValue:
@@ -1888,9 +1887,10 @@ class GetTimeValue:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "时间格式": self.ins_dic.get("参数1（键鼠指令）"),
-            "变量名称": self.ins_dic.get("参数2"),
+            "时间格式": parameter_dic_.get("时间格式"),
+            "变量名称": parameter_dic_.get("变量"),
         }
 
     def start_execute(self):
@@ -1899,6 +1899,7 @@ class GetTimeValue:
         now_time_str = str(self.get_now_time(list_dic.get("时间格式")))
         if not self.is_test:
             set_variable_value(list_dic.get("变量名称"), now_time_str)
+            self.out_mes.out_mes(f'获取到的值为：{now_time_str}', self.is_test)
             self.out_mes.out_mes(
                 f'已获取当前时间并赋值给变量：{list_dic.get("变量名称")}', self.is_test
             )
@@ -2017,7 +2018,7 @@ class GetDialogValue:
         """开始执行鼠标点击事件"""
         ins_dic = self.parsing_ins_dic()  # 解析指令字典
         text = self.gets_text_from_dialog(ins_dic)
-        set_variable_value(ins_dic.get("变量名称"), text) # 执行变量写入
+        set_variable_value(ins_dic.get("变量名称"), text)  # 执行变量写入
         self.out_mes.out_mes(
             f'已获取对话框的值并赋值给变量：{ins_dic.get("变量名称")}', self.is_test
         )

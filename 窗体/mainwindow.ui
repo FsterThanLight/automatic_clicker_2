@@ -41,11 +41,29 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
         </active>
         <inactive>
          <colorrole role="Text">
           <brush brushstyle="SolidPattern">
            <color alpha="255">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
             <red>255</red>
             <green>0</green>
             <blue>0</blue>
@@ -60,6 +78,15 @@
             <red>120</red>
             <green>120</green>
             <blue>120</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="PlaceholderText">
+          <brush brushstyle="NoBrush">
+           <color alpha="128">
+            <red>255</red>
+            <green>0</green>
+            <blue>0</blue>
            </color>
           </brush>
          </colorrole>
@@ -194,6 +221,15 @@
                </color>
               </brush>
              </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
             </active>
             <inactive>
              <colorrole role="Text">
@@ -214,6 +250,15 @@
                </color>
               </brush>
              </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
             </inactive>
             <disabled>
              <colorrole role="Text">
@@ -231,6 +276,15 @@
                 <red>240</red>
                 <green>240</green>
                 <blue>240</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="PlaceholderText">
+              <brush brushstyle="NoBrush">
+               <color alpha="128">
+                <red>0</red>
+                <green>0</green>
+                <blue>255</blue>
                </color>
               </brush>
              </colorrole>
@@ -278,11 +332,11 @@
           <attribute name="horizontalHeaderCascadingSectionResizes">
            <bool>false</bool>
           </attribute>
-          <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>80</number>
-          </attribute>
           <attribute name="horizontalHeaderMinimumSectionSize">
            <number>20</number>
+          </attribute>
+          <attribute name="horizontalHeaderDefaultSectionSize">
+           <number>80</number>
           </attribute>
           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
            <bool>false</bool>
@@ -308,7 +362,7 @@
           </column>
           <column>
            <property name="text">
-            <string>异常处理</string>
+            <string>分支处理</string>
            </property>
            <property name="textAlignment">
             <set>AlignCenter</set>
@@ -429,6 +483,15 @@
                  </color>
                 </brush>
                </colorrole>
+               <colorrole role="PlaceholderText">
+                <brush brushstyle="NoBrush">
+                 <color alpha="128">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
               </active>
               <inactive>
                <colorrole role="Button">
@@ -476,6 +539,15 @@
                  </color>
                 </brush>
                </colorrole>
+               <colorrole role="PlaceholderText">
+                <brush brushstyle="NoBrush">
+                 <color alpha="128">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
               </inactive>
               <disabled>
                <colorrole role="Button">
@@ -517,6 +589,15 @@
                <colorrole role="Window">
                 <brush brushstyle="SolidPattern">
                  <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+               <colorrole role="PlaceholderText">
+                <brush brushstyle="NoBrush">
+                 <color alpha="128">
                   <red>255</red>
                   <green>0</green>
                   <blue>0</blue>
@@ -774,11 +855,29 @@
               </color>
              </brush>
             </colorrole>
+            <colorrole role="PlaceholderText">
+             <brush brushstyle="NoBrush">
+              <color alpha="128">
+               <red>255</red>
+               <green>0</green>
+               <blue>0</blue>
+              </color>
+             </brush>
+            </colorrole>
            </active>
            <inactive>
             <colorrole role="Text">
              <brush brushstyle="SolidPattern">
               <color alpha="255">
+               <red>255</red>
+               <green>0</green>
+               <blue>0</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="PlaceholderText">
+             <brush brushstyle="NoBrush">
+              <color alpha="128">
                <red>255</red>
                <green>0</green>
                <blue>0</blue>
@@ -793,6 +892,15 @@
                <red>120</red>
                <green>120</green>
                <blue>120</blue>
+              </color>
+             </brush>
+            </colorrole>
+            <colorrole role="PlaceholderText">
+             <brush brushstyle="NoBrush">
+              <color alpha="128">
+               <red>255</red>
+               <green>0</green>
+               <blue>0</blue>
               </color>
              </brush>
             </colorrole>
@@ -996,7 +1104,7 @@ color: rgb(255, 255, 255);</string>
      <x>0</x>
      <y>0</y>
      <width>565</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

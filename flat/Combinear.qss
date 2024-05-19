@@ -604,6 +604,11 @@ QTreeView::item:selected {
     color: black; /* 字体颜色为黑色 */
 }
 
+QTreeView::item:hover {
+    background-color: #5A5E2F;
+    color: red; /* 字体颜色为黑色 */
+}
+
 QTreeView::branch:has-siblings:!adjoins-item {
     border-image: url(:/按钮图标/窗体/qss_icons/vline.png) 0;
 }
