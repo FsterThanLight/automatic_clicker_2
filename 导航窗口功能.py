@@ -2371,37 +2371,63 @@ class Na(QWidget, Ui_navigation):
         """播放语音的功能"""
 
         def get_parameters():
-            parameter_1_ = None
-            parameter_2_ = None
-            parameter_3_ = None
-            if self.radioButton_8.isChecked():
-                parameter_1_ = "音频信号"
-                parameter_2_ = (
-                    f"{self.spinBox_21.value()},{self.spinBox_23.value()},"
-                    f"{self.spinBox_22.value()},{self.spinBox_24.value()}"
-                )  # 信号频率
-            elif self.radioButton_9.isChecked():
-                parameter_1_ = "系统提示音"
-                parameter_2_ = self.comboBox_7.currentText()
-            elif self.radioButton_20.isChecked():
-                parameter_1_ = "播放语音"
-                parameter_2_ = self.textEdit_4.toPlainText()
-                parameter_3_ = self.horizontalSlider.value()
             # 检查参数是否有异常
-            if self.radioButton_20.isChecked() and parameter_2_ == "":
+            if self.groupBox_34.isChecked() and not self.textEdit_4.toPlainText():
                 QMessageBox.critical(self, "错误", "内容未输入！")
                 raise ValueError
-            return parameter_1_, parameter_2_, parameter_3_
+            if self.groupBox_32.isChecked():
+                parameter_dic_ = {
+                    "类型": "音频信号",
+                    "频率": self.spinBox_21.value(),
+                    "持续": self.spinBox_23.value(),
+                    "次数": self.spinBox_22.value(),
+                    "间隔": self.spinBox_24.value(),
+                }
+                return parameter_dic_
+            elif self.groupBox_33.isChecked():
+                parameter_dic_ = {
+                    "类型": "系统提示音",
+                    "提示类型": self.comboBox_7.currentText(),
+                }
+                return parameter_dic_
+            elif self.groupBox_34.isChecked():
+                parameter_dic_ = {
+                    "类型": "播放语音",
+                    "内容": self.textEdit_4.toPlainText(),
+                    "语速": self.horizontalSlider.value(),
+                }
+                return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            all_groupBoxes__ = [self.groupBox_32, self.groupBox_33, self.groupBox_34]
+            if parameter_dic_["类型"] == "音频信号":
+                self.groupBox_32.setChecked(True)
+                self.select_groupBox(self.groupBox_32, all_groupBoxes__)
+                self.spinBox_21.setValue(int(parameter_dic_["频率"]))
+                self.spinBox_23.setValue(int(parameter_dic_["持续"]))
+                self.spinBox_22.setValue(int(parameter_dic_["次数"]))
+                self.spinBox_24.setValue(int(parameter_dic_["间隔"]))
+            elif parameter_dic_["类型"] == "系统提示音":
+                self.groupBox_33.setChecked(True)
+                self.select_groupBox(self.groupBox_33, all_groupBoxes__)
+                index = self.comboBox_7.findText(parameter_dic_["提示类型"])
+                if index >= 0:
+                    self.comboBox_7.setCurrentIndex(index)
+            elif parameter_dic_["类型"] == "播放语音":
+                self.groupBox_34.setChecked(True)
+                self.select_groupBox(self.groupBox_34, all_groupBoxes__)
+                self.textEdit_4.setText(parameter_dic_["内容"])
+                self.horizontalSlider.setValue(int(parameter_dic_["语速"]))
+                self.label_118.setText(str(parameter_dic_["语速"]))
 
         def test():
             """测试功能"""
             try:
-                parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
-                    parameter_3_=parameter_3_,
+                    parameter_1_=parameter_dic_,
                 )
                 play_voice = PlayVoice(self.out_mes, dic_)
                 play_voice.is_test = True
@@ -2411,11 +2437,9 @@ class Na(QWidget, Ui_navigation):
                 self.out_mes.out_mes(f"参数异常", True)
 
         if type_ == "按钮功能":
-            # 将不同的单选按钮添加到同一个按钮组
-            buttonGroup_4 = QButtonGroup(self)
-            buttonGroup_4.addButton(self.radioButton_8)
-            buttonGroup_4.addButton(self.radioButton_9)
-            buttonGroup_4.addButton(self.radioButton_20)
+            all_groupBoxes_ = [self.groupBox_32, self.groupBox_33, self.groupBox_34]
+            for groupBox_ in all_groupBoxes_:
+                groupBox_.clicked.connect(lambda _, gb=groupBox_: self.select_groupBox(gb, all_groupBoxes_))
             # 测试按钮
             self.pushButton_24.clicked.connect(test)
             self.pushButton_32.clicked.connect(
@@ -2423,18 +2447,20 @@ class Na(QWidget, Ui_navigation):
             )
 
         elif type_ == "写入参数":
-            parameter_1, parameter_2, parameter_3 = get_parameters()
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "加载信息":
+            pass
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def wait_window_function(self, type_):
         """倒计时等待窗口的功能

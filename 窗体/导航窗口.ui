@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>22</number>
+        <number>23</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -5544,17 +5544,10 @@ p, li { white-space: pre-wrap; }
            <property name="title">
             <string>播放音频信号</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
            <layout class="QVBoxLayout" name="verticalLayout_65">
-            <item>
-             <widget class="QRadioButton" name="radioButton_8">
-              <property name="text">
-               <string>音频信号</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_38">
               <item row="1" column="2">
@@ -5639,24 +5632,23 @@ p, li { white-space: pre-wrap; }
             <bool>true</bool>
            </property>
            <property name="title">
-            <string>播放系统提示音</string>
+            <string>播放提示音</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
            <layout class="QGridLayout" name="gridLayout_39">
             <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton_9">
-              <property name="text">
-               <string>系统提示音</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="QLabel" name="label_115">
               <property name="text">
                <string>提示音类型：</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="0" column="1">
              <widget class="QComboBox" name="comboBox_7">
               <item>
                <property name="text">
@@ -5701,52 +5693,55 @@ p, li { white-space: pre-wrap; }
            <property name="title">
             <string>播放语音</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_40" columnstretch="2,0,1,0">
-            <item row="0" column="2">
-             <widget class="QSlider" name="horizontalSlider">
-              <property name="minimum">
-               <number>100</number>
-              </property>
-              <property name="maximum">
-               <number>999</number>
-              </property>
-              <property name="value">
-               <number>200</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_118">
-              <property name="text">
-               <string>200</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="4">
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_40" columnstretch="1,1">
+            <item row="0" column="0" colspan="2">
              <widget class="QTextEdit" name="textEdit_4">
               <property name="placeholderText">
                <string>输入播放的语音，例如：请求人工接管......</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton_20">
-              <property name="text">
-               <string>播放语音</string>
-              </property>
-             </widget>
+            <item row="1" column="0">
+             <layout class="QHBoxLayout" name="horizontalLayout_28">
+              <item>
+               <widget class="QLabel" name="label_117">
+                <property name="text">
+                 <string>语速：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider">
+                <property name="minimum">
+                 <number>100</number>
+                </property>
+                <property name="maximum">
+                 <number>999</number>
+                </property>
+                <property name="value">
+                 <number>200</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_118">
+                <property name="text">
+                 <string>200</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_117">
-              <property name="text">
-               <string>语速：</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1" colspan="3">
+            <item row="1" column="1">
              <widget class="QPushButton" name="pushButton_32">
               <property name="font">
                <font>

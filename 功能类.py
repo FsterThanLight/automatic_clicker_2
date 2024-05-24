@@ -83,6 +83,7 @@ def sub_variable(text: str):
 
 def get_available_path(image_name_: str, out_mes, is_test=False):
     """组合图片路径，返回可以打开的图片路径，如果路径不存在则重新匹配
+    :param is_test: 是否测试
     :param out_mes: 用于输出信息
     :param image_name_: 图片路径或者图片名称
     :return: 可以打开的图片路径，如果仍然不存在则返回None"""
@@ -1515,47 +1516,37 @@ class PlayVoice:
         self.is_test = False  # 是否测试
         self.cycle_number = cycle_number  # 循环次数
 
-    def parsing_ins_dic(self, type_):
-        """解析指令字典"""
-        if type_ == "系统提示音":
-            return self.ins_dic.get("参数2")
-        elif type_ == "音频信号":
-            return (
-                int(self.ins_dic.get("参数2").split(",")[0]),
-                int(self.ins_dic.get("参数2").split(",")[1]),
-                int(self.ins_dic.get("参数2").split(",")[2]),
-                int(self.ins_dic.get("参数2").split(",")[3]),
-            )
-        elif type_ == "播放语音":
-            return sub_variable(self.ins_dic.get("参数2")), int(
-                self.ins_dic.get("参数3")
-            )
-
-    def play_voice(self, type_):
+    def play_voice(self):
         """播放声音"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        type_ = parameter_dic_.get("类型")
         if type_ == "系统提示音":
-            self.out_mes.out_mes("播放系统提示音", self.is_test)
-            self.system_prompt_tone(self.parsing_ins_dic("系统提示音"))
+            voice_type = parameter_dic_.get("提示类型")
+            self.out_mes.out_mes(f"播放系统提示音：{voice_type}", self.is_test)
+            self.system_prompt_tone(sound_type=voice_type)
         elif type_ == "音频信号":
-            self.out_mes.out_mes("播放音频信号", self.is_test)
-            self.sound_signal(*self.parsing_ins_dic("音频信号"))
+            frequency = int(parameter_dic_.get("频率"))
+            self.out_mes.out_mes(f"播放音频信号：{frequency}Hz", self.is_test)
+            self.sound_signal(
+                frequency=frequency,
+                duration=int(parameter_dic_.get("持续")),
+                times=int(parameter_dic_.get("次数")),
+                interval=int(parameter_dic_.get("间隔")),
+            )
         elif type_ == "播放语音":
-            self.out_mes.out_mes("播放语音", self.is_test)
-            self.play_audio(*self.parsing_ins_dic("播放语音"))
+            text = sub_variable(parameter_dic_.get("内容"))
+            self.out_mes.out_mes(f"播放语音：{text}", self.is_test)
+            self.play_audio(
+                info=text,
+                rate=int(parameter_dic_.get("语速")),
+            )
 
     def start_execute(self):
         """开始执行鼠标点击事件"""
         reTry = self.ins_dic.get("重复次数")
-        type_ = self.ins_dic.get("参数1（键鼠指令）")
-        # 执行坐标点击
-        if reTry == 1:
-            self.play_voice(type_)
-        elif reTry > 1:
-            i = 1
-            while i < reTry + 1:
-                self.play_voice(type_)
-                i += 1
-                time.sleep(self.time_sleep)
+        for _ in range(reTry):
+            self.play_voice()
+            time.sleep(self.time_sleep)
 
     @staticmethod
     def system_prompt_tone(sound_type) -> None:
@@ -1583,7 +1574,6 @@ class PlayVoice:
         :param duration: 持续时间(毫秒)
         :param times: 次数
         :param interval: 间隔时间(毫秒)"""
-        print("播放音频信号")
         print(frequency, duration, times, interval)
         try:
             for _ in range(times):
