@@ -15,7 +15,9 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
         super().__init__(parent)
         # 初始化变量池窗口
         self.setupUi(self)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )  # 隐藏帮助按钮
         self.set_style()  # 设置窗体样式
         # 添加右键菜单
         self.tableView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -25,25 +27,33 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
     def set_style(self):
         """设置窗体样式"""
         # 设置表格风格
-        self.tableView.horizontalHeader().setStretchLastSection(True)  # 设置最后一列拉伸至最大
-        self.tableView.setStyleSheet("QHeaderView::section{background:red;}")  # 设置表头背景色
+        self.tableView.horizontalHeader().setStretchLastSection(
+            True
+        )  # 设置最后一列拉伸至最大
+        self.tableView.setStyleSheet(
+            "QHeaderView::section{background:red;}"
+        )  # 设置表头背景色
         # 设置标题字体粗体
         self.tableView.horizontalHeader().setStyleSheet(
-            "QHeaderView::section{font:11pt '微软雅黑'; color: white; font-weight: bold;}")
+            "QHeaderView::section{font:11pt '微软雅黑'; color: white; font-weight: bold;}"
+        )
         # 设置表格序数列字体粗体
         self.tableView.verticalHeader().setStyleSheet(
-            "QHeaderView::section{font:11pt '微软雅黑'; color: white; font-weight: bold;}")
+            "QHeaderView::section{font:11pt '微软雅黑'; color: white; font-weight: bold;}"
+        )
 
     def load_data(self):
         model = QStandardItemModel(self)  # 创建一个 QStandardItemModel 作为数据模型
         # 设置模型的表头
-        model.setHorizontalHeaderLabels(['变量名称', '备注', '值'])
+        model.setHorizontalHeaderLabels(["变量名称", "备注", "值"])
         variable_list = get_value_from_variable_table()  # 从数据库中获取数据
         # 添加数据到模型中
         for variable_tuple in variable_list:
-            items = [QStandardItem(str(variable_tuple[0])),
-                     QStandardItem(str(variable_tuple[1])),
-                     QStandardItem(str(variable_tuple[2]))]
+            items = [
+                QStandardItem(str(variable_tuple[0])),
+                QStandardItem(str(variable_tuple[1])),
+                QStandardItem(str(variable_tuple[2])),
+            ]
             model.appendRow(items)
         # 将模型设置到 TableView 中
         self.tableView.setModel(model)
@@ -62,7 +72,9 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
         menu.addAction(delete_row_action)
         # 设置图标
         add_row_action.setIcon(self.style().standardIcon(QStyle.SP_FileDialogNewFolder))
-        delete_row_action.setIcon(self.style().standardIcon(QStyle.SP_DialogDiscardButton))
+        delete_row_action.setIcon(
+            self.style().standardIcon(QStyle.SP_DialogDiscardButton)
+        )
         # 绑定事件
         add_row_action.triggered.connect(self.add_row)
         delete_row_action.triggered.connect(self.delete_row)
@@ -101,7 +113,7 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
         # 父窗口加载数据
         if self.parent():
             try:  # 重新加载父窗口的数据，用于选择窗口的变量更新
-                self.parent().load_lists('变量选择')
+                self.parent().load_lists("变量选择")
             except AttributeError:
                 pass
             try:  # 重新加载父窗口的数据，用于导航窗口的变量更新
@@ -110,7 +122,7 @@ class VariablePool_Win(QDialog, Ui_VariablePool):
                 pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = VariablePool_Win()
     win.show()

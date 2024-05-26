@@ -976,7 +976,7 @@ class OpenWeb:
     def start_execute(self):
         """执行重复次数"""
         url = self.ins_dic.get("图像路径")
-        self.out_mes.out_mes("正在打开网页...", self.is_test)
+        self.out_mes.out_mes("正在打开网页...等待中...", self.is_test)
         global DRIVER
         DRIVER = self.web_option.open_driver(url, True)
         self.out_mes.out_mes("已打开网页", self.is_test)
@@ -1188,10 +1188,12 @@ class ToggleFrame:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        instruction_type = parameter_dic_.get("指令类型")
         list_dic = {
-            "切换类型": self.ins_dic.get("参数1（键鼠指令）"),
-            "frame类型": self.ins_dic.get("参数2"),
-            "frame值": self.ins_dic.get("参数3"),
+            "切换类型": instruction_type,
+            "frame类型": parameter_dic_.get("frame类型") if instruction_type == "切换到指定frame" else None,
+            "frame值": parameter_dic_.get("frame值") if instruction_type == "切换到指定frame" else None,
         }
         return list_dic
 
@@ -1936,12 +1938,14 @@ class GetExcelCellValue:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
+        excel_path = self.ins_dic.get("图像路径")
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "工作簿路径": self.ins_dic.get("图像路径").split("-")[0],
-            "工作表名称": self.ins_dic.get("图像路径").split("-")[1],
-            "单元格位置": self.ins_dic.get("参数1（键鼠指令）"),
-            "变量名称": self.ins_dic.get("参数2"),
-            "行号递增": eval(self.ins_dic.get("参数3")),
+            "工作簿路径": excel_path,
+            "工作表名称": parameter_dic_.get("工作表"),
+            "单元格位置": parameter_dic_.get("单元格"),
+            "变量名称": parameter_dic_.get("变量"),
+            "行号递增": eval(parameter_dic_.get("递增")),
         }
 
     def start_execute(self):
@@ -1955,7 +1959,10 @@ class GetExcelCellValue:
         cell_value = self.get_value_from_excel(
             list_dic.get("工作簿路径"), list_dic.get("工作表名称"), cell_position
         )
-        self.send_out_message(cell_value, list_dic)
+        if cell_value is None:
+            self.out_mes.out_mes("异常，未获取到单元格的值。", self.is_test)
+        else:
+            self.send_out_message(cell_value, list_dic)
 
     def send_out_message(self, cell_value, list_dic):
         if not self.is_test:

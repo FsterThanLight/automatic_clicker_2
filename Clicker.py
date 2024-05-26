@@ -92,7 +92,7 @@ collections.Iterable = collections.abc.Iterable
 # done: 读取excel路径，会读取临时文件
 # todo: 快捷键说明提示框没对齐
 # todo: 鼠标随机移动添加区域限制
-# todo: 功能参数待修改的指令：获取Excel、全屏截图、拖拽网页元素、切换网页窗口、切换frame、保存网页表格、打开网页
+# todo: 功能参数待修改的指令：全屏截图、拖拽网页元素、切换网页窗口、保存网页表格
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 

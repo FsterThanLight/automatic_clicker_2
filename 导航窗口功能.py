@@ -2017,38 +2017,60 @@ class Na(QWidget, Ui_navigation):
             """切换frame"""
             # 切换frame时控件的状态
             if self.comboBox_26.currentText() == "切换到指定frame":
-                self.comboBox_27.setEnabled(True)
+                self.comboBox_27.setVisible(True)
                 self.lineEdit_11.clear()
-                self.lineEdit_11.setEnabled(True)
+                self.lineEdit_11.setVisible(True)
             else:
-                self.comboBox_27.setEnabled(False)
+                self.comboBox_27.setVisible(False)
                 self.lineEdit_11.clear()
-                self.lineEdit_11.setEnabled(False)
+                self.lineEdit_11.setVisible(False)
+
+        def get_parameters():
+            """获取参数"""
+            # 检查参数是否有异常
+            if self.comboBox_26.currentText() == "切换到指定frame" and not self.lineEdit_11.text():
+                QMessageBox.critical(self, "错误", "未设置frame！")
+                raise ValueError
+            # 获取参数字典
+            if self.comboBox_26.currentText() == "切换到指定frame":
+                parameter_dic_ = {
+                    "指令类型": self.comboBox_26.currentText(),
+                    "frame类型": self.comboBox_27.currentText().replace("：", ""),
+                    "frame": self.lineEdit_11.text()
+                }
+                return parameter_dic_
+            else:
+                parameter_dic_ = {
+                    "指令类型": self.comboBox_26.currentText(),
+                }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件中"""
+            # 还原指令类型
+            self.comboBox_26.setCurrentText(parameter_dic_["指令类型"])
+            switch_frame()
+            # 还原frame类型
+            if parameter_dic_["指令类型"] == "切换到指定frame":
+                self.comboBox_27.setCurrentText(parameter_dic_["frame类型"])
+                self.lineEdit_11.setText(parameter_dic_["frame"])
 
         if type_ == "按钮功能":
             # 切换frame
             self.comboBox_26.activated.connect(switch_frame)
         elif type_ == "写入参数":
-            # 切换类型
-            parameter_1 = self.comboBox_26.currentText()
-            # 获取frame类型
-            parameter_2 = self.comboBox_27.currentText().replace("：", "")
-            # 获取frame
-            parameter_3 = self.lineEdit_11.text()
-            if parameter_1 == "切换回主文档" or parameter_1 == "切换到上一级文档":
-                parameter_2 = None
-                parameter_3 = None
+            parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()
             self.writes_commands_to_the_database(
                 instruction_=func_info_dic.get("指令类型"),
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
 
     def save_form_function(self, type_):
         """保存网页表格的功能"""
@@ -2895,10 +2917,6 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """从tab页获取参数"""
-            image_ = f"{self.comboBox_45.currentText()}-{self.comboBox_46.currentText()}"  # Excel路径-工作表
-            parameter_1_ = self.lineEdit_23.text()  # 单元格
-            parameter_2_ = self.comboBox_47.currentText()  # 变量
-            parameter_3_ = str(self.checkBox_9.isChecked())  # 是否行号递增
             # 检查参数是否有异常
             if (
                     self.comboBox_45.currentText() == ""
@@ -2912,19 +2930,32 @@ class Na(QWidget, Ui_navigation):
             if self.comboBox_47.currentText() == "":
                 QMessageBox.critical(self, "错误", "变量未设置！")
                 raise ValueError
+            # 返回参数字典
+            image_ = f"{self.comboBox_45.currentText()}"
+            parameter_dic_ = {
+                "工作表": self.comboBox_46.currentText(),
+                "单元格": self.lineEdit_23.text(),
+                "变量": self.comboBox_47.currentText(),
+                "递增": str(self.checkBox_9.isChecked()),
+            }
+            return image_, parameter_dic_
 
-            return image_, parameter_1_, parameter_2_, parameter_3_
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到控件"""
+            self.comboBox_45.setCurrentText(image_)
+            self.comboBox_46.setCurrentText(parameter_dic_["工作表"])
+            self.lineEdit_23.setText(parameter_dic_["单元格"])
+            self.comboBox_47.setCurrentText(parameter_dic_["变量"])
+            self.checkBox_9.setChecked(eval(parameter_dic_["递增"]))
 
         def test():
             """测试功能"""
             try:
-                image_, parameter_1_, parameter_2_, parameter_3_ = get_parameters()
+                image_, parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
                     image_=image_,
-                    parameter_1_=parameter_1_,
-                    parameter_2_=parameter_2_,
-                    parameter_3_=parameter_3_,
+                    parameter_1_=parameter_dic_,
                 )
 
                 # 测试用例
@@ -2966,7 +2997,7 @@ class Na(QWidget, Ui_navigation):
             )
 
         elif type_ == "写入参数":
-            image, parameter_1, parameter_2, parameter_3 = get_parameters()
+            image, parameter_dic = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(
@@ -2974,9 +3005,7 @@ class Na(QWidget, Ui_navigation):
                 repeat_number_=func_info_dic.get("重复次数"),
                 exception_handling_=func_info_dic.get("异常处理"),
                 image_=image,
-                parameter_1_=parameter_1,
-                parameter_2_=parameter_2,
-                parameter_3_=parameter_3,
+                parameter_1_=parameter_dic,
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
@@ -2989,6 +3018,8 @@ class Na(QWidget, Ui_navigation):
 
             self.comboBox_47.clear()
             self.comboBox_47.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.image_path, self.parameter_1)
 
     def get_dialog_function(self, type_):
         """从对话框中获取变量的功能
