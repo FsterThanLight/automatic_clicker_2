@@ -73,7 +73,7 @@ collections.Iterable = collections.abc.Iterable
 # done: 设置资源文件夹路径自动禁止使用中文字符
 # todo: 快捷导入指令，拖动文件到窗口导入指令
 # done: 执行分支窗口可使用数字键选择分支
-# todo: 参数显示重新设计
+# done: 参数显示重新设计
 # done: bug: 分支删除后，指令表格中的分支指令没有删除
 # todo: 功能快捷键可自定义
 # todo: 设置中提高延迟上限
@@ -83,7 +83,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值
-# todo: 按下键盘的部分组合键失效
+# todo: 按下键盘指令的部分组合键失效
 # done: bug: 选择变量窗口，变量名带序号
 # done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 # todo: 自动切换工作簿路径
@@ -92,7 +92,7 @@ collections.Iterable = collections.abc.Iterable
 # done: 读取excel路径，会读取临时文件
 # todo: 快捷键说明提示框没对齐
 # todo: 鼠标随机移动添加区域限制
-# todo: 功能参数待修改的指令：全屏截图、拖拽网页元素、切换网页窗口、保存网页表格
+# todo: 执行cmd指令的功能
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 

@@ -20,9 +20,11 @@ import pyperclip
 import pyttsx4
 import requests
 import uiautomation as auto
+import win32clipboard
 import win32con
 import win32gui
 import winsound
+from PIL import ImageGrab
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -1145,17 +1147,14 @@ class SaveForm:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        image_path_parts = dict(self.ins_dic)["图像路径"].split("-")
-        element_type, element_value = image_path_parts[0], image_path_parts[1]
-        keyboard_mouse_parts = dict(self.ins_dic)["参数1（键鼠指令）"].split("-")
-        excel_path, sheet_name = keyboard_mouse_parts[0], keyboard_mouse_parts[1]
-        timeout_type = dict(self.ins_dic)["参数2"]
+        element_value = dict(self.ins_dic)["图像路径"]
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "元素类型": element_type,
+            "元素类型": parameter_dic_.get("元素类型"),
             "元素值": element_value,
-            "工作簿路径": excel_path,
-            "工作表名称": sheet_name,
-            "超时类型": timeout_type,
+            "工作簿路径": parameter_dic_.get("工作簿"),
+            "工作表名称": parameter_dic_.get("工作表"),
+            "超时类型": parameter_dic_.get("异常"),
         }
 
     def start_execute(self):
@@ -1224,9 +1223,10 @@ class SwitchWindow:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         list_dic = {
-            "切换类型": self.ins_dic.get("参数1（键鼠指令）"),
-            "窗口值": self.ins_dic.get("参数2"),
+            "切换类型": parameter_dic_.get("窗口类型"),
+            "窗口值": parameter_dic_.get("窗口"),
         }
         return list_dic
 
@@ -1255,16 +1255,14 @@ class DragWebElements:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        image_path_parts = dict(self.ins_dic)["图像路径"].split("-")
-        element_type, element_value = image_path_parts[0], image_path_parts[1]
-        x, y = map(int, dict(self.ins_dic)["参数1（键鼠指令）"].split("-"))
-        timeout_type = dict(self.ins_dic)["参数2"]
+        element_value = dict(self.ins_dic)["图像路径"]
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
-            "元素类型": element_type,
+            "元素类型": parameter_dic_.get("元素类型"),
             "元素值": element_value,
-            "x": x,
-            "y": y,
-            "超时类型": timeout_type,
+            "x": int(parameter_dic_.get('距离X')),
+            "y": int(parameter_dic_.get('距离Y')),
+            "超时类型": parameter_dic_.get("异常"),
         }
 
     def start_execute(self):
@@ -1297,16 +1295,46 @@ class FullScreenCapture:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        return {"图像路径": dict(self.ins_dic)["图像路径"]}
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        save_path = self.ins_dic.get("图像路径")
+        return parameter_dic_, save_path
+
+    @staticmethod
+    def take_screenshot(screenshot_type, region=None):
+        if screenshot_type == "区域截图" and region:
+            screenshot = pyautogui.screenshot(region=eval(region))
+        else:
+            screenshot = pyautogui.screenshot()
+        return screenshot
+
+    @staticmethod
+    def save_screenshot(screenshot, save_path):
+        screenshot.save(save_path)
+        return f"已保存截图到{save_path}"
+
+    @staticmethod
+    def copy_screenshot_to_clipboard(screenshot):
+        # 截图复制到剪切板
+        output = io.BytesIO()
+        screenshot.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]
+        output.close()
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32con.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+        return "已复制截图到剪切板"
 
     def start_execute(self):
-        """执行重复次数"""
-        image_path = self.parsing_ins_dic().get("图像路径", "") + ".png"
-        # 执行截图
-        screenshot = pyautogui.screenshot()
-        # 将图片保存到指定文件夹
-        screenshot.save(image_path)
-        self.out_mes.out_mes("已执行全屏截图", self.is_test)
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        save_path = self.ins_dic.get("图像路径")
+        screenshot_type = parameter_dic_.get("截图类型")
+        screenshot = self.take_screenshot(screenshot_type, parameter_dic_.get("区域"))
+        if parameter_dic_.get("截图后") == "保存到路径":
+            message = self.save_screenshot(screenshot, save_path)
+        else:
+            message = self.copy_screenshot_to_clipboard(screenshot)
+        self.out_mes.out_mes(message, self.is_test)
 
 
 class SendWeChat:
@@ -1677,7 +1705,7 @@ class WaitWindow:
 
     def start_execute(self):
         """开始执行窗口等待"""
-        dict_ = self.parsing_ins_dic() # 解析指令字典
+        dict_ = self.parsing_ins_dic()  # 解析指令字典
         self.out_mes.out_mes("正在运行等待窗口...", self.is_test)
         self.root.title(dict_.get("窗口标题"))
         self.label.config(text=dict_.get("提示信息"))

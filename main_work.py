@@ -139,7 +139,7 @@ class CommandThread(QThread):
                         "切换frame": (ToggleFrame, self.out_mes, dic_),
                         "保存表格": (SaveForm, self.out_mes, dic_),
                         "拖动元素": (DragWebElements, self.out_mes, dic_),
-                        "全屏截图": (FullScreenCapture, self.out_mes, dic_),
+                        "屏幕截图": (FullScreenCapture, self.out_mes, dic_),
                         "切换窗口": (SwitchWindow, self.out_mes, dic_),
                         "发送消息": (SendWeChat, self.out_mes, dic_),
                         "数字验证码": (VerificationCode, self.out_mes, dic_),

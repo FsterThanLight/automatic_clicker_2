@@ -272,7 +272,7 @@
         </item>
         <item>
          <property name="text">
-          <string>全屏截图</string>
+          <string>屏幕截图</string>
          </property>
         </item>
         <item>
@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>16</number>
+        <number>21</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -5074,7 +5074,7 @@ p, li { white-space: pre-wrap; }
             </sizepolicy>
            </property>
            <property name="text">
-            <string>操作说明：暂无。</string>
+            <string>操作说明：切换网页窗口。</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -5110,12 +5110,12 @@ p, li { white-space: pre-wrap; }
              <widget class="QComboBox" name="comboBox_32">
               <item>
                <property name="text">
-                <string>窗口ID：</string>
+                <string>窗口标题：</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>窗口标题：</string>
+                <string>窗口ID：</string>
                </property>
               </item>
              </widget>
@@ -5140,9 +5140,9 @@ p, li { white-space: pre-wrap; }
        </widget>
        <widget class="QWidget" name="tab_17">
         <attribute name="title">
-         <string>全屏截图</string>
+         <string>屏幕截图</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_38">
+        <layout class="QVBoxLayout" name="verticalLayout_52">
          <item>
           <widget class="QLabel" name="label_99">
            <property name="sizePolicy">
@@ -5152,7 +5152,7 @@ p, li { white-space: pre-wrap; }
             </sizepolicy>
            </property>
            <property name="text">
-            <string>操作说明：暂无。</string>
+            <string>操作说明：截图当前屏幕。</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -5172,9 +5172,111 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item>
+          <widget class="QGroupBox" name="groupBox_68">
+           <property name="title">
+            <string>截图区域</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_67">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>截图类型：</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBox_67">
+              <item>
+               <property name="text">
+                <string>全屏截图</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>区域截图</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_164">
+              <property name="text">
+               <string>(0,0,0,0)</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="pushButton_60">
+              <property name="text">
+               <string>设置区域</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_69">
+           <property name="title">
+            <string>截图后，将图像</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_29">
+            <item>
+             <spacer name="horizontalSpacer_22">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButton_9">
+              <property name="text">
+               <string>保存到路径</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButton_8">
+              <property name="text">
+               <string>写入剪切板</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_23">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QGroupBox" name="groupBox_14">
            <property name="title">
-            <string>保存路径</string>
+            <string>设置保存路径</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_37">
             <item>
@@ -5207,6 +5309,30 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_30" stretch="1,1">
+              <item>
+               <spacer name="horizontalSpacer_24">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_62">
+                <property name="text">
+                 <string>打开文件夹</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </item>
@@ -5222,6 +5348,57 @@ p, li { white-space: pre-wrap; }
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_61">
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>指令测试</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
