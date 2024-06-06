@@ -10,6 +10,7 @@ class Icon:
         self.main = self.get_icon(":/按钮图标/窗体/res/图标.png")
         self.add = self.get_icon(":/按钮图标/窗体/res/添加.png")
         self.setting = self.get_icon(":/按钮图标/窗体/res/设置.png")
+        self.view = self.get_icon(":/按钮图标/窗体/res/查看.png")
 
     @staticmethod
     def get_icon(path):

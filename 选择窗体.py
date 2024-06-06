@@ -1,11 +1,10 @@
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QCursor
 from PyQt5.QtWidgets import QDialog
 
+from ini操作 import set_window_size, save_window_size
 from 变量池窗口 import VariablePool_Win
-from 数据库操作 import extract_global_parameter, set_window_size, save_window_size, \
-    get_variable_info
+from 数据库操作 import extract_global_parameter,get_variable_info
 from 窗体.branchwin import Ui_branch
 
 

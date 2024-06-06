@@ -334,12 +334,12 @@ class Ui_navigation(object):
         self.comboBox_3.addItem("")
         self.gridLayout_2.addWidget(self.comboBox_3, 0, 1, 1, 1)
         self.label_22 = QtWidgets.QLabel(self.tab_27)
-        self.label_22.setEnabled(False)
+        self.label_22.setEnabled(True)
         self.label_22.setAlignment(QtCore.Qt.AlignCenter)
         self.label_22.setObjectName("label_22")
         self.gridLayout_2.addWidget(self.label_22, 1, 0, 1, 1)
         self.spinBox_2 = QtWidgets.QSpinBox(self.tab_27)
-        self.spinBox_2.setEnabled(False)
+        self.spinBox_2.setEnabled(True)
         self.spinBox_2.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.spinBox_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.spinBox_2.setMaximum(999)
@@ -3725,7 +3725,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(21)
+        self.tabWidget.setCurrentIndex(1)
         self.comboBox_2.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.pushButton_3.clicked.connect(navigation.close) # type: ignore

@@ -11,5 +11,16 @@ def timer(func):
     return func_wrapper
 
 
+import configparser
+
+
+@timer
+def test():
+    config = configparser.ConfigParser()
+    config.read('config.ini', encoding='utf-8')
+    print(config['Config']['图像匹配精度'])
+
+
 if __name__ == "__main__":
-    file_path_ = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
+    # 读取配置文件
+    test()

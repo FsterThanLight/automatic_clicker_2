@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
-from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter, set_window_size, \
-    save_window_size
+from ini操作 import set_window_size, save_window_size
+from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter
 from 窗体.global_s import Ui_Global
 
 

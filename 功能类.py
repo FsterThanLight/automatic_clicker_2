@@ -24,7 +24,6 @@ import win32clipboard
 import win32con
 import win32gui
 import winsound
-from PIL import ImageGrab
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget
@@ -313,8 +312,8 @@ class CoordinateClick:
         re_try = self.ins_dic.get("重复次数")
         parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         # 取x,y坐标的值
-        x_ = int(parameter_dic_.get("坐标")[0])
-        y_ = int(parameter_dic_.get("坐标")[1])
+        x_ = int(parameter_dic_.get("坐标").split("-")[0])
+        y_ = int(parameter_dic_.get("坐标").split("-")[1])
         z_ = int(parameter_dic_.get("自定义次数"))
         click_map = {
             "左键单击": [1, "left", x_, y_],
@@ -333,14 +332,9 @@ class CoordinateClick:
         # 获取参数
         reTry, click_times, lOrR, x__, y__ = self.parsing_ins_dic()
         # 执行坐标点击
-        if reTry == 1:
+        for _ in range(reTry):
             self.coor_click(click_times, lOrR, x__, y__)
-        elif reTry > 1:
-            i = 1
-            while i < reTry + 1:
-                self.coor_click(click_times, lOrR, x__, y__)
-                i += 1
-                time.sleep(self.time_sleep)
+            time.sleep(self.time_sleep)
 
     def coor_click(self, click_times, lOrR, x__, y__):
         pyautogui.click(
@@ -352,9 +346,9 @@ class CoordinateClick:
             button=lOrR,
         )
         if click_times == 0:
-            self.out_mes.out_mes(f"移动鼠标到{x__}:{y__}", self.is_test)
+            self.out_mes.out_mes(f"移动鼠标到{x__}-{y__}", self.is_test)
         else:
-            self.out_mes.out_mes(f"执行坐标{x__}:{y__}点击", self.is_test)
+            self.out_mes.out_mes(f"执行坐标{x__}-{y__}点击", self.is_test)
 
 
 class TimeWaiting:

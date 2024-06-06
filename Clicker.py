@@ -41,6 +41,7 @@ from system_hotkey import SystemHotkey
 from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
+from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini
 from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -53,7 +54,6 @@ from 选择窗体 import Branch_exe_win
 collections.Iterable = collections.abc.Iterable
 
 # todo：RGB颜色检测功能
-# done: 验证码指令使用云码平台
 # todo: 指令可编译为python代码
 # todo: 从微信获取变量
 # todo: 可暂时禁用指令功能
@@ -66,40 +66,31 @@ collections.Iterable = collections.abc.Iterable
 
 # 用户需求
 # todo: 自动获取uac权限
-# done: 时间等待允许输入小数
-# done: 鼠标点击和鼠标拖拽可同时可按下键盘
 # todo: 绑定窗口指令
-# done: 图像识别可使用区域识别
-# done: 设置资源文件夹路径自动禁止使用中文字符
 # todo: 快捷导入指令，拖动文件到窗口导入指令
-# done: 执行分支窗口可使用数字键选择分支
-# done: 参数显示重新设计
-# done: bug: 分支删除后，指令表格中的分支指令没有删除
 # todo: 功能快捷键可自定义
 # todo: 设置中提高延迟上限
 # todo: 按下键盘增加按压时长、按键释放等功能
-# done: 指定时间去除年月日，只保留时分秒
-# done: 获取鼠标位置功能，移动到指定位置功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值
 # todo: 按下键盘指令的部分组合键失效
-# done: bug: 选择变量窗口，变量名带序号
-# done: 图像路径改用相对路径，运行时自动匹配对应的资源文件夹
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
 # todo: 文字识别功能，图像没有文字时，会报错
-# done: 读取excel路径，会读取临时文件
 # todo: 快捷键说明提示框没对齐
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
+# todo: 右键移动指令到分支功能
+# todo: 快捷键系统重新设计，自定义快捷键
+# todo: 检验初始文件的完整性
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
 # activate clicker
 
-# pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers
-# pyinstaller -D -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers
+# pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin
+# pyinstaller -D -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
@@ -227,7 +218,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def add_recent_to_fileMenu(self):
         """将最近文件添加到菜单中"""
         recently_opened_list = get_recently_opened_file("文件列表")
-        current_file_path = get_setting_data_from_db("当前文件路径")
+        current_file_path = get_setting_data_from_ini('Config', "当前文件路径")
         # 将最近打开文件添加到菜单中
         if len(recently_opened_list) != 0:
             for file in recently_opened_list:
@@ -247,7 +238,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def open_recent_file(self, file_path):
         """打开最近打开的文件
         :param file_path: 文件路径"""
-        recent_file = get_setting_data_from_db("当前文件路径")
+        recent_file = get_setting_data_from_ini('Config', "当前文件路径")
         if file_path != recent_file:
             if os.path.exists(file_path):
                 self.data_import(file_path)
@@ -271,7 +262,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取选中值的行号和id
         try:
             row = self.tableWidget.currentRow()
-            xx = int(self.tableWidget.item(row, 7).text())
+            xx = int(self.tableWidget.item(row, 6).text())
             # 删除数据库中指定id的数据
             cursor, con = sqlitedb()
             branch_name = self.comboBox.currentText()
@@ -309,7 +300,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         try:
             row = self.tableWidget.currentRow()
-            id_ = int(self.tableWidget.item(row, 7).text())  # 指令ID
+            id_ = int(self.tableWidget.item(row, 6).text())  # 指令ID
             cursor, con = sqlitedb()
             new_list_order = get_new_order()  # 获取新的指令数据
             try:
@@ -353,7 +344,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             # 获取当前行行号列号
             row = self.tableWidget.currentRow()
-            id_ = int(self.tableWidget.item(row, 7).text())  # 指令ID
+            id_ = int(self.tableWidget.item(row, 6).text())  # 指令ID
             ins_type = self.tableWidget.item(row, 1).text()  # 指令类型
             # 将导航页的tabWidget设置为对应的页
             navigation = Na(self)  # 实例化导航页窗口
@@ -365,7 +356,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             restore_parameters = (
                 self.tableWidget.item(row, 0).text(),
                 self.tableWidget.item(row, 4).text(),
-                self.tableWidget.item(row, 6).text(),
+                self.tableWidget.item(row, 5).text(),
                 self.tableWidget.item(row, 2).text(),
                 self.tableWidget.item(row, 3).text(),
             )
@@ -410,7 +401,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             try:
                 # 获取当前行行号列号
                 row = self.tableWidget.currentRow()
-                target_id = int(self.tableWidget.item(row, 7).text())  # 指令ID
+                target_id = int(self.tableWidget.item(row, 6).text())  # 指令ID
                 navigation = Na(self)  # 实例化导航页窗口
                 navigation.show()
                 # 修改数据中的参数
@@ -433,9 +424,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             )  # 设置图标
 
             modify_params = menu.addAction("查看参数")
-            modify_params.setIcon(
-                self.style().standardIcon(QStyle.SP_DirIcon)
-            )  # 设置图标
+            modify_params.setIcon(self.icon.view)  # 设置图标
 
             up_ins = menu.addAction("上移")
             up_ins.setShortcut("Shift+↑")
@@ -580,7 +569,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             cursor, con = sqlitedb()
             branch_name = self.comboBox.currentText()
             cursor.execute(
-                "select 图像名称,指令类型,异常处理,备注,参数1,参数2,重复次数,ID from 命令 where 隶属分支=?",
+                "select 图像名称,指令类型,异常处理,备注,参数1,重复次数,ID from 命令 where 隶属分支=?",
                 (branch_name,),
             )
             list_order = cursor.fetchall()
@@ -641,11 +630,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         try:
             # 获取选中值的行号和id
             row = self.tableWidget.currentRow()
-            id_ = int(self.tableWidget.item(row, 7).text())
+            id_ = int(self.tableWidget.item(row, 6).text())
             if judge == "up":
                 if row != 0:
                     # 查询上一行的id
-                    id_row_up = int(self.tableWidget.item(row - 1, 7).text())
+                    id_row_up = int(self.tableWidget.item(row - 1, 6).text())
                     # 交换两行的id
                     database_exchanges_two_rows(id_, id_row_up)
                     self.get_data(row - 1)
@@ -653,7 +642,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             elif judge == "down":
                 if row != self.tableWidget.rowCount() - 1:
                     # 查询下一行的id
-                    id_row_down = int(self.tableWidget.item(row + 1, 7).text())
+                    id_row_down = int(self.tableWidget.item(row + 1, 6).text())
                     # 交换两行的id
                     database_exchanges_two_rows(id_, id_row_down)
                     self.get_data(row + 1)
@@ -702,7 +691,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         def get_file_and_folder_from_setting():
             """获取文件名和文件夹路径"""
             # 获取资源文件夹路径，如果存在则使用用户的主目录
-            recently_opened = get_setting_data_from_db("当前文件路径")
+            recently_opened = get_setting_data_from_ini('Config', "当前文件路径")
+            print('recently_opened', recently_opened)
             if (recently_opened != "None") and (os.path.exists(recently_opened)):
                 return (
                     os.path.normpath(os.path.split(recently_opened)[1]),
@@ -786,7 +776,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                                 ) + len(str(cell.value))
                                 max_length = max(max_length, cell_length)
                             sheet.column_dimensions[get_column_letter(col)].width = (
-                                max_length + 5
+                                    max_length + 5
                             )
 
                     wb.remove(wb["Sheet"])  # 删除默认的sheet
@@ -935,7 +925,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             clear_all_ins(True)  # 清空原有数据，包括分支表
             data_import_from_excel(target_path)
         # 将最近导入的文件路径写入数据库,用于保存时自动设置路径
-        update_settings_in_database(
+        update_settings_in_ini(
+            "Config",
             当前文件路径=os.path.normpath(target_path[0])
         )  # 写入当前文件路径
         writes_to_recently_opened_files(
@@ -1077,8 +1068,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                         self.comboBox.setCurrentIndex(self.comboBox.currentIndex() - 1)
                 # 如果按下ctrl+向下键
                 if (
-                    event.modifiers() == Qt.ControlModifier
-                    and event.key() == Qt.Key_Down
+                        event.modifiers() == Qt.ControlModifier
+                        and event.key() == Qt.Key_Down
                 ):
                     # 将焦点上移一行,抵消下移的误差
                     self.tableWidget.setCurrentCell(
@@ -1256,23 +1247,3 @@ if __name__ == "__main__":
     splash.deleteLater()
 
     sys.exit(app.exec_())
-
-    # def is_admin():
-    #     try:
-    #         return ctypes.windll.shell32.IsUserAnAdmin()
-    #     except:
-    #         return False
-    #
-    # if is_admin():
-    #     app = QApplication([])
-    #     # 创建主窗体
-    #     main_window = Main_window()
-    #     # 显示窗体，并根据设置检查更新
-    #     main_window.main_show()
-    #     # 显示添加对话框窗口
-    #     sys.exit(app.exec_())
-    # else:
-    #     if sys.version_info[0] == 3:
-    #         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-    #     else:  # in python2.x
-    #         ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)

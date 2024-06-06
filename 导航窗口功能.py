@@ -27,6 +27,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
+from ini操作 import set_window_size, save_window_size
 from 功能类 import (
     InformationEntry,
     InputCellExcel,
@@ -56,8 +57,6 @@ from 数据库操作 import (
     get_branch_count,
     sqlitedb,
     close_database,
-    set_window_size,
-    save_window_size,
     get_variable_info,
     get_ocr_info,
 )
@@ -962,21 +961,19 @@ class Na(QWidget, Ui_navigation):
         """坐标点击识别窗口的功能
         :param type_: 功能名称（加载按钮、主要功能）"""
 
-        def spinBox_2_enable():
-            # 激活自定义点击次数
-            if self.comboBox_3.currentText() == "左键（自定义次数）":
-                self.spinBox_2.setEnabled(True)
-                self.label_22.setEnabled(True)
-            else:
-                self.spinBox_2.setEnabled(False)
-                self.label_22.setEnabled(False)
+        def spinBox_2_enable() -> None:
+            """是否激活自定义点击次数"""
+            is_custom = self.comboBox_3.currentText() == "左键（自定义次数）"
+            self.spinBox_2.setVisible(is_custom)
+            self.label_22.setVisible(is_custom)
+            if not is_custom:
                 self.spinBox_2.setValue(0)
 
         def get_parameters():
             """从tab页获取参数"""
             parameter_dic_ = {
                 "动作": self.comboBox_3.currentText(),
-                "坐标": (self.label_9.text(), self.label_10.text()),
+                "坐标": f"{self.label_9.text()}-{self.label_10.text()}",
                 "自定义次数": self.spinBox_2.value(),
             }
             # 检查参数是否有异常
@@ -1028,8 +1025,8 @@ class Na(QWidget, Ui_navigation):
             # 将参数还原到窗体控件
             self.comboBox_3.setCurrentText(self.parameter_1["动作"])
             spinBox_2_enable()
-            self.label_9.setText(self.parameter_1["坐标"][0])
-            self.label_10.setText(self.parameter_1["坐标"][1])
+            self.label_9.setText(self.parameter_1["坐标"].split("-")[0])
+            self.label_10.setText(self.parameter_1["坐标"].split("-")[1])
             self.spinBox_2.setValue(int(self.parameter_1["自定义次数"]))
 
     def time_waiting_function(self, type_):

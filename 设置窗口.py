@@ -1,8 +1,11 @@
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QDialog
-
-from 数据库操作 import update_settings_in_database, get_setting_data_from_db, set_window_size, save_window_size
+from ini操作 import (
+    update_settings_in_ini,
+    get_setting_data_from_ini,
+    set_window_size,
+    save_window_size)
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
@@ -32,8 +35,9 @@ class Setting(QDialog, Ui_Setting):
         # 模式选择
         model = self.radioButton.text() if self.radioButton.isChecked() else \
             self.radioButton_2.text() if self.radioButton_2.isChecked() else None
-        # 更新数据库
-        update_settings_in_database(
+        # 更新ini文件
+        update_settings_in_ini(
+            'Config',
             图像匹配精度=str(self.horizontalSlider.value() / 10),
             时间间隔=str(self.horizontalSlider_2.value() / 1000),
             持续时间=str(self.horizontalSlider_3.value() / 1000),
@@ -42,7 +46,10 @@ class Setting(QDialog, Ui_Setting):
             启动检查更新=str(True if self.checkBox.isChecked() else False),
             退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False),
             系统提示音=str(True if self.checkBox_3.isChecked() else False),
-            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False),
+            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False)
+        )
+        update_settings_in_ini(
+            '三方接口',
             appId=str(self.lineEdit.text()),
             apiKey=str(self.lineEdit_2.text()),
             secretKey=str(self.lineEdit_3.text()),
@@ -67,7 +74,23 @@ class Setting(QDialog, Ui_Setting):
     def load_setting_data(self):
         """加载设置数据库中的数据"""
         # 加载设置数据
-        setting_data_dic = get_setting_data_from_db(
+        # setting_data_dic = get_setting_data_from_db(
+        #     '图像匹配精度',
+        #     '时间间隔',
+        #     '持续时间',
+        #     '暂停时间',
+        #     '模式',
+        #     '启动检查更新',
+        #     '退出提醒清空指令',
+        #     '系统提示音',
+        #     '任务完成后显示主窗口',
+        #     'appId',
+        #     'apiKey',
+        #     'secretKey',
+        #     '云码Token'
+        # )
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
             '图像匹配精度',
             '时间间隔',
             '持续时间',
@@ -76,7 +99,10 @@ class Setting(QDialog, Ui_Setting):
             '启动检查更新',
             '退出提醒清空指令',
             '系统提示音',
-            '任务完成后显示主窗口',
+            '任务完成后显示主窗口'
+        )
+        app_data_dic = get_setting_data_from_ini(
+            '三方接口',
             'appId',
             'apiKey',
             'secretKey',
@@ -100,12 +126,12 @@ class Setting(QDialog, Ui_Setting):
         self.checkBox_4.setChecked(eval(setting_data_dic['任务完成后显示主窗口']))
 
         # 填入OCR API信息
-        self.lineEdit.setText(setting_data_dic['appId'])
-        self.lineEdit_2.setText(setting_data_dic['apiKey'])
-        self.lineEdit_3.setText(setting_data_dic['secretKey'])
+        self.lineEdit.setText(app_data_dic['appId'])
+        self.lineEdit_2.setText(app_data_dic['apiKey'])
+        self.lineEdit_3.setText(app_data_dic['secretKey'])
 
         # 填入云码Token
-        self.lineEdit_6.setText(setting_data_dic['云码Token'])
+        self.lineEdit_6.setText(app_data_dic['云码Token'])
 
     def change_mode(self, mode: str):
         """切换模式

@@ -106,7 +106,6 @@ def close_database(cursor, conn):
     conn.close()
 
 
-# @timer
 def get_setting_data_from_db(*args):
     """从数据库中获取设置参数
     :param args: 设置类型参数
@@ -229,37 +228,37 @@ def clear_all_ins(judge: bool = False, branch_name: str = None):
     close_database(cursor, con)
 
 
-def save_window_size(save_size: tuple, window_name: str):
-    """获取窗口大小
-    :param save_size: 保存时的窗口大小
-    :param window_name:（主窗口、设置窗口、导航窗口）
-    :return: 窗口大小"""
-    cursor, con = sqlitedb()
-    # 查找数据库中是否有该设置类型
-    cursor.execute('SELECT * FROM 设置 WHERE 设置类型 = ?', (window_name,))
-    result = cursor.fetchone()
-    if result:
-        cursor.execute('UPDATE 设置 SET 值=? WHERE 设置类型 = ?', (str(save_size), window_name))
-    else:
-        cursor.execute('INSERT INTO 设置(设置类型, 值) VALUES (?, ?)', (window_name, str(save_size)))
-    con.commit()
-    close_database(cursor, con)
+# def save_window_size(save_size: tuple, window_name: str):
+#     """获取窗口大小
+#     :param save_size: 保存时的窗口大小
+#     :param window_name:（主窗口、设置窗口、导航窗口）
+#     :return: 窗口大小"""
+#     cursor, con = sqlitedb()
+#     # 查找数据库中是否有该设置类型
+#     cursor.execute('SELECT * FROM 设置 WHERE 设置类型 = ?', (window_name,))
+#     result = cursor.fetchone()
+#     if result:
+#         cursor.execute('UPDATE 设置 SET 值=? WHERE 设置类型 = ?', (str(save_size), window_name))
+#     else:
+#         cursor.execute('INSERT INTO 设置(设置类型, 值) VALUES (?, ?)', (window_name, str(save_size)))
+#     con.commit()
+#     close_database(cursor, con)
 
 
-def set_window_size(window):
-    def get_window_size(window_name: str):
-        """设置窗口大小
-        :param window_name:（主窗口、设置窗口、导航窗口）
-        :return: 窗口大小"""
-        try:
-            height_, width_ = eval(get_setting_data_from_db(window_name))
-            return int(height_), int(width_)
-        except TypeError:
-            return 0, 0
-
-    width, height = get_window_size(window.windowTitle())
-    if width and height:
-        window.resize(width, height)
+# def set_window_size(window):
+#     def get_window_size(window_name: str):
+#         """设置窗口大小
+#         :param window_name:（主窗口、设置窗口、导航窗口）
+#         :return: 窗口大小"""
+#         try:
+#             height_, width_ = eval(get_setting_data_from_db(window_name))
+#             return int(height_), int(width_)
+#         except TypeError:
+#             return 0, 0
+#
+#     width, height = get_window_size(window.windowTitle())
+#     if width and height:
+#         window.resize(width, height)
 
 
 def extracted_ins_from_database(branch_name=None) -> list:
@@ -467,4 +466,4 @@ def get_ocr_info():
 
 
 if __name__ == '__main__':
-    print(get_ocr_info())
+    print(get_setting_data_from_db('图像匹配精度'))
