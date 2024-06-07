@@ -74,21 +74,6 @@ class Setting(QDialog, Ui_Setting):
     def load_setting_data(self):
         """加载设置数据库中的数据"""
         # 加载设置数据
-        # setting_data_dic = get_setting_data_from_db(
-        #     '图像匹配精度',
-        #     '时间间隔',
-        #     '持续时间',
-        #     '暂停时间',
-        #     '模式',
-        #     '启动检查更新',
-        #     '退出提醒清空指令',
-        #     '系统提示音',
-        #     '任务完成后显示主窗口',
-        #     'appId',
-        #     'apiKey',
-        #     'secretKey',
-        #     '云码Token'
-        # )
         setting_data_dic = get_setting_data_from_ini(
             'Config',
             '图像匹配精度',
