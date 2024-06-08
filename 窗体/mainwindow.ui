@@ -107,7 +107,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideMiddle</enum>
@@ -118,7 +118,21 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit"/>
+         <widget class="QTextEdit" name="textEdit">
+          <property name="styleSheet">
+           <string notr="true">QTextEdit {
+    background-color: #131313;
+    color: #00ff00; /* 绿色 */
+    border: 1px solid #343434;
+    border-radius: 2px;
+    padding: 3px;
+    padding-left: 5px;
+}</string>
+          </property>
+          <property name="placeholderText">
+           <string>欢迎使用......</string>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
@@ -1309,22 +1323,6 @@ color: rgb(255, 255, 255);</string>
     <hint type="destinationlabel">
      <x>287</x>
      <y>38</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_7</sender>
-   <signal>clicked()</signal>
-   <receiver>plainTextEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>524</x>
-     <y>413</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>263</x>
-     <y>334</y>
     </hint>
    </hints>
   </connection>

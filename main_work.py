@@ -11,8 +11,9 @@
 
 from PyQt5.QtCore import *
 
+from functions import system_prompt_tone
 from 功能类 import *
-from 数据库操作 import extract_global_parameter, extracted_ins_from_database, system_prompt_tone
+from 数据库操作 import extract_global_parameter, extracted_ins_from_database
 
 
 class CommandThread(QThread):

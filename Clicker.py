@@ -14,6 +14,7 @@ import collections
 import json
 import os.path
 import shutil
+import time
 
 import openpyxl
 from PyQt5 import QtCore, QtWidgets
@@ -38,6 +39,7 @@ from PyQt5.QtWidgets import (
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
+from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title
 from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
@@ -62,7 +64,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 调试模式
 # todo: 动作录制功能
 # todo: 使用将指定标题的窗口正常显示后会出现菜单栏阴影的问题
-# todo: 输出信息用绿色和红色区分开时间和内容
 
 # 用户需求
 # todo: 自动获取uac权限
@@ -941,7 +942,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def operation_before_execution():
             """执行前的操作"""
-            self.plainTextEdit.clear()  # 清空日志
+            self.textEdit.clear()  # 清空日志
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
             if self.checkBox_2.isChecked():
                 self.hide()
@@ -966,7 +967,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 判断是否选择了文件
         if target_path[0] != "":
             # 获取操作日志
-            logs = self.plainTextEdit.toPlainText()
+            logs = self.textEdit.toPlainText()
             # 将操作日志写入文件
             with open(target_path[0], "w") as f:
                 f.write(f"日志导出时间：{get_str_now_time()}\n")
@@ -1126,10 +1127,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
+        time_message = f"<font color='red'>{get_str_now_time()}</font>"
         if message != "换行":
-            self.plainTextEdit.appendPlainText(f"{get_str_now_time()}\t{message}")
+            self.textEdit.append(f"{time_message}&nbsp;&nbsp;&nbsp;&nbsp;{message}")
         else:
-            self.plainTextEdit.appendPlainText("")
+            self.textEdit.append('')
 
     def thread_finished(self, message):
 
@@ -1144,10 +1146,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 elapsed_time_sec = round(elapsed_time, 2)  # 秒，保留两位小数
                 return f"{elapsed_time_sec}秒"
 
-        # self.plainTextEdit.appendPlainText('')
-        self.plainTextEdit.appendPlainText(
-            f"{get_str_now_time()}\t{message}，耗时{send_elapsed_time()}。"
-        )
+        self.send_message(f"{message}，耗时{send_elapsed_time()}。")
         if self.checkBox_2.isChecked():  # 显示窗口
             self.show()
             QApplication.processEvents()
@@ -1219,7 +1218,6 @@ class QSSLoader:
 if __name__ == "__main__":
     # 自适应高分辨率
     # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    # app = QApplication([])
     app = QtWidgets.QApplication(sys.argv)
 
     splash = QSplashScreen(QPixmap(r"./flat/开屏.png"))  # 创建启动界面

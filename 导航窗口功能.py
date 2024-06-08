@@ -57,8 +57,7 @@ from 数据库操作 import (
     get_branch_count,
     sqlitedb,
     close_database,
-    get_variable_info,
-    get_ocr_info,
+    get_variable_info
 )
 from 窗体.导航窗口 import Ui_navigation
 from 网页操作 import WebOption

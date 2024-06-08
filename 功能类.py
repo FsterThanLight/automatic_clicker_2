@@ -30,13 +30,12 @@ from PyQt5.QtWidgets import QApplication, QWidget
 from aip import AipOcr
 from dateutil.parser import parse
 
+from functions import get_str_now_time, line_number_increment
+from ini操作 import get_ocr_info
 from 数据库操作 import (
     get_setting_data_from_db,
-    get_str_now_time,
     get_variable_info,
     set_variable_value,
-    line_number_increment,
-    get_ocr_info,
     extract_global_parameter,
 )
 from 网页操作 import WebOption

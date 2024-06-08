@@ -60,9 +60,17 @@ class Ui_MainWindow(object):
         self.tab.setObjectName("tab")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.tab)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.tab)
-        self.plainTextEdit.setObjectName("plainTextEdit")
-        self.horizontalLayout.addWidget(self.plainTextEdit)
+        self.textEdit = QtWidgets.QTextEdit(self.tab)
+        self.textEdit.setStyleSheet("QTextEdit {\n"
+"    background-color: #131313;\n"
+"    color: #00ff00; /* 绿色 */\n"
+"    border: 1px solid #343434;\n"
+"    border-radius: 2px;\n"
+"    padding: 3px;\n"
+"    padding-left: 5px;\n"
+"}")
+        self.textEdit.setObjectName("textEdit")
+        self.horizontalLayout.addWidget(self.textEdit)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -521,14 +529,14 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionabout)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.actiong.toggled['bool'].connect(self.toolBar.setVisible) # type: ignore
-        self.toolButton_7.clicked.connect(self.plainTextEdit.clear) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Clicker"))
+        self.textEdit.setPlaceholderText(_translate("MainWindow", "欢迎使用......"))
         self.toolButton_8.setText(_translate("MainWindow", "导出"))
         self.toolButton_7.setText(_translate("MainWindow", "清空"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "处理状态"))
