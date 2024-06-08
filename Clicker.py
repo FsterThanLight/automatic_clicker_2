@@ -39,11 +39,12 @@ from PyQt5.QtWidgets import (
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
-from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title
+from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title, is_hotkey_valid
 from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
-from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini
+from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
+    get_global_shortcut
 from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -85,6 +86,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 右键移动指令到分支功能
 # todo: 快捷键系统重新设计，自定义快捷键
 # todo: 检验初始文件的完整性
+# todo: 设置窗口去除保存按钮
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -105,10 +107,25 @@ QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 CURRENT_VERSION = "v0.25 Beta"
 
+def timer(func):
+    def func_wrapper(*args, **kwargs):
+        from time import time
+
+        time_start = time()
+        result = func(*args, **kwargs)
+        time_end = time()
+        time_spend = time_end - time_start
+        print("%s cost time: %.3f s" % (func.__name__, time_spend))
+        return result
+
+    return func_wrapper
+
 
 class Main_window(QMainWindow, Ui_MainWindow):
     """主窗口"""
     sigkeyhot = pyqtSignal(str, name="sigkeyhot")  # 自定义信号,用于快捷键
+    clear_signal = pyqtSignal()  # 自定义信号，textEdit清空信息，防止在全局快捷键调用时程序崩溃
+    show_branch_signal = pyqtSignal()  # 自定义信号，显示分支选择窗口，防止在全局快捷键调用时程序崩溃
 
     def __init__(self):
         super().__init__()
@@ -176,6 +193,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.command_thread.send_message.connect(self.send_message)
         self.command_thread.finished_signal.connect(self.thread_finished)
         # 设置全局快捷键,用于执行指令的终止
+        self.clear_signal.connect(self.clear_textEdit)
+        self.show_branch_signal.connect(lambda: self.show_windows("分支选择"))
         self.sigkeyhot.connect(self.global_shortcut_key)
         self.hk_stop = SystemHotkey()
         # 加载上次的指令表格
@@ -186,35 +205,63 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def load_initialization(self):
         """加载窗体初始值"""
+
         set_window_size(self)  # 获取上次退出时的窗口大小
         # 显示工具栏
         judge = eval(get_setting_data_from_db("显示工具栏"))
         self.toolBar.setVisible(judge)
         self.actiong.setChecked(judge)
         # 注册全局快捷键
+        self.register_global_shortcut_keys()
+        # 设置状态栏信息
+        self.statusBar.showMessage(f"软件版本：{CURRENT_VERSION}准备就绪...", 3000)
+
+    def register_global_shortcut_keys(self):
+        """注册全局快捷键"""
+        # 从ini文件中获取全局快捷键
+        global_shortcut = get_global_shortcut()
+        # 检查快捷键是否有效，无效则弹出提示
         try:
-            self.hk_stop.register(
-                ("f11",), callback=lambda x: self.sendkeyevent("终止线程")
-            )
-            self.hk_stop.register(
-                ("f10",), callback=lambda x: self.sendkeyevent("开始线程")
-            )
-            self.hk_stop.register(
-                (
-                    "alt",
-                    "f11",
-                ),
-                callback=lambda x: self.sendkeyevent("暂停和恢复线程"),
-            )
-            self.hk_stop.register(
-                ("f9",), callback=lambda x: self.sendkeyevent("弹出分支选择窗口")
-            )
+            global_shortcuts = {
+                "开始运行": "开始线程",
+                "结束运行": "终止线程",
+                "暂停和恢复": "暂停和恢复线程",
+                "分支选择": "弹出分支选择窗口"
+            }
+
+            for shortcut_name, action in global_shortcuts.items():
+                # 将ctrl替换为control
+                global_shortcut[shortcut_name] = [
+                    key.replace("ctrl", "control") for key in global_shortcut[shortcut_name]
+                ]
+                if is_hotkey_valid(self.hk_stop, global_shortcut[shortcut_name]):
+                    self.hk_stop.register(
+                        global_shortcut[shortcut_name],
+                        callback=lambda x, action=action: self.global_shortcut_key(action),
+                        overwrite=True
+                    )
+                else:
+                    str_shortcut = "+".join(global_shortcut[shortcut_name])
+                    QMessageBox.information(
+                        self,
+                        "提醒",
+                        f"快捷键{str_shortcut}已被占用！“{shortcut_name}”的全局快捷键已失效！"
+                        f"\n\n请在设置窗口中重新设置全局快捷键。",
+                    )
         except Exception as e:
             print(e)
             QMessageBox.critical(self, "错误", "全局快捷键已失效！")
 
-        # 设置状态栏信息
-        self.statusBar.showMessage(f"软件版本：{CURRENT_VERSION}准备就绪...", 3000)
+    def unregister_global_shortcut_keys(self):
+        """注销全局忷键"""
+        global_shortcut = get_global_shortcut()
+        try:
+            for shortcut_name, action in global_shortcut.items():
+                # 将ctrl替换为control
+                action = [key.replace("ctrl", "control") for key in action]
+                self.hk_stop.unregister(tuple(action))
+        except Exception as e:
+            print(e)
 
     def add_recent_to_fileMenu(self):
         """将最近文件添加到菜单中"""
@@ -451,9 +498,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
             modify_ins = menu.addAction("修改指令")
             modify_ins.setShortcut("Ctrl+Y")
-            modify_ins.setIcon(
-                self.style().standardIcon(QStyle.SP_ComputerIcon)
-            )  # 设置图标
+            modify_ins.setIcon(self.icon.modify_instruction)  # 设置图标
 
             go_branch = menu.addAction("转到分支")
             go_branch.setShortcut("Ctrl+G")
@@ -514,6 +559,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """打开窗体"""
         if judge == "设置":
             setting_win = Setting(self)  # 设置窗体
+            setting_win.tabWidget.setCurrentIndex(0)
             setting_win.setModal(True)
             setting_win.exec_()
         elif judge == "全局":
@@ -942,7 +988,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def operation_before_execution():
             """执行前的操作"""
-            self.textEdit.clear()  # 清空日志
+            self.clear_signal.emit()  # 清空日志
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
             if self.checkBox_2.isChecked():
                 self.hide()
@@ -954,6 +1000,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.command_thread.start()
         # 记录开始时间的时间戳
         self.start_time = time.time()
+
+    def clear_textEdit(self):
+        """清空日志，主要用于在全局快捷键线程中调用，避免线程阻塞引发的程序闪退"""
+        self.textEdit.clear()
 
     def exporting_operation_logs(self):
         """导出操作日志"""
@@ -1117,7 +1167,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     self.command_thread.pause()
 
         elif i_str == "弹出分支选择窗口":
-            self.show_windows("分支选择")
+            self.show_branch_signal.emit()
             # 将焦点切换到分支选择窗口
             self.branch_win.activateWindow()
 
@@ -1127,7 +1177,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
-        time_message = f"<font color='red'>{get_str_now_time()}</font>"
+        time_message = f"<font color='pink'>{get_str_now_time()}</font>"
         if message != "换行":
             self.textEdit.append(f"{time_message}&nbsp;&nbsp;&nbsp;&nbsp;{message}")
         else:

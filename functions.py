@@ -1,10 +1,12 @@
-
 import datetime
 import re
 import time
+import typing
+
 import winsound
 import win32con
 import win32gui
+from system_hotkey import SystemHotkey, user32
 
 from ini操作 import get_setting_data_from_ini
 
@@ -35,7 +37,7 @@ def show_normal_window_with_specified_title(title):
     def get_window_titles(hwnd, titles):
         titles[hwnd] = win32gui.GetWindowText(hwnd)
 
-    if eval(get_setting_data_from_ini('Config','任务完成后显示主窗口')):
+    if eval(get_setting_data_from_ini('Config', '任务完成后显示主窗口')):
         hwnd_title = {}
         win32gui.EnumWindows(get_window_titles, hwnd_title)
 
@@ -47,6 +49,7 @@ def show_normal_window_with_specified_title(title):
                 except Exception as e:
                     print(f"主窗口显示出现错误: {e}")
                 break
+
 
 def system_prompt_tone(judge: str):
     """系统提示音
@@ -62,3 +65,17 @@ def system_prompt_tone(judge: str):
             winsound.Beep(1000, 1000)
     except Exception as e:
         print('系统提示音错误！', e)
+
+
+def is_hotkey_valid(hkobj: SystemHotkey, hk: typing.List[str]):
+    """判断快捷键是否有效"""
+    hk = hkobj.order_hotkey(hk)
+    try:
+        keycode, masks = hkobj.parse_hotkeylist(hk)
+        reg_hk_res = user32.RegisterHotKey(None, 1, masks, keycode)
+        if reg_hk_res:
+            user32.UnregisterHotKey(None, reg_hk_res)
+            return True
+    except Exception as e:
+        print("获取快捷键注册信息失败！", e)
+    return False

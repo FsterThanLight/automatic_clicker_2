@@ -98,5 +98,38 @@ def set_window_size(window):
         window.resize(width, height)
 
 
+def get_global_shortcut():
+    """获取全局快捷键"""
+    try:
+        config = configparser.ConfigParser()
+        config.read("config.ini", encoding="utf-8")
+        return {
+            "开始运行": config["全局快捷键"]["开始运行"].lower().split("+"),
+            "结束运行": config["全局快捷键"]["结束运行"].lower().split("+"),
+            "分支选择": config["全局快捷键"]["分支选择"].lower().split("+"),
+            "暂停和恢复": config["全局快捷键"]["暂停和恢复"].lower().split("+"),
+        }
+    except Exception as e:
+        print("获取全局快捷键失败！", e)
+        return {}
+
+
+def set_global_shortcut(**kwargs):
+    """设置全局快捷键
+    :param kwargs: 全局快捷键参数, 如：开始运行=["ctrl", "alt", "1"]"""
+    try:
+        config = configparser.ConfigParser()
+        config.read("config.ini", encoding="utf-8")
+        for key, value in kwargs.items():
+            # 将"control"替换为"ctrl"
+            value = ['ctrl' if v.lower() == 'control' else v for v in value]
+            config["全局快捷键"][key] = "+".join(value).lower()
+        with open("config.ini", "w", encoding="utf-8") as f:
+            config.write(f)
+    except Exception as e:
+        print("设置全局快捷键失败！", e)
+
+
 if __name__ == "__main__":
-    print(get_ocr_info())
+    print(get_global_shortcut())
+    set_global_shortcut(开始运行=["f10"])

@@ -798,6 +798,7 @@ class Na(QWidget, Ui_navigation):
         def open_setting_window():
             """打开图像点击设置窗口"""
             setting_win = Setting(self)  # 设置窗体
+            setting_win.tabWidget.setCurrentIndex(0)
             setting_win.setModal(True)
             setting_win.exec_()
 

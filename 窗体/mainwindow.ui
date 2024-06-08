@@ -1326,5 +1326,21 @@ color: rgb(255, 255, 255);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>toolButton_7</sender>
+   <signal>clicked()</signal>
+   <receiver>textEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>524</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>263</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

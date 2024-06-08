@@ -1,11 +1,14 @@
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QMessageBox, QDialog
+from system_hotkey import SystemHotkey
+
+from functions import is_hotkey_valid
 from ini操作 import (
     update_settings_in_ini,
     get_setting_data_from_ini,
     set_window_size,
-    save_window_size)
+    save_window_size, get_global_shortcut, set_global_shortcut)
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
@@ -22,6 +25,7 @@ class Setting(QDialog, Ui_Setting):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
         # 绑定事件
+        self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
         self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))  # 打开百度OCR链接
@@ -56,12 +60,41 @@ class Setting(QDialog, Ui_Setting):
             云码Token=str(self.lineEdit_6.text())
         )
 
+        # 更新快捷键设置，检查快捷键是否有效，无效则弹出提示
+        def validate_and_set_hotkey(hotkey, key_sequence_edit_, action_):
+            """验证并设置快捷键"""
+            key_sequence = key_sequence_edit_.keySequence().toString().lower().split('+')
+            key_sequence = [key.replace('ctrl', 'control') for key in key_sequence]
+            if is_hotkey_valid(hotkey, key_sequence):
+                set_global_shortcut(**{action_: key_sequence})
+            else:
+                QMessageBox.information(
+                    self, '提醒',
+                    f'快捷键{key_sequence_edit_.keySequence().toString()}为无效按键！'
+                    f'\n\n可能的原因：'
+                    f'\n1.系统不支持注册的按键。'
+                    f'\n2.按键已被其他程序占用。'
+                )
+                raise Exception('无效的快捷键！')
+
+        key_mapping = {
+            '开始运行': self.keySequenceEdit,
+            '结束运行': self.keySequenceEdit_2,
+            '分支选择': self.keySequenceEdit_3,
+            '暂停和恢复': self.keySequenceEdit_4
+        }
+        for action, key_sequence_edit in key_mapping.items():
+            validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
+
     def save_setting(self):
         """保存按钮事件"""
-        self.save_setting_date()
-        QMessageBox.information(self, '提醒', '保存成功！')
-        # 退出设置窗口
-        self.close()
+        try:
+            self.save_setting_date()
+            QMessageBox.information(self, '提醒', '设置已经生效！')
+            # 退出设置窗口
+            self.close()
+        except Exception as e:
+            print('保存设置失败！', e)
 
     def restore_default(self):
         """设置恢复至默认"""
@@ -118,6 +151,13 @@ class Setting(QDialog, Ui_Setting):
         # 填入云码Token
         self.lineEdit_6.setText(app_data_dic['云码Token'])
 
+        # 加载快捷键设置
+        global_shortcut_dic = get_global_shortcut()
+        self.keySequenceEdit.setKeySequence('+'.join(global_shortcut_dic['开始运行']))
+        self.keySequenceEdit_2.setKeySequence('+'.join(global_shortcut_dic['结束运行']))
+        self.keySequenceEdit_3.setKeySequence('+'.join(global_shortcut_dic['分支选择']))
+        self.keySequenceEdit_4.setKeySequence('+'.join(global_shortcut_dic['暂停和恢复']))
+
     def change_mode(self, mode: str):
         """切换模式
         :param mode: 模式（极速模式、普通模式）"""
@@ -142,3 +182,5 @@ class Setting(QDialog, Ui_Setting):
     def closeEvent(self, event):
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
+        # 重新注册全局快捷键
+        self.parent().register_global_shortcut_keys()

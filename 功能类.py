@@ -216,14 +216,9 @@ class ImageClick:
         # 解析指令字典
         reTry, gray_rec, area, click_times, lOrR, img, skip = self.parsing_ins_dic()
         # 执行图像点击
-        if reTry == 1:
+        for _ in range(reTry):
             self.execute_click(click_times, gray_rec, lOrR, img, skip, area)
-        elif reTry > 1:
-            i = 1
-            while i < reTry + 1:
-                self.execute_click(click_times, gray_rec, lOrR, img, skip, area)
-                i += 1
-                time.sleep(self.time_sleep)
+            time.sleep(self.time_sleep)
 
     def execute_click(self, click_times, gray_rec, lOrR, img, skip, area=None):
         """执行鼠标点击事件

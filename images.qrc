@@ -45,5 +45,6 @@
     <file>窗体/res/下移.png</file>
     <file>窗体/res/修改.png</file>
     <file>窗体/res/查看.png</file>
+    <file>窗体/res/修改指令.png</file>
   </qresource>
 </RCC>
