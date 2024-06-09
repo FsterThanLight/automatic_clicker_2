@@ -1,11 +1,7 @@
 import datetime
 import os
-import re
 import sqlite3
 import sys
-
-
-import winsound
 
 MAIN_FLOW = "主流程"
 
@@ -46,43 +42,43 @@ def close_database(cursor, conn):
     conn.close()
 
 
-def get_setting_data_from_db(*args):
-    """从数据库中获取设置参数
-    :param args: 设置类型参数
-    :return: 设置参数字典"""
-    cursor, conn = sqlitedb()
-    if len(args) > 1:
-        placeholders = ",".join(["?" for _ in args])
-        query = f"SELECT 设置类型, 值 FROM 设置 WHERE 设置类型 IN ({placeholders})"
-        cursor.execute(query, args)
-        results = cursor.fetchall()
-        close_database(cursor, conn)
-        settings_dict = {setting_type: value for setting_type, value in results}
-        return settings_dict
-    elif len(args) == 1:
-        cursor.execute("SELECT 值 FROM 设置 WHERE 设置类型 = ?", (args[0],))
-        result = cursor.fetchone()
-        close_database(cursor, conn)  # 关闭数据库
-        return result[0] if result else None
-    else:
-        return None
+# def get_setting_data_from_db(*args):
+#     """从数据库中获取设置参数
+#     :param args: 设置类型参数
+#     :return: 设置参数字典"""
+#     cursor, conn = sqlitedb()
+#     if len(args) > 1:
+#         placeholders = ",".join(["?" for _ in args])
+#         query = f"SELECT 设置类型, 值 FROM 设置 WHERE 设置类型 IN ({placeholders})"
+#         cursor.execute(query, args)
+#         results = cursor.fetchall()
+#         close_database(cursor, conn)
+#         settings_dict = {setting_type: value for setting_type, value in results}
+#         return settings_dict
+#     elif len(args) == 1:
+#         cursor.execute("SELECT 值 FROM 设置 WHERE 设置类型 = ?", (args[0],))
+#         result = cursor.fetchone()
+#         close_database(cursor, conn)  # 关闭数据库
+#         return result[0] if result else None
+#     else:
+#         return None
 
 
 # @timer
-def update_settings_in_database(**kwargs):
-    """在数据库中更新指定表中的设置类型的值
-    :param kwargs: 设置类型和对应值的关键字参数，如：暂停时间=1, 时间间隔=1, 图像匹配精度=0.8
-    """
-    if kwargs:
-        try:
-            cursor, conn = sqlitedb()
-            for setting_type, value in kwargs.items():
-                query = f"UPDATE 设置 SET 值=? WHERE 设置类型 = ?"
-                cursor.execute(query, (value, setting_type))
-            conn.commit()
-            close_database(cursor, conn)
-        except sqlite3.Error as e:
-            print(f"Error updating database: {e}")
+# def update_settings_in_database(**kwargs):
+#     """在数据库中更新指定表中的设置类型的值
+#     :param kwargs: 设置类型和对应值的关键字参数，如：暂停时间=1, 时间间隔=1, 图像匹配精度=0.8
+#     """
+#     if kwargs:
+#         try:
+#             cursor, conn = sqlitedb()
+#             for setting_type, value in kwargs.items():
+#                 query = f"UPDATE 设置 SET 值=? WHERE 设置类型 = ?"
+#                 cursor.execute(query, (value, setting_type))
+#             conn.commit()
+#             close_database(cursor, conn)
+#         except sqlite3.Error as e:
+#             print(f"Error updating database: {e}")
 
 
 # 全局参数的数据库操作

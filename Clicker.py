@@ -13,6 +13,7 @@ from __future__ import print_function
 import collections
 import json
 import os.path
+import re
 import shutil
 import time
 
@@ -67,15 +68,13 @@ collections.Iterable = collections.abc.Iterable
 # todo: 使用将指定标题的窗口正常显示后会出现菜单栏阴影的问题
 
 # 用户需求
-# todo: 自动获取uac权限
 # todo: 绑定窗口指令
 # todo: 快捷导入指令，拖动文件到窗口导入指令
 # todo: 功能快捷键可自定义
-# todo: 设置中提高延迟上限
 # todo: 按下键盘增加按压时长、按键释放等功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
-# todo: 成功和失败改变变量值
+# todo: 成功和失败改变变量值的功能
 # todo: 按下键盘指令的部分组合键失效
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
@@ -85,8 +84,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 执行cmd指令的功能
 # todo: 右键移动指令到分支功能
 # todo: 快捷键系统重新设计，自定义快捷键
-# todo: 检验初始文件的完整性
-# todo: 设置窗口去除保存按钮
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -106,6 +103,7 @@ OUR_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker/releases"
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 CURRENT_VERSION = "v0.25 Beta"
+
 
 def timer(func):
     def func_wrapper(*args, **kwargs):
@@ -206,9 +204,21 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def load_initialization(self):
         """加载窗体初始值"""
 
+        def check_file_integrity():
+            """检查文件完整性"""
+            # 检查命令集.db文件是否存在
+            if not os.path.exists("命令集.db"):
+                QMessageBox.critical(self, "错误", "命令集.db文件不存在！\n请重新下载软件！")
+                sys.exit(1)
+            # 检查ini文件是否存在
+            if not os.path.exists("config.ini"):
+                QMessageBox.critical(self, "错误", "config.ini文件不存在！\n请重新下载软件！")
+                sys.exit(1)
+
         set_window_size(self)  # 获取上次退出时的窗口大小
+        check_file_integrity()  # 检查文件完整性
         # 显示工具栏
-        judge = eval(get_setting_data_from_db("显示工具栏"))
+        judge = eval(get_setting_data_from_ini("Config", "显示工具栏"))
         self.toolBar.setVisible(judge)
         self.actiong.setChecked(judge)
         # 注册全局快捷键
@@ -848,12 +858,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         """关闭窗口事件"""
         # 是否隐藏工具栏
-        update_settings_in_database(显示工具栏=str(self.actiong.isChecked()))
+        update_settings_in_ini('Config', 显示工具栏=str(self.actiong.isChecked()))
         # 终止线程
         if self.command_thread.isRunning():
             self.command_thread.terminate()
         # 是否退出清空数据库
-        if eval(get_setting_data_from_db("退出提醒清空指令")):
+        if eval(get_setting_data_from_ini("Config", "退出提醒清空指令")):
             choice = QMessageBox.question(
                 self, "提示", "确定退出并清空所有指令？\n将自动保存当前指令数据。"
             )

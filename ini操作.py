@@ -131,5 +131,4 @@ def set_global_shortcut(**kwargs):
 
 
 if __name__ == "__main__":
-    print(get_global_shortcut())
-    set_global_shortcut(开始运行=["f10"])
+    print(get_setting_data_from_ini("Config", "暂停时间"))

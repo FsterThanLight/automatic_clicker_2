@@ -45,7 +45,7 @@ class Setting(QDialog, Ui_Setting):
             图像匹配精度=str(self.horizontalSlider.value() / 10),
             时间间隔=str(self.horizontalSlider_2.value() / 1000),
             持续时间=str(self.horizontalSlider_3.value() / 1000),
-            暂停时间=str(self.horizontalSlider_4.value() / 1000),
+            暂停时间=str(self.spinBox.value() / 1000),
             模式=model,
             启动检查更新=str(True if self.checkBox.isChecked() else False),
             退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False),
@@ -102,7 +102,7 @@ class Setting(QDialog, Ui_Setting):
         self.horizontalSlider.setValue(8)
         self.horizontalSlider_2.setValue(200)
         self.horizontalSlider_3.setValue(200)
-        self.horizontalSlider_4.setValue(100)
+        self.spinBox.setValue(100)
 
     def load_setting_data(self):
         """加载设置数据库中的数据"""
@@ -119,6 +119,15 @@ class Setting(QDialog, Ui_Setting):
             '系统提示音',
             '任务完成后显示主窗口'
         )
+
+        # 设置模式
+        if setting_data_dic['模式'] == '极速模式':
+            self.radioButton_2.setChecked(True)
+            self.change_mode('极速模式')
+        else:
+            self.radioButton.setChecked(True)
+            self.change_mode('普通模式')
+
         app_data_dic = get_setting_data_from_ini(
             '三方接口',
             'appId',
@@ -129,14 +138,7 @@ class Setting(QDialog, Ui_Setting):
         self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
         self.horizontalSlider_3.setValue(int(float(setting_data_dic['持续时间']) * 1000))
-        self.horizontalSlider_4.setValue(int(float(setting_data_dic['暂停时间']) * 1000))
-
-        if setting_data_dic['模式'] == '极速模式':
-            self.radioButton_2.setChecked(True)
-            self.change_mode('极速模式')
-        else:
-            self.radioButton.setChecked(True)
-            self.change_mode('普通模式')
+        self.spinBox.setValue(int(float(setting_data_dic['暂停时间']) * 1000))
 
         self.checkBox.setChecked(eval(setting_data_dic['启动检查更新']))
         self.checkBox_2.setChecked(eval(setting_data_dic['退出提醒清空指令']))
@@ -164,13 +166,13 @@ class Setting(QDialog, Ui_Setting):
         if mode == '极速模式':
             self.horizontalSlider_2.setValue(0)
             self.horizontalSlider_3.setValue(100)
-            self.horizontalSlider_4.setValue(0)
+            self.spinBox.setValue(0)
             self.horizontalSlider_2.setEnabled(False)
-            self.horizontalSlider_4.setEnabled(False)
+            self.spinBox.setEnabled(False)
             self.pushButton_3.setEnabled(False)
         elif mode == '普通模式':
             self.horizontalSlider_2.setEnabled(True)
-            self.horizontalSlider_4.setEnabled(True)
+            self.spinBox.setEnabled(True)
             self.pushButton_3.setEnabled(True)
             self.restore_default()
 

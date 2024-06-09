@@ -37,7 +37,7 @@ class CommandThread(QThread):
         # 运行时的参数
         self.branch_name_index: int = 0  # 分支表名索引
         # 读取配置文件
-        self.time_sleep = float(get_setting_data_from_db('暂停时间'))
+        self.time_sleep = float(get_setting_data_from_ini('Config', '暂停时间'))
         self.image_folder_path = extract_global_parameter('资源文件夹路径')
         self.branch_table_name: list = []
         # 互斥锁,用于暂停线程

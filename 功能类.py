@@ -31,9 +31,8 @@ from aip import AipOcr
 from dateutil.parser import parse
 
 from functions import get_str_now_time, line_number_increment
-from ini操作 import get_ocr_info
+from ini操作 import get_ocr_info, get_setting_data_from_ini
 from 数据库操作 import (
-    get_setting_data_from_db,
     get_variable_info,
     set_variable_value,
     extract_global_parameter,
@@ -166,7 +165,8 @@ class ImageClick:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        setting_data_dic = get_setting_data_from_db(
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
             "持续时间", "时间间隔", "图像匹配精度", "暂停时间"
         )
         self.duration = float(setting_data_dic.get("持续时间"))
@@ -290,7 +290,8 @@ class CoordinateClick:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        setting_data_dic = get_setting_data_from_db(
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
             "持续时间", "时间间隔", "图像匹配精度", "暂停时间"
         )
         self.duration = float(setting_data_dic.get("持续时间"))
@@ -499,7 +500,7 @@ class RollerSlide:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         self.out_mes = outputmessage  # 用于输出信息
         self.ins_dic = ins_dic  # 指令字典
         self.is_test = False  # 是否测试
@@ -555,7 +556,9 @@ class TextInput:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        setting_data_dic = get_setting_data_from_db("时间间隔", "暂停时间")
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
+            "时间间隔", "暂停时间")
         self.interval = float(setting_data_dic.get("时间间隔"))
         self.time_sleep = float(setting_data_dic.get("暂停时间"))
         self.out_mes = outputmessage
@@ -594,7 +597,9 @@ class MoveMouse:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        setting_data_dic = get_setting_data_from_db("持续时间", "暂停时间")
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
+            "持续时间", "暂停时间")
         self.duration = float(setting_data_dic.get("持续时间"))
         self.time_sleep = float(setting_data_dic.get("暂停时间"))
         self.out_mes = outputmessage  # 用于输出信息
@@ -699,7 +704,9 @@ class PressKeyboard:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini(
+            'Config',
+            "暂停时间"))
         self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
@@ -736,7 +743,7 @@ class MiddleActivation:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini('Config', "暂停时间"))
         # 主窗口
         self.out_mes = outputmessage
         # 指令字典
@@ -785,7 +792,7 @@ class MouseClick:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
@@ -839,7 +846,7 @@ class InformationEntry:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         # 主窗口
         self.out_mes = outputmessage
         # 指令字典
@@ -1071,7 +1078,7 @@ class MouseDrag:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         # 主窗口
         self.out_mes = outputmessage
         # 指令字典
@@ -1330,7 +1337,7 @@ class SendWeChat:
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
         # 设置参数
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         self.out_mes = outputmessage
         # 指令字典
         self.ins_dic = ins_dic
@@ -1447,7 +1454,7 @@ class VerificationCode:
         self.cycle_number = cycle_number
         # 云码平台
         self._custom_url = "http://api.jfbym.com/api/YmServer/customApi"
-        self._token = get_setting_data_from_db("云码Token")
+        self._token = get_setting_data_from_ini("Config", "云码Token")
         self._headers = {"Content-Type": "application/json"}
 
     def parsing_ins_dic(self):
@@ -1528,7 +1535,7 @@ class PlayVoice:
     """播放声音"""
 
     def __init__(self, outputmessage, ins_dic, cycle_number=1):
-        self.time_sleep = float(get_setting_data_from_db("暂停时间"))
+        self.time_sleep = float(get_setting_data_from_ini("Config", "暂停时间"))
         self.out_mes = outputmessage  # 用于输出信息
         self.ins_dic = ins_dic  # 指令字典
         self.is_test = False  # 是否测试
