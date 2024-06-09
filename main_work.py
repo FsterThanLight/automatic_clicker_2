@@ -12,6 +12,7 @@
 from PyQt5.QtCore import *
 
 from functions import system_prompt_tone
+from ini操作 import extract_resource_folder_path
 from 功能类 import *
 from 数据库操作 import extract_global_parameter, extracted_ins_from_database
 
@@ -38,7 +39,7 @@ class CommandThread(QThread):
         self.branch_name_index: int = 0  # 分支表名索引
         # 读取配置文件
         self.time_sleep = float(get_setting_data_from_ini('Config', '暂停时间'))
-        self.image_folder_path = extract_global_parameter('资源文件夹路径')
+        # self.image_folder_path = extract_resource_folder_path()
         self.branch_table_name: list = []
         # 互斥锁,用于暂停线程
         self.mutex = QMutex()

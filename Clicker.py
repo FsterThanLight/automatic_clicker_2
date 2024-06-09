@@ -45,7 +45,7 @@ from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
-    get_global_shortcut
+    get_global_shortcut, extract_resource_folder_path
 from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -258,6 +258,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
                         f"快捷键{str_shortcut}已被占用！“{shortcut_name}”的全局快捷键已失效！"
                         f"\n\n请在设置窗口中重新设置全局快捷键。",
                     )
+                # 将主界面的按钮显示为快捷键
+                self.pushButton_5.setText(f"开始运行\t{'+'.join(global_shortcut['开始运行'])}")
+                self.pushButton_4.setText(f"选择分支运行\t{'+'.join(global_shortcut['分支选择'])}")
+                self.pushButton_6.setText(f"结束任务\t{'+'.join(global_shortcut['结束运行'])}")
+                self.pushButton_7.setText(f"暂停和恢复\t{'+'.join(global_shortcut['暂停和恢复'])}")
         except Exception as e:
             print(e)
             QMessageBox.critical(self, "错误", "全局快捷键已失效！")
@@ -605,12 +610,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 "Ctrl+G：\t\t转到分支\n"
                 "Ctrl+Y：\t\t修改指令\n"
                 "\n"
-                "F10：\t\t开始任务\n"
-                "F11：\t\t终止任务\n"
-                "Alt+F11：\t暂停和恢复任务\n"
-                "Alt+Space：\t弹出分支选择窗口\n"
-                "选择窗口数字键：\t选择分支\n"
-                "\n"
                 "Ctrl+D：\t\t导入指令\n"
                 "Ctrl+S：\t\t保存指令\n"
                 "Ctrl+Alt+S：\t另存为Excel\n",
@@ -713,7 +712,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         def get_directory_pyth_global(judge__):
             """获取全局资源文件夹路径,如果不存在最近打开的文件路径"""
-            resource_folder_path = extract_global_parameter("资源文件夹路径")
+            resource_folder_path = extract_resource_folder_path()
             directory_folder_path = (
                 resource_folder_path[0]
                 if resource_folder_path
@@ -949,7 +948,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 获取资源文件夹路径，如果不存在则使用用户的主目录
         if file_path == "资源文件夹路径":
             resource_folder_path = next(
-                (item for item in extract_global_parameter("资源文件夹路径")), None
+                (item for item in extract_resource_folder_path()), None
             )
             # 获取当前文件夹路径
             directory_path = (

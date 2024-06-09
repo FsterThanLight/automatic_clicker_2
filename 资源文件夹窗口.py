@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
-from ini操作 import set_window_size, save_window_size
-from 数据库操作 import global_write_to_database, sqlitedb, close_database, extract_global_parameter
+from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, del_resource_folder_path, \
+    writes_to_resource_folder_path
 from 窗体.global_s import Ui_Global
 
 
@@ -38,7 +38,7 @@ class Global_s(QDialog, Ui_Global):
             if any('\u4e00' <= char <= '\u9fff' for char in fil_path):
                 QMessageBox.critical(self, '警告', '资源文件夹路径中暂不允许含有中文字符，请重新选择！')
                 return
-            global_write_to_database('资源文件夹路径', os.path.normpath(fil_path))
+            writes_to_resource_folder_path(os.path.normpath(fil_path))
         self.refresh_listview()
 
     def open_select_listview(self):
@@ -55,21 +55,10 @@ class Global_s(QDialog, Ui_Global):
 
     def delete_listview(self):
         """删除listview中选中的那行数据"""
-
-        # 获取选中的行的值
-        def delete_data(value_):
-            """删除数据库中的数据"""
-            # 连接数据库
-            cursor, conn = sqlitedb()
-            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 = ?", (value_,))  # 删除数据
-            cursor.execute("DELETE FROM 全局参数 WHERE 资源文件夹路径 is NULL and 分支表名 is Null")  # 删除无用数据条
-            conn.commit()
-            close_database(cursor, conn)
-
         try:
             indexes = self.listView.selectedIndexes()
             value = self.listView.model().itemFromIndex(indexes[0]).text()
-            delete_data(value)  # 删除数据库中的数据
+            del_resource_folder_path(value)  # 删除数据库中的数据
             self.refresh_listview()  # 刷新listview
         except Exception as e:
             print(e)
@@ -84,7 +73,7 @@ class Global_s(QDialog, Ui_Global):
             for item in list_:
                 model.appendRow(QStandardItem(item))
 
-        res_folder_path = extract_global_parameter('资源文件夹路径')  # 获取数据库中的数据
+        res_folder_path = extract_resource_folder_path()  # 获取数据库中的数据
         add_listview(res_folder_path, self.listView)
 
     def closeEvent(self, event):

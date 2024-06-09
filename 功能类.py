@@ -31,11 +31,10 @@ from aip import AipOcr
 from dateutil.parser import parse
 
 from functions import get_str_now_time, line_number_increment
-from ini操作 import get_ocr_info, get_setting_data_from_ini
+from ini操作 import get_ocr_info, get_setting_data_from_ini, extract_resource_folder_path
 from 数据库操作 import (
     get_variable_info,
     set_variable_value,
-    extract_global_parameter,
 )
 from 网页操作 import WebOption
 
@@ -100,11 +99,11 @@ def get_available_path(image_name_: str, out_mes, is_test=False):
         else:
             out_mes.out_mes("原资源文件路径不存在，已重新匹配。", is_test)
             image_name_only = os.path.basename(image_name_)
-            res_folder_path = extract_global_parameter("资源文件夹路径")
+            res_folder_path = extract_resource_folder_path()
             return search_image_in_folders(image_name_only, res_folder_path)
 
     else:
-        res_folder_path = extract_global_parameter("资源文件夹路径")
+        res_folder_path = extract_resource_folder_path()
         return search_image_in_folders(image_name_, res_folder_path)
 
 

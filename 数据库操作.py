@@ -3,6 +3,8 @@ import os
 import sqlite3
 import sys
 
+from ini操作 import extract_resource_folder_path
+
 MAIN_FLOW = "主流程"
 
 
@@ -119,7 +121,7 @@ def extract_excel_from_global_parameter():
     """从所有资源文件夹路径中提取所有的Excel文件
     :return: Excel文件列表"""
     # 从全局参数表中提取所有的资源文件夹路径
-    resource_folder_path_list = extract_global_parameter("资源文件夹路径")
+    resource_folder_path_list = extract_resource_folder_path()
     excel_files = []
     for folder_path in resource_folder_path_list:
         if os.path.exists(folder_path) and os.path.isdir(folder_path):

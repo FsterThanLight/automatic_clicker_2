@@ -27,7 +27,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from ini操作 import set_window_size, save_window_size
+from ini操作 import set_window_size, save_window_size, extract_resource_folder_path
 from 功能类 import (
     InformationEntry,
     InputCellExcel,
@@ -847,7 +847,7 @@ class Na(QWidget, Ui_navigation):
         elif type_ == "加载信息":
             # 加载图像文件夹路径
             self.comboBox_8.clear()
-            self.comboBox_8.addItems(extract_global_parameter("资源文件夹路径"))
+            self.comboBox_8.addItems(extract_resource_folder_path())
             self.find_controls("图像", "图像点击")
             self.show_image_to_label("图像点击")
 
@@ -1254,7 +1254,7 @@ class Na(QWidget, Ui_navigation):
             # 加载图像文件夹路径
             self.comboBox_17.clear()
             self.comboBox_18.clear()
-            self.comboBox_17.addItems(extract_global_parameter("资源文件夹路径"))
+            self.comboBox_17.addItems(extract_resource_folder_path())
             self.find_controls("图像", "图像等待")
             self.show_image_to_label("图像等待")
 
@@ -1688,7 +1688,7 @@ class Na(QWidget, Ui_navigation):
             )  # 加载全局参数中的excel文件路径
             self.comboBox_13.clear()
             self.comboBox_14.clear()
-            self.comboBox_14.addItems(extract_global_parameter("资源文件夹路径"))
+            self.comboBox_14.addItems(extract_resource_folder_path())
             self.find_controls("图像", "信息录入")
             self.show_image_to_label("信息录入")
             self.find_controls("excel", "信息录入")
@@ -2281,7 +2281,7 @@ class Na(QWidget, Ui_navigation):
             )
         elif type_ == "加载信息":
             self.comboBox_31.clear()
-            self.comboBox_31.addItems(extract_global_parameter("资源文件夹路径"))
+            self.comboBox_31.addItems(extract_resource_folder_path())
             show_region()
             show_save_path()
         elif type_ == "还原参数":

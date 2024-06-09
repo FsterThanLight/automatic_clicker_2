@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
+from ini操作 import extract_resource_folder_path
 from 数据库操作 import extract_global_parameter
 from 窗体.image_preview import Ui_Image
 
@@ -28,7 +29,7 @@ class ImagePreview(QDialog, Ui_Image):
         self.lineEdit.setText(f'{self.generate_random_alphanumeric(10)}')
 
     def load_setting_data(self):
-        folder_path_list = extract_global_parameter('资源文件夹路径')
+        folder_path_list = extract_resource_folder_path()
         self.comboBox.clear()
         self.comboBox.addItems(folder_path_list)
 
