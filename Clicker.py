@@ -45,7 +45,7 @@ from icon import Icon
 from main_work import CommandThread
 from 功能类 import close_browser
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
-    get_global_shortcut, extract_resource_folder_path
+    get_global_shortcut, extract_resource_folder_path, writes_to_branch_info, get_branch_info, del_branch_info
 from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -794,7 +794,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     # 使用openpyxl模块创建Excel文件
                     wb = openpyxl.Workbook()
                     # 获取全局参数表中的资源文件夹路径
-                    branch_table_list = extract_global_parameter("分支表名")
+                    branch_table_list = get_branch_info(keys_only=True)
                     # 将sheet名设置为分支表名
                     for branch_name in branch_table_list:
                         wb.create_sheet(branch_name)  # 创建所有分支sheet
@@ -905,7 +905,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     con.commit()
                 # 更新分支表
                 for branch_name in branch_result_list:
-                    global_write_to_database("分支表名", branch_name)
+                    writes_to_branch_info(branch_name, '')
                 self.load_branch_to_combobox()  # 重新加载分支列表
                 if file_path == "资源文件夹路径":
                     QMessageBox.information(self, "提示", "指令数据导入成功！")
@@ -919,7 +919,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             sheets = wb.worksheets  # 获取所有的sheet
             cursor_, con_ = sqlitedb()
             for sheet in sheets:
-                global_write_to_database("分支表名", sheet.title)  # 添加分支表名
+                # global_write_to_database("分支表名", sheet.title)  # 添加分支表名
+                writes_to_branch_info(sheet.title, '')  # 添加分支表名
                 max_row = sheet.max_row
                 max_column = sheet.max_column
                 # 向数据库中写入数据
@@ -1034,64 +1035,50 @@ class Main_window(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "提示", "操作日志导出成功！")
 
     def create_branch(self):
-        """创建分支表并重命名"""
-        # 弹出输入对话框，提示输入分支名称
-        text, ok = QInputDialog.getText(self, "创建分支", "请输入分支名称：")
+        """创建分支"""
+        branch_name, ok = QInputDialog.getText(self, "创建分支", "请输入分支名称：")
         if ok:
-            try:
-                # 连接数据库
-                cursor, con = sqlitedb()
-                # 查找是否有同名分支
-                cursor.execute(
-                    "select 分支表名 from 全局参数 where 分支表名=?", (text,)
-                )
-                x = cursor.fetchall()
-                if len(x) > 0:
-                    QMessageBox.information(self, "提示", "分支已存在！")
-                    return
-                else:
-                    # 向全局参数表中添加分支表名
-                    cursor.execute(
-                        "insert into 全局参数(资源文件夹路径,分支表名) values(?,?)",
-                        (None, text),
-                    )
-                    con.commit()
-                    # 弹出提示框，提示创建成功
-                    QMessageBox.information(self, "提示", "分支创建成功！")
-                # 关闭数据库连接
-                close_database(cursor, con)
-                # 加载分支
-                self.load_branch_to_combobox()
-            except sqlite3.OperationalError:
-                QMessageBox.critical(self, "提示", "分支创建失败！")
-                pass
+            message = writes_to_branch_info(branch_name, '')
+            self.load_branch_to_combobox(branch_name)
+            QMessageBox.information(
+                self, "提示",
+                "分支创建成功!" if message else "分支已存在!"
+            )
 
     def delete_branch(self):
         """删除分支"""
-        # 弹出输入对话框，提示输入分支名称
-        print("删除分支")
-        text = self.comboBox.currentText()
-        if text == MAIN_FLOW:
-            QMessageBox.information(self, "提示", "无法删除主分支！")
-        else:
-            # 将combox显示的名称切换为命令
-            self.comboBox.setCurrentIndex(0)
+
+        def del_branch_in_database(branch_name):
+            """删除数据库中的分支"""
             cursor, con = sqlitedb()
             cursor.execute(
-                "delete from 全局参数 where 分支表名=?", (text,)
-            )  # 从全局参数中删除分支名称
-            cursor.execute(
-                "delete from 命令 where 隶属分支=?", (text,)
+                "delete from 命令 where 隶属分支=?", (branch_name,)
             )  # 从命令表中删除分支指令
             con.commit()
             close_database(cursor, con)  # 关闭数据库连接
-            QMessageBox.information(self, "提示", "分支删除成功！")
-            self.load_branch_to_combobox()  # 重新加载分支列表
 
-    def load_branch_to_combobox(self):
-        """加载分支"""
+        text = self.comboBox.currentText()
+        if text == MAIN_FLOW:
+            QMessageBox.critical(self, "提示", "无法删除主分支！")
+        else:
+            # 将combox显示的名称切换为主流程
+            self.comboBox.setCurrentIndex(0)
+            # 删除分支表
+            mes = del_branch_info(text)
+            if mes:
+                del_branch_in_database(text)  # 删除数据库中的分支
+                self.load_branch_to_combobox()  # 重新加载分支列表
+                QMessageBox.information(self, "提示", "分支已删除！")
+            else:
+                QMessageBox.critical(self, "提示", "分支删除失败！")
+
+    def load_branch_to_combobox(self, text=None):
+        """加载分支
+        :param text: 设置combox的文本"""
         self.comboBox.clear()
-        self.comboBox.addItems(extract_global_parameter("分支表名"))
+        self.comboBox.addItems(get_branch_info(True))
+        if text is not None:
+            self.comboBox.setCurrentText(text)
 
     def eventFilter(self, obj, event):
         # 重写self.tableWidget的快捷键事件

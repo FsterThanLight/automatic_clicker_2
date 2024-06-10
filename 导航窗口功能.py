@@ -27,7 +27,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from ini操作 import set_window_size, save_window_size, extract_resource_folder_path
+from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, get_branch_info
 from 功能类 import (
     InformationEntry,
     InputCellExcel,
@@ -52,7 +52,6 @@ from 功能类 import (
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
 from 数据库操作 import (
-    extract_global_parameter,
     extract_excel_from_global_parameter,
     get_branch_count,
     sqlitedb,
@@ -239,7 +238,7 @@ class Na(QWidget, Ui_navigation):
                 )
                 self.comboBox_9.setCurrentText("跳转分支")
                 # 解除异常处理方式的禁用，加载分支表名
-                self.comboBox_10.addItems(extract_global_parameter("分支表名"))
+                self.comboBox_10.addItems(get_branch_info(True))
                 self.find_controls("分支", "功能区参数")
                 self.comboBox_10.setEnabled(True)
                 self.comboBox_11.setEnabled(True)
@@ -471,7 +470,7 @@ class Na(QWidget, Ui_navigation):
                     disable_combobox()
                 elif self.comboBox_9.currentText() == "跳转分支":
                     disable_combobox(True)
-                    self.comboBox_10.addItems(extract_global_parameter("分支表名"))
+                    self.comboBox_10.addItems(get_branch_info(True))
                     self.comboBox_10.setCurrentIndex(0)
                     self.find_controls("分支", "功能区参数")
             elif type_ == "分支名称":  # 分支表名下拉列表变化触发
@@ -2772,7 +2771,7 @@ class Na(QWidget, Ui_navigation):
                 remarks_=func_info_dic.get("备注"),
             )
         elif type_ == "加载信息":
-            self.comboBox_37.addItems(extract_global_parameter("分支表名"))
+            self.comboBox_37.addItems(get_branch_info(True))
             self.comboBox_37.setCurrentIndex(0)
             # 获取分支表名中的指令数量
             self.find_controls("分支", "跳转分支")
@@ -2932,7 +2931,7 @@ class Na(QWidget, Ui_navigation):
         def set_branch_name():
             """当选择跳转分支功能时，加载分支表名"""
             disable_control(True)
-            self.comboBox_41.addItems(extract_global_parameter("分支表名"))
+            self.comboBox_41.addItems(get_branch_info(True))
             self.find_controls("分支", "按键等待")
 
         def disable_control(judge_: bool):
@@ -3282,7 +3281,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_51.clear()
             self.comboBox_51.addItems(get_variable_info("list"))
             self.comboBox_52.clear()
-            self.comboBox_52.addItems(extract_global_parameter("分支表名"))
+            self.comboBox_52.addItems(get_branch_info(True))
             self.comboBox_52.setCurrentIndex(0)
             # 获取分支表名中的指令数量
             self.find_controls("分支", "变量判断")

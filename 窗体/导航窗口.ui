@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>8</number>
+        <number>4</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -1794,6 +1794,9 @@
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_15">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="title">
             <string>定时等待</string>
            </property>
@@ -1834,7 +1837,7 @@
             <item row="1" column="1">
              <widget class="QComboBox" name="comboBox_6">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="currentText">
                <string>1000</string>

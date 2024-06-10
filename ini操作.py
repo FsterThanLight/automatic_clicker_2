@@ -199,10 +199,79 @@ def extract_resource_folder_path() -> list:
         return []
 
 
+def writes_to_branch_info(branch_name: str, shortcut_key: str) -> bool:
+    """将分支信息写入到config.ini中
+    :param branch_name: 分支名称
+    :param shortcut_key: 快捷键
+    :return: 如果添加的分支名称已经存在则返回False，添加成功返回True
+    """
+    try:
+        config = get_config()
+        section = '分支'
+        # 如果“分支”部分不存在，则添加该部分
+        if not config.has_section(section):
+            config.add_section(section)
+            config.set(section, "主流程", "")  # 添加主流程
+        # 检查分支名称是否已经存在
+        if config.has_option(section, branch_name):
+            return False
+        # 将分支名称和快捷键写入到“分支”部分
+        config.set(section, branch_name, shortcut_key)
+        # 将更新后的配置写回文件
+        with open('config.ini', 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+
+
+def del_branch_info(branch_name: str) -> bool:
+    """删除分支信息
+    :param branch_name: 分支名称
+    :return: 如果分支名称不存在则返回False，删除成功返回True
+    """
+    try:
+        config = get_config()
+        section = '分支'
+        # 如果“分支”部分不存在，则返回False
+        if not config.has_section(section):
+            return False
+        # 检查分支名称是否存在，不存在则返回False
+        if not config.has_option(section, branch_name):
+            return False
+        # 如果为主流程则不允许删除
+        if branch_name == "主流程":
+            return False
+        # 删除指定分支名称
+        config.remove_option(section, branch_name)
+        # 将更新后的配置写回文件
+        with open('config.ini', 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
+        return True
+    except Exception as e:
+        print(f"删除分支信息失败: {e}")
+        return False
+
+
+def get_branch_info(keys_only: bool = False) -> list:
+    """获取分支信息
+    :param keys_only: 如果为True，只返回键（分支名称），否则返回键值对（分支名称和快捷键）
+    :return: 根据keys_only参数返回全部信息或仅返回键
+    """
+    try:
+        config = get_config()
+        section = '分支'
+        if not config.has_section(section):
+            return []
+        if keys_only:
+            return [key for key, value in config.items(section)]
+        else:
+            return [(key, value) for key, value in config.items(section)]
+    except Exception as e:
+        print(f"写入分支信息失败: {e}")
+        return []
+
+
 if __name__ == "__main__":
-    # writes_to_resource_folder_path("C:/Users/zhuzh/Desktop/11")
-    # writes_to_resource_folder_path("C:/Users/zhuzh/Desktop/12")
-    # writes_to_resource_folder_path("C:/Users/zhuzh/Desktop/13")
-    # writes_to_resource_folder_path("C:/Users/zhuzh/Desktop/14")
-    # del_resource_folder_path("C:/Users/zhuzh/Desktop/12")
-    print(extract_resource_folder_path())
+    print(writes_to_branch_info("分支6", "ctrl+alt+1"))

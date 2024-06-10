@@ -3,7 +3,7 @@ import os
 import sqlite3
 import sys
 
-from ini操作 import extract_resource_folder_path
+from ini操作 import extract_resource_folder_path, get_branch_info
 
 MAIN_FLOW = "主流程"
 
@@ -44,77 +44,38 @@ def close_database(cursor, conn):
     conn.close()
 
 
-# def get_setting_data_from_db(*args):
-#     """从数据库中获取设置参数
-#     :param args: 设置类型参数
-#     :return: 设置参数字典"""
-#     cursor, conn = sqlitedb()
-#     if len(args) > 1:
-#         placeholders = ",".join(["?" for _ in args])
-#         query = f"SELECT 设置类型, 值 FROM 设置 WHERE 设置类型 IN ({placeholders})"
-#         cursor.execute(query, args)
-#         results = cursor.fetchall()
-#         close_database(cursor, conn)
-#         settings_dict = {setting_type: value for setting_type, value in results}
-#         return settings_dict
-#     elif len(args) == 1:
-#         cursor.execute("SELECT 值 FROM 设置 WHERE 设置类型 = ?", (args[0],))
-#         result = cursor.fetchone()
-#         close_database(cursor, conn)  # 关闭数据库
-#         return result[0] if result else None
-#     else:
-#         return None
-
-
-# @timer
-# def update_settings_in_database(**kwargs):
-#     """在数据库中更新指定表中的设置类型的值
-#     :param kwargs: 设置类型和对应值的关键字参数，如：暂停时间=1, 时间间隔=1, 图像匹配精度=0.8
-#     """
-#     if kwargs:
-#         try:
-#             cursor, conn = sqlitedb()
-#             for setting_type, value in kwargs.items():
-#                 query = f"UPDATE 设置 SET 值=? WHERE 设置类型 = ?"
-#                 cursor.execute(query, (value, setting_type))
-#             conn.commit()
-#             close_database(cursor, conn)
-#         except sqlite3.Error as e:
-#             print(f"Error updating database: {e}")
-
-
 # 全局参数的数据库操作
-def global_write_to_database(judge, value):
-    """将全局参数写入数据库
-    :param judge: 判断写入类型（资源文件夹路径、分支表名）
-    :param value: 资源文件夹路径"""
-    # 连接数据库
-    cursor, conn = sqlitedb()
-    if judge == "资源文件夹路径":
-        cursor.execute(
-            "INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)", (value, None)
-        )
-        conn.commit()
-    elif judge == "分支表名":
-        if value != MAIN_FLOW:
-            cursor, con = sqlitedb()
-            cursor.execute(
-                "insert into 全局参数(资源文件夹路径,分支表名) " "values(?,?)",
-                (None, value),
-            )
-            con.commit()
-    close_database(cursor, conn)
+# def global_write_to_database(judge, value):
+#     """将全局参数写入数据库
+#     :param judge: 判断写入类型（资源文件夹路径、分支表名）
+#     :param value: 资源文件夹路径"""
+#     # 连接数据库
+#     cursor, conn = sqlitedb()
+#     if judge == "资源文件夹路径":
+#         cursor.execute(
+#             "INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)", (value, None)
+#         )
+#         conn.commit()
+#     elif judge == "分支表名":
+#         if value != MAIN_FLOW:
+#             cursor, con = sqlitedb()
+#             cursor.execute(
+#                 "insert into 全局参数(资源文件夹路径,分支表名) " "values(?,?)",
+#                 (None, value),
+#             )
+#             con.commit()
+#     close_database(cursor, conn)
 
 
-def extract_global_parameter(column_name: str) -> list:
-    """从全局参数表中提取指定列的数据
-    :param column_name: 列名（资源文件夹路径、分支表名）"""
-    cursor, conn = sqlitedb()
-    cursor.execute(f"select {column_name} from 全局参数")
-    # 去除None并转换为列表
-    result_list = [item[0] for item in cursor.fetchall() if item[0] is not None]
-    close_database(cursor, conn)
-    return result_list
+# def extract_global_parameter(column_name: str) -> list:
+#     """从全局参数表中提取指定列的数据
+#     :param column_name: 列名（资源文件夹路径、分支表名）"""
+#     cursor, conn = sqlitedb()
+#     cursor.execute(f"select {column_name} from 全局参数")
+#     # 去除None并转换为列表
+#     result_list = [item[0] for item in cursor.fetchall() if item[0] is not None]
+#     close_database(cursor, conn)
+#     return result_list
 
 
 def extract_excel_from_global_parameter():
@@ -128,7 +89,7 @@ def extract_excel_from_global_parameter():
             for root, dirs, files in os.walk(folder_path):
                 for file in files:
                     if (
-                        file.endswith(".xlsx") or file.endswith(".xls")
+                            file.endswith(".xlsx") or file.endswith(".xls")
                     ) and not file.startswith("~$"):
                         excel_files.append(os.path.normpath(os.path.join(root, file)))
     return excel_files
@@ -168,7 +129,7 @@ def clear_all_ins(judge: bool = False, branch_name: str = None):
 
 
 def extracted_ins_from_database(branch_name=None) -> list:
-    """提取所有分支表名
+    """从分支表中提取指令，如果不传入分支表名，则提取所有分支表中的指令
     :param branch_name: 分支表名，如果不传入，则提取所有指令
     :return: 分支表名列表"""
 
@@ -190,7 +151,7 @@ def extracted_ins_from_database(branch_name=None) -> list:
         return get_branch_table_ins(branch_name)  # 返回分支指令列表
     else:
         # 提取所有分支表中的指令
-        branch_table_name_list = extract_global_parameter("分支表名")
+        branch_table_name_list = get_branch_info(keys_only=True)
         all_list_instructions = []
         if len(branch_table_name_list) != 0:
             for branch_table_name in branch_table_name_list:

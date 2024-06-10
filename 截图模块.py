@@ -11,7 +11,6 @@ from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from ini操作 import extract_resource_folder_path
-from 数据库操作 import extract_global_parameter
 from 窗体.image_preview import Ui_Image
 
 

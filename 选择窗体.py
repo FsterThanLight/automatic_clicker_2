@@ -2,9 +2,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QCursor
 from PyQt5.QtWidgets import QDialog
 
-from ini操作 import set_window_size, save_window_size
+from ini操作 import set_window_size, save_window_size, get_branch_info
 from 变量池窗口 import VariablePool_Win
-from 数据库操作 import extract_global_parameter,get_variable_info
+from 数据库操作 import get_variable_info
 from 窗体.branchwin import Ui_branch
 
 
@@ -50,7 +50,7 @@ class Branch_exe_win(QDialog, Ui_branch):
                 model.appendRow(QStandardItem(item))
 
         if modes == '分支选择':
-            branch_list = extract_global_parameter('分支表名')
+            branch_list = get_branch_info(True)
             add_listview(branch_list, self.listView)
         elif modes == '变量选择':
             variable_list = get_variable_info('list')

@@ -742,6 +742,7 @@ class Ui_navigation(object):
         self.gridLayout_6.setColumnStretch(2, 1)
         self.verticalLayout_5.addWidget(self.groupBox_16)
         self.groupBox_15 = QtWidgets.QGroupBox(self.tab_3)
+        self.groupBox_15.setEnabled(True)
         self.groupBox_15.setCheckable(True)
         self.groupBox_15.setChecked(False)
         self.groupBox_15.setObjectName("groupBox_15")
@@ -759,7 +760,7 @@ class Ui_navigation(object):
         self.label_26.setObjectName("label_26")
         self.gridLayout_28.addWidget(self.label_26, 1, 0, 1, 1)
         self.comboBox_6 = QtWidgets.QComboBox(self.groupBox_15)
-        self.comboBox_6.setEnabled(False)
+        self.comboBox_6.setEnabled(True)
         self.comboBox_6.setObjectName("comboBox_6")
         self.comboBox_6.addItem("")
         self.comboBox_6.addItem("")
@@ -3725,7 +3726,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(4)
         self.comboBox_2.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         self.pushButton_3.clicked.connect(navigation.close) # type: ignore

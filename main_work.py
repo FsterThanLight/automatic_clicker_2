@@ -12,9 +12,9 @@
 from PyQt5.QtCore import *
 
 from functions import system_prompt_tone
-from ini操作 import extract_resource_folder_path
+from ini操作 import get_branch_info
 from 功能类 import *
-from 数据库操作 import extract_global_parameter, extracted_ins_from_database
+from 数据库操作 import extracted_ins_from_database
 
 
 class CommandThread(QThread):
@@ -231,7 +231,7 @@ class CommandThread(QThread):
                         self.show_message(f'转到分支：{exception_handling}')
                         target_branch_name = exception_handling.split('-')[0]  # 分支表名
                         # 目标分支表名在分支表名中的索引
-                        self.branch_table_name = extract_global_parameter('分支表名')
+                        self.branch_table_name = get_branch_info(True)
                         branch_table_name_index = self.branch_table_name.index(target_branch_name)
                         # 分支表中要跳转的指令索引
                         branch_ins_index = exception_handling.split('-')[1]
