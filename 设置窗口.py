@@ -1,6 +1,7 @@
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QDesktopServices
-from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.QtGui import QDesktopServices, QKeySequence
+from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView
 from system_hotkey import SystemHotkey
 
 from functions import is_hotkey_valid
@@ -8,7 +9,7 @@ from ini操作 import (
     update_settings_in_ini,
     get_setting_data_from_ini,
     set_window_size,
-    save_window_size, get_global_shortcut, set_global_shortcut)
+    save_window_size, get_global_shortcut, set_global_shortcut, get_branch_info, timer, writes_to_branch_info)
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
@@ -24,6 +25,7 @@ class Setting(QDialog, Ui_Setting):
         self.setupUi(self)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 绑定事件
         self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
@@ -85,6 +87,9 @@ class Setting(QDialog, Ui_Setting):
         }
         for action, key_sequence_edit in key_mapping.items():
             validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
+
+        # 保存分支信息
+        self.save_branch_info()
 
     def save_setting(self):
         """保存按钮事件"""
@@ -160,6 +165,9 @@ class Setting(QDialog, Ui_Setting):
         self.keySequenceEdit_3.setKeySequence('+'.join(global_shortcut_dic['分支选择']))
         self.keySequenceEdit_4.setKeySequence('+'.join(global_shortcut_dic['暂停和恢复']))
 
+        # 加载分支管理
+        self.load_branch_info()
+
     def change_mode(self, mode: str):
         """切换模式
         :param mode: 模式（极速模式、普通模式）"""
@@ -175,6 +183,39 @@ class Setting(QDialog, Ui_Setting):
             self.spinBox.setEnabled(True)
             self.pushButton_3.setEnabled(True)
             self.restore_default()
+
+    def load_branch_info(self):
+        """向表格中加载分支信息"""
+        branch_info = get_branch_info()
+        if branch_info:
+            # 在表格中写入数据，branch_info为列表，每个元素为元组
+            self.tableWidget.setRowCount(len(branch_info))
+            for i in range(len(branch_info)):
+                item = QtWidgets.QTableWidgetItem(branch_info[i][0])
+                item.setTextAlignment(Qt.AlignCenter)  # 设置文本居中
+                self.tableWidget.setItem(i, 0, item)
+                # 使用 QKeySequenceEdit 控件显示快捷键
+                key_sequence = QKeySequence(branch_info[i][1])
+                key_sequence_edit = QtWidgets.QKeySequenceEdit(key_sequence)
+                self.tableWidget.setCellWidget(i, 1, key_sequence_edit)
+
+    def save_branch_info(self):
+        """保存分支信息"""
+        branch_info = []
+        for i in range(self.tableWidget.rowCount()):
+            branch_name = self.tableWidget.item(i, 0).text()
+            key_sequence = self.tableWidget.cellWidget(i, 1).keySequence().toString()
+            # 检查快捷键是否为组合键
+            if '+' in key_sequence:
+                QMessageBox.critical(self, '错误', '分支快捷键暂不支持设置为组合键！')
+                raise Exception('分支快捷键不能为组合键！')
+            if (',' in key_sequence) and (len(key_sequence) > 1):
+                QMessageBox.critical(self, '错误', '分支快捷键暂不支持设置为多个按键！')
+                raise Exception('分支快捷键不能为组合键！')
+            branch_info.append((branch_name, key_sequence))
+        # 写入分支信息到ini文件
+        for branch_name, key_sequence in branch_info:
+            writes_to_branch_info(branch_name, key_sequence)
 
     @staticmethod
     def open_link(url):

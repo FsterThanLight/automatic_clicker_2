@@ -84,6 +84,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 执行cmd指令的功能
 # todo: 右键移动指令到分支功能
 # todo: 快捷键系统重新设计，自定义快捷键
+# todo: 设置窗口中分支管理可新增、删除、修改分支
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 

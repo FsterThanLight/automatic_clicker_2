@@ -213,8 +213,12 @@ def writes_to_branch_info(branch_name: str, shortcut_key: str) -> bool:
             config.add_section(section)
             config.set(section, "主流程", "")  # 添加主流程
         # 检查分支名称是否已经存在
-        if config.has_option(section, branch_name):
-            return False
+        if config.has_option(section, branch_name) and branch_name != "主流程":
+            # 如果分支名称存在但快捷键不同，则更新快捷键
+            if config.get(section, branch_name) != shortcut_key:
+                config.set(section, branch_name, shortcut_key)
+            else:
+                return False
         # 将分支名称和快捷键写入到“分支”部分
         config.set(section, branch_name, shortcut_key)
         # 将更新后的配置写回文件
@@ -274,4 +278,4 @@ def get_branch_info(keys_only: bool = False) -> list:
 
 
 if __name__ == "__main__":
-    print(writes_to_branch_info("分支6", "ctrl+alt+1"))
+    print(writes_to_branch_info("分支5", "ctrl+3"))

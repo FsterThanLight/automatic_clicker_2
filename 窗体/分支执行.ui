@@ -126,10 +126,13 @@
    <item>
     <widget class="QTableWidget" name="tableWidget">
      <property name="editTriggers">
-      <set>QAbstractItemView::DoubleClicked</set>
+      <set>QAbstractItemView::NoEditTriggers</set>
      </property>
      <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
+      <enum>QAbstractItemView::NoDragDrop</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <property name="showGrid">
       <bool>true</bool>
@@ -156,20 +159,6 @@
        <string>快捷键</string>
       </property>
      </column>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="font">
-      <font>
-       <family>微软雅黑</family>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>更改为当前快捷键</string>
-     </property>
     </widget>
    </item>
   </layout>
