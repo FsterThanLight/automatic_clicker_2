@@ -5,15 +5,15 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QHeaderView
 
-from ini操作 import get_branch_info, set_window_size, save_window_size, timer
+from ini操作 import get_branch_info, set_window_size, save_window_size
 from 窗体.分支执行 import Ui_Branch
 
 
 class BranchWindow(QDialog, Ui_Branch):
     """分支执行窗口"""
 
-    def __init__(self):
-        super().__init__(parent=None)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setupUi(self)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.Tool)
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -55,9 +55,15 @@ class BranchWindow(QDialog, Ui_Branch):
     def open_select_option(self):
         """打开选中的分支"""
         selected_row = self.tableWidget.currentRow()
-        if selected_row != -1:
-            branch_name = self.tableWidget.item(selected_row, 0).text()
-            print(f"Opening branch: {branch_name}")
+        try:
+            if selected_row != -1:
+                branch_name = self.tableWidget.item(selected_row, 0).text()
+                print(f"Opening branch: {branch_name}")
+                self.parent().comboBox.setCurrentText(branch_name)  # 设置分支
+                self.parent().start()  # 执行分支
+                self.close()
+        except Exception as e:
+            print(e)
 
     def trigger_using_number_keys(self, number):
         """设置到对应的行"""

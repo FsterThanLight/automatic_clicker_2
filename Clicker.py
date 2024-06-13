@@ -42,10 +42,11 @@ from system_hotkey import SystemHotkey
 
 from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title, is_hotkey_valid
 from icon import Icon
-from main_work import CommandThread
-from 功能类 import close_browser
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
-    get_global_shortcut, extract_resource_folder_path, writes_to_branch_info, get_branch_info, del_branch_info
+    get_global_shortcut, writes_to_branch_info, del_branch_info
+from main_work import CommandThread
+from 分支执行窗口 import BranchWindow
+from 功能类 import close_browser
 from 导航窗口功能 import Na
 from 数据库操作 import *
 from 窗体.about import Ui_About
@@ -53,7 +54,6 @@ from 窗体.mainwindow import Ui_MainWindow
 from 窗体.参数窗口 import Ui_Param
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
-from 选择窗体 import Branch_exe_win
 
 collections.Iterable = collections.abc.Iterable
 
@@ -70,7 +70,6 @@ collections.Iterable = collections.abc.Iterable
 # 用户需求
 # todo: 绑定窗口指令
 # todo: 快捷导入指令，拖动文件到窗口导入指令
-# todo: 功能快捷键可自定义
 # todo: 按下键盘增加按压时长、按键释放等功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
@@ -79,12 +78,11 @@ collections.Iterable = collections.abc.Iterable
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
 # todo: 文字识别功能，图像没有文字时，会报错
-# todo: 快捷键说明提示框没对齐
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 右键移动指令到分支功能
-# todo: 快捷键系统重新设计，自定义快捷键
 # todo: 设置窗口中分支管理可新增、删除、修改分支
+# todo: 微信发送消息功能暂时不可用
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -99,11 +97,11 @@ collections.Iterable = collections.abc.Iterable
 # 3. 在导航页的treeWidget中添加指令的名称
 # 4. 在功能类中添加运行功能
 
-
-OUR_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker/releases"
+MAIN_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2"
+RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/releases"
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
-CURRENT_VERSION = "v0.25 Beta"
+CURRENT_VERSION = "v0.26 内测1"
 
 
 def timer(func):
@@ -134,8 +132,9 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.statusBar = QStatusBar()
         self.setStatusBar(self.statusBar)  # 实例化状态栏
         self.icon = Icon()  # 实例化图标
+        self.check_file_integrity()  # 检查文件完整性
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
-        self.branch_win = Branch_exe_win(self)  # 分支选择窗口
+        self.branch_win = BranchWindow(self)  # 分支选择窗口
         # 显示导不同的窗口
         self.pushButton.clicked.connect(
             lambda: self.show_windows("导航")
@@ -226,6 +225,27 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.register_global_shortcut_keys()
         # 设置状态栏信息
         self.statusBar.showMessage(f"软件版本：{CURRENT_VERSION}准备就绪...", 3000)
+
+    def check_file_integrity(self):
+        """检查文件完整性"""
+        app_path = os.getcwd()
+        # 检查ini文件是否存在
+        if not os.path.exists(os.path.join(app_path, "config.ini")):
+            QMessageBox.critical(self, '致命错误', 'config.ini文件不存在！请重新下载！')
+            sys.exit(1)
+        # 检查命令集.db文件是否存在
+        if not os.path.exists(os.path.join(app_path, "命令集.db")):
+            QMessageBox.critical(self, '致命错误', '命令集.db文件不存在！请重新下载！')
+            sys.exit(1)
+        # 检查开屏和qss文件夹是否存在
+        if not os.path.exists(os.path.join(app_path, 'flat')):
+            QMessageBox.critical(self, '致命错误', 'flat文件夹不存在！')
+            sys.exit(1)
+        # 检查qss文件夹下是否有模型文件
+        model_files = os.listdir(os.path.join(app_path, 'flat'))
+        if not any(x.endswith('.qss') for x in model_files) or not any(x.endswith('.png') for x in model_files):
+            QMessageBox.critical(self, '致命错误', 'flat文件夹下没有文件！')
+            sys.exit(1)
 
     def register_global_shortcut_keys(self):
         """注册全局快捷键"""
@@ -592,10 +612,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif judge == "分支选择":  # 分支选择窗口
             if not self.branch_win.isVisible():
                 self.branch_win.show()
+                # 获取焦点
+                self.branch_win.activateWindow()
             else:
                 self.branch_win.close()
         elif judge == "说明":
-            QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
+            QDesktopServices.openUrl(QUrl(MAIN_WEBSITE))
         elif judge == "快捷键说明":
             # 使用MessageBox显示快捷键说明
             QMessageBox.information(
@@ -1214,13 +1236,13 @@ class About(QDialog, Ui_About):
         )  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.label_2.setText(f"版本：{CURRENT_VERSION}")  # 设置版本号
-        self.label_7.setText('<a href="{}">{}</a>'.format(QQ_GROUP, QQ))
+        self.label_7.setText('<a href="{}"><font color="red">{}</font></a>'.format(QQ_GROUP, QQ))
         # 绑定事件
         self.gitee.clicked.connect(self.show_gitee)
 
     @staticmethod
     def show_gitee():
-        QDesktopServices.openUrl(QUrl(OUR_WEBSITE))
+        QDesktopServices.openUrl(QUrl(RELEASE_WEBSITE))
 
     def closeEvent(self, event):
         # 保存窗体大小
@@ -1264,7 +1286,7 @@ class QSSLoader:
 
 if __name__ == "__main__":
     # 自适应高分辨率
-    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
 
     splash = QSplashScreen(QPixmap(r"./flat/开屏.png"))  # 创建启动界面

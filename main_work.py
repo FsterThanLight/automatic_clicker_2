@@ -178,7 +178,7 @@ class CommandThread(QThread):
                     if not info_e:
                         info_e = str(type(e))
                 # except IndexError:
-                    # e = 'test'
+                #     info_e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

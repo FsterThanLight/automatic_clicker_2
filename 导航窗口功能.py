@@ -61,7 +61,7 @@ from 数据库操作 import (
 from 窗体.导航窗口 import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
-from 选择窗体 import Branch_exe_win
+from 选择窗体 import Variable_selection_win
 
 
 class Na(QWidget, Ui_navigation):
@@ -78,7 +78,7 @@ class Na(QWidget, Ui_navigation):
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.tabWidget.setCurrentIndex(0)  # 设置默认页
         self.treeWidget.expandAll()  # treeWidget全部展开
-        self.variable_sel_win = Branch_exe_win(self, "变量选择")  # 变量选择窗口
+        self.variable_sel_win = Variable_selection_win(self, "变量选择")  # 变量选择窗口
         self.lineEdit_22.textChanged.connect(self.on_find_item)  # 指令搜索功能
         self.transparent_window = TransparentWindow()  # 框选窗口
         # 添加保存按钮事件
@@ -2369,6 +2369,7 @@ class Na(QWidget, Ui_navigation):
             """将参数还原到控件"""
             contact = parameter_dic_.get("联系人", "")
             message = parameter_dic_.get("消息内容", "")
+            print(contact, message)
             # 设置联系人
             if contact == "文件传输助手":
                 self.comboBox_33.setCurrentText(contact)
@@ -2378,7 +2379,7 @@ class Na(QWidget, Ui_navigation):
                 self.lineEdit_17.setEnabled(True)
                 self.lineEdit_17.setText(contact)
             # 设置消息内容
-            if message == "自定义消息内容":
+            if message in ['从剪切板粘贴', '当前日期时间']:
                 self.comboBox_34.setCurrentText(message)
                 self.textEdit_2.setEnabled(False)
             else:

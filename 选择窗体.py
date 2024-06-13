@@ -8,7 +8,7 @@ from 数据库操作 import get_variable_info
 from 窗体.branchwin import Ui_branch
 
 
-class Branch_exe_win(QDialog, Ui_branch):
+class Variable_selection_win(QDialog, Ui_branch):
     """弹出选择执行分支的窗体"""
 
     def __init__(self, parent=None, modes='分支选择'):
@@ -136,6 +136,6 @@ if __name__ == '__main__':
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    window = Branch_exe_win()
+    window = Variable_selection_win()
     window.show()
     sys.exit(app.exec_())

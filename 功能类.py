@@ -1395,29 +1395,29 @@ class SendWeChat:
         hwnd = self.get_pid("WeChat.exe")  # 获取微信的后台进程，检查微信是否在运行
         new_message = get_correct_message()
         try:
-            with auto.InitializeUIAutomationInCurrentThread():
-                if hwnd is not None:
-                    pyautogui.hotkey("ctrl", "alt", "w")  # 打开微信窗口
-                    wei_xin = auto.WindowControl(
-                        searchDepth=1, ClassName="WeChatMainWndForPC"
-                    )
-                    wx_chat_win = wei_xin.ListItemControl(
-                        searchDepth=10, Name=contact_person
-                    )
-                    wx_chat_win.Click(simulateMove=False)
+            # with auto.InitializeUIAutomationInCurrentThread():
+            if hwnd is not None:
+                pyautogui.hotkey("ctrl", "alt", "w")  # 打开微信窗口
+                wei_xin = auto.WindowControl(
+                    searchDepth=1, ClassName="WeChatMainWndForPC"
+                )
+                wx_chat_win = wei_xin.ListItemControl(
+                    searchDepth=10, Name=contact_person
+                )
+                wx_chat_win.Click(simulateMove=False)
 
-                    for i in range(repeat_times):  # 重复次数
-                        pyperclip.copy(new_message)  # 将消息内容复制到剪切板
-                        pyautogui.hotkey("ctrl", "v")
-                        pyautogui.press("enter")  # 模拟按下键盘enter键，发送消息
-                        time.sleep(self.time_sleep)
+                for i in range(repeat_times):  # 重复次数
+                    pyperclip.copy(new_message)  # 将消息内容复制到剪切板
+                    pyautogui.hotkey("ctrl", "v")
+                    pyautogui.press("enter")  # 模拟按下键盘enter键，发送消息
+                    time.sleep(self.time_sleep)
 
-                    wei_xin.Minimize()  # 最小化窗口
-                    output_info("成功", new_message)  # 向主窗口输出提示信息
-                else:
-                    output_info(
-                        "失败", new_message, "未找到微信窗口，发送失败。"
-                    )  # 向主窗口输出提示信息
+                wei_xin.Minimize()  # 最小化窗口
+                output_info("成功", new_message)  # 向主窗口输出提示信息
+            else:
+                output_info(
+                    "失败", new_message, "未找到微信窗口，发送失败。"
+                )  # 向主窗口输出提示信息
         except Exception as e:
             print(e)
             output_info(
