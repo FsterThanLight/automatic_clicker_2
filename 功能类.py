@@ -2304,6 +2304,7 @@ class TextRecognition:
         if list_dic["截图区域"] != "" or list_dic["变量名称"] != "":
             ocr_text = self.ocr_pic(list_dic["截图区域"])  # 识别图片中的文字
             # 显示识别结果
+            print('ocr_text', ocr_text)
             if ocr_text is not None:  # 如果识别成功
                 self.out_mes.out_mes(f"OCR识别结果：{ocr_text}", self.is_test)
                 if not self.is_test:  # 如果不是测试
@@ -2333,18 +2334,18 @@ class TextRecognition:
         im.save(im_bytes, format="PNG")
         im_b = im_bytes.getvalue()
         # 返回百度api识别文字信息
-        try:
-            client_info = get_ocr_info()  # 获取百度api信息
-            client = AipOcr(
-                client_info["appId"], client_info["apiKey"], client_info["secretKey"]
-            )
-            return get_result_from_text(client.basicGeneral(im_b))
-        except Exception as e:
-            print(f"Error: {e} 网络错误识别失败")
-            return None
-        finally:  # 释放内存
-            del im
-            del im_bytes
+        # try:
+        client_info = get_ocr_info()  # 获取百度api信息
+        client = AipOcr(
+            client_info["appId"], client_info["apiKey"], client_info["secretKey"]
+        )
+        return get_result_from_text(client.basicGeneral(im_b))
+        # except Exception as e:
+        #     print(f"Error: {e} 网络错误识别失败")
+        #     return None
+        # finally:  # 释放内存
+        #     del im
+        #     del im_bytes
 
 
 class GetMousePositon:

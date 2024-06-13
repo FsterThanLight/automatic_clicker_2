@@ -74,7 +74,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值的功能
-# todo: 按下键盘指令的部分组合键失效
+# todo: 按下键盘指令的部分组合键失效？
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
 # todo: 文字识别功能，图像没有文字时，会报错
@@ -83,6 +83,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 右键移动指令到分支功能
 # todo: 设置窗口中分支管理可新增、删除、修改分支
 # todo: 微信发送消息功能暂时不可用
+# todo: 防止多开
+# todo: 在导航页打开设置窗口，因为快捷键问题，无法保存设置数据
+# todo: OCR识别功能失效
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 

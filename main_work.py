@@ -173,12 +173,12 @@ class CommandThread(QThread):
                     # 执行完毕后，跳转到下一条指令
                     current_index += 1
 
-                except Exception as e:
-                    info_e = str(e)
-                    if not info_e:
-                        info_e = str(type(e))
-                # except IndexError:
-                #     info_e = 'test'
+                # except Exception as e:
+                #     info_e = str(e)
+                #     if not info_e:
+                #         info_e = str(type(e))
+                except IndexError:
+                    info_e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能

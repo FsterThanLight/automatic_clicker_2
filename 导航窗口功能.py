@@ -27,7 +27,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, get_branch_info
+from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, get_branch_info, get_ocr_info
 from 功能类 import (
     InformationEntry,
     InputCellExcel,
@@ -3575,10 +3575,10 @@ class Na(QWidget, Ui_navigation):
         def test():
             """测试功能"""
             try:
-                parameter_dic = get_parameters()
+                parameter_dic_ = get_parameters()
                 dic_ = self.get_test_dic(
                     repeat_number_=int(self.spinBox.value()),
-                    parameter_1_=parameter_dic,
+                    parameter_1_=parameter_dic_,
                 )
 
                 # 测试用例

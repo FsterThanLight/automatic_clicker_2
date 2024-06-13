@@ -27,7 +27,10 @@ class Setting(QDialog, Ui_Setting):
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # 绑定事件
-        self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
+        try:
+            self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
+        except AttributeError:
+            pass
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
         self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))  # 打开百度OCR链接
@@ -225,5 +228,7 @@ class Setting(QDialog, Ui_Setting):
     def closeEvent(self, event):
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
-        # 重新注册全局快捷键
-        self.parent().register_global_shortcut_keys()
+        try:
+            self.parent().register_global_shortcut_keys()  # 重新注册全局快捷键
+        except AttributeError:
+            pass
