@@ -40,7 +40,8 @@ from PyQt5.QtWidgets import (
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
-from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title, is_hotkey_valid
+from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title, is_hotkey_valid, \
+    show_window
 from icon import Icon
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
     get_global_shortcut, writes_to_branch_info, del_branch_info
@@ -77,15 +78,11 @@ collections.Iterable = collections.abc.Iterable
 # todo: 按下键盘指令的部分组合键失效？
 # todo: 自动切换工作簿路径
 # todo: 读取excel指令，大写False变为小写false
-# todo: 文字识别功能，图像没有文字时，会报错
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 右键移动指令到分支功能
 # todo: 设置窗口中分支管理可新增、删除、修改分支
-# todo: 微信发送消息功能暂时不可用
-# todo: 防止多开
-# todo: 在导航页打开设置窗口，因为快捷键问题，无法保存设置数据
-# todo: OCR识别功能失效
+# todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -104,6 +101,7 @@ MAIN_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2"
 RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/releases"
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
+APP_NAME = "Clicker"
 CURRENT_VERSION = "v0.26 内测1"
 
 
@@ -1026,9 +1024,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             """执行前的操作"""
             self.clear_signal.emit()  # 清空日志
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
-            if self.checkBox_2.isChecked():
+            if self.checkBox_2.isChecked():  # 如果勾选了执行中隐藏主窗口
                 self.hide()
-
         if self.command_thread.isRunning():  # 如果线程正在运行,则终止
             self.command_thread.terminate()
         operation_before_execution()
@@ -1291,29 +1288,34 @@ if __name__ == "__main__":
     # 自适应高分辨率
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
+    # 防多开
+    share = QSharedMemory(APP_NAME)
+    share.setKey(APP_NAME)
+    if share.attach():
+        show_window(APP_NAME)  # 显示窗口
+    if share.create(1):
+        splash = QSplashScreen(QPixmap(r"./flat/开屏.png"))  # 创建启动界面
+        splash.showMessage(  # 初始文本
+            "加载中......", QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom, QtCore.Qt.green
+        )
+        splash.setFont(QFont("微软雅黑", 15))  # 设置字体
+        splash.show()  # 显示启动界面
+        time.sleep(0.1)  # 延时1秒
 
-    splash = QSplashScreen(QPixmap(r"./flat/开屏.png"))  # 创建启动界面
-    splash.showMessage(  # 初始文本
-        "加载中......", QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom, QtCore.Qt.green
-    )
-    splash.setFont(QFont("微软雅黑", 15))  # 设置字体
-    splash.show()  # 显示启动界面
-    time.sleep(0.1)  # 延时1秒
+        main_win = Main_window()  # 创建主窗体
 
-    main_win = Main_window()  # 创建主窗体
+        # 设置窗体样式
+        try:
+            style_name = "Combinear"
+            style_file = r"./flat/{}.qss".format(style_name)
+            style_sheet = QSSLoader.read_qss_file(style_file)
+            main_win.setStyleSheet(style_sheet)
+        except FileNotFoundError:
+            pass
 
-    # 设置窗体样式
-    try:
-        style_name = "Combinear"
-        style_file = r"./flat/{}.qss".format(style_name)
-        style_sheet = QSSLoader.read_qss_file(style_file)
-        main_win.setStyleSheet(style_sheet)
-    except FileNotFoundError:
-        pass
+        main_win.show()  # 显示窗体，并根据设置检查更新
 
-    main_win.show()  # 显示窗体，并根据设置检查更新
+        splash.finish(main_win)  # 隐藏启动界面
+        splash.deleteLater()
 
-    splash.finish(main_win)  # 隐藏启动界面
-    splash.deleteLater()
-
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())

@@ -79,3 +79,17 @@ def is_hotkey_valid(hkobj: SystemHotkey, hk: typing.List[str]):
     except Exception as e:
         print("获取快捷键注册信息失败！", e)
     return False
+
+
+def show_window(title):
+    """将指定标题的窗口正常显示，主要用于主窗口显示"""
+    def get_window_titles(hwnd, titles):
+        titles[hwnd] = win32gui.GetWindowText(hwnd)
+
+    hwnd_title = {}
+    win32gui.EnumWindows(get_window_titles, hwnd_title)
+    for h, t in hwnd_title.items():
+        if t == title:
+            win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
+            win32gui.SetForegroundWindow(h)
+            break

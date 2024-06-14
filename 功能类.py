@@ -19,7 +19,6 @@ import pymsgbox
 import pyperclip
 import pyttsx4
 import requests
-import uiautomation as auto
 import win32clipboard
 import win32con
 import win32gui
@@ -29,6 +28,7 @@ from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget
 from aip import AipOcr
 from dateutil.parser import parse
+from pywinauto import Application
 
 from functions import get_str_now_time, line_number_increment
 from ini操作 import get_ocr_info, get_setting_data_from_ini, extract_resource_folder_path
@@ -1395,16 +1395,17 @@ class SendWeChat:
         hwnd = self.get_pid("WeChat.exe")  # 获取微信的后台进程，检查微信是否在运行
         new_message = get_correct_message()
         try:
-            # with auto.InitializeUIAutomationInCurrentThread():
             if hwnd is not None:
                 pyautogui.hotkey("ctrl", "alt", "w")  # 打开微信窗口
-                wei_xin = auto.WindowControl(
-                    searchDepth=1, ClassName="WeChatMainWndForPC"
-                )
-                wx_chat_win = wei_xin.ListItemControl(
-                    searchDepth=10, Name=contact_person
-                )
-                wx_chat_win.Click(simulateMove=False)
+                app = Application(backend="uia").connect(process=hwnd)
+                wechat_window = app.window(class_name="WeChatMainWndForPC")
+
+                # 找到指定联系人并点击
+                # 定位到主窗口
+                wx_win = app.window(class_name='WeChatMainWndForPC')
+                wx_chat_win = wx_win.child_window(title=contact_person, control_type="ListItem")
+                # 聚焦到所需的对话框
+                wx_chat_win.click_input()
 
                 for i in range(repeat_times):  # 重复次数
                     pyperclip.copy(new_message)  # 将消息内容复制到剪切板
@@ -1412,7 +1413,7 @@ class SendWeChat:
                     pyautogui.press("enter")  # 模拟按下键盘enter键，发送消息
                     time.sleep(self.time_sleep)
 
-                wei_xin.Minimize()  # 最小化窗口
+                wechat_window.minimize()  # 最小化窗口
                 output_info("成功", new_message)  # 向主窗口输出提示信息
             else:
                 output_info(
@@ -1421,7 +1422,7 @@ class SendWeChat:
         except Exception as e:
             print(e)
             output_info(
-                "失败", new_message, "未找到联系人，发送失败。"
+                "失败", new_message, f"发送失败，错误信息：{str(e)}"
             )  # 向主窗口输出提示信息
 
     def start_execute(self):
@@ -2334,18 +2335,18 @@ class TextRecognition:
         im.save(im_bytes, format="PNG")
         im_b = im_bytes.getvalue()
         # 返回百度api识别文字信息
-        # try:
-        client_info = get_ocr_info()  # 获取百度api信息
-        client = AipOcr(
-            client_info["appId"], client_info["apiKey"], client_info["secretKey"]
-        )
-        return get_result_from_text(client.basicGeneral(im_b))
-        # except Exception as e:
-        #     print(f"Error: {e} 网络错误识别失败")
-        #     return None
-        # finally:  # 释放内存
-        #     del im
-        #     del im_bytes
+        try:
+            client_info = get_ocr_info()  # 获取百度api信息
+            client = AipOcr(
+                client_info["appId"], client_info["apiKey"], client_info["secretKey"]
+            )
+            return get_result_from_text(client.basicGeneral(im_b))
+        except Exception as e:
+            print(f"Error: {e} 网络错误识别失败")
+            return None
+        finally:  # 释放内存
+            del im
+            del im_bytes
 
 
 class GetMousePositon:

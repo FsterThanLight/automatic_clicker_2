@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QKeySequence
-from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView
+from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView, QWidget
 from system_hotkey import SystemHotkey
 
 from functions import is_hotkey_valid
@@ -26,11 +26,10 @@ class Setting(QDialog, Ui_Setting):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)  # 隐藏帮助按钮
         set_window_size(self)  # 获取上次退出时的窗口大小
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        # 绑定事件
-        try:
-            self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
-        except AttributeError:
-            pass
+        # 绑定快捷键事件
+        self.main_window_open = True  # 设置窗口是否是主窗口打开，如果不是则不注册全局快捷键，并隐藏快捷键设置
+        self.unregister_global_shortcut_keys()
+
         self.pushButton.clicked.connect(self.save_setting)  # 点击保存（应用）按钮
         self.pushButton_3.clicked.connect(self.restore_default)  # 点击恢复至默认按钮
         self.pushButton_2.clicked.connect(lambda: self.open_link(BAIDU_OCR))  # 打开百度OCR链接
@@ -38,6 +37,18 @@ class Setting(QDialog, Ui_Setting):
         self.radioButton_2.clicked.connect(lambda: self.change_mode('极速模式'))  # 开启极速模式
         self.radioButton.clicked.connect(lambda: self.change_mode('普通模式'))  # 切换普通模式
         self.load_setting_data()  # 加载设置数据
+
+    def unregister_global_shortcut_keys(self):
+        """如果是主窗口打开，则注销全局快捷键，否则隐藏全局快捷键设置"""
+        try:
+            self.parent().unregister_global_shortcut_keys()  # 注销全局快捷键
+        except AttributeError:
+            self.main_window_open = False
+            # 如果tabWidget中tab页名称为“快捷键”，则隐藏该tab页
+            for i in range(self.tabWidget.count()):
+                if self.tabWidget.tabText(i) == '快捷键':
+                    self.tabWidget.removeTab(i)
+                    break
 
     def save_setting_date(self):
         """保存设置数据"""
@@ -68,28 +79,29 @@ class Setting(QDialog, Ui_Setting):
         # 更新快捷键设置，检查快捷键是否有效，无效则弹出提示
         def validate_and_set_hotkey(hotkey, key_sequence_edit_, action_):
             """验证并设置快捷键"""
-            key_sequence = key_sequence_edit_.keySequence().toString().lower().split('+')
-            key_sequence = [key.replace('ctrl', 'control') for key in key_sequence]
-            if is_hotkey_valid(hotkey, key_sequence):
-                set_global_shortcut(**{action_: key_sequence})
-            else:
-                QMessageBox.information(
-                    self, '提醒',
-                    f'快捷键{key_sequence_edit_.keySequence().toString()}为无效按键！'
-                    f'\n\n可能的原因：'
-                    f'\n1.系统不支持注册的按键。'
-                    f'\n2.按键已被其他程序占用。'
-                )
-                raise Exception('无效的快捷键！')
+            if self.main_window_open:
+                key_sequence = key_sequence_edit_.keySequence().toString().lower().split('+')
+                key_sequence = [key.replace('ctrl', 'control') for key in key_sequence]
+                if is_hotkey_valid(hotkey, key_sequence):
+                    set_global_shortcut(**{action_: key_sequence})
+                else:
+                    QMessageBox.information(
+                        self, '提醒',
+                        f'快捷键{key_sequence_edit_.keySequence().toString()}为无效按键！'
+                        f'\n\n可能的原因：'
+                        f'\n1.系统不支持注册的按键。'
+                        f'\n2.按键已被其他程序占用。'
+                    )
+                    raise Exception('无效的快捷键！')
 
-        key_mapping = {
-            '开始运行': self.keySequenceEdit,
-            '结束运行': self.keySequenceEdit_2,
-            '分支选择': self.keySequenceEdit_3,
-            '暂停和恢复': self.keySequenceEdit_4
-        }
-        for action, key_sequence_edit in key_mapping.items():
-            validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
+            key_mapping = {
+                '开始运行': self.keySequenceEdit,
+                '结束运行': self.keySequenceEdit_2,
+                '分支选择': self.keySequenceEdit_3,
+                '暂停和恢复': self.keySequenceEdit_4
+            }
+            for action, key_sequence_edit in key_mapping.items():
+                validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
 
         # 保存分支信息
         self.save_branch_info()
@@ -228,7 +240,6 @@ class Setting(QDialog, Ui_Setting):
     def closeEvent(self, event):
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
-        try:
-            self.parent().register_global_shortcut_keys()  # 重新注册全局快捷键
-        except AttributeError:
-            pass
+        if self.main_window_open:  # 如果是主窗口打开
+            # 注册全局快捷键
+            self.parent().register_global_shortcut_keys()
