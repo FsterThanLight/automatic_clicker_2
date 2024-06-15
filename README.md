@@ -36,7 +36,6 @@ nuitka
 pyinstaller
 python-dateutil
 psutil
-uiautomation
 ```
 ## 一键安装方法
 ```txt
