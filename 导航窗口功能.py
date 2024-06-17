@@ -3378,7 +3378,7 @@ class Na(QWidget, Ui_navigation):
             self.textEdit_5.setPlaceholderText(
                 "请编写python代码...已内置的第三方库："
                 "pyttsx4、pymsgbox、pyautogui、mouse、keyboard、pandas、selenium、"
-                "pillow、openpyxl、requests、python-dateutil、psutil、uiautomation。"
+                "pillow、openpyxl、requests、python-dateutil、psutil、pywinauto。"
             )
         elif type_ == "还原参数":
             put_parameters(self.image_path, self.parameter_1)

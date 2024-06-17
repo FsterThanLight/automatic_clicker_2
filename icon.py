@@ -12,6 +12,8 @@ class Icon:
         self.setting = self.get_icon(":/按钮图标/窗体/res/设置.png")
         self.view = self.get_icon(":/按钮图标/窗体/res/查看.png")
         self.modify_instruction = self.get_icon(":/按钮图标/窗体/res/修改指令.png")
+        self.copy = self.get_icon(":/按钮图标/窗体/res/复制.png")
+        self.move_to_branch = self.get_icon(":/按钮图标/窗体/res/移动到分支.png")
 
     @staticmethod
     def get_icon(path):

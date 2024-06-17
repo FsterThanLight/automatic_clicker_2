@@ -71,7 +71,6 @@ collections.Iterable = collections.abc.Iterable
 # 用户需求
 # todo: 绑定窗口指令
 # todo: 快捷导入指令，拖动文件到窗口导入指令
-# todo: 按下键盘增加按压时长、按键释放等功能
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值的功能
@@ -80,7 +79,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 读取excel指令，大写False变为小写false
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
-# todo: 右键移动指令到分支功能
 # todo: 设置窗口中分支管理可新增、删除、修改分支
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
 
@@ -281,10 +279,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
                         f"\n\n请在设置窗口中重新设置全局快捷键。",
                     )
                 # 将主界面的按钮显示为快捷键
-                self.pushButton_5.setText(f"开始运行\t{'+'.join(global_shortcut['开始运行'])}")
-                self.pushButton_4.setText(f"选择分支运行\t{'+'.join(global_shortcut['分支选择'])}")
-                self.pushButton_6.setText(f"结束任务\t{'+'.join(global_shortcut['结束运行'])}")
-                self.pushButton_7.setText(f"暂停和恢复\t{'+'.join(global_shortcut['暂停和恢复'])}")
+                self.pushButton_5.setText(f"开始运行\t{'+'.join(global_shortcut['开始运行'])}".upper())
+                self.pushButton_4.setText(f"选择分支运行\t{'+'.join(global_shortcut['分支选择'])}".upper())
+                self.pushButton_6.setText(f"结束任务\t{'+'.join(global_shortcut['结束运行'])}".upper())
+                self.pushButton_7.setText(f"暂停和恢复\t{'+'.join(global_shortcut['暂停和恢复'])}".upper())
         except Exception as e:
             print(e)
             QMessageBox.critical(self, "错误", "全局快捷键已失效！")
@@ -449,6 +447,36 @@ class Main_window(QMainWindow, Ui_MainWindow):
         except AttributeError:
             QMessageBox.information(self, "提示", "请先选择一行待修改的数据！")
 
+    def move_ins_to_branch(self, branch_name, target_branch_name):
+        """移动指令到分支"""
+        try:
+            row = self.tableWidget.currentRow()
+            id_ = int(self.tableWidget.item(row, 6).text())  # 指令ID
+            cursor, con = sqlitedb()
+            # 获取数据库中id的最大值
+            cursor.execute("SELECT MAX(ID) FROM 命令")
+            max_id = cursor.fetchone()[0]
+            # 将指令移动到目标分支
+            cursor.execute(
+                "UPDATE 命令 SET 隶属分支=?, ID=? WHERE ID=? AND 隶属分支=?",
+                (
+                    target_branch_name,
+                    max_id + 1,
+                    id_,
+                    branch_name,
+                ),
+            )
+            con.commit()
+            close_database(cursor, con)
+            self.get_data()
+            # 切换到目标分支
+            self.comboBox.setCurrentText(target_branch_name)
+            # 选中最后一行
+            self.tableWidget.setCurrentCell(self.tableWidget.rowCount() - 1, 1)
+            self.statusBar.showMessage(f"已将指令移动到分支：{target_branch_name}。", 3000)
+        except AttributeError:
+            pass
+
     def open_params_win(self):
         """打开参数窗口"""
         row = self.tableWidget.currentRow()
@@ -476,7 +504,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
             choice = QMessageBox.question(self, "提示", "确认清除所有指令吗？")
             if choice == QMessageBox.Yes:
                 clear_all_ins()
+                # 在ini中删除分支信息，保留主分支
+                for i in range(self.comboBox.count()):
+                    if self.comboBox.itemText(i) != MAIN_FLOW:
+                        del_branch_info(self.comboBox.itemText(i))
                 self.get_data()
+                self.load_branch_to_combobox()  # 重新加载分支
             else:
                 pass
 
@@ -529,14 +562,21 @@ class Main_window(QMainWindow, Ui_MainWindow):
             menu.addSeparator()
             copy_ins = menu.addAction("复制指令")
             copy_ins.setShortcut("Ctrl+C")
-            copy_ins.setIcon(
-                self.style().standardIcon(QStyle.SP_DialogSaveButton)
-            )  # 设置图标
+            copy_ins.setIcon(self.icon.copy)  # 设置图标
 
             modify_ins = menu.addAction("修改指令")
             modify_ins.setShortcut("Ctrl+Y")
             modify_ins.setIcon(self.icon.modify_instruction)  # 设置图标
 
+            move_to_branch_menu = menu.addMenu("移动指令到分支")
+            move_to_branch_menu.setIcon(self.icon.move_to_branch)
+            # 从self.comboBox中获取分支列表
+            branch_list = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
+            for branch in branch_list:
+                action = move_to_branch_menu.addAction(branch)  # 右键菜单添加分支
+                action.triggered.connect(lambda _, b=branch: self.move_ins_to_branch(self.comboBox.currentText(), b))
+
+            menu.addSeparator()
             go_branch = menu.addAction("转到分支")
             go_branch.setShortcut("Ctrl+G")
             go_branch.setIcon(
@@ -1026,6 +1066,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.tabWidget.setCurrentIndex(0)  # 切换到日志页
             if self.checkBox_2.isChecked():  # 如果勾选了执行中隐藏主窗口
                 self.hide()
+
         if self.command_thread.isRunning():  # 如果线程正在运行,则终止
             self.command_thread.terminate()
         operation_before_execution()
@@ -1196,7 +1237,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
-        time_message = f"<font color='pink'>{get_str_now_time()}</font>"
+        time_message = f"<font color='red'>{get_str_now_time()}</font>"
         if message != "换行":
             self.textEdit.append(f"{time_message}&nbsp;&nbsp;&nbsp;&nbsp;{message}")
         else:

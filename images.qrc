@@ -46,5 +46,7 @@
     <file>窗体/res/修改.png</file>
     <file>窗体/res/查看.png</file>
     <file>窗体/res/修改指令.png</file>
+    <file>窗体/res/复制.png</file>
+    <file>窗体/res/移动到分支.png</file>
   </qresource>
 </RCC>

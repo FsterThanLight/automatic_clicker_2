@@ -9,6 +9,8 @@
       <excludeFolder url="file://$MODULE_DIR$/Clicker.onefile-build/static_src" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/Clicker-test" />
+      <excludeFolder url="file://$MODULE_DIR$/.vscode" />
+      <excludeFolder url="file://$MODULE_DIR$/EXE_TEST" />
     </content>
     <orderEntry type="jdk" jdkName="clicker" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
