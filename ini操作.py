@@ -277,5 +277,30 @@ def get_branch_info(keys_only: bool = False) -> list:
         return []
 
 
+# @timer
+def move_branch_info(branch_name: str, direction: str) -> bool:
+    """移动分支信息
+    :param branch_name: 分支名称
+    :param direction: 移动方向（up: 上移, down: 下移）
+    :return: 移动成功返回 True，否则返回 False
+    """
+    config = get_config()
+    if '分支' not in config:
+        return False
+    branches = list(config['分支'].items())
+    index = next((i for i, (name, _) in enumerate(branches) if name == branch_name), None)
+    if index is None or branch_name == '主流程':
+        return False
+    new_index = index - 1 if direction == 'up' and index > 1 else index + 1 if direction == 'down' and index < len(
+        branches) - 1 else index
+    if new_index != index:
+        branches.insert(new_index, branches.pop(index))
+        config['分支'] = {name: value for name, value in branches}
+        with open('config.ini', 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
+        return True
+    return False
+
+
 if __name__ == "__main__":
-    print(writes_to_branch_info("分支5", "ctrl+3"))
+    move_branch_info("分支1", "up")

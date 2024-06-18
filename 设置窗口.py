@@ -9,7 +9,8 @@ from ini操作 import (
     update_settings_in_ini,
     get_setting_data_from_ini,
     set_window_size,
-    save_window_size, get_global_shortcut, set_global_shortcut, get_branch_info, timer, writes_to_branch_info)
+    save_window_size, get_global_shortcut, set_global_shortcut, get_branch_info, timer, writes_to_branch_info,
+    del_branch_info, move_branch_info)
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
@@ -36,6 +37,11 @@ class Setting(QDialog, Ui_Setting):
         self.pushButton_4.clicked.connect(lambda: self.open_link(YUN_CODE))  # 打开云码链接
         self.radioButton_2.clicked.connect(lambda: self.change_mode('极速模式'))  # 开启极速模式
         self.radioButton.clicked.connect(lambda: self.change_mode('普通模式'))  # 切换普通模式
+        # 分支管理
+        self.pushButton_7.clicked.connect(self.add_branch)  # 添加分支
+        self.pushButton_8.clicked.connect(self.delete_branch)  # 删除分支
+        self.pushButton_5.clicked.connect(lambda: self.move_branch('up'))  # 上移分支
+        self.pushButton_6.clicked.connect(lambda: self.move_branch('down'))  # 下移分支
         self.load_setting_data()  # 加载设置数据
 
     def unregister_global_shortcut_keys(self):
@@ -227,10 +233,60 @@ class Setting(QDialog, Ui_Setting):
             if (',' in key_sequence) and (len(key_sequence) > 1):
                 QMessageBox.critical(self, '错误', '分支快捷键暂不支持设置为多个按键！')
                 raise Exception('分支快捷键不能为组合键！')
+            # 检查快捷键是否重复
+            for j in range(self.tableWidget.rowCount()):
+                if i != j and key_sequence == self.tableWidget.cellWidget(j, 1).keySequence().toString():
+                    QMessageBox.critical(self, '错误', '分支快捷键重复，请重新设置！')
+                    raise Exception('分支快捷键已存在！')
             branch_info.append((branch_name, key_sequence))
         # 写入分支信息到ini文件
         for branch_name, key_sequence in branch_info:
             writes_to_branch_info(branch_name, key_sequence)
+
+    def add_branch(self):
+        """添加分支"""
+        # 弹出输入框
+        branch_name, ok = QtWidgets.QInputDialog.getText(
+            self, '添加分支', '请输入分支名称：', flags=Qt.WindowCloseButtonHint
+        )
+        if ok and branch_name:
+            # 检查分支名称是否已存在
+            if any(
+                    branch_name == self.tableWidget.item(i, 0).text() for i
+                    in range(self.tableWidget.rowCount())
+            ):
+                QMessageBox.critical(self, '错误', '分支名称已存在！')
+                return
+            # 在ini文件中添加分支信息
+            writes_to_branch_info(branch_name, '')
+            self.load_branch_info()  # 刷新表格
+            # 选中新添加的分支，最后一行
+            self.tableWidget.selectRow(self.tableWidget.rowCount() - 1)
+
+    def delete_branch(self):
+        """删除分支"""
+        selected_row = self.tableWidget.currentRow()
+        if selected_row != -1:
+            branch_name = self.tableWidget.item(selected_row, 0).text()
+            if branch_name == '主流程':
+                QMessageBox.critical(self, '错误', '主流程不能删除，也不能移动！')
+                return
+            if del_branch_info(branch_name):
+                self.load_branch_info()
+            else:
+                QMessageBox.critical(self, '错误', '删除分支失败！请重试！')
+
+    def move_branch(self, direction: str):
+        """移动分支
+        :param direction: 移动方向（上移、下移）"""
+        selected_row = self.tableWidget.currentRow()
+        if selected_row != -1:
+            branch_name = self.tableWidget.item(selected_row, 0).text()
+            if move_branch_info(branch_name, direction):
+                self.load_branch_info()
+                self.tableWidget.selectRow(
+                    selected_row - 1 if direction == 'up' else selected_row + 1
+                )
 
     @staticmethod
     def open_link(url):
@@ -243,3 +299,5 @@ class Setting(QDialog, Ui_Setting):
         if self.main_window_open:  # 如果是主窗口打开
             # 注册全局快捷键
             self.parent().register_global_shortcut_keys()
+            # 刷新主窗口的分支信息
+            self.parent().load_branch_to_combobox()

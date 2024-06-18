@@ -79,8 +79,10 @@ collections.Iterable = collections.abc.Iterable
 # todo: 读取excel指令，大写False变为小写false
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
-# todo: 设置窗口中分支管理可新增、删除、修改分支
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
+# todo: 右键菜单添加从当前行开始执行
+# todo: 鼠标点击、按下键盘改为pyautogui
+# todo: 重新设计导出数据的功能（可导出设置）
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -457,15 +459,25 @@ class Main_window(QMainWindow, Ui_MainWindow):
             cursor.execute("SELECT MAX(ID) FROM 命令")
             max_id = cursor.fetchone()[0]
             # 将指令移动到目标分支
-            cursor.execute(
-                "UPDATE 命令 SET 隶属分支=?, ID=? WHERE ID=? AND 隶属分支=?",
-                (
-                    target_branch_name,
-                    max_id + 1,
-                    id_,
-                    branch_name,
-                ),
-            )
+            if max_id != id_:
+                cursor.execute(
+                    "UPDATE 命令 SET 隶属分支=?, ID=? WHERE ID=? AND 隶属分支=?",
+                    (
+                        target_branch_name,
+                        max_id + 1,
+                        id_,
+                        branch_name,
+                    ),
+                )
+            else:
+                cursor.execute(
+                    "UPDATE 命令 SET 隶属分支=? WHERE ID=? AND 隶属分支=?",
+                    (
+                        target_branch_name,
+                        id_,
+                        branch_name,
+                    ),
+                )
             con.commit()
             close_database(cursor, con)
             self.get_data()
@@ -1100,7 +1112,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def create_branch(self):
         """创建分支"""
-        branch_name, ok = QInputDialog.getText(self, "创建分支", "请输入分支名称：")
+        flag = Qt.WindowCloseButtonHint
+        branch_name, ok = QInputDialog.getText(self, "创建分支", "请输入分支名称：", flags=flag)
         if ok:
             message = writes_to_branch_info(branch_name, '')
             self.load_branch_to_combobox(branch_name)
