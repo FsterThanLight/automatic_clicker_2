@@ -28,7 +28,6 @@ from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QApplication, QWidget
 from aip import AipOcr
 from dateutil.parser import parse
-from pywinauto import Application
 
 from functions import get_str_now_time, line_number_increment
 from ini操作 import get_ocr_info, get_setting_data_from_ini, extract_resource_folder_path
@@ -38,8 +37,8 @@ from 数据库操作 import (
 )
 from 网页操作 import WebOption
 
-# sys.coinit_flags = 2  # STA
-# from pywinauto import Application
+sys.coinit_flags = 2  # STA
+from pywinauto import Application
 # from pywinauto.findwindows import ElementNotFoundError
 
 # dic_ = {

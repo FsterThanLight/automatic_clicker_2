@@ -44,40 +44,6 @@ def close_database(cursor, conn):
     conn.close()
 
 
-# 全局参数的数据库操作
-# def global_write_to_database(judge, value):
-#     """将全局参数写入数据库
-#     :param judge: 判断写入类型（资源文件夹路径、分支表名）
-#     :param value: 资源文件夹路径"""
-#     # 连接数据库
-#     cursor, conn = sqlitedb()
-#     if judge == "资源文件夹路径":
-#         cursor.execute(
-#             "INSERT INTO 全局参数(资源文件夹路径,分支表名) VALUES (?,?)", (value, None)
-#         )
-#         conn.commit()
-#     elif judge == "分支表名":
-#         if value != MAIN_FLOW:
-#             cursor, con = sqlitedb()
-#             cursor.execute(
-#                 "insert into 全局参数(资源文件夹路径,分支表名) " "values(?,?)",
-#                 (None, value),
-#             )
-#             con.commit()
-#     close_database(cursor, conn)
-
-
-# def extract_global_parameter(column_name: str) -> list:
-#     """从全局参数表中提取指定列的数据
-#     :param column_name: 列名（资源文件夹路径、分支表名）"""
-#     cursor, conn = sqlitedb()
-#     cursor.execute(f"select {column_name} from 全局参数")
-#     # 去除None并转换为列表
-#     result_list = [item[0] for item in cursor.fetchall() if item[0] is not None]
-#     close_database(cursor, conn)
-#     return result_list
-
-
 def extract_excel_from_global_parameter():
     """从所有资源文件夹路径中提取所有的Excel文件
     :return: Excel文件列表"""
@@ -128,6 +94,16 @@ def clear_all_ins(judge: bool = False, branch_name: str = None):
     close_database(cursor, con)
 
 
+def del_branch_in_database(branch_name):
+    """删除数据库中的分支"""
+    cursor, con = sqlitedb()
+    cursor.execute(
+        "delete from 命令 where 隶属分支=?", (branch_name,)
+    )  # 从命令表中删除分支指令
+    con.commit()
+    close_database(cursor, con)  # 关闭数据库连接
+
+
 def extracted_ins_from_database(branch_name=None) -> list:
     """从分支表中提取指令，如果不传入分支表名，则提取所有分支表中的指令
     :param branch_name: 分支表名，如果不传入，则提取所有指令
@@ -157,6 +133,17 @@ def extracted_ins_from_database(branch_name=None) -> list:
             for branch_table_name in branch_table_name_list:
                 all_list_instructions.append(get_branch_table_ins(branch_table_name))
             return all_list_instructions
+
+
+def extracted_ins_target_id_from_database(id_: int) -> list:
+    """获取目标id的指令，并返回一个和extracted_ins_from_database相似的列表
+    :param id_: 目标id"""
+    cursor, con = sqlitedb()
+    cursor.execute("SELECT * FROM 命令 where ID=?", (id_,))
+    count_record = cursor.fetchall()
+    close_database(cursor, con)
+    # 生成一个和extracted_ins_from_database相似的列表
+    return [count_record]
 
 
 # @timer
@@ -331,5 +318,5 @@ def set_variable_value(variable_name, new_value) -> None:
 
 
 if __name__ == "__main__":
-    # print(get_setting_data_from_db('图像匹配精度'))
-    pass
+    print(extracted_ins_from_database())
+    print(extracted_ins_target_id_from_database(13))

@@ -1,4 +1,28 @@
 import configparser
+import sqlite3
+import sys
+
+
+def sqlitedb(db_name="命令集.db"):
+    """建立与数据库的连接，返回游标
+    :param db_name: 数据库名称
+    :return: 游标，数据库连接"""
+    try:
+        # 取得当前文件目录
+        con = sqlite3.connect(db_name)
+        cursor = con.cursor()
+        return cursor, con
+    except sqlite3.Error:
+        print("未连接到数据库！！请检查数据库路径是否异常。")
+        sys.exit()
+
+
+def close_database(cursor, conn):
+    """关闭数据库
+    :param cursor: 游标
+    :param conn: 数据库连接"""
+    cursor.close()
+    conn.close()
 
 
 def timer(func):
@@ -235,6 +259,15 @@ def del_branch_info(branch_name: str) -> bool:
     :param branch_name: 分支名称
     :return: 如果分支名称不存在则返回False，删除成功返回True
     """
+    def del_branch_in_database():
+        """删除数据库中的分支"""
+        cursor, con = sqlitedb()
+        cursor.execute(
+            "delete from 命令 where 隶属分支=?", (branch_name,)
+        )  # 从命令表中删除分支指令
+        con.commit()
+        close_database(cursor, con)  # 关闭数据库连接
+
     try:
         config = get_config()
         section = '分支'
@@ -249,6 +282,7 @@ def del_branch_info(branch_name: str) -> bool:
             return False
         # 删除指定分支名称
         config.remove_option(section, branch_name)
+        del_branch_in_database()  # 删除数据库中的分支
         # 将更新后的配置写回文件
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config.write(configfile)

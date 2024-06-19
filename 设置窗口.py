@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QKeySequence
-from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView, QWidget
+from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView
 from system_hotkey import SystemHotkey
 
 from functions import is_hotkey_valid
@@ -9,8 +9,13 @@ from ini操作 import (
     update_settings_in_ini,
     get_setting_data_from_ini,
     set_window_size,
-    save_window_size, get_global_shortcut, set_global_shortcut, get_branch_info, timer, writes_to_branch_info,
-    del_branch_info, move_branch_info)
+    save_window_size,
+    get_global_shortcut,
+    set_global_shortcut,
+    get_branch_info,
+    writes_to_branch_info,
+    del_branch_info, move_branch_info
+)
 from 窗体.setting import Ui_Setting
 
 BAIDU_OCR = 'https://ai.baidu.com/tech/ocr'
@@ -58,6 +63,24 @@ class Setting(QDialog, Ui_Setting):
 
     def save_setting_date(self):
         """保存设置数据"""
+
+        def validate_and_set_hotkey(hotkey, key_sequence_edit_, action_):
+            """验证并设置快捷键"""
+            if self.main_window_open:
+                key_sequence = key_sequence_edit_.keySequence().toString().lower().split('+')
+                key_sequence = [key.replace('ctrl', 'control') for key in key_sequence]
+                if is_hotkey_valid(hotkey, key_sequence):
+                    set_global_shortcut(**{action_: key_sequence})
+                else:
+                    QMessageBox.information(
+                        self, '提醒',
+                        f'快捷键{key_sequence_edit_.keySequence().toString()}为无效按键！'
+                        f'\n\n可能的原因：'
+                        f'\n1.系统不支持注册的按键。'
+                        f'\n2.按键已被其他程序占用。'
+                    )
+                    raise Exception('无效的快捷键！')
+
         # 模式选择
         model = self.radioButton.text() if self.radioButton.isChecked() else \
             self.radioButton_2.text() if self.radioButton_2.isChecked() else None
@@ -83,31 +106,14 @@ class Setting(QDialog, Ui_Setting):
         )
 
         # 更新快捷键设置，检查快捷键是否有效，无效则弹出提示
-        def validate_and_set_hotkey(hotkey, key_sequence_edit_, action_):
-            """验证并设置快捷键"""
-            if self.main_window_open:
-                key_sequence = key_sequence_edit_.keySequence().toString().lower().split('+')
-                key_sequence = [key.replace('ctrl', 'control') for key in key_sequence]
-                if is_hotkey_valid(hotkey, key_sequence):
-                    set_global_shortcut(**{action_: key_sequence})
-                else:
-                    QMessageBox.information(
-                        self, '提醒',
-                        f'快捷键{key_sequence_edit_.keySequence().toString()}为无效按键！'
-                        f'\n\n可能的原因：'
-                        f'\n1.系统不支持注册的按键。'
-                        f'\n2.按键已被其他程序占用。'
-                    )
-                    raise Exception('无效的快捷键！')
-
-            key_mapping = {
-                '开始运行': self.keySequenceEdit,
-                '结束运行': self.keySequenceEdit_2,
-                '分支选择': self.keySequenceEdit_3,
-                '暂停和恢复': self.keySequenceEdit_4
-            }
-            for action, key_sequence_edit in key_mapping.items():
-                validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
+        key_mapping = {
+            '开始运行': self.keySequenceEdit,
+            '结束运行': self.keySequenceEdit_2,
+            '分支选择': self.keySequenceEdit_3,
+            '暂停和恢复': self.keySequenceEdit_4
+        }
+        for action, key_sequence_edit in key_mapping.items():
+            validate_and_set_hotkey(SystemHotkey(), key_sequence_edit, action)
 
         # 保存分支信息
         self.save_branch_info()
@@ -116,7 +122,7 @@ class Setting(QDialog, Ui_Setting):
         """保存按钮事件"""
         try:
             self.save_setting_date()
-            QMessageBox.information(self, '提醒', '设置已经生效！')
+            QMessageBox.information(self, '提醒', '设置成功！')
             # 退出设置窗口
             self.close()
         except Exception as e:

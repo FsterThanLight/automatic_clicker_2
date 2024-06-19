@@ -167,7 +167,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             lambda: self.data_import("资源文件夹路径")
         )  # 导入数据
         # 主窗体开始按钮
-        self.pushButton_5.clicked.connect(self.start)
+        self.pushButton_5.clicked.connect(lambda: self.global_shortcut_key("开始线程"))
         self.start_time = None
         self.pushButton_4.clicked.connect(
             lambda: self.show_windows("分支选择")
@@ -548,6 +548,17 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if row_num != -1:  # 未选中数据不弹出右键菜单
             menu = QMenu()  # 实例化菜单
 
+            run_ins = menu.addAction("运行选中指令")
+            run_ins.setIcon(
+                self.style().standardIcon(QStyle.SP_MediaPlay)
+            )
+
+            run_from_this_ins = menu.addAction("从当前行运行")
+            run_from_this_ins.setIcon(
+                self.style().standardIcon(QStyle.SP_MediaPlay)
+            )
+
+            menu.addSeparator()
             refresh = menu.addAction("刷新")
             refresh.setIcon(
                 self.style().standardIcon(QStyle.SP_BrowserReload)
@@ -643,6 +654,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.statusBar.showMessage(f"清空当前分支全部指令。", 1000)
         elif action == go_branch:
             self.go_to_branch()
+        elif action == run_ins:
+            # 获取选中的行的id
+            row = self.tableWidget.currentRow()
+            id_ = int(self.tableWidget.item(row, 6).text())
+            self.start('单行指令', id_)
+        elif action == run_from_this_ins:
+            # 获取选中行的行号
+            row = self.tableWidget.currentRow()
+            self.start('从当前行运行', row)
 
     def show_windows(self, judge):
         """打开窗体"""
@@ -1069,8 +1089,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.menuzv.clear()  # 清空最近打开文件菜单
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
 
-    def start(self):
-        """主窗体开始按钮"""
+    def start(self, run_mode='全部指令', info=0):
+        """主窗体开始按钮
+        :param run_mode: 运行模式（全部指令、单行指令、从当前行运行）
+        :param info: 指令ID"""
 
         def operation_before_execution():
             """执行前的操作"""
@@ -1082,7 +1104,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
         if self.command_thread.isRunning():  # 如果线程正在运行,则终止
             self.command_thread.terminate()
         operation_before_execution()
-        self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+        if run_mode == '全部指令':
+            self.command_thread.set_run_mode('全部指令', 0)  # 设置运行模式
+            self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+        elif run_mode == '单行指令':
+            self.command_thread.set_run_mode('单行指令', info)  # 设置运行模式
+            self.command_thread.set_branch_name_index(0)
+        elif run_mode == '从当前行运行':
+            self.command_thread.set_run_mode('从当前行运行', info)  # 设置运行模式
+            self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
         self.command_thread.start()
         # 记录开始时间的时间戳
         self.start_time = time.time()
@@ -1123,17 +1153,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
             )
 
     def delete_branch(self):
-        """删除分支"""
-
-        def del_branch_in_database(branch_name):
-            """删除数据库中的分支"""
-            cursor, con = sqlitedb()
-            cursor.execute(
-                "delete from 命令 where 隶属分支=?", (branch_name,)
-            )  # 从命令表中删除分支指令
-            con.commit()
-            close_database(cursor, con)  # 关闭数据库连接
-
         text = self.comboBox.currentText()
         if text == MAIN_FLOW:
             QMessageBox.critical(self, "提示", "无法删除主分支！")
@@ -1227,7 +1246,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
 
         elif i_str == "开始线程":
-            self.start()  # 执行主任务
+            self.start('全部指令', 0)  # 开始线程
             self.send_message("任务开始！")
 
         elif i_str == "暂停和恢复线程":

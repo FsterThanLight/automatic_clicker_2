@@ -14,7 +14,7 @@ from PyQt5.QtCore import *
 from functions import system_prompt_tone
 from ini操作 import get_branch_info
 from 功能类 import *
-from 数据库操作 import extracted_ins_from_database
+from 数据库操作 import extracted_ins_from_database, extracted_ins_target_id_from_database
 
 
 class CommandThread(QThread):
@@ -37,9 +37,9 @@ class CommandThread(QThread):
         self.suspended: bool = False
         # 运行时的参数
         self.branch_name_index: int = 0  # 分支表名索引
+        self.run_mode: tuple = ('全部指令', 0)  # 运行模式
         # 读取配置文件
         self.time_sleep = float(get_setting_data_from_ini('Config', '暂停时间'))
-        # self.image_folder_path = extract_resource_folder_path()
         self.branch_table_name: list = []
         # 互斥锁,用于暂停线程
         self.mutex = QMutex()
@@ -50,6 +50,12 @@ class CommandThread(QThread):
         """设置分支表名索引"""
         self.branch_name_index = branch_name_index_
 
+    def set_run_mode(self, mode: str, info: int):
+        """设置运行模式
+        :param mode: 运行模式（全部指令、单行指令）
+        :param info: 指令ID"""
+        self.run_mode = (mode, info)
+
     def show_message(self, message):
         """显示消息"""
         self.send_message.emit(message)
@@ -58,8 +64,19 @@ class CommandThread(QThread):
         """执行指令"""
         self.start_state = True
         self.suspended = False
+        # 从数据库中获取要执行的指令列表，并设置不同的运行模式
+        list_instructions: list = []
+        current_index: int = 0
+        if self.run_mode[0] == '全部指令':
+            list_instructions = extracted_ins_from_database()
+            current_index = 0
+        elif self.run_mode[0] == '单行指令':
+            list_instructions = extracted_ins_target_id_from_database(self.run_mode[1])
+            current_index = 0
+        elif self.run_mode[0] == '从当前行运行':
+            list_instructions = extracted_ins_from_database()
+            current_index = self.run_mode[1]
         # 执行指令
-        list_instructions = extracted_ins_from_database()
         if len(list_instructions) != 0:
             # 设置主流程循环前的参数
             loop_type = '无限循环' if self.main_window.radioButton.isChecked() else '有限循环'
@@ -69,7 +86,7 @@ class CommandThread(QThread):
             while (self.start_state and loop_type == '无限循环') or \
                     (loop_type == '有限循环' and self.number <= self.number_cycles):
                 # 执行指令集中的指令
-                self.execute_instructions(self.branch_name_index, 0, list_instructions)
+                self.execute_instructions(self.branch_name_index, current_index, list_instructions)
                 self.show_message('换行')
                 self.show_message(f'完成第{self.number}次循环')
                 self.number += 1
@@ -103,9 +120,21 @@ class CommandThread(QThread):
         while current_index < len(list_instructions_[current_list_index]) and not self.check_mutex():
             try:
                 elem_ = list_instructions_[current_list_index][current_index]
-                # print('elem_:', elem_)
                 # 【指令集合【指令分支（指令元素[元素索引]）】】
                 # print('执行当前指令：', elem_)
+                # [
+                #     [
+                #         (13, None, '时间等待', "{'类型': '时间等待', '时长': 5, '单位': '秒'}", None, None, None, 1,
+                #          '提示异常并暂停', '', '主流程'),
+                #         (14, None, '坐标点击', "{'动作': '左键单击', '坐标': '1086-1414', '自定义次数': 0}", None, None,
+                #          None, 1, '提示异常并暂停', '', '主流程')
+                #     ],
+                #     [
+                #         (16, None, '鼠标点击',
+                #          "{'鼠标': '左键', '次数': 1, '间隔': 100, '按压': 100}", None,
+                #          None, None, 1, '提示异常并暂停', '', '分支1')
+                #     ]
+                # ]
                 dic_ = {
                     'ID': elem_[0],
                     '图像路径': elem_[1],
@@ -177,8 +206,8 @@ class CommandThread(QThread):
                     info_e = str(e)
                     if not info_e:
                         info_e = str(type(e))
-                # except IndexError:
-                #     info_e = 'test'
+                    # except IndexError:
+                    #     info_e = 'test'
                     str_id = str(dict(dic_)['ID'])
 
                     # 自动跳过功能
@@ -241,5 +270,5 @@ class CommandThread(QThread):
                         break
 
             except IndexError:
-                self.show_message(f'分支执行异常！')
+                self.show_message(f'无法进行分支跳转')
                 break
