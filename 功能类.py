@@ -39,6 +39,7 @@ from 网页操作 import WebOption
 
 sys.coinit_flags = 2  # STA
 from pywinauto import Application
+
 # from pywinauto.findwindows import ElementNotFoundError
 
 # dic_ = {
@@ -727,13 +728,19 @@ class PressKeyboard:
             time.sleep(self.time_sleep)
 
     def press_keyboard(self, key, duration):
-        """鼠标移动事件
-        :param key: 按键列表
+        """键盘按键事件
+        :param key: 按键
         :param duration: 按键持续时间(毫秒)"""
-        keyboard.press(key)
-        time.sleep(duration / 1000)
-        keyboard.release(key)
-        self.out_mes.out_mes(f"按下按键：{key}，持续{duration}毫秒", self.is_test)
+        keys = key.split('+')
+        # 按下组合键
+        if len(keys) > 1:
+            pyautogui.hotkey(*keys)
+            self.out_mes.out_mes(f"按下组合键：{key}", self.is_test)
+        else:
+            pyautogui.keyDown(keys[0])
+            time.sleep(duration / 1000)
+            pyautogui.keyUp(keys[0])
+            self.out_mes.out_mes(f"按下按键：{key}，持续{duration}毫秒", self.is_test)
 
 
 class MiddleActivation:
@@ -819,8 +826,8 @@ class MouseClick:
 
     def simulated_mouse_click(self, click_times, lOrR, duration, interval, auxiliary):
         """模拟鼠标点击
-        :param duration: 按压时长，单位：秒
-        :param interval: 时间间隔，单位：秒
+        :param duration: 按压时长，单位：毫秒
+        :param interval: 时间间隔，单位：毫秒
         :param click_times: 点击次数
         :param lOrR: (左键、右键)
         :param auxiliary: 辅助键，默认为空"""
@@ -831,11 +838,11 @@ class MouseClick:
             if auxiliary:
                 keyboard.press(auxiliary)  # 按下辅助键
             mouse.press(button=button)
-            time.sleep(duration)  # 将毫秒转换为秒
+            time.sleep(duration / 1000)
             mouse.release(button=button)
             if auxiliary:
                 keyboard.release(auxiliary)  # 释放辅助键
-            time.sleep(interval)
+            time.sleep(interval / 1000)
         self.out_mes.out_mes(f"鼠标在当前位置点击{click_times}次", self.is_test)
 
 

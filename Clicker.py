@@ -80,8 +80,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
-# todo: 右键菜单添加从当前行开始执行
-# todo: 鼠标点击、按下键盘改为pyautogui
 # todo: 重新设计导出数据的功能（可导出设置）
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496

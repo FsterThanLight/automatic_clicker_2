@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'c:\Users\Administrator\Desktop\personal_data\automatic_clicker_2\窗体\about.ui'
+# Form implementation generated from reading ui file 'about.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -157,5 +157,5 @@ class Ui_About(object):
         self.label_6.setText(_translate("About", "QQ交流群："))
         self.label_7.setText(_translate("About", "308994839"))
         self.gitee.setText(_translate("About", "gitee地址"))
-        self.label_4.setText(_translate("About", "[federalsadler@sohu.com] Copyright (c) [2022] "))
+        self.label_4.setText(_translate("About", "成都羽图软件开发有限公司 Copyright (c) [2022] "))
 import images_rc

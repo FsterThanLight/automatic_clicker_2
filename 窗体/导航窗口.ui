@@ -334,7 +334,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>3</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -1399,7 +1399,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>999</number>
+                 <number>10000</number>
                 </property>
                 <property name="value">
                  <number>100</number>
@@ -1501,7 +1501,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>9999</number>
+                 <number>10000</number>
                 </property>
                 <property name="value">
                  <number>100</number>
@@ -1514,7 +1514,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>9999</number>
+                 <number>10000</number>
                 </property>
                 <property name="value">
                  <number>100</number>
@@ -1527,7 +1527,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>999</number>
+                 <number>10000</number>
                 </property>
                 <property name="value">
                  <number>100</number>
@@ -1837,7 +1837,7 @@
             <item row="1" column="1">
              <widget class="QComboBox" name="comboBox_6">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="currentText">
                <string>1000</string>

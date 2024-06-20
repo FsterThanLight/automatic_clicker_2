@@ -2,6 +2,9 @@ import configparser
 import sqlite3
 import sys
 
+from openpyxl.reader.excel import load_workbook
+from openpyxl.workbook import Workbook
+
 
 def sqlitedb(db_name="命令集.db"):
     """建立与数据库的连接，返回游标
@@ -259,6 +262,7 @@ def del_branch_info(branch_name: str) -> bool:
     :param branch_name: 分支名称
     :return: 如果分支名称不存在则返回False，删除成功返回True
     """
+
     def del_branch_in_database():
         """删除数据库中的分支"""
         cursor, con = sqlitedb()
@@ -336,5 +340,54 @@ def move_branch_info(branch_name: str, direction: str) -> bool:
     return False
 
 
+def ini_to_excel(excel_path_):
+    # 读取ini文件
+    config = get_config()
+    # 创建Excel工作簿
+    wb = Workbook()
+    # 创建一个名为“设置”的工作表
+    ws = wb.active
+    ws.title = "设置"
+    # 写入ini文件内容到Excel
+    row = 1
+    for section in config.sections():
+        ws.cell(row=row, column=1, value=f"[{section}]")
+        row += 1
+        for key, value in config.items(section):
+            ws.cell(row=row, column=1, value=key)
+            ws.cell(row=row, column=2, value=value)
+            row += 1
+        row += 1  # 在每个section后面加一个空行
+    # 保存Excel文件
+    wb.save(excel_path_)
+
+
+def excel_to_ini(excel_path_, ini_path):
+    try:
+        # 读取Excel文件
+        wb = load_workbook(excel_path_)
+        ws = wb['设置']
+        # 创建configparser对象
+        config = configparser.ConfigParser()
+        current_section = None
+        for row in ws.iter_rows(values_only=True):
+            if row[0] is None:
+                continue
+            if row[0].startswith('[') and row[0].endswith(']'):
+                # 这是一个section
+                current_section = row[0][1:-1]
+                config.add_section(current_section)
+            elif current_section and row[0] and row[1]:
+                # 这是一个键值对
+                config.set(current_section, str(row[0]), str(row[1]))
+        # 将内容写入ini文件
+        with open(ini_path, 'w', encoding='utf-8') as configfile:
+            config.write(configfile)
+    except Exception as e:
+        print(f"设置写入失败: {e}")
+
+
 if __name__ == "__main__":
-    move_branch_info("分支1", "up")
+    excel_path = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
+    ini_to_excel(excel_path)
+    # excel_to_ini(excel_path, "config.ini")

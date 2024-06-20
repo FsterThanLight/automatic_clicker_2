@@ -362,7 +362,7 @@
       </font>
      </property>
      <property name="text">
-      <string>[federalsadler@sohu.com] Copyright (c) [2022] </string>
+      <string>成都羽图软件开发有限公司 Copyright (c) [2022] </string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
