@@ -503,7 +503,6 @@ class Ui_MainWindow(object):
         self.actionceui_1.setObjectName("actionceui_1")
         self.actiondh = QtWidgets.QAction(MainWindow)
         self.actiondh.setObjectName("actiondh")
-        self.menu_5.addAction(self.actionb)
         self.menu_5.addAction(self.actiona)
         self.menu.addAction(self.actionx)
         self.menu.addAction(self.menu_5.menuAction())

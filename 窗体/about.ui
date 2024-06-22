@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>347</width>
-    <height>398</height>
+    <width>305</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -184,21 +184,8 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <spacer name="horizontalSpacer_7">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
       <widget class="QLabel" name="label_2">
        <property name="font">
         <font>
@@ -216,7 +203,7 @@
        </property>
       </widget>
      </item>
-     <item>
+     <item row="0" column="2">
       <spacer name="horizontalSpacer_8">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -228,6 +215,54 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="0">
+      <spacer name="horizontalSpacer_7">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="pushButton">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>-1</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: red;
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 14px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+}
+
+QPushButton:hover {
+    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */
+}
+</string>
+       </property>
+       <property name="text">
+        <string>检查更新</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

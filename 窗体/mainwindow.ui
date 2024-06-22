@@ -1121,7 +1121,6 @@ color: rgb(255, 255, 255);</string>
      <property name="title">
       <string>另存为</string>
      </property>
-     <addaction name="actionb"/>
      <addaction name="actiona"/>
     </widget>
     <widget class="QMenu" name="menuzv">

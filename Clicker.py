@@ -37,6 +37,7 @@ from PyQt5.QtWidgets import (
     QAction,
     QSplashScreen,
 )
+from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.utils import get_column_letter
 from system_hotkey import SystemHotkey
 
@@ -53,6 +54,7 @@ from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.参数窗口 import Ui_Param
+from 自动更新 import Update
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
@@ -134,6 +136,10 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.check_file_integrity()  # 检查文件完整性
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
         self.branch_win = BranchWindow(self)  # 分支选择窗口
+        # 检查更新
+        is_update = eval(get_setting_data_from_ini("Config", "启动检查更新"))
+        if is_update:
+            self.update_software(False)
         # 显示导不同的窗口
         self.pushButton.clicked.connect(
             lambda: self.show_windows("导航")
@@ -155,15 +161,15 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.actionx.triggered.connect(
             lambda: self.save_data("自动保存")
         )  # 保存指令数据
-        self.actionb.triggered.connect(
-            lambda: self.save_data("db")
-        )  # 导出数据，导出按钮
         self.actiona.triggered.connect(
             lambda: self.save_data("excel")
         )  # 导出数据，导出按钮
         self.actionf.triggered.connect(
             lambda: self.data_import("资源文件夹路径")
         )  # 导入数据
+        self.actionj.triggered.connect(
+            lambda: self.update_software(True)
+        )
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(lambda: self.global_shortcut_key("开始线程"))
         self.start_time = None
@@ -802,149 +808,99 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def save_data(self, judge: str):
         """保存配置文件到当前文件夹下
-        :param judge: 保存的文件类型（db、excel、自动保存）"""
+        :param judge: 保存的文件类型（excel、自动保存）"""
 
-        def get_directory_pyth_global(judge__):
-            """获取全局资源文件夹路径,如果不存在最近打开的文件路径"""
-            resource_folder_path = extract_resource_folder_path()
-            directory_folder_path = (
-                resource_folder_path[0]
-                if resource_folder_path
-                else os.path.expanduser("~")
-            )
-            # 默认文件名
-            default_file_name = "指令数据.xlsx" if judge__ == "excel" else "指令数据.db"
-            return os.path.normpath(
-                os.path.join(directory_folder_path, default_file_name)
-            )
-
-        def get_file_and_folder(judge__) -> tuple:
-            """获取文件名和文件夹路径"""
-            directory_path = get_directory_pyth_global(
-                judge__
-            )  # 获取全局资源文件夹路径
-            # 打开选择文件对话框
+        def get_save_file_and_folder() -> tuple:
+            """获取保存文件名和文件夹路径"""
+            # 获取资源文件夹路径作为默认路径，如果存在则使用用户的主目录
+            directory_folder_path = extract_resource_folder_path()[0] \
+                if extract_resource_folder_path() else os.path.expanduser("~")
+            directory_path = os.path.normpath(os.path.join(directory_folder_path, "指令数据.xlsx"))
+            # 获取保存文件名和文件夹路径
             file_path, _ = QFileDialog.getSaveFileName(
                 parent=self,
                 caption="保存文件",
-                filter="(*.db)" if judge__ == "db" else "(*.xlsx)",
-                directory=directory_path,
+                filter="(*.xlsx)",
+                directory=directory_path
             )
-            if file_path != "":  # 获取文件名称
-                return (
-                    os.path.normpath(os.path.split(file_path)[1]),
-                    os.path.normpath(os.path.split(file_path)[0]),
-                )
-            else:
-                return None, None
+            return (os.path.normpath(os.path.split(file_path)[1]),
+                    os.path.normpath(os.path.split(file_path)[0])) \
+                if file_path else (None, None)
 
         def get_file_and_folder_from_setting():
-            """获取文件名和文件夹路径"""
-            # 获取资源文件夹路径，如果存在则使用用户的主目录
+            """从设置中获取最近打开的文件路径作为保存路径，用于自动保存"""
             recently_opened = get_setting_data_from_ini('Config', "当前文件路径")
-            print('recently_opened', recently_opened)
-            if (recently_opened != "None") and (os.path.exists(recently_opened)):
-                return (
-                    os.path.normpath(os.path.split(recently_opened)[1]),
-                    os.path.normpath(os.path.split(recently_opened)[0]),
+            if recently_opened != "None" and os.path.exists(recently_opened):
+                return os.path.split(recently_opened)
+            self.statusBar.showMessage("未找到最近导入的文件路径。已自动切换为另存为...", 3000)
+            return get_save_file_and_folder()
+
+        def adaptive_column_width(sheet_):
+            for col in range(1, sheet_.max_column + 1):
+                max_length = 0
+                for cell in sheet_[get_column_letter(col)]:
+                    cell_length = 0.7 * len(
+                        re.findall("([\u4e00-\u9fa5])", str(cell.value))
+                    ) + len(str(cell.value))
+                    max_length = max(max_length, cell_length)
+                sheet_.column_dimensions[get_column_letter(col)].width = (
+                        max_length + 5
                 )
-            else:
-                self.statusBar.showMessage(
-                    f"未找到最近导入的文件路径。已自动切换为另存为...", 3000
-                )
-                return get_file_and_folder("excel")
+
+        def set_title_style(sheet_):
+            """设置标题样式"""
+            header_font = Font(bold=True, color="FFFFFF")
+            header_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
+            header_alignment = Alignment(horizontal="center", vertical="center")
+            for cell in sheet_[1]:  # 第一行标题
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = header_alignment
 
         # 判断是否为另存为,如果不是则自动判断文件类型
         try:
-            print("保存数据", judge)
-            judge_ = None
-            if judge != "自动保存":
-                file_name, folder_path = get_file_and_folder(
-                    judge
-                )  # 获取文件名和文件夹路径
-                judge_ = judge
-            else:
-                file_name, folder_path = (
-                    get_file_and_folder_from_setting()
-                )  # 如果存在最近打开的文件路径
-                if (file_name != "") and (file_name is not None):
-                    judge_ = "excel" if file_name.endswith(".xlsx") else "db"
+            file_name, folder_path = get_save_file_and_folder() \
+                if judge != "自动保存" else get_file_and_folder_from_setting()
             # 开始保存数据
-            if (file_name is not None) and (folder_path is not None):
-                if judge_ == "db":
-                    # 连接数据库
-                    cursor, con = sqlitedb()
-                    # 获取数据库文件路径
-                    db_file = con.execute("PRAGMA database_list").fetchall()[0][2]
-                    close_database(cursor, con)
-                    # 将数据库文件复制到指定文件夹下
-                    save_path = os.path.normpath(os.path.join(folder_path, file_name))
-                    shutil.copy(db_file, save_path)
-                    # 提示保存成功
-                    if judge != "自动保存":
-                        QMessageBox.information(self, "提示", "指令数据保存成功！")
-                    self.statusBar.showMessage(f"指令数据已保存至{save_path}。", 3000)
-                elif judge_ == "excel":
-                    # 使用openpyxl模块创建Excel文件
-                    wb = openpyxl.Workbook()
-                    # 获取全局参数表中的资源文件夹路径
-                    branch_table_list = get_branch_info(keys_only=True)
-                    # 将sheet名设置为分支表名
-                    for branch_name in branch_table_list:
-                        wb.create_sheet(branch_name)  # 创建所有分支sheet
-                        # 向分支sheet中写入数据
-                        sheet = wb[branch_name]
-                        # 设置表头
-                        sheet["A1"] = "ID"
-                        sheet["B1"] = "图像名称"
-                        sheet["C1"] = "指令类型"
-                        sheet["D1"] = "参数1"
-                        sheet["E1"] = "参数2"
-                        sheet["F1"] = "参数3"
-                        sheet["G1"] = "参数4"
-                        sheet["H1"] = "重复次数"
-                        sheet["I1"] = "异常处理"
-                        sheet["J1"] = "备注"
-                        sheet["K1"] = "隶属分支"
-                        # 写入数据
-                        branch_list_instructions = extracted_ins_from_database(
-                            branch_name
-                        )
-                        for ins in range(len(branch_list_instructions)):
-                            for i_ in range(len(branch_list_instructions[ins])):
-                                sheet.cell(
-                                    row=ins + 2,
-                                    column=i_ + 1,
-                                    value=branch_list_instructions[ins][i_],
-                                )
-                        # 自适应列宽
-                        for col in range(1, sheet.max_column + 1):
-                            max_length = 0
-                            for cell in sheet[get_column_letter(col)]:
-                                cell_length = 0.7 * len(
-                                    re.findall("([\u4e00-\u9fa5])", str(cell.value))
-                                ) + len(str(cell.value))
-                                max_length = max(max_length, cell_length)
-                            sheet.column_dimensions[get_column_letter(col)].width = (
-                                    max_length + 5
-                            )
+            if all([file_name, folder_path]):
+                # 使用openpyxl模块创建Excel文件
+                wb = openpyxl.Workbook()
+                # 获取全局参数表中的分支表名
+                branch_table_list = get_branch_info(keys_only=True)
+                # 将sheet名设置为分支表名
+                headers = ["ID",
+                           "图像名称",
+                           "指令类型",
+                           "参数信息",
+                           "参数-2",
+                           "参数-3",
+                           "参数-4",
+                           "重复次数",
+                           "异常处理",
+                           "备注",
+                           "隶属分支"
+                           ]
+                for branch_name in branch_table_list:
+                    sheet = wb.create_sheet(branch_name)
+                    sheet.append(headers)
+                    set_title_style(sheet)  # 设置标题样式
+                    # 写入数据
+                    for ins in extracted_ins_from_database(branch_name):
+                        sheet.append(ins)
+                    adaptive_column_width(sheet)
 
-                    wb.remove(wb["Sheet"])  # 删除默认的sheet
-                    # 保存Excel文件
-                    save_path = os.path.normpath(os.path.join(folder_path, file_name))
-                    wb.save(save_path)
-                    # 提示保存成功，是否打开文件夹
-                    if judge != "自动保存":
-                        choice__ = QMessageBox.question(
-                            self,
-                            "提示",
-                            "指令数据保存成功！是否打开文件夹？",
-                            QMessageBox.Yes | QMessageBox.No,
-                            QMessageBox.No,
-                        )
-                        if choice__ == QMessageBox.Yes:
-                            os.startfile(save_path)
-                    self.statusBar.showMessage(f"指令数据已保存至{save_path}。", 3000)
+                wb.remove(wb["Sheet"])  # 删除默认的sheet
+                # 保存Excel文件
+                save_path = os.path.normpath(os.path.join(folder_path, file_name))
+                wb.save(save_path)
+                # 提示保存成功，是否打开文件夹
+                if judge != "自动保存" and QMessageBox.question(
+                        self, "提示", "指令数据保存成功！是否打开文件夹？",
+                        QMessageBox.Yes | QMessageBox.No,
+                        QMessageBox.No
+                ) == QMessageBox.Yes:
+                    os.startfile(save_path)
+                self.statusBar.showMessage(f"指令数据已保存至{save_path}。", 3000)
         except PermissionError:
             QMessageBox.critical(self, "错误", "保存失败，文件被占用！")
 
@@ -1294,6 +1250,41 @@ class Main_window(QMainWindow, Ui_MainWindow):
         show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
         close_browser()  # 关闭浏览器驱动
 
+    def update_software(self, show_MessageBox=True):
+        """更新软件"""
+
+        def start_update():
+            try:
+                update.start_update_program()
+            except FileNotFoundError:
+                QMessageBox.critical(self, '致命错误', '更新程序丢失！')
+
+        update = Update()
+        # 返回更新信息
+        update_info_dic = update.get_update_info()
+
+        if update_info_dic is None:
+            QMessageBox.critical(self, '提示', '网络故障无法连接到服务器！\n\n请检查网络连接！')
+            return
+
+        new_version = update_info_dic['版本号']
+        if CURRENT_VERSION == new_version:
+            if show_MessageBox:
+                QMessageBox.information(self, '更新提示', f'当前版本已经是最新版本。')
+            return
+
+        if update_info_dic['强制更新']:
+            start_update()
+        else:
+            text = (f"发现新版本：{new_version}，"
+                    f"\n\n{update_info_dic['更新内容']}"
+                    f"\n\n是否更新？")
+            ok = QMessageBox.question(
+                self, '提示', text,
+                QMessageBox.Yes | QMessageBox.No)
+            if ok == QMessageBox.Yes:
+                start_update()
+
 
 class About(QDialog, Ui_About):
     """关于窗体"""
@@ -1301,6 +1292,7 @@ class About(QDialog, Ui_About):
     def __init__(self, parent=None):
         super().__init__(parent)
         # 初始化窗体
+        self._parent = parent
         self.setupUi(self)
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint
@@ -1310,6 +1302,7 @@ class About(QDialog, Ui_About):
         self.label_7.setText('<a href="{}"><font color="red">{}</font></a>'.format(QQ_GROUP, QQ))
         # 绑定事件
         self.gitee.clicked.connect(self.show_gitee)
+        self.pushButton.clicked.connect(lambda: self._parent.update_software(True))
 
     @staticmethod
     def show_gitee():
@@ -1371,7 +1364,6 @@ if __name__ == "__main__":
         )
         splash.setFont(QFont("微软雅黑", 15))  # 设置字体
         splash.show()  # 显示启动界面
-        time.sleep(0.1)  # 延时1秒
 
         main_win = Main_window()  # 创建主窗体
 

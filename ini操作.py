@@ -388,6 +388,7 @@ def excel_to_ini(excel_path_, ini_path):
 
 
 if __name__ == "__main__":
-    excel_path = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
-    ini_to_excel(excel_path)
+    # excel_path = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
+    # ini_to_excel(excel_path)
     # excel_to_ini(excel_path, "config.ini")
+    print(eval(get_setting_data_from_ini("Config", "启动检查更新")))
