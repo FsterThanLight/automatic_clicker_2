@@ -181,7 +181,7 @@ class ImageClick:
         """从指令字典中解析出指令参数
         :return: 指令参数列表，重复次数"""
         # 读取图像名称
-        img = get_available_path(self.ins_dic.get("图像路径"), self.out_mes)
+        img = get_available_path(self.ins_dic.get("图像路径"), self.out_mes, self.is_test)
         # 取重复次数
         re_try = self.ins_dic.get("重复次数")
         # 获取其他参数
@@ -1040,7 +1040,7 @@ class WebEntry:
 
     def parsing_ins_dic(self):
         """解析指令字典"""
-        image_path = self.ins_dic.get("图像路径")
+        image_path = get_available_path(self.ins_dic.get("图像路径"), self.out_mes, self.is_test)
         parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         list_dic = {
             "工作簿路径": image_path,
@@ -1967,7 +1967,7 @@ class GetExcelCellValue:
 
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数"""
-        excel_path = self.ins_dic.get("图像路径")
+        excel_path = get_available_path(self.ins_dic.get("图像路径"), self.out_mes, self.is_test)
         parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         return {
             "工作簿路径": excel_path,

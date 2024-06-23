@@ -75,9 +75,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值的功能
-# todo: 按下键盘指令的部分组合键失效？
-# todo: 自动切换工作簿路径
-# todo: 读取excel指令，大写False变为小写false
+# todo: 读取excel指令，大写False变为小写false?
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
@@ -100,7 +98,7 @@ RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/release
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 APP_NAME = "Clicker"
-CURRENT_VERSION = "v0.26 内测1"
+CURRENT_VERSION = "v0.26.1 Beta"
 
 
 def timer(func):
