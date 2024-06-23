@@ -340,14 +340,11 @@ def move_branch_info(branch_name: str, direction: str) -> bool:
     return False
 
 
-def ini_to_excel(excel_path_):
+def ini_to_excel(wb: Workbook):
     # 读取ini文件
     config = get_config()
-    # 创建Excel工作簿
-    wb = Workbook()
     # 创建一个名为“设置”的工作表
-    ws = wb.active
-    ws.title = "设置"
+    ws = wb.create_sheet("设置")
     # 写入ini文件内容到Excel
     row = 1
     for section in config.sections():
@@ -358,14 +355,10 @@ def ini_to_excel(excel_path_):
             ws.cell(row=row, column=2, value=value)
             row += 1
         row += 1  # 在每个section后面加一个空行
-    # 保存Excel文件
-    wb.save(excel_path_)
 
 
-def excel_to_ini(excel_path_, ini_path):
+def excel_to_ini(wb: Workbook):
     try:
-        # 读取Excel文件
-        wb = load_workbook(excel_path_)
         ws = wb['设置']
         # 创建configparser对象
         config = configparser.ConfigParser()
@@ -381,7 +374,7 @@ def excel_to_ini(excel_path_, ini_path):
                 # 这是一个键值对
                 config.set(current_section, str(row[0]), str(row[1]))
         # 将内容写入ini文件
-        with open(ini_path, 'w', encoding='utf-8') as configfile:
+        with open('config.ini', 'w', encoding='utf-8') as configfile:
             config.write(configfile)
     except Exception as e:
         print(f"设置写入失败: {e}")

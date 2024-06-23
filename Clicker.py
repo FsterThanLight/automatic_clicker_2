@@ -14,7 +14,6 @@ import collections
 import json
 import os.path
 import re
-import shutil
 import time
 
 import openpyxl
@@ -45,7 +44,7 @@ from functions import get_str_now_time, system_prompt_tone, show_normal_window_w
     show_window
 from icon import Icon
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
-    get_global_shortcut, writes_to_branch_info, del_branch_info
+    get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini
 from main_work import CommandThread
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
@@ -82,7 +81,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
-# todo: 重新设计导出数据的功能（可导出设置）
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -835,6 +833,17 @@ class Main_window(QMainWindow, Ui_MainWindow):
             self.statusBar.showMessage("未找到最近导入的文件路径。已自动切换为另存为...", 3000)
             return get_save_file_and_folder()
 
+        def prompt_save_success(save_path_: str):
+            """提示保存成功"""
+            # 提示保存成功，是否打开文件夹
+            if judge != "自动保存" and QMessageBox.question(
+                    self, "提示", "指令数据保存成功！是否打开文件夹？",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+            ) == QMessageBox.Yes:
+                os.startfile(save_path_)
+            self.statusBar.showMessage(f"指令数据已保存至{save_path_}。", 3000)
+
         def adaptive_column_width(sheet_):
             for col in range(1, sheet_.max_column + 1):
                 max_length = 0
@@ -859,7 +868,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         # 判断是否为另存为,如果不是则自动判断文件类型
         try:
-            file_name, folder_path = get_save_file_and_folder() \
+            folder_path, file_name = get_save_file_and_folder() \
                 if judge != "自动保存" else get_file_and_folder_from_setting()
             # 开始保存数据
             if all([file_name, folder_path]):
@@ -868,18 +877,19 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 # 获取全局参数表中的分支表名
                 branch_table_list = get_branch_info(keys_only=True)
                 # 将sheet名设置为分支表名
-                headers = ["ID",
-                           "图像名称",
-                           "指令类型",
-                           "参数信息",
-                           "参数-2",
-                           "参数-3",
-                           "参数-4",
-                           "重复次数",
-                           "异常处理",
-                           "备注",
-                           "隶属分支"
-                           ]
+                headers = [
+                    "ID",
+                    "图像名称",
+                    "指令类型",
+                    "参数信息",
+                    "参数-2",
+                    "参数-3",
+                    "参数-4",
+                    "重复次数",
+                    "异常处理",
+                    "备注",
+                    "隶属分支"
+                ]
                 for branch_name in branch_table_list:
                     sheet = wb.create_sheet(branch_name)
                     sheet.append(headers)
@@ -890,17 +900,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     adaptive_column_width(sheet)
 
                 wb.remove(wb["Sheet"])  # 删除默认的sheet
+                ini_to_excel(wb)  # 将ini文件中的数据写入到Excel文件中
+                adaptive_column_width(wb['设置'])
                 # 保存Excel文件
                 save_path = os.path.normpath(os.path.join(folder_path, file_name))
                 wb.save(save_path)
-                # 提示保存成功，是否打开文件夹
-                if judge != "自动保存" and QMessageBox.question(
-                        self, "提示", "指令数据保存成功！是否打开文件夹？",
-                        QMessageBox.Yes | QMessageBox.No,
-                        QMessageBox.No
-                ) == QMessageBox.Yes:
-                    os.startfile(save_path)
-                self.statusBar.showMessage(f"指令数据已保存至{save_path}。", 3000)
+                prompt_save_success(save_path)  # 提示保存成功
         except PermissionError:
             QMessageBox.critical(self, "错误", "保存失败，文件被占用！")
 
@@ -930,67 +935,36 @@ class Main_window(QMainWindow, Ui_MainWindow):
     def data_import(self, file_path):
         """导入数据功能"""
 
-        def data_import_from_db(target_path_):
-            # 获取当前文件夹路径
-            # 将目标数据库中的数据导入到当前数据库中
-            cursor, con = sqlitedb()
-            # 获取目标数据库中的数据
-            con_target = sqlite3.connect(target_path_[0])
-            cursor_target = con_target.cursor()
-            cursor_target.execute("select * from 命令")
-            list_instructions = cursor_target.fetchall()
-            # 获取目标数据库中的分支表名
-            cursor_target.execute(f"select 分支表名 from 全局参数")
-            branch_result_list = [
-                item[0] for item in cursor_target.fetchall() if item[0] is not None
-            ]
-            close_database(cursor_target, con_target)
-            # 将数据导入到当前数据库中
-            try:
-                # 更新命令表
-                for ins in list_instructions:
-                    cursor.execute(
-                        "insert into 命令 values (?,?,?,?,?,?,?,?,?,?,?)", ins
-                    )
-                    con.commit()
-                # 更新分支表
-                for branch_name in branch_result_list:
-                    writes_to_branch_info(branch_name, '')
-                self.load_branch_to_combobox()  # 重新加载分支列表
-                if file_path == "资源文件夹路径":
-                    QMessageBox.information(self, "提示", "指令数据导入成功！")
-            except sqlite3.IntegrityError:
-                QMessageBox.warning(self, "导入失败", "ID重复或格式错误！")
-            close_database(cursor, con)
-
         def data_import_from_excel(target_path_):
             # 读取数据
-            wb = openpyxl.load_workbook(target_path_[0])
+            wb = openpyxl.load_workbook(target_path_)
             sheets = wb.worksheets  # 获取所有的sheet
             cursor_, con_ = sqlitedb()
-            for sheet in sheets:
-                # global_write_to_database("分支表名", sheet.title)  # 添加分支表名
-                writes_to_branch_info(sheet.title, '')  # 添加分支表名
-                max_row = sheet.max_row
-                max_column = sheet.max_column
-                # 向数据库中写入数据
-                try:
-                    for row in range(2, max_row + 1):
-                        # 获取第一列数据
-                        instructions = []
-                        for column in range(1, max_column + 1):
-                            # 获取单元格数据
-                            data = sheet.cell(row, column).value
-                            instructions.append(data)
-                        cursor_.execute(
-                            "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
-                            "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-                            instructions[0:11],
-                        )
-                        con_.commit()
-                except Exception as e:
-                    # 捕获并处理异常
-                    QMessageBox.warning(self, f"导入失败", f"ID重复或格式错误！{e}")
+            for sheet in sheets:  # 遍历所有的sheet，写入分支指令
+                if sheet.title != "设置":
+                    writes_to_branch_info(sheet.title, '')  # 添加分支表名
+                    max_row = sheet.max_row
+                    max_column = sheet.max_column
+                    # 向数据库中写入数据
+                    try:
+                        for row in range(2, max_row + 1):
+                            # 获取第一列数据
+                            instructions = []
+                            for column in range(1, max_column + 1):
+                                # 获取单元格数据
+                                data = sheet.cell(row, column).value
+                                instructions.append(data)
+                            cursor_.execute(
+                                "INSERT INTO 命令(ID,图像名称,指令类型,参数1,参数2,参数3,参数4,"
+                                "重复次数,异常处理,备注,隶属分支) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                                instructions[0:11],
+                            )
+                            con_.commit()
+                    except Exception as e:
+                        # 捕获并处理异常
+                        QMessageBox.warning(self, f"导入失败", f"ID重复或格式错误！{e}")
+            excel_to_ini(wb)  # 写入ini设置
+            wb.close()
             close_database(cursor_, con_)
             self.load_branch_to_combobox()  # 重新加载分支列表
             if file_path == "资源文件夹路径":
@@ -998,46 +972,34 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         # 获取资源文件夹路径，如果不存在则使用用户的主目录
         if file_path == "资源文件夹路径":
-            resource_folder_path = next(
-                (item for item in extract_resource_folder_path()), None
+            directory_path = next(
+                (item for item in extract_resource_folder_path()), os.path.expanduser("~")
             )
-            # 获取当前文件夹路径
-            directory_path = (
-                resource_folder_path
-                if resource_folder_path
-                else os.path.expanduser("~")
-            )
-            # 打开选择文件对话框
-            target_path = QFileDialog.getOpenFileName(
+            target_path, _ = QFileDialog.getOpenFileName(
                 parent=self,
                 caption="请选择指令备份文件",
                 directory=directory_path,
-                filter="(*.db *.xlsx)",
+                filter="(*.xlsx)"
             )
-            # 判断是否选择了文件
-            if target_path[0] != "":
-                suffix = os.path.splitext(target_path[0])[1]  # 获取文件后缀
+            if target_path:
+                suffix = os.path.splitext(target_path)[1]
             else:
                 return
         else:
             target_path = (file_path, "")
             suffix = os.path.splitext(file_path)[1]
 
-        # 如果为.db文件
-        if suffix == ".db":
-            clear_all_ins(True)  # 清空原有数据
-            data_import_from_db(target_path)
         # 如果为.xlsx文件
-        elif suffix == ".xlsx":
+        if suffix == ".xlsx":
             clear_all_ins(True)  # 清空原有数据，包括分支表
             data_import_from_excel(target_path)
         # 将最近导入的文件路径写入数据库,用于保存时自动设置路径
         update_settings_in_ini(
             "Config",
-            当前文件路径=os.path.normpath(target_path[0])
+            当前文件路径=os.path.normpath(target_path)
         )  # 写入当前文件路径
         writes_to_recently_opened_files(
-            os.path.normpath(target_path[0])
+            os.path.normpath(target_path)
         )  # 写入最近打开的文件
         self.statusBar.showMessage(f"指令数据导入成功！已自动设置保存路径。", 1000)
         self.menuzv.clear()  # 清空最近打开文件菜单
