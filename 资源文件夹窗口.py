@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, del_resource_folder_path, \
-    writes_to_resource_folder_path
+    writes_to_resource_folder_path, move_resource_folder_up_and_down
 from 窗体.global_s import Ui_Global
 
 
@@ -23,8 +23,10 @@ class Global_s(QDialog, Ui_Global):
         self.refresh_listview()  # 刷新listview
         self.pushButton.clicked.connect(self.select_file)  # 添加图像文件夹路径
         self.pushButton_2.clicked.connect(self.delete_listview)  # 删除listview中的项
-        self.pushButton_3.clicked.connect(self.open_select_listview)  # 打开listview中的文件夹路径
         self.listView.doubleClicked.connect(self.open_select_listview)  # 双击打开listview中的文件夹路径
+        # 上下移动选中的路径
+        self.pushButton_4.clicked.connect(lambda: self.move_up_down('up'))
+        self.pushButton_5.clicked.connect(lambda: self.move_up_down('down'))
 
     def select_file(self):
         """打开选择文件窗口,并将路径写入数据库"""
@@ -76,8 +78,21 @@ class Global_s(QDialog, Ui_Global):
         res_folder_path = extract_resource_folder_path()  # 获取数据库中的数据
         add_listview(res_folder_path, self.listView)
 
+    def move_up_down(self, direction):
+        """上移或下移"""
+        indexes = self.listView.selectedIndexes()
+        if not indexes:
+            return
+        path = indexes[0].data()
+        move_resource_folder_up_and_down(path, direction)
+        self.refresh_listview()
+        # 选中移动后的项
+        for i in range(self.listView.model().rowCount()):
+            if self.listView.model().item(i).text() == path:
+                self.listView.setCurrentIndex(self.listView.model().index(i, 0))
+                break
+
     def closeEvent(self, event):
         """关闭窗口时触发"""
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
-

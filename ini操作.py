@@ -212,6 +212,43 @@ def del_resource_folder_path(path: str):
         print("删除资源文件路径失败！", e)
 
 
+def move_resource_folder_up_and_down(path: str, direction: str):
+    """将资源文件夹路径上移或下移
+    :param path: 选中的路径
+    :param direction: 移动方向（up: 上移, down: 下移）"""
+    try:
+        config = get_config()
+        section = '资源文件夹路径'
+        if not config.has_section(section):
+            print("配置文件中不存在资源文件夹路径部分！")
+            return
+
+        paths = {key: config.get(section, key) for key in config.options(section)}
+        if path not in paths.values():
+            print("路径不存在于配置文件中！")
+            return
+        path_key = next((key for key, value in paths.items() if value == path), None)
+        path_index = list(paths.keys()).index(path_key)
+        if direction == 'up' and path_index > 0:
+            paths[path_key], paths[
+                list(paths.keys())[path_index - 1]] = paths[list(paths.keys())[path_index - 1]], paths[path_key
+            ]
+        elif direction == 'down' and path_index < len(paths) - 1:
+            paths[path_key], paths[
+                list(paths.keys())[path_index + 1]] = paths[list(paths.keys())[path_index + 1]], paths[path_key
+            ]
+        config.remove_section(section)
+        config.add_section(section)
+        for key, value in paths.items():
+            config.set(section, key, value)
+
+        with open("config.ini", "w", encoding="utf-8") as configfile:
+            config.write(configfile)
+        print("路径移动成功！")
+    except Exception as e:
+        print("移动资源文件夹路径失败！", e)
+
+
 def extract_resource_folder_path() -> list:
     """提取资源文件夹路径"""
     try:
@@ -384,4 +421,4 @@ if __name__ == "__main__":
     # excel_path = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
     # ini_to_excel(excel_path)
     # excel_to_ini(excel_path, "config.ini")
-    print(eval(get_setting_data_from_ini("Config", "启动检查更新")))
+    move_resource_folder_up_and_down(r"C:\Users\FS\Desktop\Clicker_test", "down")
