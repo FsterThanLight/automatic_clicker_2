@@ -1031,6 +1031,22 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 记录开始时间的时间戳
         self.start_time = time.time()
 
+    def start_from_branch(self, branch_name):
+        """从分支开始运行"""
+        if self.command_thread.isRunning():  # 如果线程正在运行,则终止
+            self.command_thread.terminate()
+        self.clear_signal.emit()  # 清空日志
+        self.tabWidget.setCurrentIndex(0)  # 切换到日志页
+        if self.checkBox_2.isChecked():  # 如果勾选了执行中隐藏主窗口
+            self.hide()
+        # 获取branch_name在self.comboBox中的索引
+        branch_index = self.comboBox.findText(branch_name)
+        self.command_thread.set_run_mode('全部指令', 0)  # 设置运行模式
+        self.command_thread.set_branch_name_index(branch_index)
+        self.command_thread.start()
+        # 记录开始时间的时间戳
+        self.start_time = time.time()
+
     def clear_textEdit(self):
         """清空日志，主要用于在全局快捷键线程中调用，避免线程阻塞引发的程序闪退"""
         self.textEdit.clear()

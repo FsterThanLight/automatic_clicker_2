@@ -58,9 +58,7 @@ class BranchWindow(QDialog, Ui_Branch):
         try:
             if selected_row != -1:
                 branch_name = self.tableWidget.item(selected_row, 0).text()
-                print(f"Opening branch: {branch_name}")
-                self.parent().comboBox.setCurrentText(branch_name)  # 设置分支
-                self.parent().start()  # 执行分支
+                self.parent().start_from_branch(branch_name)  # 执行分支
                 self.close()
         except Exception as e:
             print(e)

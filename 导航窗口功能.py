@@ -171,6 +171,7 @@ class Na(QWidget, Ui_navigation):
             "写入单元格": (lambda x: self.input_cell_function(x), True),
             "OCR识别": (lambda x: self.ocr_recognition_function(x), False),
             "获取鼠标位置": (lambda x: self.get_mouse_position_function(x), False),
+            "窗口焦点等待": (lambda x: self.window_focus_wait_function(x), True),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -3631,11 +3632,14 @@ class Na(QWidget, Ui_navigation):
             parameter_dic = {"变量": self.comboBox_60.currentText()}
             return parameter_dic
 
+        def put_parameters(parameter_dic):
+            """将参数还原到控件"""
+            self.comboBox_60.setCurrentText(parameter_dic.get("变量", ""))
+
         if type_ == "按钮功能":
             self.pushButton_51.clicked.connect(
                 lambda: self.merge_additional_functions("打开变量池")
             )
-
         elif type_ == "写入参数":
             parameter_1 = str(get_parameters())
             # 将命令写入数据库
@@ -3651,3 +3655,54 @@ class Na(QWidget, Ui_navigation):
             # 当t导航业显示时，加载信息到控件
             self.comboBox_60.clear()
             self.comboBox_60.addItems(get_variable_info("list"))
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)
+
+    def window_focus_wait_function(self, type_):
+        """窗口焦点等待的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            # 检查参数是否有异常
+            if self.lineEdit_18.text() == "":
+                QMessageBox.critical(self, "错误", "窗口标题未填！")
+                raise ValueError
+            # 返回参数字典
+            parameter_dic_ = {
+                "标题包含": self.lineEdit_18.text(),
+                "检测频率": self.comboBox_68.currentText(),
+                "等待时间": self.spinBox_28.value(),
+                "等待类型": self.comboBox_69.currentText()
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到控件"""
+            self.lineEdit_18.setText(parameter_dic_["标题包含"])
+            index = self.comboBox_68.findText(parameter_dic_["检测频率"])
+            if index >= 0:
+                self.comboBox_68.setCurrentIndex(index)
+            self.spinBox_28.setValue(int(parameter_dic_["等待时间"]))
+            index = self.comboBox_69.findText(parameter_dic_["等待类型"])
+            if index >= 0:
+                self.comboBox_69.setCurrentIndex(index)
+
+        if type_ == "按钮功能":
+            pass
+        elif type_ == "加载信息":
+            pass
+        elif type_ == "写入参数":
+            parameter_dic = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(
+                instruction_=func_info_dic.get("指令类型"),
+                repeat_number_=func_info_dic.get("重复次数"),
+                exception_handling_=func_info_dic.get("异常处理"),
+                parameter_1_=parameter_dic,
+                remarks_=func_info_dic.get("备注"),
+            )
+        elif type_ == "还原参数":
+            put_parameters(self.parameter_1)

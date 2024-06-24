@@ -11,6 +11,7 @@ from datetime import datetime
 from tkinter import ttk
 
 import keyboard
+import pygetwindow as gw
 import mouse
 import openpyxl
 import psutil
@@ -737,9 +738,10 @@ class PressKeyboard:
             pyautogui.hotkey(*keys)
             self.out_mes.out_mes(f"按下组合键：{key}", self.is_test)
         else:
-            pyautogui.keyDown(keys[0])
+            key_ = keys[0].lower()
+            keyboard.press(key_)
             time.sleep(duration / 1000)
-            pyautogui.keyUp(keys[0])
+            keyboard.release(key_)
             self.out_mes.out_mes(f"按下按键：{key}，持续{duration}毫秒", self.is_test)
 
 
@@ -2382,3 +2384,75 @@ class GetMousePositon:
         str_mouse_position = f"{mouse_position[0]}, {mouse_position[1]}"
         # 设置变量池中的值
         set_variable_value(var, str_mouse_position)
+
+
+class WindowFocusWait:
+    """窗口焦点等待"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        return {
+            "窗口标题": parameter_dic_.get("标题包含"),
+            "检测频率": float(int(parameter_dic_.get("检测频率")) / 1000),
+            '等待类型': parameter_dic_.get('等待类型'),
+            '等待时间': int(parameter_dic_.get('等待时间'))
+        }
+
+    def start_execute(self):
+        """开始执行"""
+        list_dic = self.parsing_ins_dic()
+        self.check_focus(
+            list_dic.get("窗口标题"),
+            list_dic.get("等待时间"),
+            list_dic.get("检测频率"),
+            True if list_dic.get("等待类型") == "等待窗口获取焦点" else False
+        )
+
+    def check_focus(
+            self,
+            window_title_: str,
+            timeout: int = 10,
+            frequency: float = 0.5,
+            wait_for_focus: bool = True
+    ):
+        """检查窗口是否获得焦点
+        :param window_title_: 窗口标题
+        :param timeout: 超时时间
+        :param frequency: 检查频率
+        :param wait_for_focus: True表示等待窗口获取焦点，False表示等待窗口失去焦点"""
+        start_time = time.time()
+        self.out_mes.out_mes("等待窗口获得焦点中......" if wait_for_focus else "等待窗口失去焦点中......", self.is_test)
+        while True:
+            active_window = gw.getActiveWindow()
+            if active_window is not None:
+                if wait_for_focus:
+                    if window_title_ in active_window.title:
+                        print("应用程序已经获得了焦点")
+                        self.out_mes.out_mes("应用窗口已经获得了焦点，等待结束", self.is_test)
+                        break
+                else:
+                    if window_title_ not in active_window.title:
+                        print("应用程序已经失去焦点")
+                        self.out_mes.out_mes("应用窗口已经失去了焦点，等待结束", self.is_test)
+                        break
+            else:
+                print("没有找到活动窗口")
+                self.out_mes.out_mes("没有找到活动窗口", self.is_test)
+
+            # 检查超时
+            elapsed_time = time.time() - start_time
+            if elapsed_time > timeout:
+                self.out_mes.out_mes("窗口等待超时", self.is_test)
+                raise TimeoutError("窗口超过指定时间未获取到焦点" if wait_for_focus else "窗口超过指定时间未失去焦点")
+
+            time.sleep(frequency)
