@@ -263,10 +263,11 @@ def extract_resource_folder_path() -> list:
         return []
 
 
-def writes_to_branch_info(branch_name: str, shortcut_key: str) -> bool:
+def writes_to_branch_info(branch_name: str, shortcut_key: str, repeat_times: int = 1) -> bool:
     """将分支信息写入到config.ini中
     :param branch_name: 分支名称
     :param shortcut_key: 快捷键
+    :param repeat_times: 重复次数
     :return: 如果添加的分支名称已经存在则返回False，添加成功返回True
     """
     try:
@@ -275,16 +276,22 @@ def writes_to_branch_info(branch_name: str, shortcut_key: str) -> bool:
         # 如果“分支”部分不存在，则添加该部分
         if not config.has_section(section):
             config.add_section(section)
-            config.set(section, "主流程", "")  # 添加主流程
+            config.set(section, "主流程", f"('',{repeat_times})")  # 添加主流程
         # 检查分支名称是否已经存在
         if config.has_option(section, branch_name) and branch_name != "主流程":
             # 如果分支名称存在但快捷键不同，则更新快捷键
-            if config.get(section, branch_name) != shortcut_key:
-                config.set(section, branch_name, shortcut_key)
+            existing_value = eval(config.get(section, branch_name))
+            existing_shortcut = existing_value[0]
+            existing_repeat_times = existing_value[1]
+            if existing_shortcut != shortcut_key:
+                config.set(section, branch_name, f"('{shortcut_key}',{repeat_times})")
+            elif existing_repeat_times != repeat_times:
+                config.set(section, branch_name, f"('{shortcut_key}',{repeat_times})")
             else:
                 return False
-        # 将分支名称和快捷键写入到“分支”部分
-        config.set(section, branch_name, shortcut_key)
+        else:
+            # 将分支名称和快捷键写入到“分支”部分
+            config.set(section, branch_name, f"('{shortcut_key}',{repeat_times})")
         # 将更新后的配置写回文件
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config.write(configfile)
@@ -292,6 +299,36 @@ def writes_to_branch_info(branch_name: str, shortcut_key: str) -> bool:
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
+
+
+def set_branch_repeat_times(branch_name: str, repeat_times: int) -> None:
+    """设置分支的重复次数
+    :param branch_name: 分支名称
+    :param repeat_times: 重复次数"""
+    try:
+        config = get_config()
+        section = '分支'
+        if config.has_option(section, branch_name):
+            config.set(section, branch_name, f"('{eval(config.get(section, branch_name))[0]}',{repeat_times})")
+            with open('config.ini', 'w', encoding='utf-8') as configfile:
+                config.write(configfile)
+    except Exception as e:
+        print(f"设置分支重复次数失败: {e}")
+
+
+def get_branch_repeat_times(branch_name: str) -> int:
+    """获取分支的重复次数
+    :param branch_name: 分支名称
+    :return: 分支的重复次数"""
+    try:
+        config = get_config()
+        section = '分支'
+        if config.has_option(section, branch_name):
+            return eval(config.get(section, branch_name))[1]
+        return 1
+    except Exception as e:
+        print(f"获取分支重复次数失败: {e}")
+        return 1
 
 
 def del_branch_info(branch_name: str) -> bool:
@@ -346,13 +383,17 @@ def get_branch_info(keys_only: bool = False) -> list:
         if keys_only:
             return [key for key, value in config.items(section)]
         else:
-            return [(key, value) for key, value in config.items(section)]
+            result = []
+            for key, value in config.items(section):
+                # 将字符串转换为元组并展开
+                shortcut, priority = eval(value)
+                result.append((key, shortcut, priority))
+            return result
     except Exception as e:
         print(f"写入分支信息失败: {e}")
         return []
 
 
-# @timer
 def move_branch_info(branch_name: str, direction: str) -> bool:
     """移动分支信息
     :param branch_name: 分支名称
@@ -418,7 +459,7 @@ def excel_to_ini(wb: Workbook):
 
 
 if __name__ == "__main__":
-    # excel_path = r"C:\Users\FS\Desktop\新建 XLSX 工作表.xlsx"
-    # ini_to_excel(excel_path)
-    # excel_to_ini(excel_path, "config.ini")
-    move_resource_folder_up_and_down(r"C:\Users\FS\Desktop\Clicker_test", "down")
+    writes_to_branch_info("分支3", "R", 5)
+    # set_branch_repeat_times("分支1", 2)
+    # print(get_branch_info())
+    # print(get_branch_repeat_times("分支1"))

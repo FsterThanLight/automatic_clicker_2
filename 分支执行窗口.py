@@ -1,6 +1,6 @@
 import ctypes
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QHeaderView
@@ -24,33 +24,45 @@ class BranchWindow(QDialog, Ui_Branch):
         """加载分支数据"""
         branch_info = get_branch_info()
         self.tableWidget.setRowCount(len(branch_info))
-        for row, (name, short_desc) in enumerate(branch_info):
+        for row, (name, short_desc, repeat_times) in enumerate(branch_info):
             for col, text in enumerate((name, short_desc)):
                 item = QtWidgets.QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self.tableWidget.setItem(row, col, item)
-        self.tableWidget.clearFocus()
+            # 在第三列添加QSpinBox控件
+            spin_box = QtWidgets.QSpinBox()
+            # 设置最大值
+            spin_box.setMaximum(1000000)
+            spin_box.setMinimum(-1)
+            spin_box.setValue(repeat_times)
+            spin_box.setAlignment(Qt.AlignCenter)
+            self.tableWidget.setCellWidget(row, 2, spin_box)
+        # 将焦点设置到第一行
+        self.tableWidget.setCurrentCell(0, 0)
 
     @staticmethod
     def set_caps_lock_status(judge: str):
         """设置大写锁定状态，防止快捷键失效
         :param judge: open or close
         """
-        VK_CAPITAL = 0x14
-        KEYEVENTF_EXTENDEDKEY = 0x0001
-        KEYEVENTF_KEYUP = 0x0002
-        # 获取大写锁定状态
-        hllDll = ctypes.WinDLL("User32.dll")
-        caps_lock_state = hllDll.GetKeyState(VK_CAPITAL)
-        is_caps_lock_on = caps_lock_state & 1
-        if judge == 'close' and is_caps_lock_on:
-            # 如果大写锁定打开，则关闭
-            ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY, 0)
-            ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
-        elif judge == 'open' and not is_caps_lock_on:
-            # 如果大写锁定关闭，则打开
-            ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY, 0)
-            ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
+        try:
+            VK_CAPITAL = 0x14
+            KEYEVENTF_EXTENDEDKEY = 0x0001
+            KEYEVENTF_KEYUP = 0x0002
+            # 获取大写锁定状态
+            hllDll = ctypes.WinDLL("User32.dll")
+            caps_lock_state = hllDll.GetKeyState(VK_CAPITAL)
+            is_caps_lock_on = caps_lock_state & 1
+            if judge == 'close' and is_caps_lock_on:
+                # 如果大写锁定打开，则关闭
+                ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY, 0)
+                ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
+            elif judge == 'open' and not is_caps_lock_on:
+                # 如果大写锁定关闭，则打开
+                ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY, 0)
+                ctypes.windll.user32.keybd_event(VK_CAPITAL, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0)
+        except Exception as e:
+            print('设置大写锁定状态错误！', e)
 
     def open_select_option(self):
         """打开选中的分支"""
@@ -58,7 +70,9 @@ class BranchWindow(QDialog, Ui_Branch):
         try:
             if selected_row != -1:
                 branch_name = self.tableWidget.item(selected_row, 0).text()
-                self.parent().start_from_branch(branch_name)  # 执行分支
+                repeat_times = self.tableWidget.cellWidget(selected_row, 2).value()
+                print(f'执行分支: {branch_name}，重复次数: {repeat_times}')
+                self.parent().start_from_branch(branch_name, repeat_times)
                 self.close()
         except Exception as e:
             print(e)
@@ -90,7 +104,7 @@ class BranchWindow(QDialog, Ui_Branch):
         if obj == self.tableWidget:
             if event.type() == 6:  # 键盘按下事件
                 branch_info = get_branch_info()
-                for i, (name, key_str) in enumerate(branch_info):
+                for i, (name, key_str, repeat_times) in enumerate(branch_info):
                     if event.key() == self.key_name_to_qt_key(key_str):
                         self.trigger_using_number_keys(i + 1)
         return super().eventFilter(obj, event)

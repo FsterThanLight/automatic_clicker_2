@@ -56,6 +56,11 @@ class CommandThread(QThread):
         :param info: 指令ID"""
         self.run_mode = (mode, info)
 
+    def set_repeat_number(self, number: int):
+        """设置循环次数
+        :param number: 循环次数，-1为无限循环"""
+        self.number_cycles = number
+
     def show_message(self, message):
         """显示消息"""
         self.send_message.emit(message)
@@ -79,9 +84,8 @@ class CommandThread(QThread):
         # 执行指令
         if len(list_instructions) != 0:
             # 设置主流程循环前的参数
-            loop_type = '无限循环' if self.main_window.radioButton.isChecked() else '有限循环'
+            loop_type = '无限循环' if self.number_cycles == -1 else '有限循环'
             self.number = 1
-            self.number_cycles = int(self.main_window.spinBox.value())
             # 开始循环执行指令
             while (self.start_state and loop_type == '无限循环') or \
                     (loop_type == '有限循环' and self.number <= self.number_cycles):

@@ -225,6 +225,13 @@ class Setting(QDialog, Ui_Setting):
                 key_sequence = QKeySequence(branch_info[i][1])
                 key_sequence_edit = QtWidgets.QKeySequenceEdit(key_sequence)
                 self.tableWidget.setCellWidget(i, 1, key_sequence_edit)
+                # 使用 QSpinBox 控件显示重复次数
+                spin_box = QtWidgets.QSpinBox()
+                spin_box.setMaximum(1000000)
+                spin_box.setMinimum(-1)
+                spin_box.setValue(branch_info[i][2])
+                spin_box.setAlignment(Qt.AlignCenter)
+                self.tableWidget.setCellWidget(i, 2, spin_box)
 
     def save_branch_info(self):
         """保存分支信息"""
@@ -232,6 +239,7 @@ class Setting(QDialog, Ui_Setting):
         for i in range(self.tableWidget.rowCount()):
             branch_name = self.tableWidget.item(i, 0).text()
             key_sequence = self.tableWidget.cellWidget(i, 1).keySequence().toString()
+            repeat_times = self.tableWidget.cellWidget(i, 2).value()
             # 检查快捷键是否为组合键
             if '+' in key_sequence:
                 QMessageBox.critical(self, '错误', '分支快捷键暂不支持设置为组合键！')
@@ -244,10 +252,10 @@ class Setting(QDialog, Ui_Setting):
                 if i != j and key_sequence == self.tableWidget.cellWidget(j, 1).keySequence().toString():
                     QMessageBox.critical(self, '错误', '分支快捷键重复，请重新设置！')
                     raise Exception('分支快捷键已存在！')
-            branch_info.append((branch_name, key_sequence))
+            branch_info.append((branch_name, key_sequence, repeat_times))
         # 写入分支信息到ini文件
-        for branch_name, key_sequence in branch_info:
-            writes_to_branch_info(branch_name, key_sequence)
+        for branch_name, key_sequence, repeat_times in branch_info:
+            writes_to_branch_info(branch_name, key_sequence, repeat_times)
 
     def add_branch(self):
         """添加分支"""
@@ -264,7 +272,7 @@ class Setting(QDialog, Ui_Setting):
                 QMessageBox.critical(self, '错误', '分支名称已存在！')
                 return
             # 在ini文件中添加分支信息
-            writes_to_branch_info(branch_name, '')
+            writes_to_branch_info(branch_name, '', 1)
             self.load_branch_info()  # 刷新表格
             # 选中新添加的分支，最后一行
             self.tableWidget.selectRow(self.tableWidget.rowCount() - 1)

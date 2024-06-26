@@ -655,6 +655,14 @@
            <set>AlignCenter</set>
           </property>
          </column>
+         <column>
+          <property name="text">
+           <string>重复次数</string>
+          </property>
+          <property name="textAlignment">
+           <set>AlignCenter</set>
+          </property>
+         </column>
         </widget>
        </item>
        <item row="1" column="0">

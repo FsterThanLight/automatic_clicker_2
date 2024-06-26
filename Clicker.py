@@ -44,7 +44,8 @@ from functions import get_str_now_time, system_prompt_tone, show_normal_window_w
     show_window
 from icon import Icon
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
-    get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini
+    get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini, get_branch_repeat_times, \
+    set_branch_repeat_times
 from main_work import CommandThread
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
@@ -741,6 +742,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 设置焦点
             if row is not None:
                 self.tableWidget.setCurrentCell(int(row), 0)
+            # 设置重复次数
+            self.spinBox.setValue(int(get_branch_repeat_times(branch_name)))
 
         except sqlite3.OperationalError:
             pass
@@ -819,8 +822,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 filter="(*.xlsx)",
                 directory=directory_path
             )
-            return (os.path.normpath(os.path.split(file_path)[1]),
-                    os.path.normpath(os.path.split(file_path)[0])) \
+            return (os.path.normpath(os.path.split(file_path)[0]),
+                    os.path.normpath(os.path.split(file_path)[1])) \
                 if file_path else (None, None)
 
         def get_file_and_folder_from_setting():
@@ -937,10 +940,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
             # 读取数据
             wb = openpyxl.load_workbook(target_path_)
             sheets = wb.worksheets  # 获取所有的sheet
+            excel_to_ini(wb)  # 写入ini设置
             cursor_, con_ = sqlitedb()
             for sheet in sheets:  # 遍历所有的sheet，写入分支指令
                 if sheet.title != "设置":
-                    writes_to_branch_info(sheet.title, '')  # 添加分支表名
+                    # writes_to_branch_info(sheet.title, '')  # 添加分支表名
                     max_row = sheet.max_row
                     max_column = sheet.max_column
                     # 向数据库中写入数据
@@ -961,7 +965,6 @@ class Main_window(QMainWindow, Ui_MainWindow):
                     except Exception as e:
                         # 捕获并处理异常
                         QMessageBox.warning(self, f"导入失败", f"ID重复或格式错误！{e}")
-            excel_to_ini(wb)  # 写入ini设置
             wb.close()
             close_database(cursor_, con_)
             self.load_branch_to_combobox()  # 重新加载分支列表
@@ -1017,7 +1020,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
         if self.command_thread.isRunning():  # 如果线程正在运行,则终止
             self.command_thread.terminate()
-        operation_before_execution()
+        operation_before_execution()  # 执行前的操作
         if run_mode == '全部指令':
             self.command_thread.set_run_mode('全部指令', 0)  # 设置运行模式
             self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
@@ -1027,11 +1030,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
         elif run_mode == '从当前行运行':
             self.command_thread.set_run_mode('从当前行运行', info)  # 设置运行模式
             self.command_thread.set_branch_name_index(int(self.comboBox.currentIndex()))
+        # 设置重复次数
+        repeat_number = self.spinBox.value() if self.radioButton_2.isChecked() else -1
+        self.command_thread.set_repeat_number(repeat_number)  # 设置重复次数
+        set_branch_repeat_times(self.comboBox.currentText(), repeat_number)  # 设置分支重复次数
+        # 开始运行
         self.command_thread.start()
         # 记录开始时间的时间戳
         self.start_time = time.time()
 
-    def start_from_branch(self, branch_name):
+    def start_from_branch(self, branch_name, repeat_number=1):
         """从分支开始运行"""
         if self.command_thread.isRunning():  # 如果线程正在运行,则终止
             self.command_thread.terminate()
@@ -1043,6 +1051,11 @@ class Main_window(QMainWindow, Ui_MainWindow):
         branch_index = self.comboBox.findText(branch_name)
         self.command_thread.set_run_mode('全部指令', 0)  # 设置运行模式
         self.command_thread.set_branch_name_index(branch_index)
+        self.command_thread.set_repeat_number(repeat_number)  # 设置重复次数
+        set_branch_repeat_times(branch_name, repeat_number)  # 记录分支重复次数
+        # 设置主窗口显示的重复次数
+        if self.comboBox.currentText() == branch_name:
+            self.spinBox.setValue(repeat_number)
         self.command_thread.start()
         # 记录开始时间的时间戳
         self.start_time = time.time()
@@ -1105,6 +1118,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.comboBox.addItems(get_branch_info(True))
         if text is not None:
             self.comboBox.setCurrentText(text)
+        # 设置重复次数
+        self.spinBox.setValue(int(get_branch_repeat_times(self.comboBox.currentText())))
 
     def eventFilter(self, obj, event):
         # 重写self.tableWidget的快捷键事件

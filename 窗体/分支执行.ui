@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>302</width>
+    <width>404</width>
     <height>329</height>
    </rect>
   </property>
@@ -116,7 +116,7 @@
       </font>
      </property>
      <property name="text">
-      <string>双击名称或使用快捷键执行分支</string>
+      <string>双击名称或按下快捷键执行分支</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -159,6 +159,21 @@
        <string>快捷键</string>
       </property>
      </column>
+     <column>
+      <property name="text">
+       <string>重复次数</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>提示：重复次数-1为无限运行</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
    </item>
   </layout>
