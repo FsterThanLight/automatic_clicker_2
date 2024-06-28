@@ -247,11 +247,12 @@ class Setting(QDialog, Ui_Setting):
             if (',' in key_sequence) and (len(key_sequence) > 1):
                 QMessageBox.critical(self, '错误', '分支快捷键暂不支持设置为多个按键！')
                 raise Exception('分支快捷键不能为组合键！')
-            # 检查快捷键是否重复
-            for j in range(self.tableWidget.rowCount()):
-                if i != j and key_sequence == self.tableWidget.cellWidget(j, 1).keySequence().toString():
-                    QMessageBox.critical(self, '错误', '分支快捷键重复，请重新设置！')
-                    raise Exception('分支快捷键已存在！')
+            # 检查快捷键是否重复，只有在快捷键非空时进行检查
+            if key_sequence:
+                for j in range(self.tableWidget.rowCount()):
+                    if i != j and key_sequence == self.tableWidget.cellWidget(j, 1).keySequence().toString():
+                        QMessageBox.critical(self, '错误', '分支快捷键重复，请重新设置！')
+                        raise Exception('分支快捷键已存在！')
             branch_info.append((branch_name, key_sequence, repeat_times))
         # 写入分支信息到ini文件
         for branch_name, key_sequence, repeat_times in branch_info:

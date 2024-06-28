@@ -72,32 +72,44 @@ class CommandThread(QThread):
         # 从数据库中获取要执行的指令列表，并设置不同的运行模式
         list_instructions: list = []
         current_index: int = 0
-        if self.run_mode[0] == '全部指令':
-            list_instructions = extracted_ins_from_database()
-            current_index = 0
-        elif self.run_mode[0] == '单行指令':
-            list_instructions = extracted_ins_target_id_from_database(self.run_mode[1])
-            current_index = 0
-        elif self.run_mode[0] == '从当前行运行':
-            list_instructions = extracted_ins_from_database()
-            current_index = self.run_mode[1]
+        # 检查 self.run_mode 是否为空
+        if not self.run_mode:
+            self.show_message("运行模式未设置")
+            return
+        # 不断尝试获取指令列表，直到成功
+        while True:
+            if self.run_mode[0] == '全部指令':
+                list_instructions = extracted_ins_from_database()
+                current_index = 0
+            elif self.run_mode[0] == '单行指令':
+                list_instructions = extracted_ins_target_id_from_database(self.run_mode[1])
+                current_index = 0
+            elif self.run_mode[0] == '从当前行运行':
+                list_instructions = extracted_ins_from_database()
+                current_index = self.run_mode[1]
+            # 如果获取失败，等待一段时间再尝试
+            if list_instructions is None:
+                self.show_message("未能从数据库中获取指令，重试中...")
+                time.sleep(0.1)  # 等待5秒再重试
+            else:
+                break
+        print('指令列表：', list_instructions)
         # 执行指令
-        if len(list_instructions) != 0:
-            # 设置主流程循环前的参数
-            loop_type = '无限循环' if self.number_cycles == -1 else '有限循环'
-            self.number = 1
-            # 开始循环执行指令
-            while (self.start_state and loop_type == '无限循环') or \
-                    (loop_type == '有限循环' and self.number <= self.number_cycles):
-                # 执行指令集中的指令
-                self.execute_instructions(self.branch_name_index, current_index, list_instructions)
-                self.show_message('换行')
-                self.show_message(f'完成第{self.number}次循环')
-                self.number += 1
-                time.sleep(self.time_sleep)
+        # 设置主流程循环前的参数
+        loop_type = '无限循环' if self.number_cycles == -1 else '有限循环'
+        self.number = 1
+        # 开始循环执行指令
+        while (self.start_state and loop_type == '无限循环') or \
+                (loop_type == '有限循环' and self.number <= self.number_cycles):
+            # 执行指令集中的指令
+            self.execute_instructions(self.branch_name_index, current_index, list_instructions)
+            self.show_message('换行')
+            self.show_message(f'完成第{self.number}次循环')
+            self.number += 1
+            time.sleep(self.time_sleep)
 
-            # 结束信号
-            self.finished_signal.emit('任务完成')
+        # 结束信号
+        self.finished_signal.emit('任务完成')
 
     def pause(self):
         self.mutex.lock()

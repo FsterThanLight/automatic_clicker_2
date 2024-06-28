@@ -519,18 +519,38 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     background-color: transparent;
-    color: #eee;
+    color: #ADD8E6;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+}
+
+/* 设置 QGroupBox 标题中的 QCheckBox 样式 */
+QGroupBox::indicator {
+    background-color: #323232;
+    border: 1px solid darkgray;
+    width: 12px;
+    height: 12px;
+}
+
+QGroupBox::indicator:checked {
+    image: url("./ressources/check.png");
+    background-color: #ffff00;
+    border: 1px solid #3a546e;
+}
+
+QGroupBox::indicator:unchecked:hover {
+    border: 1px solid #ffff00;
+}
+
+QGroupBox::indicator:disabled {
+    background-color: #656565;
+    color: #656565;
+    border: 1px solid #656565;
 }
 
 QGroupBox::unchecked {
     border-color: black;
 }
-
-/* proceed with styling just like QCheckBox */
-
-/* proceed with styling just like QCheckBox */
 
 
 /*-----QHeaderView-----*/

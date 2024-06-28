@@ -45,7 +45,7 @@ from functions import get_str_now_time, system_prompt_tone, show_normal_window_w
 from icon import Icon
 from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
     get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini, get_branch_repeat_times, \
-    set_branch_repeat_times
+    set_branch_repeat_times, set_current_branch, get_current_branch
 from main_work import CommandThread
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
@@ -80,6 +80,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 鼠标随机移动添加区域限制
 # todo: 执行cmd指令的功能
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
+# todo: 指令可以选择执行，表格中使用checkbox控制
+# todo: 指令可导出为json
+# todo: 指更新使用多线程
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -99,7 +102,7 @@ RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/release
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 APP_NAME = "Clicker"
-CURRENT_VERSION = "v0.26.1 Beta"
+CURRENT_VERSION = "v0.26.2 Beta"
 
 
 def timer(func):
@@ -134,6 +137,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
         self.branch_win = BranchWindow(self)  # 分支选择窗口
         # 检查更新
+        self.update_thread = Update(self)  # 自动更新线程
+        self.update_thread.show_update_signal.connect(self.update_Qmessage)
         is_update = eval(get_setting_data_from_ini("Config", "启动检查更新"))
         if is_update:
             self.update_software(False)
@@ -218,6 +223,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 sys.exit(1)
 
         set_window_size(self)  # 获取上次退出时的窗口大小
+        branch_name = get_current_branch()
+        self.comboBox.setCurrentIndex(self.comboBox.findText(branch_name) if branch_name else 0)
         check_file_integrity()  # 检查文件完整性
         # 显示工具栏
         judge = eval(get_setting_data_from_ini("Config", "显示工具栏"))
@@ -930,6 +937,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
             else:
                 event.ignore()
         self.branch_win.close()  # 关闭选择窗口
+        # 保存当前分支
+        set_current_branch(self.comboBox.currentText())
         # 窗口大小
         save_window_size((self.width(), self.height()), self.windowTitle())
 
@@ -1243,38 +1252,16 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def update_software(self, show_MessageBox=True):
         """更新软件"""
+        self.update_thread.set_show_info(show_MessageBox)
+        self.update_thread.start()
 
-        def start_update():
-            try:
-                update.start_update_program()
-            except FileNotFoundError:
-                QMessageBox.critical(self, '致命错误', '更新程序丢失！')
-
-        update = Update()
-        # 返回更新信息
-        update_info_dic = update.get_update_info()
-
-        if update_info_dic is None:
-            QMessageBox.critical(self, '提示', '网络故障无法连接到服务器！\n\n请检查网络连接！')
-            return
-
-        new_version = update_info_dic['版本号']
-        if CURRENT_VERSION == new_version:
-            if show_MessageBox:
-                QMessageBox.information(self, '更新提示', f'当前版本已经是最新版本。')
-            return
-
-        if update_info_dic['强制更新']:
-            start_update()
-        else:
-            text = (f"发现新版本：{new_version}，"
-                    f"\n\n{update_info_dic['更新内容']}"
-                    f"\n\n是否更新？")
-            ok = QMessageBox.question(
-                self, '提示', text,
-                QMessageBox.Yes | QMessageBox.No)
-            if ok == QMessageBox.Yes:
-                start_update()
+    def update_Qmessage(self, message, message_type):
+        message_box = {
+            "警告": QMessageBox.warning,
+            "错误": QMessageBox.critical,
+            "信息": QMessageBox.information
+        }
+        message_box[message_type](self, '提示', message)
 
 
 class About(QDialog, Ui_About):

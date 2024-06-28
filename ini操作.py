@@ -458,6 +458,27 @@ def excel_to_ini(wb: Workbook):
         print(f"设置写入失败: {e}")
 
 
+def set_current_branch(branch_name: str):
+    """设置当前分支"""
+    try:
+        config = get_config()
+        config.set("Config", "当前分支", branch_name)
+        with open("config.ini", "w", encoding="utf-8") as f:
+            config.write(f)
+    except Exception as e:
+        print("设置当前分支失败！", e)
+
+
+def get_current_branch() -> str:
+    """获取当前分支"""
+    try:
+        config = get_config()
+        return config["Config"]["当前分支"]
+    except Exception as e:
+        print("获取当前分支失败！", e)
+        return "主流程"
+
+
 if __name__ == "__main__":
     writes_to_branch_info("分支3", "R", 5)
     # set_branch_repeat_times("分支1", 2)
