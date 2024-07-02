@@ -54,7 +54,7 @@ from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.参数窗口 import Ui_Param
-from 自动更新 import Update
+from 自动更新 import Check_Update, CURRENT_VERSION, UpdateWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
@@ -102,7 +102,6 @@ RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/release
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 APP_NAME = "Clicker"
-CURRENT_VERSION = "v0.26.2 Beta"
 
 
 def timer(func):
@@ -137,11 +136,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
         self.add_recent_to_fileMenu()  # 将最近文件添加到菜单中
         self.branch_win = BranchWindow(self)  # 分支选择窗口
         # 检查更新
-        self.update_thread = Update(self)  # 自动更新线程
+        self.update_thread = Check_Update(self)  # 自动更新线程
         self.update_thread.show_update_signal.connect(self.update_Qmessage)
+        self.update_thread.show_update_window_signal.connect(self.update_window)
         is_update = eval(get_setting_data_from_ini("Config", "启动检查更新"))
         if is_update:
-            self.update_software(False)
+            self.check_update_software(False)
         # 显示导不同的窗口
         self.pushButton.clicked.connect(
             lambda: self.show_windows("导航")
@@ -170,7 +170,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
             lambda: self.data_import("资源文件夹路径")
         )  # 导入数据
         self.actionj.triggered.connect(
-            lambda: self.update_software(True)
+            lambda: self.check_update_software(True)
         )
         # 主窗体开始按钮
         self.pushButton_5.clicked.connect(lambda: self.global_shortcut_key("开始线程"))
@@ -1250,8 +1250,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         show_normal_window_with_specified_title(self.windowTitle())  # 显示窗口
         close_browser()  # 关闭浏览器驱动
 
-    def update_software(self, show_MessageBox=True):
-        """更新软件"""
+    def check_update_software(self, show_MessageBox=True):
+        """检查更新"""
         self.update_thread.set_show_info(show_MessageBox)
         self.update_thread.start()
 
@@ -1262,6 +1262,12 @@ class Main_window(QMainWindow, Ui_MainWindow):
             "信息": QMessageBox.information
         }
         message_box[message_type](self, '提示', message)
+
+    def update_window(self, update_info_dic_):
+        """显示更新窗口"""
+        update_win = UpdateWindow(self, update_info_dic_)
+        update_win.setModal(True)
+        update_win.exec_()
 
 
 class About(QDialog, Ui_About):
@@ -1280,7 +1286,7 @@ class About(QDialog, Ui_About):
         self.label_7.setText('<a href="{}"><font color="red">{}</font></a>'.format(QQ_GROUP, QQ))
         # 绑定事件
         self.gitee.clicked.connect(self.show_gitee)
-        self.pushButton.clicked.connect(lambda: self._parent.update_software(True))
+        self.pushButton.clicked.connect(lambda: self._parent.check_update_software(True))
 
     @staticmethod
     def show_gitee():

@@ -480,7 +480,15 @@ def get_current_branch() -> str:
 
 
 if __name__ == "__main__":
-    writes_to_branch_info("分支3", "R", 5)
+    # writes_to_branch_info("分支3", "R", 5)
     # set_branch_repeat_times("分支1", 2)
     # print(get_branch_info())
     # print(get_branch_repeat_times("分支1"))
+    app_data_dic = get_setting_data_from_ini(
+        '三方接口',
+        'appId',
+        'apiKey',
+        'secretKey',
+        '云码Token'
+    )
+    print(app_data_dic)
