@@ -20,7 +20,7 @@ class Ui_Update_UI(object):
         font.setPointSize(12)
         Update_UI.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/上移.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/更新.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Update_UI.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(Update_UI)
         self.verticalLayout.setObjectName("verticalLayout")

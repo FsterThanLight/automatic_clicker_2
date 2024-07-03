@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 import time
+import webbrowser
 from contextlib import closing
 
 import pymsgbox
@@ -12,8 +13,9 @@ from dateutil.parser import parse
 
 from 窗体.update import Ui_Update_UI
 
-CURRENT_VERSION = "v0.26.1 Beta"
+CURRENT_VERSION = "v0.26.3 Beta"
 INTERFACE = 'http://api.ytsoftware.cn/appClicker/getClickerAppVersion'
+DOWNLOAD_PAGE = 'https://gitee.com/fasterthanlight/automatic_clicker_2/releases'
 
 
 class Check_Update(QThread):
@@ -57,6 +59,7 @@ class Check_Update(QThread):
                 "检测程序": data.get('检测程序', ''),
                 "需要关闭的文件": data.get('需要关闭的文件', '').split('，'),
                 "需要删除的文件": data.get('需要删除的文件', '').split('，'),
+                "前往下载网页": data.get('前往下载网页', '')
             }
         except Exception as e:
             print(e)
@@ -84,12 +87,9 @@ class Check_Update(QThread):
             self.show_update_window_signal.emit(update_info_dic_)
 
         update_info_dic = self.get_update_info()
+        print(update_info_dic)
         if update_info_dic is None:
-            pymsgbox.alert(
-                text='网络故障无法连接到服务器！\n\n请检查网络连接！',
-                title='更新提示',
-                icon=pymsgbox.STOP
-            )
+            time.sleep(1)
             self.show_update_signal.emit('网络故障无法连接到服务器！\n\n请检查网络连接！', '错误')
             return
 
@@ -112,7 +112,10 @@ class Check_Update(QThread):
                 buttons=[pymsgbox.OK_TEXT, pymsgbox.CANCEL_TEXT]
             )
             if reply == pymsgbox.OK_TEXT:
-                open_update_window(update_info_dic)
+                if update_info_dic.get('前往下载网页') == '否':
+                    open_update_window(update_info_dic)
+                else:
+                    webbrowser.open(DOWNLOAD_PAGE)
 
 
 class Download_UpdatePack(QThread):
@@ -130,7 +133,7 @@ class Download_UpdatePack(QThread):
         self.download_url = download_url_
 
     def run(self):
-        self.run_test()
+        self.download()
 
     def download(self):
         """下载更新"""
@@ -212,10 +215,14 @@ class UpdateWindow(QDialog, Ui_Update_UI):
 
     def finish_download(self):
         """下载完成"""
-        print('下载完成！')
         self.label_2.setText('下载完成！即将重启程序...')
         self.progressBar.setValue(100)
         self.export_json()  # 导出json文件
+        time.sleep(1)
+        try:
+            os.startfile('sky.exe')
+        except FileNotFoundError:
+            self.label_2.setText('更新程序不存在！请手动解压更新文件！')
 
     def closeEvent(self, event):
         """关闭窗口时触发"""

@@ -82,7 +82,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
 # todo: 指令可以选择执行，表格中使用checkbox控制
 # todo: 指令可导出为json
-# todo: 指更新使用多线程
+# todo: 鼠标拖动可设置速度
+# todo: 后台截图点击指令
+# todo: 设置窗口获取ocr信息存在bug
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 

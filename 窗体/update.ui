@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../images.qrc">
-    <normaloff>:/按钮图标/窗体/res/上移.png</normaloff>:/按钮图标/窗体/res/上移.png</iconset>
+    <normaloff>:/按钮图标/窗体/res/更新.png</normaloff>:/按钮图标/窗体/res/更新.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
