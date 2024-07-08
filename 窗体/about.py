@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_About(object):
     def setupUi(self, About):
         About.setObjectName("About")
-        About.resize(305, 426)
+        About.resize(279, 370)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         About.setWindowIcon(icon)
@@ -79,6 +79,10 @@ class Ui_About(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem2, 0, 0, 1, 1)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem3, 0, 2, 1, 1)
         self.label_2 = QtWidgets.QLabel(About)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -89,10 +93,9 @@ class Ui_About(object):
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.gridLayout.addWidget(self.label_2, 0, 1, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 0, 2, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem3, 0, 0, 1, 1)
+        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.pushButton = QtWidgets.QPushButton(About)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
@@ -119,8 +122,35 @@ class Ui_About(object):
 "}\n"
 "")
         self.pushButton.setObjectName("pushButton")
-        self.gridLayout.addWidget(self.pushButton, 1, 1, 1, 1)
-        self.verticalLayout_2.addLayout(self.gridLayout)
+        self.horizontalLayout_4.addWidget(self.pushButton)
+        self.pushButton_2 = QtWidgets.QPushButton(About)
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton_2.setFont(font)
+        self.pushButton_2.setStyleSheet("QPushButton {\n"
+"    background-color: red;\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 14px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
+"}")
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_4.addWidget(self.pushButton_2)
+        self.horizontalLayout_4.setStretch(0, 1)
+        self.horizontalLayout_4.setStretch(1, 1)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.label_3 = QtWidgets.QLabel(About)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -181,9 +211,10 @@ class Ui_About(object):
         self.label_5.setText(_translate("About", "Clicker"))
         self.label_2.setText(_translate("About", "版本：v0.25 Bate"))
         self.pushButton.setText(_translate("About", "检查更新"))
+        self.pushButton_2.setText(_translate("About", "反馈及功能建议"))
         self.label_3.setText(_translate("About", "PyAutoGUI可视化，自动处理需要大量重复操作鼠标键盘的事件。"))
         self.label_6.setText(_translate("About", "QQ交流群："))
         self.label_7.setText(_translate("About", "308994839"))
         self.gitee.setText(_translate("About", "gitee地址"))
-        self.label_4.setText(_translate("About", "成都羽图软件开发有限公司 Copyright (c) [2022] "))
+        self.label_4.setText(_translate("About", "federalsadler@sohu.com Copyright (c) [2022] "))
 import images_rc

@@ -3,7 +3,7 @@ import os
 import sqlite3
 import sys
 
-from ini操作 import extract_resource_folder_path, get_branch_info
+from ini控制 import extract_resource_folder_path, get_branch_info
 
 MAIN_FLOW = "主流程"
 

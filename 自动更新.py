@@ -11,11 +11,8 @@ from PyQt5.QtCore import QThread, pyqtSignal, Qt
 from PyQt5.QtWidgets import QDialog
 from dateutil.parser import parse
 
+from 软件信息 import INTERFACE, CURRENT_VERSION, DOWNLOAD_PAGE
 from 窗体.update import Ui_Update_UI
-
-CURRENT_VERSION = "v0.26.3 Beta"
-INTERFACE = 'http://api.ytsoftware.cn/appClicker/getClickerAppVersion'
-DOWNLOAD_PAGE = 'https://gitee.com/fasterthanlight/automatic_clicker_2/releases'
 
 
 class Check_Update(QThread):
@@ -87,7 +84,6 @@ class Check_Update(QThread):
             self.show_update_window_signal.emit(update_info_dic_)
 
         update_info_dic = self.get_update_info()
-        print(update_info_dic)
         if update_info_dic is None:
             time.sleep(1)
             self.show_update_signal.emit('网络故障无法连接到服务器！\n\n请检查网络连接！', '错误')

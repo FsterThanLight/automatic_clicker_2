@@ -12,7 +12,7 @@
 from PyQt5.QtCore import *
 
 from functions import system_prompt_tone
-from ini操作 import get_branch_info
+from ini控制 import get_branch_info
 from 功能类 import *
 from 数据库操作 import extracted_ins_from_database, extracted_ins_target_id_from_database
 

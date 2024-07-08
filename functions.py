@@ -8,7 +8,7 @@ import win32con
 import win32gui
 from system_hotkey import SystemHotkey, user32
 
-from ini操作 import get_setting_data_from_ini
+from ini控制 import get_setting_data_from_ini
 
 
 def get_str_now_time():
@@ -86,10 +86,13 @@ def show_window(title):
     def get_window_titles(hwnd, titles):
         titles[hwnd] = win32gui.GetWindowText(hwnd)
 
-    hwnd_title = {}
-    win32gui.EnumWindows(get_window_titles, hwnd_title)
-    for h, t in hwnd_title.items():
-        if t == title:
-            win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
-            win32gui.SetForegroundWindow(h)
-            break
+    try:
+        hwnd_title = {}
+        win32gui.EnumWindows(get_window_titles, hwnd_title)
+        for h, t in hwnd_title.items():
+            if t == title:
+                win32gui.ShowWindow(h, win32con.SW_SHOWNORMAL)  # 正常显示窗口
+                win32gui.SetForegroundWindow(h)
+                break
+    except Exception as e:
+        print(f"显示窗口出现错误: {e}")

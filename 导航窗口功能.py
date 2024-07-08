@@ -1,4 +1,5 @@
 import datetime
+import glob
 import os
 import re
 import sqlite3
@@ -18,7 +19,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItemIterator,
     QFileDialog,
     QWidget,
-    QApplication,
+    QApplication, QDialog,
 )
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
@@ -27,7 +28,13 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, get_branch_info, get_ocr_info
+from ini控制 import (
+    set_window_size,
+    save_window_size,
+    extract_resource_folder_path,
+    get_branch_info, get_ocr_info,
+    get_all_png_images_from_resource_folders, matched_complete_path_from_resource_folders
+)
 from 功能类 import (
     InformationEntry,
     InputCellExcel,
@@ -47,7 +54,8 @@ from 功能类 import (
     TextRecognition,
     VerificationCode,
     SendWeChat,
-    MoveMouse, FullScreenCapture,
+    MoveMouse,
+    FullScreenCapture,
 )
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
@@ -58,10 +66,77 @@ from 数据库操作 import (
     close_database,
     get_variable_info
 )
+from 窗体.图像选择 import Ui_ImageSelect
 from 窗体.导航窗口 import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
 from 选择窗体 import Variable_selection_win
+
+
+class ImageSelection(QDialog, Ui_ImageSelect):
+    """选择图片窗口"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )  # 隐藏帮助按钮
+        self.load_images_name_to_listView()  # 加载图片名称到listView
+        self.listView.clicked.connect(self.preview_image)  # 预览图片
+        self.pushButton.clicked.connect(self.get_image_name)  # 获取图片名称
+        self.pushButton_2.clicked.connect(self.close)  # 关闭窗口
+
+    def load_images_name_to_listView(self):
+        """加载图片名称到listView"""
+        images_name_list = get_all_png_images_from_resource_folders()
+        # 创建模型并绑定到listView
+        model = QtCore.QStringListModel()
+        model.setStringList(images_name_list)
+        self.listView.setModel(model)
+
+    def preview_image(self):
+        """预览图片"""
+        # 获取图片名称
+        image_name = self.listView.currentIndex().data()
+        # 获取图片路径
+        image_path = matched_complete_path_from_resource_folders(image_name)
+        # 加载图片
+        if image_path != '':
+            # 将图像转换为QImage对象
+            image_ = QImage(image_path)
+            image = image_.scaled(
+                self.label.width(),
+                self.label.height(),
+                Qt.KeepAspectRatio,
+            )
+            self.label.setPixmap(QPixmap.fromImage(image))
+
+    def get_image_name(self):
+        """获取图片路径"""
+        image_name = self.listView.currentIndex().data()
+        print('选择的图片名称:', image_name)
+        try:
+            # 获取父窗口中的listView和其模型
+            parent_listView = self.parent().listView
+            model = parent_listView.model()
+            # 如果模型不存在，就创建一个新的 QStringListModel
+            if model is None:
+                model = QtCore.QStringListModel()
+                parent_listView.setModel(model)
+            # 获取当前的字符串列表
+            current_list = model.stringList()
+            # 检查是否已经存在相同的图片名称
+            if image_name in current_list:
+                QMessageBox.warning(self, '警告', '该图像不能重复添加！')
+            else:
+                # 将新的图片名称添加到列表中
+                current_list.append(image_name)
+                # 更新模型的数据
+                model.setStringList(current_list)
+                self.close()
+        except Exception as e:
+            print(e)
 
 
 class Na(QWidget, Ui_navigation):
@@ -134,6 +209,7 @@ class Na(QWidget, Ui_navigation):
         # 映射标签标题和对应的函数
         self.function_mapping = {
             "图像点击": (lambda x: self.image_click_function(x), True),
+            "多图点击": (lambda x: self.multiple_images_click_function(x), True),
             "坐标点击": (lambda x: self.coordinate_click_function(x), False),
             "移动鼠标": (lambda x: self.move_mouse_function(x), False),
             "时间等待": (lambda x: self.time_waiting_function(x), False),
@@ -189,6 +265,7 @@ class Na(QWidget, Ui_navigation):
         self.textBrowser.clear()  # 清空测试输出
         self.comboBox_9.setCurrentIndex(0)  # 异常处理方式
         self.comboBox_10.clear()  # 分支表名
+        self.disable_exception_handling_control(False)  # 禁用异常处理控件
 
     def closeEvent(self, a0) -> None:
         """关闭窗口时,触发的动作"""
@@ -241,8 +318,8 @@ class Na(QWidget, Ui_navigation):
                 # 解除异常处理方式的禁用，加载分支表名
                 self.comboBox_10.addItems(get_branch_info(True))
                 self.find_controls("分支", "功能区参数")
-                self.comboBox_10.setEnabled(True)
-                self.comboBox_11.setEnabled(True)
+                # self.comboBox_10.setEnabled(True)
+                # self.comboBox_11.setEnabled(True)
                 # 设置分支表名和分支序号
                 self.comboBox_10.setCurrentText(select_branch_table_name)
                 self.comboBox_11.setCurrentText(branch_index)
@@ -266,6 +343,7 @@ class Na(QWidget, Ui_navigation):
                 except Exception as e:
                     QMessageBox.warning(self, "警告", "该指令参数错误", QMessageBox.Yes)
                     print("还原参数错误", e)
+
         except ValueError:  # 如果没有找到对应的功能页，则跳过
             pass
 
@@ -396,10 +474,7 @@ class Na(QWidget, Ui_navigation):
             self.label_35.setVisible(disable_control_)
             self.comboBox_9.setCurrentIndex(0)
             self.comboBox_9.setVisible(disable_control_)
-            self.comboBox_10.clear()
-            self.comboBox_10.setVisible(disable_control_)
-            self.comboBox_11.clear()
-            self.comboBox_11.setVisible(disable_control_)
+            self.disable_exception_handling_control(False)
 
         try:
             # 获取当前活动页面的标题
@@ -450,27 +525,29 @@ class Na(QWidget, Ui_navigation):
         elif function_name == "打开变量选择":
             self.variable_sel_win.show()
 
+    def disable_exception_handling_control(self, judge: bool = False):
+        """禁用控件"""
+        self.comboBox_10.clear()
+        self.label_34.setVisible(judge)
+        self.comboBox_10.setVisible(judge)
+        self.comboBox_11.clear()
+        self.label_35.setVisible(judge)
+        self.comboBox_11.setVisible(judge)
+
     def exception_handling_judgment_type(self, type_):
         """判断异常护理选项并调整控件
         :param type_: 判断类型（报错处理、分支名称）"""
 
-        def disable_combobox(judge: bool = False):
-            """禁用控件"""
-            self.comboBox_10.clear()
-            self.comboBox_10.setEnabled(judge)
-            self.comboBox_11.clear()
-            self.comboBox_11.setEnabled(judge)
-
         try:
             if type_ == "报错处理":  # 报错处理下拉列表变化触发
                 if self.comboBox_9.currentText() == "自动跳过":
-                    disable_combobox()
+                    self.disable_exception_handling_control(False)
                 elif self.comboBox_9.currentText() == "提示异常并暂停":
-                    disable_combobox()
+                    self.disable_exception_handling_control(False)
                 elif self.comboBox_9.currentText() == "提示异常并停止":
-                    disable_combobox()
+                    self.disable_exception_handling_control(False)
                 elif self.comboBox_9.currentText() == "跳转分支":
-                    disable_combobox(True)
+                    self.disable_exception_handling_control(True)
                     self.comboBox_10.addItems(get_branch_info(True))
                     self.comboBox_10.setCurrentIndex(0)
                     self.find_controls("分支", "功能区参数")
@@ -850,6 +927,211 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_8.addItems(extract_resource_folder_path())
             self.find_controls("图像", "图像点击")
             self.show_image_to_label("图像点击")
+
+    def multiple_images_click_function(self, type_):
+        """多图像点击识别窗口的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def open_images_select_window():
+            """打开图像选择窗口"""
+            images_select = ImageSelection(self)
+            images_select.setModal(True)
+            images_select.exec_()
+
+        def quick_screenshot_and_add_image():
+            """快捷截图并添加图像"""
+
+            def get_the_latest_saved_image():
+                """获取最新保存的图像"""
+                latest_image_path_ = None
+                latest_mod_time = 0
+                for folder_path in extract_resource_folder_path():
+                    for png_file in glob.glob(os.path.join(folder_path, '*.png')):
+                        mod_time = os.path.getmtime(png_file)
+                        if mod_time > latest_mod_time:
+                            latest_image_path_, latest_mod_time = png_file, mod_time
+                return latest_image_path_
+
+            # 隐藏主窗口
+            self.hide()
+            self.main_window.hide()
+            # 截图
+            screen_capture = ScreenCapture()
+            screen_capture.screenshot_area()  # 设置截图区域
+            screen_capture.screenshot_region()  # 截图
+            screen_capture.show_preview()  # 显示预览
+            # 显示主窗口
+            self.show()
+            self.main_window.show()
+            # 刷新图像文件夹
+            QApplication.processEvents()
+            latest_image_path = get_the_latest_saved_image()
+            if latest_image_path:
+                # 向listWidget中添加图像名称
+                try:
+                    image_name = os.path.basename(latest_image_path)
+                    # 获取父窗口中的listView和其模型
+                    parent_listView = self.listView
+                    model = parent_listView.model()
+                    # 如果模型不存在，就创建一个新的 QStringListModel
+                    if model is None:
+                        model = QtCore.QStringListModel()
+                        parent_listView.setModel(model)
+                    # 获取当前的字符串列表
+                    current_list = model.stringList()
+                    # 将新的图片名称添加到列表中
+                    current_list.append(image_name)
+                    # 更新模型的数据
+                    model.setStringList(current_list)
+                except Exception as e:
+                    print(e)
+
+        def delect_selected_image():
+            """删除选中的图像"""
+            # 获取listView中选中的图像名称
+            selected_image = self.listView.currentIndex().data()
+            if selected_image:
+                # 弹出提示对话框
+                reply = QMessageBox.question(
+                    self,
+                    '删除图像',
+                    f'是否删除本地图像：{selected_image}？\n删除后不可恢复。',
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+                if reply == QMessageBox.Yes:
+                    # 获取图像完整路径
+                    image_path = matched_complete_path_from_resource_folders(selected_image)
+                    # 刷新listView
+                    model = self.listView.model()
+                    current_list = model.stringList()
+                    current_list.remove(selected_image)
+                    model.setStringList(current_list)
+                    # 删除图像
+                    os.remove(image_path)
+
+        def remove_checked_image():
+            """移除选中的图像名称"""
+            selected_image = self.listView.currentIndex().data()
+            if selected_image:
+                model = self.listView.model()
+                current_list = model.stringList()
+                current_list.remove(selected_image)
+                model.setStringList(current_list)
+
+        def move_checked_image(direction):
+            """移动选中的图像名称"""
+            selected_index = self.listView.currentIndex()
+            selected_row = selected_index.row()
+            model = self.listView.model()
+            current_list = model.stringList()
+            if direction == "上移" and selected_row > 0:
+                target_row = selected_row - 1
+            elif direction == "下移" and selected_row < len(current_list) - 1:
+                target_row = selected_row + 1
+            else:
+                return
+            current_list[selected_row], current_list[target_row] = current_list[target_row], current_list[selected_row]
+            model.setStringList(current_list)
+            self.listView.setCurrentIndex(model.index(target_row))
+
+        def preview_image():
+            # 获取当前选中的图像名称
+            selected_image = self.listView.currentIndex().data()
+            if selected_image:
+                # 获取图像完整路径
+                image_path = matched_complete_path_from_resource_folders(selected_image)
+                # 显示图像
+                image_ = QImage(image_path)
+                image_ = image_.scaled(
+                    self.label_43.width(),
+                    self.label_43.height(),
+                    Qt.KeepAspectRatio,
+                )
+                self.label_43.setPixmap(QPixmap.fromImage(image_))
+                self.tabWidget_2.setCurrentIndex(1)  # 设置到功能页面到预览页
+
+        def open_setting_window():
+            """打开图像点击设置窗口"""
+            setting_win = Setting(self)  # 设置窗体
+            setting_win.tabWidget.setCurrentIndex(0)
+            setting_win.setModal(True)
+            setting_win.exec_()
+
+
+        def get_parameters():
+            """从tab页获取参数"""
+            image_ = None
+            parameter_1_ = None
+            parameter_2_ = None
+            parameter_3_ = None
+            parameter_4_ = None
+            # 检查参数是否有异常
+            if image_ is None or parameter_1_ is None or parameter_2_ is None or parameter_3_ is None or parameter_4_ is None:
+                QMessageBox.critical(self, "错误", "xxx")
+                raise FileNotFoundError
+            # 返回参数字典
+            parameter_dic_ = {
+                'x_1': parameter_1_,
+                'x_2': parameter_2_,
+                'x_3': parameter_3_,
+                'x_4': parameter_4_,
+            }
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到tab页"""
+            pass
+
+        # def test():
+        #     """测试功能"""
+        #     try:
+        #         image_, parameter_dic_ = get_parameters()
+        #         dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+        #                                  image_=image_,
+        #                                  parameter_1_=parameter_dic_
+        #                                  )
+        #
+        #         # 测试用例
+        #         test_class = XxxxClss(self.out_mes, dic_)
+        #         test_class.is_test = True
+        #         test_class.start_execute()
+        #
+        #     except Exception as e:
+        #         print(e)
+        #         self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_67.clicked.connect(open_images_select_window)
+            # 快捷截图
+            self.pushButton_63.clicked.connect(quick_screenshot_and_add_image)
+            # 删除选中图像
+            self.pushButton_68.clicked.connect(delect_selected_image)
+            # 移除选中
+            self.pushButton_64.clicked.connect(remove_checked_image)
+            # 移动
+            self.toolButton_2.clicked.connect(lambda: move_checked_image("上移"))
+            self.toolButton.clicked.connect(lambda: move_checked_image("下移"))
+            self.listView.clicked.connect(preview_image)
+            self.pushButton_66.clicked.connect(open_setting_window)
+
+        elif type_ == '写入参数':
+            image, parameter_dic = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 parameter_1_=parameter_dic,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            pass
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
 
     def scroll_wheel_function(self, type_):
         """滚轮滑动的窗口功能"""

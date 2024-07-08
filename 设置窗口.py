@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QMessageBox, QDialog, QHeaderView
 from system_hotkey import SystemHotkey
 
 from functions import is_hotkey_valid
-from ini操作 import (
+from ini控制 import (
     update_settings_in_ini,
     get_setting_data_from_ini,
     set_window_size,
@@ -178,12 +178,11 @@ class Setting(QDialog, Ui_Setting):
         self.checkBox_4.setChecked(eval(setting_data_dic['任务完成后显示主窗口']))
 
         # 填入OCR API信息
-        self.lineEdit.setText(app_data_dic['appId'])
-        self.lineEdit_2.setText(app_data_dic['apiKey'])
-        self.lineEdit_3.setText(app_data_dic['secretKey'])
-
+        self.lineEdit.setText(app_data_dic.get('appId', ''))
+        self.lineEdit_2.setText(app_data_dic.get('apiKey', ''))
+        self.lineEdit_3.setText(app_data_dic.get('secretKey', ''))
         # 填入云码Token
-        self.lineEdit_6.setText(app_data_dic['云码Token'])
+        self.lineEdit_6.setText(app_data_dic.get('云码Token', ''))
 
         # 加载快捷键设置
         global_shortcut_dic = get_global_shortcut()

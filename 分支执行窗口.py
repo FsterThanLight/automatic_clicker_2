@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QDialog, QHeaderView
 
-from ini操作 import get_branch_info, set_window_size, save_window_size
+from ini控制 import get_branch_info, set_window_size, save_window_size
 from 窗体.分支执行 import Ui_Branch
 
 

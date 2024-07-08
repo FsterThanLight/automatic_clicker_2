@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
-from ini操作 import set_window_size, save_window_size, extract_resource_folder_path, del_resource_folder_path, \
+from ini控制 import set_window_size, save_window_size, extract_resource_folder_path, del_resource_folder_path, \
     writes_to_resource_folder_path, move_resource_folder_up_and_down
 from 窗体.global_s import Ui_Global
 

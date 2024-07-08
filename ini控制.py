@@ -1,8 +1,8 @@
 import configparser
+import os
 import sqlite3
 import sys
 
-from openpyxl.reader.excel import load_workbook
 from openpyxl.workbook import Workbook
 
 
@@ -55,18 +55,15 @@ def get_setting_data_from_ini(selection: str, *args):
     :param args: 设置类型参数"""
     try:
         config = get_config()
-        if len(args) > 1:
-            setting_data_dic = {}
-            for arg in args:
-                setting_data_dic[arg] = config[selection][arg]
-            return setting_data_dic
+        if not args:
+            return None
         elif len(args) == 1:
             return config[selection][args[0]]
         else:
-            return None
+            return {arg: config[selection][arg] for arg in args}
     except Exception as e:
         print(e)
-        return None
+        return {} if len(args) > 1 else None
 
 
 def update_settings_in_ini(selection: str, **kwargs):
@@ -261,6 +258,40 @@ def extract_resource_folder_path() -> list:
     except Exception as e:
         print("提取资源文件夹路径失败！", e)
         return []
+
+
+# @timer
+def get_all_png_images_from_resource_folders() -> list:
+    """Retrieve all PNG image names from resource folder paths defined in the config."""
+    try:
+        config = get_config()
+        if '资源文件夹路径' not in config:
+            return []
+        paths = [config.get('资源文件夹路径', key) for key in config.options('资源文件夹路径')]
+        return [file for path in paths for _, _, files in os.walk(path) for file in files if file.endswith('.png')]
+    except Exception as e:
+        print(f"Failed to retrieve PNG image names: {e}")
+        return []
+
+
+def matched_complete_path_from_resource_folders(file_name: str) -> str:
+    """从资源文件夹中匹配完整路径
+    :param file_name: 文件名
+    :return: 完整路径"""
+    try:
+        config = get_config()
+        if '资源文件夹路径' not in config:
+            return ''
+        paths = [config.get('资源文件夹路径', key) for key in config.options('资源文件夹路径')]
+        for path in paths:
+            for root, _, files in os.walk(path):
+                for file in files:
+                    if file == file_name:
+                        return os.path.join(root, file)
+        return ''
+    except Exception as e:
+        print(f"匹配资源文件夹路径失败: {e}")
+        return ''
 
 
 def writes_to_branch_info(branch_name: str, shortcut_key: str, repeat_times: int = 1) -> bool:
@@ -480,15 +511,5 @@ def get_current_branch() -> str:
 
 
 if __name__ == "__main__":
-    # writes_to_branch_info("分支3", "R", 5)
-    # set_branch_repeat_times("分支1", 2)
-    # print(get_branch_info())
-    # print(get_branch_repeat_times("分支1"))
-    app_data_dic = get_setting_data_from_ini(
-        '三方接口',
-        'appId',
-        'apiKey',
-        'secretKey',
-        '云码Token'
-    )
-    print(app_data_dic)
+    print(get_all_png_images_from_resource_folders())
+    print(matched_complete_path_from_resource_folders("zMATHYn6w.png"))

@@ -43,10 +43,11 @@ from system_hotkey import SystemHotkey
 from functions import get_str_now_time, system_prompt_tone, show_normal_window_with_specified_title, is_hotkey_valid, \
     show_window
 from icon import Icon
-from ini操作 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
+from ini控制 import set_window_size, save_window_size, get_setting_data_from_ini, update_settings_in_ini, \
     get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini, get_branch_repeat_times, \
     set_branch_repeat_times, set_current_branch, get_current_branch
 from main_work import CommandThread
+from 软件信息 import CURRENT_VERSION, MAIN_WEBSITE, ISSUE_WEBSITE, RELEASE_WEBSITE, QQ_GROUP, QQ, APP_NAME
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
 from 导航窗口功能 import Na
@@ -54,11 +55,12 @@ from 数据库操作 import *
 from 窗体.about import Ui_About
 from 窗体.mainwindow import Ui_MainWindow
 from 窗体.参数窗口 import Ui_Param
-from 自动更新 import Check_Update, CURRENT_VERSION, UpdateWindow
+from 自动更新 import Check_Update, UpdateWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
 
 collections.Iterable = collections.abc.Iterable
+
 
 # todo：RGB颜色检测功能
 # todo: 指令可编译为python代码
@@ -84,7 +86,6 @@ collections.Iterable = collections.abc.Iterable
 # todo: 指令可导出为json
 # todo: 鼠标拖动可设置速度
 # todo: 后台截图点击指令
-# todo: 设置窗口获取ocr信息存在bug
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -98,12 +99,6 @@ collections.Iterable = collections.abc.Iterable
 # 2. 在导航页的页面中添加指令的处理函数
 # 3. 在导航页的treeWidget中添加指令的名称
 # 4. 在功能类中添加运行功能
-
-MAIN_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2"
-RELEASE_WEBSITE = "https://gitee.com/fasterthanlight/automatic_clicker_2/releases"
-QQ = "308994839"
-QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
-APP_NAME = "Clicker"
 
 
 def timer(func):
@@ -1289,6 +1284,9 @@ class About(QDialog, Ui_About):
         # 绑定事件
         self.gitee.clicked.connect(self.show_gitee)
         self.pushButton.clicked.connect(lambda: self._parent.check_update_software(True))
+        self.pushButton_2.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(ISSUE_WEBSITE))
+        )
 
     @staticmethod
     def show_gitee():

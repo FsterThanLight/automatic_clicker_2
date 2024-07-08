@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
-from ini操作 import extract_resource_folder_path
+from ini控制 import extract_resource_folder_path
 from 窗体.image_preview import Ui_Image
 
 

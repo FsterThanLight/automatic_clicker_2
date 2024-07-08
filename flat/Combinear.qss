@@ -519,27 +519,26 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     background-color: transparent;
-    color: #ADD8E6;
+    color: #FFC0CB;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 }
 
-/* 设置 QGroupBox 标题中的 QCheckBox 样式 */
 QGroupBox::indicator {
     background-color: #323232;
-    border: 1px solid darkgray;
+    border: 1px solid pink; /* 修改边框颜色为红色 */
     width: 12px;
     height: 12px;
 }
 
 QGroupBox::indicator:checked {
     image: url("./ressources/check.png");
-    background-color: #ffff00;
-    border: 1px solid #3a546e;
+    background-color: pink; /* 修改选中状态的背景颜色为红色 */
+    border: 1px solid pink; /* 修改选中状态的边框颜色为红色 */
 }
 
 QGroupBox::indicator:unchecked:hover {
-    border: 1px solid #ffff00;
+    border: 1px solid pink; /* 修改鼠标悬停时未选中状态的边框颜色为红色 */
 }
 
 QGroupBox::indicator:disabled {
