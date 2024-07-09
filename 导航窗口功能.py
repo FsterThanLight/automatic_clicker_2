@@ -55,7 +55,7 @@ from 功能类 import (
     VerificationCode,
     SendWeChat,
     MoveMouse,
-    FullScreenCapture,
+    FullScreenCapture, MultipleImagesClick,
 )
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
@@ -1059,48 +1059,62 @@ class Na(QWidget, Ui_navigation):
             setting_win.setModal(True)
             setting_win.exec_()
 
-
         def get_parameters():
             """从tab页获取参数"""
-            image_ = None
-            parameter_1_ = None
-            parameter_2_ = None
-            parameter_3_ = None
-            parameter_4_ = None
-            # 检查参数是否有异常
-            if image_ is None or parameter_1_ is None or parameter_2_ is None or parameter_3_ is None or parameter_4_ is None:
-                QMessageBox.critical(self, "错误", "xxx")
+            images_name_list = self.listView.model().stringList() if self.listView.model() else []
+            if not images_name_list:
+                QMessageBox.critical(self, "错误", "未添加任何图像！")
                 raise FileNotFoundError
+            if self.groupBox_73.isChecked():
+                if self.label_174.text() == "(0,0,0,0)":
+                    QMessageBox.critical(self, "错误", "未设置识别区域！")
+                    raise FileNotFoundError
             # 返回参数字典
+            image_ = '、'.join(images_name_list)
             parameter_dic_ = {
-                'x_1': parameter_1_,
-                'x_2': parameter_2_,
-                'x_3': parameter_3_,
-                'x_4': parameter_4_,
+                '动作': self.comboBox_70.currentText(),
+                '异常': self.comboBox_71.currentText()[-4:],
+                '区域': self.label_174.text() if self.groupBox_73.isChecked() else "(0,0,0,0)",
+                '灰度': self.checkBox_11.isChecked()
             }
             return image_, parameter_dic_
 
         def put_parameters(image_, parameter_dic_):
             """将参数还原到tab页"""
-            pass
+            # 将图像名称添加到listView中
+            image_name_list = image_.split('、')
+            model = self.listView.model()
+            if model is None:
+                model = QtCore.QStringListModel()
+                self.listView.setModel(model)
+            model.setStringList(image_name_list)
+            # 将其他参数设置回对应的控件
+            self.comboBox_70.setCurrentText(parameter_dic_['动作'])
+            self.comboBox_71.setCurrentIndex(1 if parameter_dic_['异常'] == "自动略过" else 0)
+            if parameter_dic_['区域'] == "(0,0,0,0)":
+                self.groupBox_73.setChecked(False)
+            else:
+                self.groupBox_73.setChecked(True)
+                self.label_174.setText(parameter_dic_['区域'])
+            self.checkBox_11.setChecked(parameter_dic_['灰度'])
 
-        # def test():
-        #     """测试功能"""
-        #     try:
-        #         image_, parameter_dic_ = get_parameters()
-        #         dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
-        #                                  image_=image_,
-        #                                  parameter_1_=parameter_dic_
-        #                                  )
-        #
-        #         # 测试用例
-        #         test_class = XxxxClss(self.out_mes, dic_)
-        #         test_class.is_test = True
-        #         test_class.start_execute()
-        #
-        #     except Exception as e:
-        #         print(e)
-        #         self.out_mes.out_mes(f'指令错误请重试！', True)
+        def test():
+            """测试功能"""
+            try:
+                image_, parameter_dic_ = get_parameters()
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         image_=image_,
+                                         parameter_1_=parameter_dic_
+                                         )
+
+                # 测试用例
+                test_class = MultipleImagesClick(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
 
         if type_ == '按钮功能':
             self.pushButton_67.clicked.connect(open_images_select_window)
@@ -1115,6 +1129,11 @@ class Na(QWidget, Ui_navigation):
             self.toolButton.clicked.connect(lambda: move_checked_image("下移"))
             self.listView.clicked.connect(preview_image)
             self.pushButton_66.clicked.connect(open_setting_window)
+            # 设置区域
+            self.pushButton_65.clicked.connect(
+                lambda: self.quick_screenshot(self.label_174, "设置区域")
+            )
+            self.pushButton_69.clicked.connect(test)
 
         elif type_ == '写入参数':
             image, parameter_dic = get_parameters()

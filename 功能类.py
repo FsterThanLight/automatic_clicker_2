@@ -31,7 +31,8 @@ from aip import AipOcr
 from dateutil.parser import parse
 
 from functions import get_str_now_time, line_number_increment
-from ini控制 import get_ocr_info, get_setting_data_from_ini, extract_resource_folder_path
+from ini控制 import get_ocr_info, get_setting_data_from_ini, extract_resource_folder_path, \
+    matched_complete_path_from_resource_folders
 from 数据库操作 import (
     get_variable_info,
     set_variable_value,
@@ -283,6 +284,134 @@ class ImageClick:
         except pyautogui.ImageNotFoundException:
             self.out_mes.out_mes("未找到匹配图像", self.is_test)
             raise FileNotFoundError
+
+
+class MultipleImagesClick:
+    """多图点击"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        setting_data_dic = get_setting_data_from_ini(
+            'Config',
+            "持续时间", "时间间隔", "图像匹配精度", "暂停时间"
+        )
+        self.duration = float(setting_data_dic.get("持续时间"))
+        self.interval = float(setting_data_dic.get("时间间隔"))
+        self.confidence = float(setting_data_dic.get("图像匹配精度"))
+        self.time_sleep = float(setting_data_dic.get("暂停时间"))
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        re_try = self.ins_dic.get('重复次数')
+        img_name_list = str(self.ins_dic.get('图像路径')).split('、')
+        img_path_list = [matched_complete_path_from_resource_folders(img_name) for img_name in img_name_list]
+        parameter_dic_ = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        area_identification = None if eval(parameter_dic_.get("区域")) == (0, 0, 0, 0) \
+            else eval(parameter_dic_.get("区域"))
+        # 返回参数字典
+        return {
+            "重复次数": re_try,
+            "图像列表": img_path_list,
+            "灰度": parameter_dic_.get("灰度"),  # 是否灰度识别
+            "区域": area_identification,
+            "动作": parameter_dic_.get("动作"),  # 动作
+            "异常": parameter_dic_.get("异常")  # 是否自动跳过
+        }
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        # 解析指令字典
+        ins_dic = self.parsing_ins_dic()
+        click_map = {
+            "左键单击": [1, "left"],
+            "左键双击": [2, "left"],
+            "右键单击": [1, "right"],
+            "右键双击": [2, "right"],
+            "仅移动鼠标": [0, "left"],
+        }
+        # 执行图像点击
+        reTry = ins_dic.get("重复次数")
+        for _ in range(reTry):
+            self.execute_click(
+                click_times=click_map.get(ins_dic.get("动作"))[0],
+                gray_rec=ins_dic.get("灰度"),
+                lOrR=click_map.get(ins_dic.get("动作"))[1],
+                img_path_list=ins_dic.get("图像列表"),
+                area=ins_dic.get("区域"),
+                skip=ins_dic.get("异常")
+            )
+            if reTry > 1:
+                time.sleep(self.time_sleep)
+
+    def execute_click(self, click_times, gray_rec, lOrR, img_path_list, skip, area=None):
+        """执行鼠标点击事件
+        :param click_times: 点击次数
+        :param gray_rec: 是否灰度识别
+        :param lOrR: 左键右键
+        :param img_path_list: 图像路径列表
+        :param skip: 是否跳过
+        :param area: 是否区域识别"""
+
+        # 4个参数：鼠标点击时间，按钮类型（左键右键中键），图片名称，重复次数
+        def image_match_click(location, spend_time, img_name):
+            if location is not None:
+                if not self.is_test:
+                    # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
+                    self.out_mes.out_mes(
+                        f"已找到{img_name}，耗时{spend_time}毫秒。", self.is_test
+                    )
+                    pyautogui.click(
+                        location.x,
+                        location.y,
+                        clicks=click_times,
+                        interval=self.interval,
+                        duration=self.duration,
+                        button=lOrR,
+                    )
+                elif self.is_test:
+                    self.out_mes.out_mes(
+                        f"已找到匹配图片，耗时{spend_time}毫秒。", self.is_test
+                    )
+                    # 移动鼠标到图片位置
+                    pyautogui.moveTo(location.x, location.y, duration=0.2)
+
+        for img in img_path_list:
+            # 显示信息
+            img_name_ = os.path.basename(img)
+            self.out_mes.out_mes(f"正在查找匹配图像 {img_name_}...", self.is_test)
+            QApplication.processEvents()
+            # 记录开始时间
+            start_time = time.time()
+            try:
+                location_ = pyautogui.locateCenterOnScreen(
+                    image=img,
+                    confidence=self.confidence,
+                    grayscale=gray_rec,
+                    minSearchTime=0,
+                    region=area,
+                )
+                if location_:  # 如果找到图像
+                    spend_time_ = int((time.time() - start_time) * 1000)  # 计算耗时
+                    image_match_click(location_, spend_time_, img_name_)
+                    return  # 一旦找到其中一个图像并点击，直接返回
+            except pyautogui.ImageNotFoundException:
+                pass
+            except OSError or TypeError:
+                self.out_mes.out_mes(
+                    f'本地文件"{img}"不存在，请检查文件是否存在！', self.is_test
+                )
+                if skip != "自动略过":
+                    raise FileNotFoundError(f'本地文件"{img}"不存在！')
+
+        # 如果所有图像都未找到
+        self.out_mes.out_mes("未找到全部的匹配图像", self.is_test)
+        if skip != "自动略过":
+            raise FileNotFoundError("未找到全部的匹配图像")
 
 
 class CoordinateClick:
