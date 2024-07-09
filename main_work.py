@@ -93,7 +93,7 @@ class CommandThread(QThread):
                 time.sleep(0.1)  # 等待5秒再重试
             else:
                 break
-        print('指令列表：', list_instructions)
+        # print('指令列表：', list_instructions)
         # 执行指令
         # 设置主流程循环前的参数
         loop_type = '无限循环' if self.number_cycles == -1 else '有限循环'
@@ -169,6 +169,7 @@ class CommandThread(QThread):
                     # 命令类型与对应操作类的映射
                     command_mapping = {
                         "图像点击": (ImageClick, self.out_mes, dic_),
+                        "多图点击": (MultipleImagesClick, self.out_mes, dic_),
                         "坐标点击": (CoordinateClick, self.out_mes, dic_),
                         "时间等待": (TimeWaiting, self.out_mes, dic_),
                         "图像等待": (ImageWaiting, self.out_mes, dic_),

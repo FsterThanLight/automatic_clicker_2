@@ -104,13 +104,9 @@ class XxxxClss:
         # 解析指令字典
         reTry, x, = self.parsing_ins_dic()
         # 执行图像点击
-        if reTry == 1:
+        for _ in range(reTry):
             self.execute_func(x)
-        elif reTry > 1:
-            i = 1
-            while i < reTry + 1:
-                self.execute_func(x)
-                i += 1
+            if reTry > 1:
                 time.sleep(self.time_sleep)
 
     def execute_func(self, x):

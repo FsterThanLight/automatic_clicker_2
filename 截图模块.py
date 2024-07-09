@@ -83,7 +83,9 @@ class ScreenCapture:
         def on_press(event):
             self.x_1, self.y_1 = event.x, event.y
             # print('鼠标开始点击位置为：', self.x_1, self.y_1)
-            self.rect = canvas.create_rectangle(self.x_1, self.y_1, 0, 0, outline='red', width=2, fill='black')
+            self.rect = canvas.create_rectangle(
+                self.x_1, self.y_1, 0, 0, outline='red', width=2, fill='black'
+            )
 
         def on_drag(event):
             x_2, y_2 = event.x, event.y

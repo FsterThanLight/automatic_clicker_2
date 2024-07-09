@@ -82,6 +82,11 @@
         </item>
         <item>
          <property name="text">
+          <string>多图点击</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>坐标点击</string>
          </property>
         </item>
@@ -258,6 +263,11 @@
         <item>
          <property name="text">
           <string>运行Python</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>运行cmd</string>
          </property>
         </item>
         <item>
@@ -831,8 +841,8 @@ color: rgb(255, 255, 255);</string>
            <property name="title">
             <string>则执行鼠标动作</string>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="2,1,1">
-            <item>
+           <layout class="QGridLayout" name="gridLayout_70" columnstretch="2,1">
+            <item row="0" column="0">
              <widget class="QComboBox" name="comboBox_70">
               <property name="currentIndex">
                <number>0</number>
@@ -864,7 +874,7 @@ color: rgb(255, 255, 255);</string>
               </item>
              </widget>
             </item>
-            <item>
+            <item row="0" column="1">
              <widget class="QPushButton" name="pushButton_66">
               <property name="styleSheet">
                <string notr="true"/>
@@ -874,7 +884,24 @@ color: rgb(255, 255, 255);</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item row="1" column="0">
+             <widget class="QComboBox" name="comboBox_71">
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>匹配不到全部图像时立即报错</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>匹配不到全部图像时自动略过</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="1">
              <widget class="QCheckBox" name="checkBox_11">
               <property name="enabled">
                <bool>true</bool>
@@ -939,56 +966,54 @@ color: rgb(255, 255, 255);</string>
           </spacer>
          </item>
          <item>
-          <widget class="QGroupBox" name="groupBox_72">
-           <property name="title">
-            <string>如果全部未匹配到目标则报错</string>
+          <widget class="QPushButton" name="pushButton_69">
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </disabled>
+            </palette>
            </property>
-           <layout class="QGridLayout" name="gridLayout_69">
-            <item row="0" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton_16">
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <property name="text">
-               <string>匹配不到指定图像时自动略过该指令</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QRadioButton" name="radioButton_17">
-              <property name="text">
-               <string>匹配不到图片超时报错</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_34">
-              <item>
-               <widget class="QLabel" name="label_175">
-                <property name="text">
-                 <string>秒数：</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="spinBox_26">
-                <property name="maximum">
-                 <number>9999</number>
-                </property>
-                <property name="value">
-                 <number>5</number>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>指令测试</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1539,15 +1564,6 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -1571,15 +1587,6 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -1612,15 +1619,6 @@ color: rgb(255, 255, 255);</string>
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -2743,15 +2741,6 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -2775,15 +2764,6 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -2816,15 +2796,6 @@ color: rgb(255, 255, 255);</string>
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3095,7 +3066,7 @@ color: rgb(255, 255, 255);</string>
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'微软雅黑','微软雅黑'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'微软雅黑'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'黑体,黑体';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="placeholderText">
@@ -4176,29 +4147,11 @@ p, li { white-space: pre-wrap; }
                      </color>
                     </brush>
                    </colorrole>
-                   <colorrole role="PlaceholderText">
-                    <brush brushstyle="NoBrush">
-                     <color alpha="128">
-                      <red>0</red>
-                      <green>0</green>
-                      <blue>255</blue>
-                     </color>
-                    </brush>
-                   </colorrole>
                   </active>
                   <inactive>
                    <colorrole role="Text">
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
-                      <red>0</red>
-                      <green>0</green>
-                      <blue>255</blue>
-                     </color>
-                    </brush>
-                   </colorrole>
-                   <colorrole role="PlaceholderText">
-                    <brush brushstyle="NoBrush">
-                     <color alpha="128">
                       <red>0</red>
                       <green>0</green>
                       <blue>255</blue>
@@ -4213,15 +4166,6 @@ p, li { white-space: pre-wrap; }
                       <red>120</red>
                       <green>120</green>
                       <blue>120</blue>
-                     </color>
-                    </brush>
-                   </colorrole>
-                   <colorrole role="PlaceholderText">
-                    <brush brushstyle="NoBrush">
-                     <color alpha="128">
-                      <red>0</red>
-                      <green>0</green>
-                      <blue>255</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -5430,15 +5374,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -5462,15 +5397,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -5503,15 +5429,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6081,15 +5998,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -6113,15 +6021,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -6154,15 +6053,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6452,15 +6342,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -6484,15 +6365,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -6525,15 +6397,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6717,15 +6580,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -6749,15 +6603,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -6790,15 +6635,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6942,15 +6778,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -6974,15 +6801,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -7015,15 +6833,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7187,15 +6996,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -7219,15 +7019,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -7260,15 +7051,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7559,15 +7341,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -7591,15 +7364,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -7632,15 +7396,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8181,7 +7936,7 @@ p, li { white-space: pre-wrap; }
                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cascadia Code','微软雅黑','微软雅黑'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cascadia Code'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cascadia Code,微软雅黑,微软雅黑';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="placeholderText">
@@ -8293,15 +8048,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -8325,15 +8071,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -8369,12 +8106,266 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
+             </disabled>
+            </palette>
+           </property>
+           <property name="font">
+            <font>
+             <family>微软雅黑</family>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>运行测试</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_44">
+        <attribute name="title">
+         <string>运行cmd</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_62">
+         <item>
+          <widget class="QGroupBox" name="groupBox_72">
+           <property name="title">
+            <string>执行CMD命令</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_83">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_69" columnstretch="1,1">
+              <item row="0" column="0" colspan="2">
+               <widget class="QTextEdit" name="textEdit_7">
+                <property name="font">
+                 <font>
+                  <family>Cascadia Code</family>
+                  <pointsize>10</pointsize>
+                  <weight>50</weight>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="html">
+                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Cascadia Code'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Cascadia Code,微软雅黑,微软雅黑';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="placeholderText">
+                 <string>执行CMD命令行...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="pushButton_70">
+                <property name="font">
+                 <font>
+                  <family>微软雅黑</family>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>插入变量</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="pushButton_71">
+                <property name="font">
+                 <font>
+                  <family>微软雅黑</family>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>设置变量</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_75">
+           <property name="title">
+            <string>写入常见命令</string>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_31" stretch="1,1">
+            <item>
+             <widget class="QComboBox" name="comboBox_72">
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+              <property name="insertPolicy">
+               <enum>QComboBox::NoInsert</enum>
+              </property>
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::AdjustToContents</enum>
+              </property>
+              <item>
+               <property name="text">
+                <string>立即关闭计算机</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1分钟后关闭计算机</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>重启计算机</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>返回登录界面</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>锁定屏幕</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>创建新目录</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>删除目录</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>终止进程</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_73">
+              <property name="text">
+               <string>写入命令</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_39">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>211</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_72">
+           <property name="palette">
+            <palette>
+             <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </active>
+             <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>0</green>
+                 <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+             </inactive>
+             <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="ButtonText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>120</red>
+                 <green>120</green>
+                 <blue>120</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8482,15 +8473,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -8514,15 +8496,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -8555,15 +8528,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8771,15 +8735,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -8803,15 +8758,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -8844,15 +8790,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8996,15 +8933,6 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="WindowText">
@@ -9028,15 +8956,6 @@ p, li { white-space: pre-wrap; }
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>255</red>
                  <green>0</green>
                  <blue>0</blue>
@@ -9069,15 +8988,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9277,29 +9187,11 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>255</blue>
-                </color>
-               </brush>
-              </colorrole>
              </active>
              <inactive>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>255</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
                  <red>0</red>
                  <green>0</green>
                  <blue>255</blue>
@@ -9314,15 +9206,6 @@ p, li { white-space: pre-wrap; }
                  <red>120</red>
                  <green>120</green>
                  <blue>120</blue>
-                </color>
-               </brush>
-              </colorrole>
-              <colorrole role="PlaceholderText">
-               <brush brushstyle="NoBrush">
-                <color alpha="128">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
