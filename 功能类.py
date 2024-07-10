@@ -2182,6 +2182,50 @@ class GetDialogValue:
         return pymsgbox.prompt(ins_dic.get("对话框提示信息"), ins_dic.get("对话框标题"))
 
 
+class GetClipboard:
+    """获取剪切板的值"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
+        return parameter_dic_.get("变量")
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        variable_name = self.parsing_ins_dic()
+        text = self.get_clipboard_text()
+        if text != "":
+            self.out_mes.out_mes(f'已获取剪贴板的值：{text}', self.is_test)
+            if not self.is_test:
+                set_variable_value(variable_name, text)
+                self.out_mes.out_mes(
+                    f'已将值赋予变量：{variable_name}', self.is_test
+                )
+        else:
+            self.out_mes.out_mes("异常，未获取到剪贴板的值。", self.is_test)
+
+    @staticmethod
+    def get_clipboard_text():
+        win32clipboard.OpenClipboard()
+        try:
+            text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
+        except Exception as e:
+            print('获取剪贴板内容失败！', e)
+            text = ''
+        finally:
+            win32clipboard.CloseClipboard()
+        return text
+
+
 class ContrastVariables:
     """变量判断的功能"""
 
@@ -2312,6 +2356,36 @@ class RunPython:
         except Exception as e:
             print(e)
             self.out_mes.out_mes(f"运行失败：{e}", self.is_test)
+
+
+class RunCmd:
+    """运行cmd指令功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def parsing_ins_dic(self):
+        """从指令字典中解析出指令参数"""
+        cmd = self.ins_dic.get('图像路径')
+        return cmd
+
+    def start_execute(self):
+        """开始执行鼠标点击事件"""
+        cmd = self.parsing_ins_dic()
+        # 打开cmd，并执行命令
+        try:
+            os.system(cmd)
+            self.out_mes.out_mes(f"已执行cmd命令：{cmd}", self.is_test)
+        except Exception as e:
+            print(e)
+            self.out_mes.out_mes(f"运行失败：{e}", self.is_test)
+            raise ValueError(f"运行失败")
 
 
 class RunExternalFile:

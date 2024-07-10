@@ -55,7 +55,7 @@ from 功能类 import (
     VerificationCode,
     SendWeChat,
     MoveMouse,
-    FullScreenCapture, MultipleImagesClick,
+    FullScreenCapture, MultipleImagesClick, RunCmd, GetClipboard,
 )
 from 变量池窗口 import VariablePool_Win
 from 截图模块 import ScreenCapture
@@ -189,6 +189,7 @@ class Na(QWidget, Ui_navigation):
             "提示音": self.textEdit_4,
             "运行Python": self.textEdit_5,
             "写入单元格": self.textEdit_6,
+            "运行cmd": self.textEdit_7,
         }
         self.branch_jump_control = {  # 需要分支跳转的功能
             "功能区参数": (self.comboBox_10, self.comboBox_11),
@@ -241,8 +242,10 @@ class Na(QWidget, Ui_navigation):
             "获取时间": (lambda x: self.gain_time_function(x), False),
             "获取Excel": (lambda x: self.gain_excel_function(x), False),
             "获取对话框": (lambda x: self.get_dialog_function(x), False),
+            "获取剪切板": (lambda x: self.get_clipboard_function(x), False),
             "变量判断": (lambda x: self.contrast_variables_function(x), False),
             "运行Python": (lambda x: self.run_python_function(x), False),
+            "运行cmd": (lambda x: self.run_cmd_function(x), False),
             "运行外部文件": (lambda x: self.run_external_file_function(x), True),
             "写入单元格": (lambda x: self.input_cell_function(x), True),
             "OCR识别": (lambda x: self.ocr_recognition_function(x), False),
@@ -3500,6 +3503,68 @@ class Na(QWidget, Ui_navigation):
         elif type_ == "还原参数":
             put_parameters(self.parameter_1)
 
+    def get_clipboard_function(self, type_):
+        """从剪切板中获取变量的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def get_parameters():
+            """从tab页获取参数"""
+            # 检查参数是否有异常
+            if self.comboBox_73.currentText() == "":
+                QMessageBox.critical(self, "错误", "变量未设置！")
+                raise ValueError
+            # 返回参数字典
+            parameter_dic_ = {
+                '变量': self.comboBox_73.currentText(),
+            }
+            return parameter_dic_
+
+        def put_parameters(parameter_dic_):
+            """将参数还原到tab页"""
+            index = self.comboBox_73.findText(parameter_dic_['变量'])
+            if index >= 0:
+                self.comboBox_73.setCurrentIndex(index)
+
+        def test():
+            """测试功能"""
+            try:
+                parameter_dic_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    parameter_1_=parameter_dic_
+                )
+                # 测试用例
+                test_class = GetClipboard(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_74.clicked.connect(
+                lambda: self.merge_additional_functions('打开变量池')
+            )
+            self.pushButton_75.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            parameter_dic = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 parameter_1_=parameter_dic,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            self.comboBox_73.clear()
+            self.comboBox_73.addItems(get_variable_info("list"))
+        elif type_ == '还原参数':
+            put_parameters(self.parameter_1)
+
     def contrast_variables_function(self, type_):
         """变量比较的功能
         :param self:
@@ -3684,6 +3749,90 @@ class Na(QWidget, Ui_navigation):
             )
         elif type_ == "还原参数":
             put_parameters(self.image_path, self.parameter_1)
+
+    def run_cmd_function(self, type_):
+        """运行cmd命令的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def write_cmd_to_textedit(comboBox_72_text):
+            """将命令写入textEdit"""
+            cmd_dic = {
+                "立即关闭计算机": "shutdown -s -t 0",
+                "1分钟后关闭计算机": "shutdown -s -t 60",
+                "重启计算机": "shutdown -r -t 0",
+                "锁定屏幕": "rundll32.exe user32.dll,LockWorkStation",
+                "注销账户": "shutdown -l",
+                "创建新目录": "mkdir 目录名",
+                "删除目录": "rmdir /s /q 目录名",
+                "终止进程": "taskkill 进程名.exe",
+                "打开记事本": "notepad",
+                "打开计算器": "calc",
+                "打开资源管理器": "explorer",
+                "打开控制面板": "control",
+            }
+            self.textEdit_7.setPlainText(
+                f"{self.textEdit_7.toPlainText()}\n{cmd_dic[comboBox_72_text]}".strip("\n"))
+
+        def get_parameters():
+            """从tab页获取参数"""
+            # 检查参数是否有异常
+            if self.textEdit_7.toPlainText() == "":
+                QMessageBox.critical(self, "错误", "命令未填写！")
+                raise ValueError
+            # 返回参数字典
+            image_ = self.textEdit_7.toPlainText()
+            return image_
+
+        def put_parameters(image_):
+            """将参数还原到tab页"""
+            self.textEdit_7.setPlainText(image_)
+
+        def test():
+            """测试功能"""
+            try:
+                image_ = get_parameters()
+                dic_ = self.get_test_dic(
+                    repeat_number_=int(self.spinBox.value()),
+                    image_=image_,
+                )
+
+                # 测试用例
+                test_class = RunCmd(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_70.clicked.connect(
+                lambda: self.merge_additional_functions("打开变量选择")
+            )
+            self.pushButton_71.clicked.connect(
+                lambda: self.merge_additional_functions("打开变量池")
+            )
+            self.pushButton_73.clicked.connect(
+                lambda: write_cmd_to_textedit(self.comboBox_72.currentText())
+            )
+            self.pushButton_72.clicked.connect(test)
+
+        elif type_ == '写入参数':
+            image = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            pass
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path)
 
     def run_external_file_function(self, type_):
         """运行外部文件的功能

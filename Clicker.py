@@ -75,17 +75,15 @@ collections.Iterable = collections.abc.Iterable
 # 用户需求
 # todo: 绑定窗口指令
 # todo: 快捷导入指令，拖动文件到窗口导入指令
-# todo: 窗口焦点等待功能
 # todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值的功能
-# todo: 读取excel指令，大写False变为小写false?
 # todo: 鼠标随机移动添加区域限制
-# todo: 执行cmd指令的功能
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
 # todo: 指令可以选择执行，表格中使用checkbox控制
 # todo: 指令可导出为json
 # todo: 鼠标拖动可设置速度
 # todo: 后台截图点击指令
+# todo: 图像点击可设置点击图像的位置
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -498,15 +496,18 @@ class Main_window(QMainWindow, Ui_MainWindow):
         """打开参数窗口"""
         row = self.tableWidget.currentRow()
         params = self.tableWidget.item(row, 4).text()  # parameters
-        # 格式化字典
-        formatted_dict = json.dumps(
-            {
-                k: str(v).capitalize() if isinstance(v, bool) else v
-                for k, v in eval(params).items()
-            },
-            indent=4,
-            ensure_ascii=False,
-        )
+        if (params is not None) and (params != "") and (params != "None"):
+            # 格式化字典
+            formatted_dict = json.dumps(
+                {
+                    k: str(v).capitalize() if isinstance(v, bool) else v
+                    for k, v in eval(params).items()
+                },
+                indent=4,
+                ensure_ascii=False,
+            )
+        else:
+            formatted_dict = ""
         # 显示参数窗口
         param_win = Param(self)  # create a new window
         param_win.setModal(True)

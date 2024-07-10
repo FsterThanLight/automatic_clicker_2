@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_About(object):
     def setupUi(self, About):
         About.setObjectName("About")
-        About.resize(279, 370)
+        About.resize(279, 399)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         About.setWindowIcon(icon)
@@ -211,7 +211,7 @@ class Ui_About(object):
         self.label_5.setText(_translate("About", "Clicker"))
         self.label_2.setText(_translate("About", "版本：v0.25 Bate"))
         self.pushButton.setText(_translate("About", "检查更新"))
-        self.pushButton_2.setText(_translate("About", "反馈及功能建议"))
+        self.pushButton_2.setText(_translate("About", "反馈及建议"))
         self.label_3.setText(_translate("About", "PyAutoGUI可视化，自动处理需要大量重复操作鼠标键盘的事件。"))
         self.label_6.setText(_translate("About", "QQ交流群："))
         self.label_7.setText(_translate("About", "308994839"))

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>370</height>
+    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -297,7 +297,7 @@ QPushButton:pressed {
 }</string>
        </property>
        <property name="text">
-        <string>反馈及功能建议</string>
+        <string>反馈及建议</string>
        </property>
       </widget>
      </item>
