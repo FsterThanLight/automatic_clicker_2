@@ -3901,7 +3901,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(37)
+        self.tabWidget.setCurrentIndex(1)
         self.comboBox_2.setCurrentIndex(0)
         self.comboBox_70.setCurrentIndex(0)
         self.comboBox_71.setCurrentIndex(0)
