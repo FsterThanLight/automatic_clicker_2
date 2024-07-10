@@ -75,7 +75,6 @@ collections.Iterable = collections.abc.Iterable
 # 用户需求
 # todo: 绑定窗口指令
 # todo: 快捷导入指令，拖动文件到窗口导入指令
-# todo: 将剪贴板文本写入变量功能
 # todo: 成功和失败改变变量值的功能
 # todo: 鼠标随机移动添加区域限制
 # todo: 导航窗口、设置窗口打开时，按全局快捷键也会触发运行
