@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_About(object):
     def setupUi(self, About):
         About.setObjectName("About")
-        About.resize(279, 399)
+        About.resize(311, 455)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/图标.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         About.setWindowIcon(icon)
@@ -111,6 +111,7 @@ class Ui_About(object):
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
 "    font-size: 14px; /* 设置字体大小，可以根据需要调整 */\n"
 "    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -137,6 +138,7 @@ class Ui_About(object):
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
 "    font-size: 14px; /* 设置字体大小，可以根据需要调整 */\n"
 "    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -145,7 +147,8 @@ class Ui_About(object):
 "\n"
 "QPushButton:pressed {\n"
 "    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
-"}")
+"}\n"
+"")
         self.pushButton_2.setObjectName("pushButton_2")
         self.horizontalLayout_4.addWidget(self.pushButton_2)
         self.horizontalLayout_4.setStretch(0, 1)
@@ -159,10 +162,42 @@ class Ui_About(object):
         self.label_3.setWordWrap(True)
         self.label_3.setObjectName("label_3")
         self.verticalLayout_2.addWidget(self.label_3)
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.gridLayout_2 = QtWidgets.QGridLayout()
+        self.gridLayout_2.setHorizontalSpacing(7)
+        self.gridLayout_2.setVerticalSpacing(4)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.pushButton_3 = QtWidgets.QPushButton(About)
+        font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setWeight(75)
+        self.pushButton_3.setFont(font)
+        self.pushButton_3.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(219, 58, 150); /* 设置背景颜色为粉红色 */\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 18px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(180, 40, 120); /* 设置鼠标悬停时的背景颜色为加深的粉红色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/捐赠.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_3.setIcon(icon1)
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.gridLayout_2.addWidget(self.pushButton_3, 0, 0, 1, 3)
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_5.addItem(spacerItem4)
+        self.gridLayout_2.addItem(spacerItem4, 1, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.label_6 = QtWidgets.QLabel(About)
@@ -173,22 +208,30 @@ class Ui_About(object):
         self.label_7.setOpenExternalLinks(True)
         self.label_7.setObjectName("label_7")
         self.horizontalLayout.addWidget(self.label_7)
-        self.horizontalLayout_5.addLayout(self.horizontalLayout)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 1, 1, 1, 1)
         spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_5.addItem(spacerItem5)
-        self.verticalLayout_2.addLayout(self.horizontalLayout_5)
+        self.gridLayout_2.addItem(spacerItem5, 1, 2, 1, 1)
+        self.verticalLayout_2.addLayout(self.gridLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem6)
         self.gitee = QtWidgets.QToolButton(About)
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/gitee.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.gitee.setIcon(icon1)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/gitee.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.gitee.setIcon(icon2)
         self.gitee.setIconSize(QtCore.QSize(50, 50))
         self.gitee.setAutoRaise(True)
         self.gitee.setObjectName("gitee")
         self.horizontalLayout_3.addWidget(self.gitee)
+        self.gitee_2 = QtWidgets.QToolButton(About)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/按钮图标/窗体/res/github.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.gitee_2.setIcon(icon3)
+        self.gitee_2.setIconSize(QtCore.QSize(50, 50))
+        self.gitee_2.setAutoRaise(True)
+        self.gitee_2.setObjectName("gitee_2")
+        self.horizontalLayout_3.addWidget(self.gitee_2)
         spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem7)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
@@ -213,8 +256,10 @@ class Ui_About(object):
         self.pushButton.setText(_translate("About", "检查更新"))
         self.pushButton_2.setText(_translate("About", "反馈及建议"))
         self.label_3.setText(_translate("About", "PyAutoGUI可视化，自动处理需要大量重复操作鼠标键盘的事件。"))
+        self.pushButton_3.setText(_translate("About", "捐赠支持开发者"))
         self.label_6.setText(_translate("About", "QQ交流群："))
         self.label_7.setText(_translate("About", "308994839"))
         self.gitee.setText(_translate("About", "gitee地址"))
+        self.gitee_2.setText(_translate("About", "gitee地址"))
         self.label_4.setText(_translate("About", "federalsadler@sohu.com Copyright (c) [2022] "))
 import images_rc

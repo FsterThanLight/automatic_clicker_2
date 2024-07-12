@@ -175,6 +175,7 @@ QPushButton
 }
 
 
+
 QPushButton::flat
 {
 	background-color: transparent;
@@ -1009,7 +1010,18 @@ QTableWidget::item:selected {
 
 QTableWidget::item:selected:!focus {
     background-color: #5A5E2F; /* 未聚焦的选中区为浅金色 */
-    color: white; /* 字体颜色为白色 */
+    color: white;
+}
+QTableWidget::item:hover {
+     background-color: #5A5E2F;
+}
+QTableWidget::item:selected:hover {
+    background-color: #FFFF00;
+    color: black;
+}
+QTableWidget::item:selected:hover!focus {
+    background-color: #5A5E2F;
+    color: white;
 }
 
 /*-----plainTextEdit*-----*/

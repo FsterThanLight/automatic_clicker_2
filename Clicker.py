@@ -11,6 +11,7 @@
 from __future__ import print_function
 
 import collections
+import ctypes
 import json
 import os.path
 import re
@@ -47,7 +48,8 @@ from ini控制 import set_window_size, save_window_size, get_setting_data_from_i
     get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini, get_branch_repeat_times, \
     set_branch_repeat_times, set_current_branch, get_current_branch
 from main_work import CommandThread
-from 软件信息 import CURRENT_VERSION, MAIN_WEBSITE, ISSUE_WEBSITE, RELEASE_WEBSITE, QQ_GROUP, QQ, APP_NAME
+from 软件信息 import CURRENT_VERSION, MAIN_WEBSITE, ISSUE_WEBSITE, RELEASE_WEBSITE, QQ_GROUP, QQ, APP_NAME, \
+    Github_WEBSITE, DONATE_WEBSITE
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
 from 导航窗口功能 import Na
@@ -219,6 +221,8 @@ class Main_window(QMainWindow, Ui_MainWindow):
         set_window_size(self)  # 获取上次退出时的窗口大小
         branch_name = get_current_branch()
         self.comboBox.setCurrentIndex(self.comboBox.findText(branch_name) if branch_name else 0)
+        # 缩小tableWidget行高
+        self.tableWidget.verticalHeader().setDefaultSectionSize(20)
         check_file_integrity()  # 检查文件完整性
         # 显示工具栏
         judge = eval(get_setting_data_from_ini("Config", "显示工具栏"))
@@ -698,23 +702,26 @@ class Main_window(QMainWindow, Ui_MainWindow):
             QDesktopServices.openUrl(QUrl(MAIN_WEBSITE))
         elif judge == "快捷键说明":
             # 使用MessageBox显示快捷键说明
-            QMessageBox.information(
-                self,
-                "快捷键说明",
-                "Ctrl+Enter：\t添加指令\n"
-                "Ctrl+C：\t\t复制指令\n"
-                "Delete：\t\t删除指令\n"
-                "Shift+↑：\t上移指令\n"
-                "Shift+↓：\t下移指令\n"
-                "Ctrl+↑：\t\t切换到上个分支\n"
-                "Ctrl+↓：\t\t切换到下个分支\n"
-                "Ctrl+G：\t\t转到分支\n"
-                "Ctrl+Y：\t\t修改指令\n"
-                "\n"
-                "Ctrl+D：\t\t导入指令\n"
-                "Ctrl+S：\t\t保存指令\n"
-                "Ctrl+Alt+S：\t另存为Excel\n",
-            )
+            # QMessageBox.information(
+            #     self,
+            #     "快捷键说明",
+            #     "Ctrl+Enter：\t添加指令\n"
+            #     "Ctrl+C：\t\t复制指令\n"
+            #     "Delete：\t\t删除指令\n"
+            #     "Shift+↑：\t上移指令\n"
+            #     "Shift+↓：\t下移指令\n"
+            #     "Ctrl+↑：\t\t切换到上个分支\n"
+            #     "Ctrl+↓：\t\t切换到下个分支\n"
+            #     "Ctrl+G：\t\t转到分支\n"
+            #     "Ctrl+Y：\t\t修改指令\n"
+            #     "\n"
+            #     "Ctrl+D：\t\t导入指令\n"
+            #     "Ctrl+S：\t\t保存指令\n"
+            #     "Ctrl+Alt+S：\t另存为Excel\n",
+            # )
+            shortcut_win = ShortcutTable(self)  # 快捷键说明窗口
+            shortcut_win.setModal(True)
+            shortcut_win.exec_()
 
     def get_data(self, row=None):
         """从数据库获取数据并存入表格
@@ -1282,15 +1289,19 @@ class About(QDialog, Ui_About):
         self.label_2.setText(f"版本：{CURRENT_VERSION}")  # 设置版本号
         self.label_7.setText('<a href="{}"><font color="red">{}</font></a>'.format(QQ_GROUP, QQ))
         # 绑定事件
-        self.gitee.clicked.connect(self.show_gitee)
+        self.gitee.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(MAIN_WEBSITE))
+        )
+        self.gitee_2.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(Github_WEBSITE))
+        )
         self.pushButton.clicked.connect(lambda: self._parent.check_update_software(True))
         self.pushButton_2.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl(ISSUE_WEBSITE))
         )
-
-    @staticmethod
-    def show_gitee():
-        QDesktopServices.openUrl(QUrl(RELEASE_WEBSITE))
+        self.pushButton_3.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl(DONATE_WEBSITE))
+        )
 
     def closeEvent(self, event):
         # 保存窗体大小
@@ -1317,6 +1328,58 @@ class Param(QDialog, Ui_Param):
     def modify_parameters(self):
         self.parent().modify_parameters()
         self.close()
+
+
+class ShortcutTable(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        # Set window title
+        self.setWindowTitle("快捷键说明")
+        self.table = QtWidgets.QTableWidget()
+        self.table.setRowCount(12)
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["快捷键", "说明"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.verticalHeader().setVisible(False)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )  # 隐藏帮助按钮
+        self.button = QtWidgets.QPushButton("我知道了")
+        self.button.clicked.connect(self.close)
+        data = [
+            ("Ctrl+Enter", "添加指令"),
+            ("Ctrl+C", "复制指令"),
+            ("Delete", "删除指令"),
+            ("Shift+↑", "上移指令"),
+            ("Shift+↓", "下移指令"),
+            ("Ctrl+↑", "切换到上个分支"),
+            ("Ctrl+↓", "切换到下个分支"),
+            ("Ctrl+G", "转到分支"),
+            ("Ctrl+Y", "修改指令"),
+            ("Ctrl+D", "导入指令"),
+            ("Ctrl+S", "保存指令"),
+            ("Ctrl+Alt+S", "另存为Excel")
+        ]
+        for row, (shortcut, description) in enumerate(data):
+            shortcut_item = QTableWidgetItem(shortcut)
+            shortcut_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+            shortcut_item.setTextAlignment(Qt.AlignCenter)
+            description_item = QTableWidgetItem(description)
+            description_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+            description_item.setTextAlignment(Qt.AlignCenter)
+            self.table.setItem(row, 0, shortcut_item)
+            self.table.setItem(row, 1, description_item)
+
+        # Set layout
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.table)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
+        # 获取表格的总高度，设置窗口的高度
+        table_height = self.table.verticalHeader().length()
+        self.resize(300, table_height + 150)
+        self.table.setFocusPolicy(Qt.NoFocus)
 
 
 class QSSLoader:
@@ -1350,7 +1413,6 @@ if __name__ == "__main__":
         splash.show()  # 显示启动界面
 
         main_win = Main_window()  # 创建主窗体
-
         # 设置窗体样式
         try:
             style_name = "Combinear"

@@ -134,6 +134,7 @@ class Ui_MainWindow(object):
         self.tableWidget.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
+        font.setPointSize(8)
         font.setBold(False)
         font.setItalic(False)
         font.setWeight(50)

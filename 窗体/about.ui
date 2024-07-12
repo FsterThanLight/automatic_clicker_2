@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>279</width>
-    <height>399</height>
+    <width>311</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -252,6 +252,7 @@
     font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
     font-size: 14px; /* 设置字体大小，可以根据需要调整 */
     padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+border: 2px solid transparent; /* 设置边框为透明 */
 }
 
 QPushButton:hover {
@@ -286,6 +287,7 @@ QPushButton:pressed {
     font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
     font-size: 14px; /* 设置字体大小，可以根据需要调整 */
     padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+border: 2px solid transparent; /* 设置边框为透明 */
 }
 
 QPushButton:hover {
@@ -294,7 +296,8 @@ QPushButton:hover {
 
 QPushButton:pressed {
     background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */
-}</string>
+}
+</string>
        </property>
        <property name="text">
         <string>反馈及建议</string>
@@ -322,8 +325,53 @@ QPushButton:pressed {
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="horizontalSpacing">
+      <number>7</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>4</number>
+     </property>
+     <item row="0" column="0" colspan="3">
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei</family>
+         <pointsize>-1</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    background-color: rgb(219, 58, 150); /* 设置背景颜色为粉红色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 18px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(180, 40, 120); /* 设置鼠标悬停时的背景颜色为加深的粉红色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */
+}
+</string>
+       </property>
+       <property name="text">
+        <string>捐赠支持开发者</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../images.qrc">
+         <normaloff>:/按钮图标/窗体/res/捐赠.png</normaloff>:/按钮图标/窗体/res/捐赠.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -336,7 +384,7 @@ QPushButton:pressed {
        </property>
       </spacer>
      </item>
-     <item>
+     <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="label_6">
@@ -360,7 +408,7 @@ QPushButton:pressed {
        </item>
       </layout>
      </item>
-     <item>
+     <item row="1" column="2">
       <spacer name="horizontalSpacer_6">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -398,6 +446,26 @@ QPushButton:pressed {
        <property name="icon">
         <iconset resource="../images.qrc">
          <normaloff>:/按钮图标/窗体/res/gitee.png</normaloff>:/按钮图标/窗体/res/gitee.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>50</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="gitee_2">
+       <property name="text">
+        <string>gitee地址</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../images.qrc">
+         <normaloff>:/按钮图标/窗体/res/github.png</normaloff>:/按钮图标/窗体/res/github.png</iconset>
        </property>
        <property name="iconSize">
         <size>

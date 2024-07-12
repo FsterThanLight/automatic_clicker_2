@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="按钮图标">
     <file>窗体/qss_icons/branch-end.png</file>
+    <file>窗体/res/捐赠.png</file>
     <file>窗体/qss_icons/branch-end.png</file>
     <file>窗体/qss_icons/branch-end.png</file>
     <file>窗体/qss_icons/add_bottom.png</file>
