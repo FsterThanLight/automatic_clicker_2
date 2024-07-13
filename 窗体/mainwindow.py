@@ -225,12 +225,28 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.toolButton)
         self.pushButton_3 = QtWidgets.QPushButton(self.tab_2)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_3.setFont(font)
-        self.pushButton_3.setStyleSheet("background-color: rgb(255, 0, 0);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_3.setStyleSheet("QPushButton {\n"
+"    background-color: red;\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
+"}")
         self.pushButton_3.setObjectName("pushButton_3")
         self.horizontalLayout_3.addWidget(self.pushButton_3)
         self.horizontalLayout_4.addLayout(self.horizontalLayout_3)
@@ -428,12 +444,28 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.pushButton_5 = QtWidgets.QPushButton(self.groupBox_4)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_5.setFont(font)
-        self.pushButton_5.setStyleSheet("background-color: rgb(255, 0, 0);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_5.setStyleSheet("QPushButton {\n"
+"    background-color: red;\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
+"}")
         self.pushButton_5.setObjectName("pushButton_5")
         self.gridLayout_3.addWidget(self.pushButton_5, 0, 0, 1, 2)
         self.pushButton_6 = QtWidgets.QPushButton(self.groupBox_4)
@@ -526,7 +558,6 @@ class Ui_MainWindow(object):
         self.actiondh = QtWidgets.QAction(MainWindow)
         self.actiondh.setObjectName("actiondh")
         self.menu_5.addAction(self.actiona)
-        self.menu.addAction(self.actionx)
         self.menu.addAction(self.menu_5.menuAction())
         self.menu.addSeparator()
         self.menu.addAction(self.actionf)
@@ -541,7 +572,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_3.menuAction())
         self.menubar.addAction(self.menu_4.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
-        self.toolBar.addAction(self.actionb)
+        self.toolBar.addAction(self.actionx)
         self.toolBar.addAction(self.actionf)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actions_2)

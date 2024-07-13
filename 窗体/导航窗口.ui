@@ -354,7 +354,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>35</number>
+        <number>1</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideNone</enum>
@@ -429,14 +429,31 @@
             <widget class="QPushButton" name="pushButton">
              <property name="font">
               <font>
-               <family>微软雅黑</family>
+               <family>Microsoft YaHei</family>
+               <pointsize>-1</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 85, 255);
-color: rgb(255, 255, 255);</string>
+              <string notr="true">QPushButton {
+    background-color: #0066CC; /* 蓝色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */
+}
+
+QPushButton:pressed {
+    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */
+}
+</string>
              </property>
              <property name="text">
               <string>快捷截图</string>
@@ -673,6 +690,15 @@ color: rgb(255, 255, 255);</string>
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -682,12 +708,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -706,17 +741,44 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -724,8 +786,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -747,8 +809,26 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -758,12 +838,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -782,6 +871,15 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -790,13 +888,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>找图测试</string>
@@ -859,14 +975,30 @@ color: rgb(255, 255, 255);</string>
                <widget class="QPushButton" name="pushButton_67">
                 <property name="font">
                  <font>
-                  <family>微软雅黑</family>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>-1</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(255, 0, 0);
-color: rgb(255, 255, 255);</string>
+                 <string notr="true">QPushButton {
+    background-color: red;
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */
+}</string>
                 </property>
                 <property name="text">
                  <string>添加图像</string>
@@ -888,14 +1020,31 @@ color: rgb(255, 255, 255);</string>
                <widget class="QPushButton" name="pushButton_63">
                 <property name="font">
                  <font>
-                  <family>微软雅黑</family>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>-1</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0, 85, 255);
-color: rgb(255, 255, 255);</string>
+                 <string notr="true">QPushButton {
+    background-color: #0066CC; /* 蓝色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */
+}
+
+QPushButton:pressed {
+    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */
+}
+</string>
                 </property>
                 <property name="text">
                  <string>快捷截图</string>
@@ -1066,6 +1215,15 @@ color: rgb(255, 255, 255);</string>
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -1075,12 +1233,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1099,17 +1266,44 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1117,8 +1311,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1140,8 +1334,26 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -1151,12 +1363,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1175,6 +1396,15 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1183,13 +1413,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -1409,6 +1657,15 @@ color: rgb(255, 255, 255);</string>
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -1418,12 +1675,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1442,17 +1708,44 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1460,8 +1753,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1483,8 +1776,26 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -1494,12 +1805,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1518,6 +1838,15 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1526,13 +1855,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -1815,8 +2162,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1833,8 +2180,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1842,8 +2189,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1869,8 +2216,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1880,8 +2227,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1898,8 +2245,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1907,8 +2254,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1934,8 +2281,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1944,9 +2291,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1962,18 +2309,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -1999,8 +2346,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -2009,13 +2356,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>移动测试</string>
@@ -2516,7 +2881,7 @@ color: rgb(255, 255, 255);</string>
             <item row="1" column="1">
              <widget class="QComboBox" name="comboBox_6">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
               <property name="currentText">
                <string>1000</string>
@@ -2630,8 +2995,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2657,8 +3022,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2666,8 +3031,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2695,8 +3060,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2722,8 +3087,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2731,8 +3096,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2760,8 +3125,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2787,8 +3152,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2796,8 +3161,8 @@ color: rgb(255, 255, 255);</string>
                     <brush brushstyle="SolidPattern">
                      <color alpha="255">
                       <red>0</red>
-                      <green>85</green>
-                      <blue>255</blue>
+                      <green>102</green>
+                      <blue>204</blue>
                      </color>
                     </brush>
                    </colorrole>
@@ -2815,14 +3180,31 @@ color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="font">
                  <font>
-                  <family>微软雅黑</family>
+                  <family>Microsoft YaHei</family>
+                  <pointsize>-1</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0, 85, 255);
-color: rgb(255, 255, 255);</string>
+                 <string notr="true">QPushButton {
+    background-color: #0066CC; /* 蓝色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */
+}
+
+QPushButton:pressed {
+    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */
+}
+</string>
                 </property>
                 <property name="text">
                  <string>快捷截图</string>
@@ -3269,8 +3651,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3287,8 +3669,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3296,8 +3678,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3323,8 +3705,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3334,8 +3716,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3352,8 +3734,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3361,8 +3743,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3388,8 +3770,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3398,9 +3780,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3416,18 +3798,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3453,8 +3835,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -3463,13 +3845,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -4331,6 +4731,15 @@ p, li { white-space: pre-wrap; }
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -4340,12 +4749,21 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4364,17 +4782,44 @@ p, li { white-space: pre-wrap; }
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4382,8 +4827,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4405,8 +4850,26 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -4416,12 +4879,21 @@ p, li { white-space: pre-wrap; }
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4440,6 +4912,15 @@ p, li { white-space: pre-wrap; }
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4448,13 +4929,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>拖拽测试</string>
@@ -4516,8 +5015,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4543,8 +5042,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4552,8 +5051,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4581,8 +5080,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4608,8 +5107,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4617,8 +5116,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4646,8 +5145,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4673,8 +5172,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4682,8 +5181,8 @@ p, li { white-space: pre-wrap; }
                  <brush brushstyle="SolidPattern">
                   <color alpha="255">
                    <red>0</red>
-                   <green>85</green>
-                   <blue>255</blue>
+                   <green>102</green>
+                   <blue>204</blue>
                   </color>
                  </brush>
                 </colorrole>
@@ -4701,14 +5200,31 @@ p, li { white-space: pre-wrap; }
              </property>
              <property name="font">
               <font>
-               <family>微软雅黑</family>
+               <family>Microsoft YaHei</family>
+               <pointsize>-1</pointsize>
                <weight>75</weight>
                <bold>true</bold>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 85, 255);
-color: rgb(255, 255, 255);</string>
+              <string notr="true">QPushButton {
+    background-color: #0066CC; /* 蓝色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */
+}
+
+QPushButton:pressed {
+    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */
+}
+</string>
              </property>
              <property name="text">
               <string>快捷截图</string>
@@ -4949,6 +5465,15 @@ color: rgb(255, 255, 255);</string>
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -4958,12 +5483,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -4982,17 +5516,44 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -5000,8 +5561,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -5023,8 +5584,26 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -5034,12 +5613,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -5058,6 +5646,15 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -5066,13 +5663,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>找图测试</string>
@@ -6374,8 +6989,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6392,8 +7007,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6401,8 +7016,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6428,8 +7043,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6439,8 +7054,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6457,8 +7072,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6466,8 +7081,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6493,8 +7108,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6503,9 +7118,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6521,18 +7136,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6558,8 +7173,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6568,13 +7183,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -6877,6 +7510,15 @@ color: rgb(255, 255, 255);</string>
            <property name="palette">
             <palette>
              <active>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -6886,12 +7528,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6910,17 +7561,44 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
              </active>
              <inactive>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6928,8 +7606,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6951,8 +7629,26 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
              </inactive>
              <disabled>
+              <colorrole role="WindowText">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="Button">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
@@ -6962,12 +7658,21 @@ color: rgb(255, 255, 255);</string>
                 </color>
                </brush>
               </colorrole>
+              <colorrole role="Text">
+               <brush brushstyle="SolidPattern">
+                <color alpha="255">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
+                </color>
+               </brush>
+              </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6986,6 +7691,15 @@ color: rgb(255, 255, 255);</string>
                  <red>0</red>
                  <green>170</green>
                  <blue>0</blue>
+                </color>
+               </brush>
+              </colorrole>
+              <colorrole role="PlaceholderText">
+               <brush brushstyle="NoBrush">
+                <color alpha="128">
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -6994,13 +7708,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -7193,8 +7925,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7211,8 +7943,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7220,8 +7952,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7247,8 +7979,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7258,8 +7990,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7276,8 +8008,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7285,8 +8017,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7312,8 +8044,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7322,9 +8054,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7340,18 +8072,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7377,8 +8109,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7387,13 +8119,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -7648,8 +8398,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7666,8 +8416,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7675,8 +8425,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7702,8 +8452,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7713,8 +8463,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7731,8 +8481,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7740,8 +8490,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7767,8 +8517,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7777,9 +8527,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7795,18 +8545,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7832,8 +8582,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -7842,13 +8592,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>播放测试</string>
@@ -7997,8 +8765,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8015,8 +8783,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8024,8 +8792,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8051,8 +8819,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8062,8 +8830,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8080,8 +8848,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8089,8 +8857,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8116,8 +8884,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8126,9 +8894,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8144,18 +8912,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8181,8 +8949,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8191,13 +8959,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>显示测试</string>
@@ -8306,8 +9092,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8324,8 +9110,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8333,8 +9119,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8360,8 +9146,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8371,8 +9157,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8389,8 +9175,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8398,8 +9184,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8425,8 +9211,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8435,9 +9221,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8453,18 +9239,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8490,8 +9276,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8500,13 +9286,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>控制测试</string>
@@ -8635,8 +9439,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8653,8 +9457,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8662,8 +9466,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8689,8 +9493,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8700,8 +9504,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8718,8 +9522,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8727,8 +9531,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8754,8 +9558,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8764,9 +9568,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8782,18 +9586,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8819,8 +9623,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -8829,13 +9633,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>对话框预览</string>
@@ -9091,8 +9913,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9109,8 +9931,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9118,8 +9940,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9145,8 +9967,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9156,8 +9978,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9174,8 +9996,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9183,8 +10005,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9210,8 +10032,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9220,9 +10042,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9238,18 +10060,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9275,8 +10097,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9285,13 +10107,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -9697,8 +10537,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9715,8 +10555,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9724,8 +10564,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9751,8 +10591,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9762,8 +10602,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9780,8 +10620,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9789,8 +10629,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9816,8 +10656,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9826,9 +10666,9 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9844,18 +10684,18 @@ color: rgb(255, 255, 255);</string>
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9881,8 +10721,8 @@ color: rgb(255, 255, 255);</string>
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -9891,13 +10731,31 @@ color: rgb(255, 255, 255);</string>
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>运行测试</string>
@@ -10194,8 +11052,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10212,8 +11070,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10221,8 +11079,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10248,8 +11106,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10259,8 +11117,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10277,8 +11135,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10286,8 +11144,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10313,8 +11171,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10323,9 +11181,9 @@ p, li { white-space: pre-wrap; }
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10341,18 +11199,18 @@ p, li { white-space: pre-wrap; }
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10378,8 +11236,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10388,13 +11246,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>运行测试</string>
@@ -10588,8 +11464,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10606,8 +11482,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10615,8 +11491,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10642,8 +11518,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10653,8 +11529,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10671,8 +11547,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10680,8 +11556,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10707,8 +11583,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10717,9 +11593,9 @@ p, li { white-space: pre-wrap; }
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10735,18 +11611,18 @@ p, li { white-space: pre-wrap; }
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10772,8 +11648,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10782,13 +11658,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>运行测试</string>
@@ -10861,8 +11755,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10879,8 +11773,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10888,8 +11782,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10915,8 +11809,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10926,8 +11820,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10944,8 +11838,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10953,8 +11847,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10980,8 +11874,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -10990,9 +11884,9 @@ p, li { white-space: pre-wrap; }
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11008,18 +11902,18 @@ p, li { white-space: pre-wrap; }
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11045,8 +11939,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11055,13 +11949,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>运行测试</string>
@@ -11234,8 +12146,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11252,8 +12164,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11261,8 +12173,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11288,8 +12200,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11299,8 +12211,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11317,8 +12229,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11326,8 +12238,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11353,8 +12265,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11363,9 +12275,9 @@ p, li { white-space: pre-wrap; }
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11381,18 +12293,18 @@ p, li { white-space: pre-wrap; }
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11418,8 +12330,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11428,13 +12340,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>指令测试</string>
@@ -11543,8 +12473,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11561,8 +12491,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11570,8 +12500,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11597,8 +12527,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11608,8 +12538,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11626,8 +12556,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11635,8 +12565,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11662,8 +12592,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11672,9 +12602,9 @@ p, li { white-space: pre-wrap; }
               <colorrole role="WindowText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11690,18 +12620,18 @@ p, li { white-space: pre-wrap; }
               <colorrole role="Text">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
               <colorrole role="ButtonText">
                <brush brushstyle="SolidPattern">
                 <color alpha="255">
-                 <red>120</red>
-                 <green>120</green>
-                 <blue>120</blue>
+                 <red>255</red>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11727,8 +12657,8 @@ p, li { white-space: pre-wrap; }
                <brush brushstyle="NoBrush">
                 <color alpha="128">
                  <red>255</red>
-                 <green>0</green>
-                 <blue>0</blue>
+                 <green>255</green>
+                 <blue>255</blue>
                 </color>
                </brush>
               </colorrole>
@@ -11737,13 +12667,31 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="font">
             <font>
-             <family>微软雅黑</family>
+             <family>Microsoft YaHei</family>
+             <pointsize>-1</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(0, 170, 0);</string>
+            <string notr="true">QPushButton {
+    background-color: rgb(0, 170, 0);
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */
+}
+</string>
            </property>
            <property name="text">
             <string>识别测试</string>
@@ -11999,6 +12947,9 @@ p, li { white-space: pre-wrap; }
            <weight>75</weight>
            <bold>true</bold>
           </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>添加指令</string>

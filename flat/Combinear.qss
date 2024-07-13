@@ -1,11 +1,8 @@
-* {
-    font-family: "微软雅黑";
-/*    font-family: "Arial";*/
-}
+
 
 /* 标题栏设置 */
 QMainWindow::title {
-    color: #000000; /* 黑色 */
+    color: #FFFFFF ; /* 黑色 */
     background-color: #000000; /* 黑色 */
 }
 
@@ -18,11 +15,42 @@ QWidget
 	selection-color: #000;
 }
 
+/*-----QPushButton-----*/
+QPushButton {
+    background-color: #5a5a5a; /* 设置背景颜色为蓝色 */
+    color: white;
+    border-radius: 10px; /* 设置圆角半径 */
+    font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
+    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
+    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    border: 2px solid transparent; /* 设置边框为透明 */
+}
+
+QPushButton:hover {
+    background-color: #4a4a4a; /* 设置鼠标悬停时的背景颜色为更深的蓝色 */
+    color: #ffff00; /* 设置鼠标悬停时的文字颜色为白色 */
+}
+
+QPushButton:pressed {
+    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */
+}
+
+QPushButton::disabled
+{
+	background-color: #404040;
+	color: #656565;
+	border-color: #051a39;
+	/* 设置按钮边框为1像素宽*/
+	border-width: 1px;
+}
+
+
 
 /*-----QLabel-----*/
 QLabel
 {
 	background-color: transparent;
+	font-family: 'Microsoft YaHei';
 	color: #fff;
 }
 
@@ -36,6 +64,7 @@ QLabel:disabled {
 QMenuBar
 {
 	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(57, 57, 57, 255),stop:1 rgba(50, 50, 50, 255));
+	font-family: 'Microsoft YaHei';
 	border: 1px solid #000;
 	color: #fff;
 }
@@ -67,6 +96,7 @@ QMenuBar::item:pressed
 QMenu
 {
     background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(57, 57, 57, 255),stop:1 rgba(50, 50, 50, 255));
+    font-family: 'Microsoft YaHei';
     border: 1px solid #222;
     padding: 4px;
 	color: #fff;
@@ -107,6 +137,7 @@ QMenu::item:selected
 /*-----QToolBar-----*/
 QToolBar
 {
+    font-family: 'Microsoft YaHei';
 	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(69, 69, 69, 255),stop:1 rgba(58, 58, 58, 255));
 	border-top: none;
 	border-bottom: 1px solid #4f4f4f;
@@ -127,6 +158,7 @@ QToolBar::separator
 /*-----QToolButton-----*/
 QToolButton
 {
+    font-family: 'Microsoft YaHei';
 	background-color: transparent;
 	color: #fff;
 	padding: 5px;
@@ -159,68 +191,10 @@ QToolButton:checked
 }
 
 
-/*-----QPushButton-----*/
-QPushButton
-{
-	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(84, 84, 84, 255),stop:1 rgba(59, 59, 59, 255));
-	color: #ffffff;
-	min-width: 80px;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 3px;
-	border-radius: 8px;
-	border-color: #00aaff;
-	padding: 5px;
-
-}
-
-
-
-QPushButton::flat
-{
-	background-color: transparent;
-	border: none;
-	color: #fff;
-
-}
-
-
-QPushButton::disabled
-{
-	background-color: #404040;
-	color: #656565;
-	border-color: #051a39;
-
-}
-
-
-QPushButton::hover
-{
-	background-color: rgba(183, 134, 32, 20%);
-	border: 1px solid #ffff00;
-
-}
-
-
-QPushButton::pressed
-{
-	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(74, 74, 74, 255),stop:1 rgba(49, 49, 49, 255));
-	border: 1px solid #ffff00;
-
-}
-
-
-QPushButton::checked
-{
-	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(74, 74, 74, 255),stop:1 rgba(49, 49, 49, 255));
-	border: 1px solid #222;
-
-}
-
-
 /*-----QLineEdit-----*/
 QLineEdit
 {
+    font-family: 'Microsoft YaHei';
 	background-color: #131313;
 	color : #eee;
 	border: 1px solid #343434;
@@ -245,6 +219,7 @@ QLineEdit:disabled {
 
 /*-----QTextEdit-----*/
 QTextEdit {
+    font-family: 'Microsoft YaHei';
     background-color: #131313;
     border: 1px solid #343434;
     border-radius: 2px;
@@ -267,6 +242,7 @@ QTextEdit:disabled {
 /*-----QTabBar-----*/
 QTabBar::tab
 {
+    font-family: 'Microsoft YaHei';
 	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(84, 84, 84, 255),stop:1 rgba(59, 59, 59, 255));
 	color: #ffffff;
 	border-style: solid;
@@ -331,7 +307,8 @@ QTabBar::tab:!selected:hover
 QComboBox {
     background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(84, 84, 84, 255),stop:1 rgba(59, 59, 59, 255));
     border: 1px solid #000; /* 增大边框线宽度 */
-    border-radius: 10px; /* 设置边框为圆角 */
+
+    font-family: 'Microsoft YaHei';
     padding-left: 5px;
     padding-right: 5px; /* 增大左右内边距 */
 	padding-top: 5px;
@@ -393,6 +370,7 @@ QSpinBox,
 QDoubleSpinBox,
 QDateTimeEdit
 {
+    font-family: 'Microsoft YaHei';
     background-color: #131313;
 	color : #eee;
 	border: 1px solid #343434;
@@ -509,6 +487,7 @@ QDateTimeEdit::down-arrow
 /*-----QGroupBox-----*/
 QGroupBox {
     border: 1px solid;
+    font-family: 'Microsoft YaHei';
     border-color: #FFFF00;
     border-radius: 5px;
     margin-top: 25px;
@@ -520,6 +499,7 @@ QGroupBox {
 QGroupBox::title {
     subcontrol-origin: margin;
     background-color: transparent;
+    font-family: 'Microsoft YaHei';
     color: #FFC0CB;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
@@ -556,6 +536,7 @@ QGroupBox::unchecked {
 /*-----QHeaderView-----*/
 QHeaderView::section
 {
+    font-family: 'Microsoft YaHei';
     background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(60, 60, 60, 255),stop:1 rgba(50, 50, 50, 255));
 	border: 1px solid #000;
     color: #fff;
@@ -658,6 +639,7 @@ QTreeView::branch:open:has-children:has-siblings  {
 /*-----QListView-----*/
 QListView
 {
+    font-family: 'Microsoft YaHei';
 	background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(83, 83, 83, 255),stop:0.293269 rgba(81, 81, 81, 255),stop:0.634615 rgba(79, 79, 79, 255),stop:1 rgba(83, 83, 83, 255));
     border : none;
     color: white;
@@ -726,6 +708,7 @@ QListView:!has-children {
 /*-----QCheckBox-----*/
 QCheckBox
 {
+    font-family: 'Microsoft YaHei';
 	background-color: transparent;
     color: lightgray;
 	border: none;
@@ -778,6 +761,7 @@ QCheckBox::indicator:disabled
 /*-----QRadioButton-----*/
 QRadioButton
 {
+    font-family: 'Microsoft YaHei';
 	color: lightgray;
 	background-color: transparent;
 

@@ -143,12 +143,29 @@ class Ui_navigation(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.pushButton = QtWidgets.QPushButton(self.tab)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton.setFont(font)
-        self.pushButton.setStyleSheet("background-color: rgb(0, 85, 255);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton.setStyleSheet("QPushButton {\n"
+"    background-color: #0066CC; /* 蓝色 */\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"")
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout_4.addWidget(self.pushButton)
         self.pushButton_7 = QtWidgets.QPushButton(self.tab)
@@ -246,10 +263,16 @@ class Ui_navigation(object):
         self.verticalLayout_12.addWidget(self.groupBox_3)
         self.pushButton_6 = QtWidgets.QPushButton(self.tab)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -258,10 +281,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -270,10 +302,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -282,13 +323,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_6.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_6.setFont(font)
-        self.pushButton_6.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_6.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_6.setObjectName("pushButton_6")
         self.verticalLayout_12.addWidget(self.pushButton_6)
         self.tabWidget.addTab(self.tab, "")
@@ -320,12 +382,28 @@ class Ui_navigation(object):
         self.gridLayout_71.setObjectName("gridLayout_71")
         self.pushButton_67 = QtWidgets.QPushButton(self.groupBox_71)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_67.setFont(font)
-        self.pushButton_67.setStyleSheet("background-color: rgb(255, 0, 0);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_67.setStyleSheet("QPushButton {\n"
+"    background-color: red;\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
+"}")
         self.pushButton_67.setObjectName("pushButton_67")
         self.gridLayout_71.addWidget(self.pushButton_67, 0, 0, 1, 1)
         self.toolButton_2 = QtWidgets.QToolButton(self.groupBox_71)
@@ -336,12 +414,29 @@ class Ui_navigation(object):
         self.gridLayout_71.addWidget(self.toolButton_2, 0, 1, 1, 1)
         self.pushButton_63 = QtWidgets.QPushButton(self.groupBox_71)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_63.setFont(font)
-        self.pushButton_63.setStyleSheet("background-color: rgb(0, 85, 255);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_63.setStyleSheet("QPushButton {\n"
+"    background-color: #0066CC; /* 蓝色 */\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"")
         self.pushButton_63.setObjectName("pushButton_63")
         self.gridLayout_71.addWidget(self.pushButton_63, 0, 2, 1, 1)
         self.pushButton_64 = QtWidgets.QPushButton(self.groupBox_71)
@@ -406,10 +501,16 @@ class Ui_navigation(object):
         self.verticalLayout_57.addItem(spacerItem1)
         self.pushButton_69 = QtWidgets.QPushButton(self.tab_43)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -418,10 +519,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -430,10 +540,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -442,13 +561,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_69.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_69.setFont(font)
-        self.pushButton_69.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_69.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_69.setObjectName("pushButton_69")
         self.verticalLayout_57.addWidget(self.pushButton_69)
         self.tabWidget.addTab(self.tab_43, "")
@@ -545,10 +685,16 @@ class Ui_navigation(object):
         self.verticalLayout_3.addItem(spacerItem2)
         self.pushButton_23 = QtWidgets.QPushButton(self.tab_27)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -557,10 +703,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -569,10 +724,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -581,13 +745,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_23.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_23.setFont(font)
-        self.pushButton_23.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_23.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_23.setObjectName("pushButton_23")
         self.verticalLayout_3.addWidget(self.pushButton_23)
         self.tabWidget.addTab(self.tab_27, "")
@@ -719,16 +904,16 @@ class Ui_navigation(object):
         self.verticalLayout_15.addItem(spacerItem3)
         self.pushButton_52 = QtWidgets.QPushButton(self.tab_5)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -737,19 +922,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -758,19 +943,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -779,16 +964,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_52.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_52.setFont(font)
-        self.pushButton_52.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_52.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_52.setObjectName("pushButton_52")
         self.verticalLayout_15.addWidget(self.pushButton_52)
         self.tabWidget.addTab(self.tab_5, "")
@@ -1014,7 +1217,7 @@ class Ui_navigation(object):
         self.label_26.setObjectName("label_26")
         self.gridLayout_28.addWidget(self.label_26, 1, 0, 1, 1)
         self.comboBox_6 = QtWidgets.QComboBox(self.groupBox_15)
-        self.comboBox_6.setEnabled(True)
+        self.comboBox_6.setEnabled(False)
         self.comboBox_6.setObjectName("comboBox_6")
         self.comboBox_6.addItem("")
         self.comboBox_6.addItem("")
@@ -1056,7 +1259,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1065,10 +1268,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1077,7 +1280,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1086,10 +1289,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1098,7 +1301,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1107,10 +1310,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1118,12 +1321,29 @@ class Ui_navigation(object):
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_21.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_21.setFont(font)
-        self.pushButton_21.setStyleSheet("background-color: rgb(0, 85, 255);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_21.setStyleSheet("QPushButton {\n"
+"    background-color: #0066CC; /* 蓝色 */\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"")
         self.pushButton_21.setObjectName("pushButton_21")
         self.horizontalLayout_5.addWidget(self.pushButton_21)
         self.pushButton_22 = QtWidgets.QPushButton(self.groupBox_2)
@@ -1317,16 +1537,16 @@ class Ui_navigation(object):
         self.verticalLayout_76.addItem(spacerItem9)
         self.pushButton_36 = QtWidgets.QPushButton(self.tab_23)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1335,19 +1555,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1356,19 +1576,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1377,16 +1597,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_36.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_36.setFont(font)
-        self.pushButton_36.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_36.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_36.setObjectName("pushButton_36")
         self.verticalLayout_76.addWidget(self.pushButton_36)
         self.tabWidget.addTab(self.tab_23, "")
@@ -1760,10 +1998,16 @@ class Ui_navigation(object):
         self.verticalLayout_29.addItem(spacerItem21)
         self.pushButton_14 = QtWidgets.QPushButton(self.tab_14)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1772,10 +2016,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1784,10 +2037,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -1796,13 +2058,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_14.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_14.setFont(font)
-        self.pushButton_14.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_14.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_14.setObjectName("pushButton_14")
         self.verticalLayout_29.addWidget(self.pushButton_14)
         self.tabWidget.addTab(self.tab_14, "")
@@ -1829,7 +2112,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1838,10 +2121,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1850,7 +2133,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1859,10 +2142,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1871,7 +2154,7 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -1880,10 +2163,10 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 85, 255))
+        brush = QtGui.QBrush(QtGui.QColor(0, 102, 204))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
@@ -1891,12 +2174,29 @@ class Ui_navigation(object):
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_5.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_5.setFont(font)
-        self.pushButton_5.setStyleSheet("background-color: rgb(0, 85, 255);\n"
-"color: rgb(255, 255, 255);")
+        self.pushButton_5.setStyleSheet("QPushButton {\n"
+"    background-color: #0066CC; /* 蓝色 */\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #0056B3; /* 鼠标悬停时的较深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: #004C99; /* 按钮按下时的更深蓝色，通过调整#0066CC的明度得到 */\n"
+"}\n"
+"")
         self.pushButton_5.setObjectName("pushButton_5")
         self.horizontalLayout_2.addWidget(self.pushButton_5)
         self.pushButton_8 = QtWidgets.QPushButton(self.tab_10)
@@ -1998,10 +2298,16 @@ class Ui_navigation(object):
         self.verticalLayout_42.addWidget(self.groupBox_24)
         self.pushButton_58 = QtWidgets.QPushButton(self.tab_10)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2010,10 +2316,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2022,10 +2337,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2034,13 +2358,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_58.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_58.setFont(font)
-        self.pushButton_58.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_58.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_58.setObjectName("pushButton_58")
         self.verticalLayout_42.addWidget(self.pushButton_58)
         self.tabWidget.addTab(self.tab_10, "")
@@ -2601,16 +2946,16 @@ class Ui_navigation(object):
         self.pushButton_17 = QtWidgets.QPushButton(self.tab_25)
         self.pushButton_17.setEnabled(True)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2619,19 +2964,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2640,19 +2985,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2661,16 +3006,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_17.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_17.setFont(font)
-        self.pushButton_17.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_17.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_17.setObjectName("pushButton_17")
         self.verticalLayout_16.addWidget(self.pushButton_17)
         self.tabWidget.addTab(self.tab_25, "")
@@ -2797,10 +3160,16 @@ class Ui_navigation(object):
         self.verticalLayout_52.addItem(spacerItem39)
         self.pushButton_61 = QtWidgets.QPushButton(self.tab_17)
         palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2809,10 +3178,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2821,10 +3199,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2833,13 +3220,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
+        brush.setStyle(QtCore.Qt.NoBrush)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_61.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_61.setFont(font)
-        self.pushButton_61.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_61.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_61.setObjectName("pushButton_61")
         self.verticalLayout_52.addWidget(self.pushButton_61)
         self.tabWidget.addTab(self.tab_17, "")
@@ -2924,16 +3332,16 @@ class Ui_navigation(object):
         self.verticalLayout_47.addWidget(self.groupBox_18)
         self.pushButton_15 = QtWidgets.QPushButton(self.tab_22)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2942,19 +3350,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2963,19 +3371,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -2984,16 +3392,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_15.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_15.setFont(font)
-        self.pushButton_15.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_15.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_15.setObjectName("pushButton_15")
         self.verticalLayout_47.addWidget(self.pushButton_15)
         self.tabWidget.addTab(self.tab_22, "")
@@ -3104,16 +3530,16 @@ class Ui_navigation(object):
         self.verticalLayout_66.addItem(spacerItem42)
         self.pushButton_24 = QtWidgets.QPushButton(self.tab_2)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3122,19 +3548,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3143,19 +3569,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3164,16 +3590,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_24.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_24.setFont(font)
-        self.pushButton_24.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_24.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_24.setObjectName("pushButton_24")
         self.verticalLayout_66.addWidget(self.pushButton_24)
         self.tabWidget.addTab(self.tab_2, "")
@@ -3233,16 +3677,16 @@ class Ui_navigation(object):
         self.verticalLayout_68.addItem(spacerItem44)
         self.pushButton_25 = QtWidgets.QPushButton(self.tab_28)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3251,19 +3695,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3272,19 +3716,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3293,16 +3737,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_25.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_25.setFont(font)
-        self.pushButton_25.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_25.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_25.setObjectName("pushButton_25")
         self.verticalLayout_68.addWidget(self.pushButton_25)
         self.tabWidget.addTab(self.tab_28, "")
@@ -3344,16 +3806,16 @@ class Ui_navigation(object):
         self.verticalLayout_74.addItem(spacerItem45)
         self.pushButton_27 = QtWidgets.QPushButton(self.tab_32)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3362,19 +3824,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3383,19 +3845,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3404,16 +3866,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_27.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_27.setFont(font)
-        self.pushButton_27.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_27.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_27.setObjectName("pushButton_27")
         self.verticalLayout_74.addWidget(self.pushButton_27)
         self.tabWidget.addTab(self.tab_32, "")
@@ -3466,16 +3946,16 @@ class Ui_navigation(object):
         self.verticalLayout_70.addItem(spacerItem46)
         self.pushButton_26 = QtWidgets.QPushButton(self.tab_29)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3484,19 +3964,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3505,19 +3985,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3526,16 +4006,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_26.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_26.setFont(font)
-        self.pushButton_26.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_26.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_26.setObjectName("pushButton_26")
         self.verticalLayout_70.addWidget(self.pushButton_26)
         self.tabWidget.addTab(self.tab_29, "")
@@ -3644,16 +4142,16 @@ class Ui_navigation(object):
         self.verticalLayout_48.addItem(spacerItem50)
         self.pushButton_34 = QtWidgets.QPushButton(self.tab_34)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3662,19 +4160,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3683,19 +4181,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3704,16 +4202,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_34.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_34.setFont(font)
-        self.pushButton_34.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_34.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_34.setObjectName("pushButton_34")
         self.verticalLayout_48.addWidget(self.pushButton_34)
         self.tabWidget.addTab(self.tab_34, "")
@@ -3902,16 +4418,16 @@ class Ui_navigation(object):
         self.verticalLayout_64.addItem(spacerItem57)
         self.pushButton_75 = QtWidgets.QPushButton(self.tab_45)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3920,19 +4436,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3941,19 +4457,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -3962,16 +4478,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_75.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_75.setFont(font)
-        self.pushButton_75.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_75.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_75.setObjectName("pushButton_75")
         self.verticalLayout_64.addWidget(self.pushButton_75)
         self.tabWidget.addTab(self.tab_45, "")
@@ -4116,16 +4650,16 @@ class Ui_navigation(object):
         self.verticalLayout_81.addWidget(self.groupBox_50)
         self.pushButton_40 = QtWidgets.QPushButton(self.tab_37)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4134,19 +4668,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4155,19 +4689,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4176,16 +4710,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_40.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_40.setFont(font)
-        self.pushButton_40.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_40.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_40.setObjectName("pushButton_40")
         self.verticalLayout_81.addWidget(self.pushButton_40)
         self.tabWidget.addTab(self.tab_37, "")
@@ -4262,16 +4814,16 @@ class Ui_navigation(object):
         self.verticalLayout_62.addItem(spacerItem59)
         self.pushButton_72 = QtWidgets.QPushButton(self.tab_44)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4280,19 +4832,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4301,19 +4853,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4322,16 +4874,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_72.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_72.setFont(font)
-        self.pushButton_72.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_72.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_72.setObjectName("pushButton_72")
         self.verticalLayout_62.addWidget(self.pushButton_72)
         self.tabWidget.addTab(self.tab_44, "")
@@ -4364,16 +4934,16 @@ class Ui_navigation(object):
         self.verticalLayout_82.addItem(spacerItem60)
         self.pushButton_42 = QtWidgets.QPushButton(self.tab_38)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4382,19 +4952,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4403,19 +4973,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4424,16 +4994,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_42.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_42.setFont(font)
-        self.pushButton_42.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_42.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_42.setObjectName("pushButton_42")
         self.verticalLayout_82.addWidget(self.pushButton_42)
         self.tabWidget.addTab(self.tab_38, "")
@@ -4515,16 +5103,16 @@ class Ui_navigation(object):
         self.verticalLayout_51.addItem(spacerItem63)
         self.pushButton_59 = QtWidgets.QPushButton(self.tab_39)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4533,19 +5121,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4554,19 +5142,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4575,16 +5163,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_59.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_59.setFont(font)
-        self.pushButton_59.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_59.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_59.setObjectName("pushButton_59")
         self.verticalLayout_51.addWidget(self.pushButton_59)
         self.tabWidget.addTab(self.tab_39, "")
@@ -4636,16 +5242,16 @@ class Ui_navigation(object):
         self.verticalLayout_85.addItem(spacerItem64)
         self.pushButton_47 = QtWidgets.QPushButton(self.tab_40)
         palette = QtGui.QPalette()
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4654,19 +5260,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4675,19 +5281,19 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
-        brush = QtGui.QBrush(QtGui.QColor(120, 120, 120))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
@@ -4696,16 +5302,34 @@ class Ui_navigation(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 170, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
-        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0, 128))
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255, 128))
         brush.setStyle(QtCore.Qt.NoBrush)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.pushButton_47.setPalette(palette)
         font = QtGui.QFont()
-        font.setFamily("微软雅黑")
+        font.setFamily("Microsoft YaHei")
+        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_47.setFont(font)
-        self.pushButton_47.setStyleSheet("background-color: rgb(0, 170, 0);")
+        self.pushButton_47.setStyleSheet("QPushButton {\n"
+"    background-color: rgb(0, 170, 0);\n"
+"    color: white;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(0, 150, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(0, 100, 0); /* 设置按钮按下时的背景颜色 */\n"
+"}\n"
+"")
         self.pushButton_47.setObjectName("pushButton_47")
         self.verticalLayout_85.addWidget(self.pushButton_47)
         self.tabWidget.addTab(self.tab_40, "")
@@ -4823,6 +5447,7 @@ class Ui_navigation(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_2.setFont(font)
+        self.pushButton_2.setStyleSheet("")
         self.pushButton_2.setObjectName("pushButton_2")
         self.horizontalLayout_14.addWidget(self.pushButton_2)
         self.pushButton_3 = QtWidgets.QPushButton(navigation)
@@ -4834,7 +5459,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(35)
+        self.tabWidget.setCurrentIndex(1)
         self.comboBox_2.setCurrentIndex(0)
         self.comboBox_70.setCurrentIndex(0)
         self.comboBox_71.setCurrentIndex(0)

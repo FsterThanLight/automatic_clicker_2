@@ -11,7 +11,6 @@
 from __future__ import print_function
 
 import collections
-import ctypes
 import json
 import os.path
 import re
@@ -48,8 +47,6 @@ from ini控制 import set_window_size, save_window_size, get_setting_data_from_i
     get_global_shortcut, writes_to_branch_info, del_branch_info, ini_to_excel, excel_to_ini, get_branch_repeat_times, \
     set_branch_repeat_times, set_current_branch, get_current_branch
 from main_work import CommandThread
-from 软件信息 import CURRENT_VERSION, MAIN_WEBSITE, ISSUE_WEBSITE, RELEASE_WEBSITE, QQ_GROUP, QQ, APP_NAME, \
-    Github_WEBSITE, DONATE_WEBSITE
 from 分支执行窗口 import BranchWindow
 from 功能类 import close_browser
 from 导航窗口功能 import Na
@@ -60,6 +57,8 @@ from 窗体.参数窗口 import Ui_Param
 from 自动更新 import Check_Update, UpdateWindow
 from 设置窗口 import Setting
 from 资源文件夹窗口 import Global_s
+from 软件信息 import CURRENT_VERSION, MAIN_WEBSITE, ISSUE_WEBSITE, QQ_GROUP, QQ, APP_NAME, \
+    Github_WEBSITE, DONATE_WEBSITE
 
 collections.Iterable = collections.abc.Iterable
 
@@ -1413,7 +1412,7 @@ if __name__ == "__main__":
         splash.show()  # 显示启动界面
 
         main_win = Main_window()  # 创建主窗体
-        # 设置窗体样式
+        # # 设置窗体样式
         try:
             style_name = "Combinear"
             style_file = r"./flat/{}.qss".format(style_name)
