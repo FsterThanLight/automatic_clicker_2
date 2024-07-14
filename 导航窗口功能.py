@@ -32,8 +32,10 @@ from ini控制 import (
     set_window_size,
     save_window_size,
     extract_resource_folder_path,
-    get_branch_info, get_ocr_info,
-    get_all_png_images_from_resource_folders, matched_complete_path_from_resource_folders
+    get_branch_info,
+    get_ocr_info,
+    get_all_png_images_from_resource_folders,
+    matched_complete_path_from_resource_folders
 )
 from 功能类 import (
     InformationEntry,
@@ -55,9 +57,13 @@ from 功能类 import (
     VerificationCode,
     SendWeChat,
     MoveMouse,
-    FullScreenCapture, MultipleImagesClick, RunCmd, GetClipboard,
+    FullScreenCapture,
+    MultipleImagesClick,
+    RunCmd,
+    GetClipboard,
 )
 from 变量池窗口 import VariablePool_Win
+from 图像点击位置 import ClickPosition
 from 截图模块 import ScreenCapture
 from 数据库操作 import (
     extract_excel_from_global_parameter,
@@ -882,6 +888,16 @@ class Na(QWidget, Ui_navigation):
             setting_win.setModal(True)
             setting_win.exec_()
 
+        def open_set_click_position_window():
+            """打开设置点击位置窗口"""
+            image_path = os.path.normpath(
+                os.path.join(self.comboBox_8.currentText(), self.comboBox.currentText())
+            )
+            position = self.label_176.text()
+            set_click_position = ClickPosition(self, image_path, position)
+            set_click_position.setModal(True)
+            set_click_position.exec_()
+
         if type_ == "按钮功能":
             # 快捷截图功能
             self.pushButton.clicked.connect(
@@ -907,6 +923,8 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_6.clicked.connect(test)
             # 打开设置窗口
             self.pushButton_11.clicked.connect(open_setting_window)
+            # 打开设置点击位置窗口
+            self.pushButton_76.clicked.connect(open_set_click_position_window)
 
         elif type_ == "写入参数":
             image, parameter_1 = get_parameters()

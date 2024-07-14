@@ -62,18 +62,6 @@ class Check_Update(QThread):
             print(e)
             return None
 
-    @staticmethod
-    def start_update_program():
-        """启动更新程序"""
-        try:
-            os.startfile('sky.exe')
-        except FileNotFoundError:
-            pymsgbox.alert(
-                text='更新程序不存在！请重新下载',
-                title='更新提示',
-                icon=pymsgbox.STOP
-            )
-
     def run(self):
 
         def open_update_window(update_info_dic_: dict):
@@ -130,6 +118,7 @@ class Download_UpdatePack(QThread):
 
     def run(self):
         self.download()
+        # self.run_test()
 
     def download(self):
         """下载更新"""
@@ -219,6 +208,7 @@ class UpdateWindow(QDialog, Ui_Update_UI):
             os.startfile('sky.exe')
         except FileNotFoundError:
             self.label_2.setText('更新程序不存在！请手动解压更新文件！')
+            os.remove('update_info.json')  # 删除json文件
 
     def closeEvent(self, event):
         """关闭窗口时触发"""

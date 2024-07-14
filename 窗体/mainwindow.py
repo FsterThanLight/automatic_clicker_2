@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         self.textEdit = QtWidgets.QTextEdit(self.tab)
         self.textEdit.setStyleSheet("QTextEdit {\n"
 "    background-color: #131313;\n"
-"    color: #00ff00; /* 绿色 */\n"
+"    color: #00ff00;\n"
 "    border: 1px solid #343434;\n"
 "    border-radius: 2px;\n"
 "    padding: 3px;\n"
@@ -581,7 +581,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionabout)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.actiong.toggled['bool'].connect(self.toolBar.setVisible) # type: ignore
         self.toolButton_7.clicked.connect(self.textEdit.clear) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

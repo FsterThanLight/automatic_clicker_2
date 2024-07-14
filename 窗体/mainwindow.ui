@@ -107,7 +107,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideMiddle</enum>
@@ -122,7 +122,7 @@
           <property name="styleSheet">
            <string notr="true">QTextEdit {
     background-color: #131313;
-    color: #00ff00; /* 绿色 */
+    color: #00ff00;
     border: 1px solid #343434;
     border-radius: 2px;
     padding: 3px;

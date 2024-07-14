@@ -978,15 +978,11 @@ QProgressBar
 QProgressBar::chunk
 {
     background-color: #ffff00;
-    width: 30px;
+    width: 5px;
     margin: 0.5px;
 }
 
 /*-----QTableWidget-----*/
-/*QTableWidget {*/
-/*    gridline-color: black; *//* 设置表格线颜色 */
-/*}*/
-
 QTableWidget::item:selected {
     background-color: #FFFF00; /* 选中的单元格为金色 */
     color: black; /* 字体颜色为黑色 */

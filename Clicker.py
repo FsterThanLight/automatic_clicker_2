@@ -1226,7 +1226,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
 
     def send_message(self, message):
         """向日志窗口发送信息"""
-        time_message = f"<font color='red'>{get_str_now_time()}</font>"
+        time_message = f"<font color=#ffff00>{get_str_now_time()}</font>"
         if message != "换行":
             self.textEdit.append(f"{time_message}&nbsp;&nbsp;&nbsp;&nbsp;{message}")
         else:
