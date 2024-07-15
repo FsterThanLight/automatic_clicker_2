@@ -97,9 +97,6 @@ class ClickPosition(QDialog, Ui_ClickPosition):
         self.setWindowFlags(
             self.windowFlags() & ~Qt.WindowContextHelpButtonHint
         )  # 隐藏帮助按钮
-        # index = self.horizontalLayout.indexOf(self.label)
-        # 移除原来的label
-        # self.label.deleteLater()
         # 创建自定义的MyLabel实例，传入图像路径
         self.label = MyLabel(self, self.image_path, position)
         # 在原label的位置插入自定义的label
@@ -107,6 +104,17 @@ class ClickPosition(QDialog, Ui_ClickPosition):
         # 调整比例
         self.horizontalLayout.setStretch(0, 3)
         self.horizontalLayout.setStretch(1, 1)
+        # 保存数据
+        self.pushButton.clicked.connect(self.save_position)
+
+    def save_position(self):
+        try:
+            tabWidget_title = self.parent().tabWidget.tabText(self.parent().tabWidget.currentIndex())
+            if tabWidget_title == '图像点击':
+                self.parent().label_176.setText(f'({self.label_4.text()},{self.label_5.text()})')
+                self.close()
+        except Exception as e:
+            print(f'保存数据出现错误: {e}')
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Global(object):
     def setupUi(self, Global):
         Global.setObjectName("Global")
-        Global.resize(415, 310)
+        Global.resize(426, 310)
         font = QtGui.QFont()
         font.setFamily("黑体")
         Global.setFont(font)
@@ -41,7 +41,20 @@ class Ui_Global(object):
         self.pushButton.setStyleSheet("QPushButton {\n"
 "    background-color: red;\n"
 "    color: white;\n"
-"    font-weight: bold;\n"
+"    border-radius: 10px; /* 设置圆角半径 */\n"
+"    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
+"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
+"    font-weight: bold; /* 设置字体加粗 */\n"
+"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"border: 2px solid transparent; /* 设置边框为透明 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: rgb(170, 0, 0); /* 设置鼠标悬停时的背景颜色 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: rgb(85, 85, 127); /* 设置按钮按下时的背景颜色 */\n"
 "}")
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 2, 2, 1, 1)

@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItemIterator,
     QFileDialog,
     QWidget,
-    QApplication, QDialog,
+    QApplication, QDialog, QColorDialog,
 )
 from dateutil.parser import parse
 from openpyxl.utils.exceptions import InvalidFileException
@@ -257,6 +257,7 @@ class Na(QWidget, Ui_navigation):
             "OCR识别": (lambda x: self.ocr_recognition_function(x), False),
             "获取鼠标位置": (lambda x: self.get_mouse_position_function(x), False),
             "窗口焦点等待": (lambda x: self.window_focus_wait_function(x), True),
+            "颜色判断": (lambda x: self.color_judgment_function(x), False),
         }
         # 加载功能窗口的按钮功能
         for func_name in self.function_mapping:
@@ -518,16 +519,22 @@ class Na(QWidget, Ui_navigation):
             elif self.mouse_position_function == "指定坐标":
                 self.lineEdit_29.setText(str(x))
                 self.lineEdit_30.setText(str(y))
+            elif self.mouse_position_function == "颜色判断":
+                self.label_197.setText(str(x))
+                self.label_195.setText(str(y))
+            elif self.mouse_position_function == "获取颜色":
+                # 获取鼠标位置的rgb值
+                rgb = pyautogui.pixel(x, y)
+                self.spinBox_26.setValue(rgb[0])
+                self.spinBox_29.setValue(rgb[1])
+                self.spinBox_30.setValue(rgb[2])
+                # 设置标签的背景色
+                self.label_191.setStyleSheet(
+                    f"background-color:rgb({rgb[0]},{rgb[1]},{rgb[2]})"
+                )
         elif function_name == "change_get_mouse_position_function":
             # 改变获取鼠标位置功能
-            if pars_1 == "开始拖拽":
-                self.mouse_position_function = "开始拖拽"
-            elif pars_1 == "结束拖拽":
-                self.mouse_position_function = "结束拖拽"
-            elif pars_1 == "坐标点击":
-                self.mouse_position_function = "坐标点击"
-            elif pars_1 == "指定坐标":
-                self.mouse_position_function = "指定坐标"
+            self.mouse_position_function = pars_1
         elif function_name == "打开变量池":
             variable_pool = VariablePool_Win(self)
             variable_pool.exec_()
@@ -808,6 +815,8 @@ class Na(QWidget, Ui_navigation):
                 "异常": parameter_2_,
                 "区域": parameter_4_,
                 "灰度": self.checkBox.isChecked(),
+                "精度": self.horizontalSlider_4.value() / 100,
+                "点击位置": self.label_176.text(),
             }
             # 检查参数是否有异常
             if (os.path.isdir(image_)) or (not os.path.exists(image_)):
@@ -855,9 +864,9 @@ class Na(QWidget, Ui_navigation):
             else:
                 self.groupBox_57.setChecked(True)
                 self.label_155.setText(parameter_dic_["区域"])
-
             self.checkBox.setChecked(parameter_dic_["灰度"])
-
+            self.horizontalSlider_4.setValue(int(parameter_dic_["精度"] * 100))
+            self.label_176.setText(parameter_dic_["点击位置"])
             self.show_image_to_label("图像点击")
 
         def test():
@@ -925,6 +934,10 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_11.clicked.connect(open_setting_window)
             # 打开设置点击位置窗口
             self.pushButton_76.clicked.connect(open_set_click_position_window)
+            # 设置识别精度
+            self.horizontalSlider_4.valueChanged.connect(
+                lambda: self.label_178.setText(f'{str(self.horizontalSlider_4.value())}%')
+            )
 
         elif type_ == "写入参数":
             image, parameter_1 = get_parameters()
@@ -948,6 +961,8 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_8.addItems(extract_resource_folder_path())
             self.find_controls("图像", "图像点击")
             self.show_image_to_label("图像点击")
+            # 设置初始识别精度
+            self.label_178.setText(f'{str(self.horizontalSlider_4.value())}%')
 
     def multiple_images_click_function(self, type_):
         """多图像点击识别窗口的功能
@@ -1096,7 +1111,8 @@ class Na(QWidget, Ui_navigation):
                 '动作': self.comboBox_70.currentText(),
                 '异常': self.comboBox_71.currentText()[-4:],
                 '区域': self.label_174.text() if self.groupBox_73.isChecked() else "(0,0,0,0)",
-                '灰度': self.checkBox_11.isChecked()
+                '灰度': self.checkBox_11.isChecked(),
+                '精度': self.horizontalSlider_5.value() / 100
             }
             return image_, parameter_dic_
 
@@ -1118,6 +1134,7 @@ class Na(QWidget, Ui_navigation):
                 self.groupBox_73.setChecked(True)
                 self.label_174.setText(parameter_dic_['区域'])
             self.checkBox_11.setChecked(parameter_dic_['灰度'])
+            self.horizontalSlider_5.setValue(int(parameter_dic_['精度'] * 100))
 
         def test():
             """测试功能"""
@@ -1155,6 +1172,10 @@ class Na(QWidget, Ui_navigation):
                 lambda: self.quick_screenshot(self.label_174, "设置区域")
             )
             self.pushButton_69.clicked.connect(test)
+            # 设置识别精度
+            self.horizontalSlider_5.valueChanged.connect(
+                lambda: self.label_181.setText(f'{str(self.horizontalSlider_5.value())}%')
+            )
 
         elif type_ == '写入参数':
             image, parameter_dic = get_parameters()
@@ -1168,7 +1189,7 @@ class Na(QWidget, Ui_navigation):
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 当t导航业显示时，加载信息到控件
-            pass
+            self.label_181.setText(f'{str(self.horizontalSlider_5.value())}%')
 
         elif type_ == '还原参数':
             put_parameters(self.image_path, self.parameter_1)
@@ -1326,7 +1347,6 @@ class Na(QWidget, Ui_navigation):
                     "change_get_mouse_position_function", "坐标点击"
                 )
             )
-            self.pushButton_4.clicked.connect(self.mouseMoveEvent)
             # 是否激活自定义点击次数
             self.comboBox_3.activated.connect(spinBox_2_enable)
             # 测试按钮
@@ -1488,6 +1508,7 @@ class Na(QWidget, Ui_navigation):
                 "等待类型": parameter_1_,
                 "超时时间": parameter_2_,
                 "区域": parameter_3,
+                "精度": self.horizontalSlider_6.value() / 100,
             }
             # 检查参数是否有异常
             if (os.path.isdir(image_)) or (not os.path.exists(image_)):
@@ -1530,6 +1551,7 @@ class Na(QWidget, Ui_navigation):
             else:
                 self.groupBox_61.setChecked(False)
                 self.label_160.setText("(0,0,0,0)")
+            self.horizontalSlider_6.setValue(int(parameter_dic_["精度"] * 100))
             self.show_image_to_label("图像等待")  # 将图像显示到预览中
 
         if type_ == "按钮功能":
@@ -1552,6 +1574,9 @@ class Na(QWidget, Ui_navigation):
             # 设置区域
             self.pushButton_54.clicked.connect(
                 lambda: self.quick_screenshot(self.label_160, "设置区域")
+            )
+            self.horizontalSlider_6.valueChanged.connect(
+                lambda: self.label_182.setText(f'{str(self.horizontalSlider_6.value())}%')
             )
         elif type_ == "写入参数":
             # 获取参数
@@ -1578,6 +1603,7 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_18.clear()
             self.comboBox_17.addItems(extract_resource_folder_path())
             self.find_controls("图像", "图像等待")
+            self.label_182.setText(f'{str(self.horizontalSlider_6.value())}%')
             self.show_image_to_label("图像等待")
 
         elif type_ == "还原参数":
@@ -1755,9 +1781,26 @@ class Na(QWidget, Ui_navigation):
     def press_keyboard_function(self, type_):
         """按下键盘识别窗口的功能"""
 
+        def method_one(judge):
+            """方法一"""
+            # 获取“运行Python”标题的索引
+            tab_index = self.tab_title_list.index('运行Python')
+            self.tabWidget.setCurrentIndex(tab_index)
+            code_1 = (
+                "import pyautogui\n\n"
+                "pyautogui.hotkey('ctrl', 'v')\n"
+            )
+            code_2 = (
+                "import keyboard\n\n"
+                "keyboard.press_and_release('ctrl + v')\n"
+            )
+            self.textEdit_5.setText(code_1 if judge == "pyautogui" else code_2)
+
         if type_ == "按钮功能":
             # 当按钮按下时，获取按键的名称
-            pass
+            self.pushButton_77.pressed.connect(lambda: method_one("keyboard"))
+            self.pushButton_78.pressed.connect(lambda: method_one("pyautogui"))
+
         elif type_ == "写入参数":
             # 按下键盘的内容
             parameter_dic = {
@@ -1786,6 +1829,7 @@ class Na(QWidget, Ui_navigation):
 
         def get_parameters():
             """获取参数"""
+            parameter_dic_ = None
             if self.radioButton.isChecked():
                 parameter_dic_ = {
                     "类型": "模拟点击",
@@ -2290,14 +2334,14 @@ class Na(QWidget, Ui_navigation):
                     "change_get_mouse_position_function", "开始拖拽"
                 )
             )
-            self.pushButton_12.clicked.connect(self.mouseMoveEvent)
+            # self.pushButton_12.clicked.connect(self.mouseMoveEvent)
 
             self.pushButton_13.pressed.connect(
                 lambda: self.merge_additional_functions(
                     "change_get_mouse_position_function", "结束拖拽"
                 )
             )
-            self.pushButton_13.clicked.connect(self.mouseMoveEvent)
+            # self.pushButton_13.clicked.connect(self.mouseMoveEvent)
             # 拖拽测试按钮
             self.pushButton_14.clicked.connect(test)
         elif type_ == "写入参数":
@@ -4174,3 +4218,100 @@ class Na(QWidget, Ui_navigation):
             )
         elif type_ == "还原参数":
             put_parameters(self.parameter_1)
+
+    def color_judgment_function(self, type_):
+        """颜色判断的功能
+        :param self:
+        :param type_: 功能名称（按钮功能、主要功能）"""
+
+        def set_label_color():
+            """设置标签颜色"""
+            r = self.spinBox_26.value()
+            g = self.spinBox_29.value()
+            b = self.spinBox_30.value()
+            color = f"background-color: rgb({r}, {g}, {b})"
+            self.label_191.setStyleSheet(color)
+
+        def open_color_picker():
+            """打开颜色选择器"""
+            color = QColorDialog.getColor()
+            if color.isValid():
+                self.spinBox_26.setValue(color.red())
+                self.spinBox_29.setValue(color.green())
+                self.spinBox_30.setValue(color.blue())
+                set_label_color()
+
+        def get_parameters():
+            """从tab页获取参数"""
+            image_ = None
+            parameter_1_ = None
+            parameter_2_ = None
+            parameter_3_ = None
+            parameter_4_ = None
+            # 检查参数是否有异常
+            if image_ is None or parameter_1_ is None or parameter_2_ is None or parameter_3_ is None or parameter_4_ is None:
+                QMessageBox.critical(self, "错误", "xxx")
+                raise FileNotFoundError
+            # 返回参数字典
+            parameter_dic_ = {
+                'x_1': parameter_1_,
+                'x_2': parameter_2_,
+                'x_3': parameter_3_,
+                'x_4': parameter_4_,
+            }
+            return image_, parameter_dic_
+
+        def put_parameters(image_, parameter_dic_):
+            """将参数还原到tab页"""
+            pass
+
+        # def test():
+        #     """测试功能"""
+        #     try:
+        #         image_, parameter_dic_ = get_parameters()
+        #         dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+        #                                  image_=image_,
+        #                                  parameter_1_=parameter_dic_
+        #                                  )
+        #
+        #         # 测试用例
+        #         test_class = XxxxClss(self.out_mes, dic_)
+        #         test_class.is_test = True
+        #         test_class.start_execute()
+        #
+        #     except Exception as e:
+        #         print(e)
+        #         self.out_mes.out_mes(f'指令错误请重试！', True)
+
+        if type_ == '按钮功能':
+            self.pushButton_79.pressed.connect(
+                lambda: self.merge_additional_functions(
+                    "change_get_mouse_position_function", "颜色判断"
+                )
+            )
+            self.pushButton_82.pressed.connect(
+                lambda: self.merge_additional_functions(
+                    "change_get_mouse_position_function", "获取颜色"
+                )
+            )
+            self.spinBox_26.valueChanged.connect(set_label_color)
+            self.spinBox_29.valueChanged.connect(set_label_color)
+            self.spinBox_30.valueChanged.connect(set_label_color)
+            self.pushButton_80.clicked.connect(open_color_picker)
+
+        elif type_ == '写入参数':
+            image, parameter_dic = get_parameters()
+            # 将命令写入数据库
+            func_info_dic = self.get_func_info()  # 获取功能区的参数
+            self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
+                                                 repeat_number_=func_info_dic.get('重复次数'),
+                                                 exception_handling_=func_info_dic.get('异常处理'),
+                                                 image_=image,
+                                                 parameter_1_=parameter_dic,
+                                                 remarks_=func_info_dic.get('备注'))
+        elif type_ == '加载信息':
+            # 当t导航业显示时，加载信息到控件
+            set_label_color()
+
+        elif type_ == '还原参数':
+            put_parameters(self.image_path, self.parameter_1)
