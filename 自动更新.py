@@ -56,7 +56,8 @@ class Check_Update(QThread):
                 "检测程序": data.get('检测程序', ''),
                 "需要关闭的文件": data.get('需要关闭的文件', '').split('，'),
                 "需要删除的文件": data.get('需要删除的文件', '').split('，'),
-                "前往下载网页": data.get('前往下载网页', '')
+                "前往下载网页": data.get('前往下载网页', ''),
+                "解压文件名": data.get('解压文件名', ''),
             }
         except Exception as e:
             print(e)
