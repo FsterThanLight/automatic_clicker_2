@@ -1,6 +1,7 @@
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QCursor
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QHeaderView, QTableWidgetItem
 
 from ini控制 import set_window_size, save_window_size, get_branch_info
 from 变量池窗口 import VariablePool_Win
@@ -129,6 +130,50 @@ class Variable_selection_win(QDialog, Ui_branch):
                     row_number = key_to_row[event.key()]
                     self.trigger_using_number_keys(row_number)  # 使用数字键触发对应的行
         return super().eventFilter(obj, event)
+
+
+class ShortcutTable(QDialog):
+    def __init__(self, parent=None, title=None, data=None, width=300):
+        super().__init__(parent)
+
+        # Set window title
+        self.setWindowTitle("快捷键说明")
+        self.table = QtWidgets.QTableWidget()
+        self.table.setRowCount(12)  # 调整行数，确保足够显示所有数据
+        self.table.setColumnCount(2)
+        if title:
+            self.table.setHorizontalHeaderLabels(title)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.verticalHeader().setVisible(False)
+        self.setWindowFlags(
+            self.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )  # 隐藏帮助按钮
+
+        self.button = QtWidgets.QPushButton("我知道了")
+        self.button.clicked.connect(self.close)
+
+        if data:
+            self.table.setRowCount(len(data))
+            for row, (shortcut, description) in enumerate(data):
+                shortcut_item = QTableWidgetItem(shortcut)
+                shortcut_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                shortcut_item.setTextAlignment(Qt.AlignCenter)
+                description_item = QTableWidgetItem(description)
+                description_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                description_item.setTextAlignment(Qt.AlignCenter)
+                self.table.setItem(row, 0, shortcut_item)
+                self.table.setItem(row, 1, description_item)
+
+        # Set layout
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.table)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
+
+        # 获取表格的总高度，设置窗口的高度
+        table_height = self.table.verticalHeader().length()
+        self.resize(width, table_height + 150)
+        self.table.setFocusPolicy(Qt.NoFocus)
 
 
 if __name__ == '__main__':

@@ -87,7 +87,6 @@ class Setting(QDialog, Ui_Setting):
         # 更新ini文件
         update_settings_in_ini(
             'Config',
-            图像匹配精度=str(self.horizontalSlider.value() / 10),
             时间间隔=str(self.horizontalSlider_2.value() / 1000),
             持续时间=str(self.horizontalSlider_3.value() / 1000),
             暂停时间=str(self.spinBox.value() / 1000),
@@ -131,7 +130,6 @@ class Setting(QDialog, Ui_Setting):
     def restore_default(self):
         """设置恢复至默认"""
         self.radioButton.isChecked()
-        self.horizontalSlider.setValue(8)
         self.horizontalSlider_2.setValue(200)
         self.horizontalSlider_3.setValue(200)
         self.spinBox.setValue(100)
@@ -141,7 +139,6 @@ class Setting(QDialog, Ui_Setting):
         # 加载设置数据
         setting_data_dic = get_setting_data_from_ini(
             'Config',
-            '图像匹配精度',
             '时间间隔',
             '持续时间',
             '暂停时间',
@@ -167,7 +164,6 @@ class Setting(QDialog, Ui_Setting):
             'secretKey',
             '云码Token'
         )
-        self.horizontalSlider.setValue(int(float(setting_data_dic['图像匹配精度']) * 10))
         self.horizontalSlider_2.setValue(int(float(setting_data_dic['时间间隔']) * 1000))
         self.horizontalSlider_3.setValue(int(float(setting_data_dic['持续时间']) * 1000))
         self.spinBox.setValue(int(float(setting_data_dic['暂停时间']) * 1000))

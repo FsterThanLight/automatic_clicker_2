@@ -61,6 +61,7 @@ from 功能类 import (
     MultipleImagesClick,
     RunCmd,
     GetClipboard,
+    ColorJudgment,
 )
 from 变量池窗口 import VariablePool_Win
 from 图像点击位置 import ClickPosition
@@ -76,7 +77,7 @@ from 窗体.图像选择 import Ui_ImageSelect
 from 窗体.导航窗口 import Ui_navigation
 from 网页操作 import WebOption
 from 设置窗口 import Setting
-from 选择窗体 import Variable_selection_win
+from 选择窗体 import Variable_selection_win, ShortcutTable
 
 
 class ImageSelection(QDialog, Ui_ImageSelect):
@@ -202,6 +203,7 @@ class Na(QWidget, Ui_navigation):
             "跳转分支": (self.comboBox_37, self.comboBox_38),
             "变量判断": (self.comboBox_52, self.comboBox_53),
             "按键等待": (self.comboBox_41, self.comboBox_42),
+            "颜色判断": (self.comboBox_74, self.comboBox_75),
         }
         self.pushButton_9.clicked.connect(lambda: self.on_button_clicked("查看"))
         self.pushButton_10.clicked.connect(lambda: self.on_button_clicked("删除"))
@@ -3777,6 +3779,29 @@ class Na(QWidget, Ui_navigation):
             code = self.textEdit_5.toPlainText()
             highlight_text(code)
 
+        def show_lib_info():
+            """显示库的信息"""
+            title = ["模块名称", "说明"]
+            data = [
+                ("pyttsx4", "文本转语音"),
+                ("pymsgbox", "消息框"),
+                ("pyautogui", "自动化GUI，鼠标、键盘控制"),
+                ("mouse", "鼠标控制"),
+                ("keyboard", "键盘控制"),
+                ("pandas", "数据处理"),
+                ("selenium", "网页自动化"),
+                ("pillow", "图像处理"),
+                ("openpyxl", "Excel操作"),
+                ("requests", "HTTP请求"),
+                ("python-dateutil", "日期处理"),
+                ("psutil", "系统监控"),
+                ("pywinauto", "Windows自动化")
+            ]
+            shortcut_win = ShortcutTable(self, title, data,600)  # 快捷键说明窗口
+            shortcut_win.setWindowTitle("库的使用")
+            shortcut_win.setModal(True)
+            shortcut_win.exec_()
+
         if type_ == "按钮功能":
             # 自动代码高亮
             self.pushButton_40.clicked.connect(test)
@@ -3786,6 +3811,7 @@ class Na(QWidget, Ui_navigation):
             self.pushButton_41.clicked.connect(
                 lambda: self.merge_additional_functions("打开变量池")
             )
+            self.toolButton_4.clicked.connect(show_lib_info)
 
         elif type_ == "写入参数":
             image, parameter_dic = get_parameters()
@@ -3805,9 +3831,14 @@ class Na(QWidget, Ui_navigation):
             self.comboBox_56.addItems(get_variable_info("list"))
             # 设置textEdit_5的说明信息
             self.textEdit_5.setPlaceholderText(
-                "请编写python代码...已内置的第三方库："
-                "pyttsx4、pymsgbox、pyautogui、mouse、keyboard、pandas、selenium、"
-                "pillow、openpyxl、requests、python-dateutil、psutil、pywinauto。"
+                "执行python代码......"
+                "\n\n已内置的第三方库："
+                "\npyttsx4、pymsgbox、pyautogui、mouse、keyboard、pandas、selenium、"
+                "pillow、openpyxl、requests、python-dateutil、psutil、pywinauto"
+                "\n\n点击帮助按钮查看库的使用"
+                "\n\n请去除代码中的"
+                "\nif __name__ == '__main__': "
+                "\n否则无法执行"
             )
         elif type_ == "还原参数":
             put_parameters(self.image_path, self.parameter_1)
@@ -4241,47 +4272,51 @@ class Na(QWidget, Ui_navigation):
                 self.spinBox_30.setValue(color.blue())
                 set_label_color()
 
-        def get_parameters():
+        def get_parameters(judge=False):
             """从tab页获取参数"""
-            image_ = None
-            parameter_1_ = None
-            parameter_2_ = None
-            parameter_3_ = None
-            parameter_4_ = None
-            # 检查参数是否有异常
-            if image_ is None or parameter_1_ is None or parameter_2_ is None or parameter_3_ is None or parameter_4_ is None:
-                QMessageBox.critical(self, "错误", "xxx")
-                raise FileNotFoundError
+            if not judge:
+                if self.comboBox_74.currentText() == "" or self.comboBox_75.currentText() == "":
+                    QMessageBox.critical(self, "错误", "分支未设置！")
+                    raise ValueError
             # 返回参数字典
             parameter_dic_ = {
-                'x_1': parameter_1_,
-                'x_2': parameter_2_,
-                'x_3': parameter_3_,
-                'x_4': parameter_4_,
+                '像素坐标': f"({self.label_197.text()}, {self.label_195.text()})",
+                '目标颜色': f"({self.spinBox_26.value()}, {self.spinBox_29.value()}, {self.spinBox_30.value()})",
+                '误差范围': self.spinBox_31.value(),
+                '分支': f"{self.comboBox_74.currentText()}-{self.comboBox_75.currentText()}",
             }
-            return image_, parameter_dic_
+            exception_handling_ = f"{self.comboBox_74.currentText()}-{self.comboBox_75.currentText()}"
+            return parameter_dic_, exception_handling_
 
-        def put_parameters(image_, parameter_dic_):
+        def put_parameters(parameter_dic_):
             """将参数还原到tab页"""
-            pass
+            rgb_tuple = eval(parameter_dic_['目标颜色'])
+            crosshair = eval(parameter_dic_['像素坐标'])
+            self.label_197.setText(str(crosshair[0]))
+            self.label_195.setText(str(crosshair[1]))
+            self.spinBox_26.setValue(rgb_tuple[0])
+            self.spinBox_29.setValue(rgb_tuple[1])
+            self.spinBox_30.setValue(rgb_tuple[2])
+            self.spinBox_31.setValue(int(parameter_dic_['误差范围']))
+            self.comboBox_74.setCurrentText(parameter_dic_['分支'].split('-')[0])
+            self.comboBox_75.setCurrentText(parameter_dic_['分支'].split('-')[1])
 
-        # def test():
-        #     """测试功能"""
-        #     try:
-        #         image_, parameter_dic_ = get_parameters()
-        #         dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
-        #                                  image_=image_,
-        #                                  parameter_1_=parameter_dic_
-        #                                  )
-        #
-        #         # 测试用例
-        #         test_class = XxxxClss(self.out_mes, dic_)
-        #         test_class.is_test = True
-        #         test_class.start_execute()
-        #
-        #     except Exception as e:
-        #         print(e)
-        #         self.out_mes.out_mes(f'指令错误请重试！', True)
+        def test():
+            """测试功能"""
+            try:
+                parameter_dic_, exception_handling_ = get_parameters(True)
+                dic_ = self.get_test_dic(repeat_number_=int(self.spinBox.value()),
+                                         parameter_1_=parameter_dic_
+                                         )
+
+                # 测试用例
+                test_class = ColorJudgment(self.out_mes, dic_)
+                test_class.is_test = True
+                test_class.start_execute()
+
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f'指令错误请重试！', True)
 
         if type_ == '按钮功能':
             self.pushButton_79.pressed.connect(
@@ -4298,20 +4333,34 @@ class Na(QWidget, Ui_navigation):
             self.spinBox_29.valueChanged.connect(set_label_color)
             self.spinBox_30.valueChanged.connect(set_label_color)
             self.pushButton_80.clicked.connect(open_color_picker)
+            # 分支选择
+            self.comboBox_74.activated.connect(
+                lambda: self.find_controls("分支", "颜色判断")
+            )
+            # 显示坐标
+            self.toolButton_3.clicked.connect(
+                lambda: pyautogui.moveTo(int(self.label_197.text()), int(self.label_195.text()))
+            )
+            # 测试按钮
+            self.pushButton_81.clicked.connect(test)
 
         elif type_ == '写入参数':
-            image, parameter_dic = get_parameters()
+            parameter_dic, exception_handling = get_parameters()
             # 将命令写入数据库
             func_info_dic = self.get_func_info()  # 获取功能区的参数
             self.writes_commands_to_the_database(instruction_=func_info_dic.get('指令类型'),
                                                  repeat_number_=func_info_dic.get('重复次数'),
-                                                 exception_handling_=func_info_dic.get('异常处理'),
-                                                 image_=image,
+                                                 exception_handling_=exception_handling,
                                                  parameter_1_=parameter_dic,
                                                  remarks_=func_info_dic.get('备注'))
         elif type_ == '加载信息':
             # 当t导航业显示时，加载信息到控件
             set_label_color()
+            self.comboBox_74.clear()
+            self.comboBox_74.addItems(get_branch_info(True))
+            self.comboBox_74.setCurrentIndex(0)
+            # 获取分支表名中的指令数量
+            self.find_controls("分支", "颜色判断")
 
         elif type_ == '还原参数':
-            put_parameters(self.image_path, self.parameter_1)
+            put_parameters(self.parameter_1)

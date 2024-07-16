@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -221,88 +221,13 @@
           </font>
          </property>
          <property name="title">
-          <string>图形点击设置</string>
+          <string>指令设置</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>持续时间：</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>图像匹配精度：</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>精度</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="3">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>毫秒</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1" colspan="2">
-             <widget class="QSlider" name="horizontalSlider">
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="maximum">
-               <number>10</number>
-              </property>
-              <property name="singleStep">
-               <number>1</number>
-              </property>
-              <property name="value">
-               <number>9</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>时间间隔：</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="4">
-             <widget class="QLabel" name="label_13">
+            <item row="1" column="0" colspan="4">
+             <widget class="QLabel" name="label_11">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
@@ -311,11 +236,14 @@
                </font>
               </property>
               <property name="text">
-               <string>指执行指令如鼠标点击的持续时间</string>
+               <string>指鼠标双击的时间间隔</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-            <item row="1" column="1" colspan="2">
+            <item row="0" column="1" colspan="2">
              <widget class="QSlider" name="horizontalSlider_2">
               <property name="maximum">
                <number>1000</number>
@@ -334,7 +262,20 @@
               </property>
              </widget>
             </item>
-            <item row="6" column="0" colspan="4">
+            <item row="4" column="1" colspan="2">
+             <widget class="QSpinBox" name="spinBox">
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>1000000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0" colspan="4">
              <widget class="QLabel" name="label_12">
               <property name="font">
                <font>
@@ -351,24 +292,21 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0" colspan="4">
-             <widget class="QLabel" name="label_11">
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_9">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
-                <weight>50</weight>
-                <bold>false</bold>
+                <weight>75</weight>
+                <bold>true</bold>
                </font>
               </property>
               <property name="text">
-               <string>指鼠标双击的时间间隔</string>
-              </property>
-              <property name="wordWrap">
-               <bool>true</bool>
+               <string>暂停时间：</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="1" colspan="2">
+            <item row="2" column="1" colspan="2">
              <widget class="QSlider" name="horizontalSlider_3">
               <property name="maximum">
                <number>1000</number>
@@ -387,15 +325,29 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="3">
+            <item row="2" column="3">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>毫秒</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
              <widget class="QLabel" name="label_6">
               <property name="text">
                <string>毫秒</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_9">
+            <item row="4" column="3">
+             <widget class="QLabel" name="label_10">
+              <property name="text">
+               <string>毫秒</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_5">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
@@ -404,27 +356,35 @@
                </font>
               </property>
               <property name="text">
-               <string>暂停时间：</string>
+               <string>时间间隔：</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="3">
-             <widget class="QLabel" name="label_10">
+            <item row="3" column="0" colspan="4">
+             <widget class="QLabel" name="label_13">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
               <property name="text">
-               <string>毫秒</string>
+               <string>指执行指令如鼠标点击的持续时间</string>
               </property>
              </widget>
             </item>
-            <item row="5" column="1" colspan="2">
-             <widget class="QSpinBox" name="spinBox">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
               </property>
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <number>1000000</number>
+              <property name="text">
+               <string>持续时间：</string>
               </property>
              </widget>
             </item>
@@ -796,22 +756,6 @@
   <include location="../images.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>horizontalSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_4</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>185</x>
-     <y>230</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>302</x>
-     <y>240</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>horizontalSlider_2</sender>
    <signal>valueChanged(int)</signal>

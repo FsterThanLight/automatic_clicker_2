@@ -2373,7 +2373,12 @@ class RunPython:
             globals_dict = {}
             python_code = self.sub_variable_2(ins_dic.get("代码"))
             # 在执行代码时，将结果保存到全局命名空间中
-            exec(python_code, globals_dict)
+            try:
+                exec(python_code, globals_dict)
+            except Exception as e:
+                print(e)
+                self.out_mes.out_mes(f"运行失败：{e}", self.is_test)
+                raise ValueError(f"运行失败")
             # 从全局命名空间中获取结果
             result = globals_dict.get(ins_dic.get("返回名称"), None)
             if result is not None:
@@ -2686,3 +2691,34 @@ class WindowFocusWait:
                 raise TimeoutError("窗口超过指定时间未获取到焦点" if wait_for_focus else "窗口超过指定时间未失去焦点")
 
             time.sleep(frequency)
+
+
+class ColorJudgment:
+    """颜色判断功能"""
+
+    def __init__(self, outputmessage, ins_dic, cycle_number=1):
+        # 设置参数
+        self.time_sleep: float = 0.5  # 等待时间
+        self.out_mes = outputmessage  # 用于输出信息到不同的窗口
+        self.ins_dic: dict = ins_dic  # 指令字典
+
+        self.is_test: bool = False  # 是否测试
+        self.cycle_number: int = cycle_number  # 循环次数
+
+    def start_execute(self):
+        params = eval(self.ins_dic.get('参数1（键鼠指令）'))
+        pixel_coords = eval(params.get('像素坐标'))
+        target_color = eval(params.get('目标颜色'))
+        tolerance = int(params.get('误差范围'))
+        # 判断像素颜色是否匹配
+        if pyautogui.pixelMatchesColor(
+                pixel_coords[0],
+                pixel_coords[1],
+                target_color,
+                tolerance
+        ):
+            self.out_mes.out_mes(f"像素颜色匹配成功", self.is_test)
+            if not self.is_test:
+                raise ValueError("像素颜色匹配")
+        else:
+            self.out_mes.out_mes(f"像素颜色不匹配！坐标：{pixel_coords}", self.is_test)
