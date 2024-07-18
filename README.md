@@ -39,7 +39,7 @@ psutil
 ```
 ## 一键安装方法
 ```txt
-pip install -r python库.txt
+pip install PyQt5 pyttsx4 pymsgbox pyautogui mouse keyboard pywinauto pandas selenium webdriver_manager pillow openpyxl requests system_hotkey pygments opencv-python baidu-aip chardet nuitka pyinstaller python-dateutil psutil
 ```
 # 贡献者
 FasterThanLight

@@ -83,6 +83,7 @@ collections.Iterable = collections.abc.Iterable
 # todo: 指令可导出为json
 # todo: 鼠标拖动可设置速度
 # todo: 后台截图点击指令
+# todo: pywinauto闪退问题
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
