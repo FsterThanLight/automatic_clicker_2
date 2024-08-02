@@ -83,7 +83,8 @@ collections.Iterable = collections.abc.Iterable
 # todo: 指令可导出为json
 # todo: 鼠标拖动可设置速度
 # todo: 后台截图点击指令
-# todo: pywinauto闪退问题
+# todo: 命令添加窗口不能缩小
+# todo: 图像点击位置可设置随机范围
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -852,17 +853,23 @@ class Main_window(QMainWindow, Ui_MainWindow):
                 os.startfile(save_path_)
             self.statusBar.showMessage(f"指令数据已保存至{save_path_}。", 3000)
 
-        def adaptive_column_width(sheet_):
+        def adaptive_column_width(sheet_, max_width=50):
+            """
+            自动设置单元格宽度，并加上最大宽度限制。
+
+            :param sheet_: 工作表对象
+            :param max_width: 列宽的最大限制（默认为50）
+            """
             for col in range(1, sheet_.max_column + 1):
                 max_length = 0
                 for cell in sheet_[get_column_letter(col)]:
-                    cell_length = 0.7 * len(
-                        re.findall("([\u4e00-\u9fa5])", str(cell.value))
-                    ) + len(str(cell.value))
+                    # 计算单元格内容的长度，中文字符的长度为0.7
+                    cell_length = (0.7 * len(re.findall(r"([\u4e00-\u9fa5])", str(cell.value)))
+                                   + len(str(cell.value)))
                     max_length = max(max_length, cell_length)
-                sheet_.column_dimensions[get_column_letter(col)].width = (
-                        max_length + 5
-                )
+                # 设置列宽，但不超过最大宽度
+                adjusted_width = min(max_length + 5, max_width)
+                sheet_.column_dimensions[get_column_letter(col)].width = adjusted_width
 
         def set_title_style(sheet_):
             """设置标题样式"""
