@@ -95,17 +95,21 @@
    <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="styleSheet">
-      <string notr="true">QProgressBar {
-            border: 2px solid lightgray;
-            border-radius: 5px;
-            text-align: center;
-            color: white;
-        }
-        
-        QProgressBar::chunk {
-			background-color: rgb(255, 0, 0);
-            border-radius: 4px;
-        }</string>
+      <string notr="true">QProgressBar
+{
+    border: 1px solid #666666;
+    text-align: center;
+    color: #000;
+    font-weight: bold;
+}
+
+QProgressBar::chunk
+{
+    background-color: red; /* 将黄色改为红色 */
+    width: 5px;
+    margin: 0.5px;
+}
+</string>
      </property>
      <property name="value">
       <number>24</number>

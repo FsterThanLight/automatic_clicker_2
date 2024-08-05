@@ -50,17 +50,21 @@ class Ui_Update_UI(object):
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2)
         self.progressBar = QtWidgets.QProgressBar(Update_UI)
-        self.progressBar.setStyleSheet("QProgressBar {\n"
-"            border: 2px solid lightgray;\n"
-"            border-radius: 5px;\n"
-"            text-align: center;\n"
-"            color: white;\n"
-"        }\n"
-"        \n"
-"        QProgressBar::chunk {\n"
-"            background-color: rgb(255, 0, 0);\n"
-"            border-radius: 4px;\n"
-"        }")
+        self.progressBar.setStyleSheet("QProgressBar\n"
+"{\n"
+"    border: 1px solid #666666;\n"
+"    text-align: center;\n"
+"    color: #000;\n"
+"    font-weight: bold;\n"
+"}\n"
+"\n"
+"QProgressBar::chunk\n"
+"{\n"
+"    background-color: red; /* 将黄色改为红色 */\n"
+"    width: 5px;\n"
+"    margin: 0.5px;\n"
+"}\n"
+"")
         self.progressBar.setProperty("value", 24)
         self.progressBar.setAlignment(QtCore.Qt.AlignCenter)
         self.progressBar.setOrientation(QtCore.Qt.Horizontal)
