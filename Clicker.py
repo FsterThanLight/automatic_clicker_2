@@ -1348,7 +1348,7 @@ class QSSLoader:
 
 if __name__ == "__main__":
     # 自适应高分辨率
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
     # 防多开
     share = QSharedMemory(APP_NAME)
