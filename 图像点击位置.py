@@ -22,7 +22,7 @@ class MyLabel(QLabel):
         self.crosshair_color = Qt.red  # 十字框颜色
         self.crosshair_thickness = 2  # 十字框粗细
         # 设置十字框初始位置为图像中心
-        if position != '(0,0)':
+        if position != '(0,0)' and position != '(随机,随机)':
             position_ = eval(position)
             self.crosshair_position = (
                 self.pixmap.width() // 2 + position_[0],
@@ -99,6 +99,10 @@ class ClickPosition(QDialog, Ui_ClickPosition):
         )  # 隐藏帮助按钮
         # 创建自定义的MyLabel实例，传入图像路径
         self.label = MyLabel(self, self.image_path, position)
+        if position == '(随机,随机)':
+            self.checkBox.setChecked(True)
+            self.label_4.setText('随机')
+            self.label_5.setText('随机')
         # 在原label的位置插入自定义的label
         self.horizontalLayout.insertWidget(0, self.label)
         # 调整比例
@@ -106,6 +110,8 @@ class ClickPosition(QDialog, Ui_ClickPosition):
         self.horizontalLayout.setStretch(1, 1)
         # 保存数据
         self.pushButton.clicked.connect(self.save_position)
+        # 是否随机点击
+        self.checkBox.stateChanged.connect(self.random_click)
 
     def save_position(self):
         try:
@@ -115,6 +121,14 @@ class ClickPosition(QDialog, Ui_ClickPosition):
                 self.close()
         except Exception as e:
             print(f'保存数据出现错误: {e}')
+
+    def random_click(self):
+        if self.checkBox.isChecked():
+            self.label_4.setText('随机')
+            self.label_5.setText('随机')
+        else:
+            self.label_4.setText('0')
+            self.label_5.setText('0')
 
 
 if __name__ == '__main__':

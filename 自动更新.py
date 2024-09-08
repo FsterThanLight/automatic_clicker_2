@@ -118,6 +118,7 @@ class Download_UpdatePack(QThread):
         self.download_url = download_url_
 
     def run(self):
+        print('开始下载更新')
         self.download()
         # self.run_test()
 
@@ -183,8 +184,8 @@ class UpdateWindow(QDialog, Ui_Update_UI):
 
     def download(self):
         """下载更新"""
-        if self.download_thread.isRunning():
-            self.download_thread.terminate()
+        # if self.download_thread.isRunning():
+        self.download_thread.terminate()
         self.download_thread.start()
 
     def export_json(self):
@@ -210,8 +211,10 @@ class UpdateWindow(QDialog, Ui_Update_UI):
         except FileNotFoundError:
             self.label_2.setText('更新程序不存在！请手动解压更新文件！')
             os.remove('update_info.json')  # 删除json文件
+        except OSError:
+            self.label_2.setText(f'更新失败！请手动解压更新文件！')
+            os.remove('update_info.json')
 
     def closeEvent(self, event):
         """关闭窗口时触发"""
-        if self.download_thread.isRunning():
-            self.download_thread.terminate()
+        self.download_thread.terminate()

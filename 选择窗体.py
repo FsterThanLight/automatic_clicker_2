@@ -108,7 +108,7 @@ class Variable_selection_win(QDialog, Ui_branch):
 
     def closeEvent(self, event):
         # 保存窗体大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
 
     def eventFilter(self, obj, event):
         # 重写self.tableWidget的快捷键事件

@@ -17,7 +17,7 @@ import re
 import time
 
 import openpyxl
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import *
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QDesktopServices, QPixmap, QFont
@@ -83,8 +83,9 @@ collections.Iterable = collections.abc.Iterable
 # todo: 指令可导出为json
 # todo: 鼠标拖动可设置速度
 # todo: 后台截图点击指令
-# todo: 命令添加窗口不能缩小
-# todo: 图像点击位置可设置随机范围
+# done: 命令添加窗口不能缩小
+# done: 图像点击位置可设置随机范围
+# done: 网页录入的指令没有替换变量的值
 
 # https://blog.csdn.net/qq_41567921/article/details/134813496
 
@@ -947,7 +948,7 @@ class Main_window(QMainWindow, Ui_MainWindow):
         # 保存当前分支
         set_current_branch(self.comboBox.currentText())
         # 窗口大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
 
     def data_import(self, file_path):
         """导入数据功能"""
@@ -1308,7 +1309,7 @@ class About(QDialog, Ui_About):
 
     def closeEvent(self, event):
         # 保存窗体大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
 
 
 class Param(QDialog, Ui_Param):
@@ -1348,7 +1349,13 @@ class QSSLoader:
 
 if __name__ == "__main__":
     # 自适应高分辨率
-    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # 强制启用高 DPI 感知模式
+    # 需要在创建 QApplication 之前设置环境变量
+    # QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    is_AA_EnableHighDpiScaling = eval(get_setting_data_from_ini("Config", "高DPI自适应"))
+    if is_AA_EnableHighDpiScaling:
+        QtCore.QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     app = QtWidgets.QApplication(sys.argv)
     # 防多开
     share = QSharedMemory(APP_NAME)
@@ -1357,8 +1364,10 @@ if __name__ == "__main__":
         show_window(APP_NAME)  # 显示窗口
     if share.create(1):
         splash = QSplashScreen(QPixmap(r"./flat/开屏.png"))  # 创建启动界面
-        splash.showMessage(  # 初始文本
-            "加载中......", QtCore.Qt.AlignHCenter | QtCore.Qt.AlignBottom, QtCore.Qt.green
+        splash.showMessage(
+            "加载中......",
+            QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignBottom,
+            QtGui.QColor('green')
         )
         splash.setFont(QFont("微软雅黑", 15))  # 设置字体
         splash.show()  # 显示启动界面

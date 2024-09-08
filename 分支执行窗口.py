@@ -96,7 +96,7 @@ class BranchWindow(QDialog, Ui_Branch):
 
     def closeEvent(self, event):
         # 保存窗体大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
         self.set_caps_lock_status('close')  # 关闭大写锁定
 
     def eventFilter(self, obj, event):

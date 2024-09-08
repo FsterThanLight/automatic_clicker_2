@@ -95,4 +95,4 @@ class Global_s(QDialog, Ui_Global):
     def closeEvent(self, event):
         """关闭窗口时触发"""
         # 窗口大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())

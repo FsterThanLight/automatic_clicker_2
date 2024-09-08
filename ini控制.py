@@ -1,4 +1,5 @@
 import configparser
+import ctypes
 import os
 import sqlite3
 import sys
@@ -94,15 +95,27 @@ def get_ocr_info() -> dict:
         return {}
 
 
-def save_window_size(save_size: tuple, window_name: str):
+def get_screen_resolution():
+    """获取屏幕分辨率"""
+    user32 = ctypes.windll.user32
+    width = user32.GetSystemMetrics(0)
+    height = user32.GetSystemMetrics(1)
+    return f"{width}*{height}"
+
+
+def save_window_size(win_width: int, win_height: int, window_name: str):
     """获取窗口大小
-    :param save_size: 保存时的窗口大小
-    :param window_name:（主窗口、设置窗口、导航窗口）
+    :param win_width: 保存时窗口的宽度
+    :param win_height: 保存时窗口的高度
+    :param window_name:窗口名称
     :return: 窗口大小"""
+
     try:
         config = get_config()
+        save_size = (win_width, win_height)
+        window_info = f"{window_name}-{get_screen_resolution()}"
         # 检查'窗口大小'选区中是否存在window_name选项
-        config["窗口大小"][window_name] = str(save_size)
+        config["窗口大小"][window_info] = str(save_size)
         with open("config.ini", "w", encoding="utf-8") as f:
             config.write(f)
     except Exception as e:
@@ -112,11 +125,12 @@ def save_window_size(save_size: tuple, window_name: str):
 def set_window_size(window):
     def get_window_size(window_name: str):
         """设置窗口大小
-        :param window_name:（主窗口、设置窗口、导航窗口）
+        :param window_name:窗口名称
         :return: 窗口大小"""
+        window_info = f"{window_name}-{get_screen_resolution()}"
         try:
-            height_, width_ = eval(get_setting_data_from_ini("窗口大小", window_name))
-            return int(height_), int(width_)
+            width_, height_ = eval(get_setting_data_from_ini("窗口大小", window_info))
+            return int(width_), int(height_)
         except TypeError:
             return 0, 0
 

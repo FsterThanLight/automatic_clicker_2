@@ -285,7 +285,7 @@ class Na(QWidget, Ui_navigation):
             self.transparent_window.close()
         self.main_window.get_data(self.modify_row)
         # 窗口大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
 
     def on_find_item(self, filter_txt):
         """指令搜索功能"""
@@ -506,6 +506,18 @@ class Na(QWidget, Ui_navigation):
         :param pars_1:参数1
         :param function_name: 功能名称
         """
+        def get_rgb_value():
+            """获取颜色的rgb值"""
+            # 获取鼠标位置的rgb值
+            rgb = pyautogui.pixel(x, y)
+            self.spinBox_26.setValue(rgb[0])
+            self.spinBox_29.setValue(rgb[1])
+            self.spinBox_30.setValue(rgb[2])
+            # 设置标签的背景色
+            self.label_191.setStyleSheet(
+                f"background-color:rgb({rgb[0]},{rgb[1]},{rgb[2]})"
+            )
+
         if function_name == "get_mouse_position":
             # 获取鼠标位置
             x, y = pyautogui.position()
@@ -524,16 +536,11 @@ class Na(QWidget, Ui_navigation):
             elif self.mouse_position_function == "颜色判断":
                 self.label_197.setText(str(x))
                 self.label_195.setText(str(y))
+                # 获取鼠标位置的rgb值
+                get_rgb_value()
             elif self.mouse_position_function == "获取颜色":
                 # 获取鼠标位置的rgb值
-                rgb = pyautogui.pixel(x, y)
-                self.spinBox_26.setValue(rgb[0])
-                self.spinBox_29.setValue(rgb[1])
-                self.spinBox_30.setValue(rgb[2])
-                # 设置标签的背景色
-                self.label_191.setStyleSheet(
-                    f"background-color:rgb({rgb[0]},{rgb[1]},{rgb[2]})"
-                )
+                get_rgb_value()
         elif function_name == "change_get_mouse_position_function":
             # 改变获取鼠标位置功能
             self.mouse_position_function = pars_1
@@ -2305,6 +2312,7 @@ class Na(QWidget, Ui_navigation):
                 "结束位置": f"{self.label_65.text()},{self.label_66.text()}",
                 "开始随机": str(self.checkBox_8.isChecked()),
                 "结束随机": str(self.checkBox_7.isChecked()),
+                "移动速度": self.spinBox_32.value(),
             }
             if self.label_59.text() == "0" and self.label_61.text() == "0":
                 QMessageBox.critical(self, "错误", "未设置开始位置！")
@@ -2324,10 +2332,27 @@ class Na(QWidget, Ui_navigation):
             x, y = parameter_dic_["结束位置"].split(",")
             self.label_65.setText(x)
             self.label_66.setText(y)
+            # 还原移动速度
+            self.spinBox_32.setValue(int(parameter_dic_["移动速度"]))
             # 还原开始随机
             self.checkBox_8.setChecked(parameter_dic_["开始随机"] == "True")
             # 还原结束随机
             self.checkBox_7.setChecked(parameter_dic_["结束随机"] == "True")
+
+        def method_one():
+            """方法一"""
+            # 获取“运行Python”标题的索引
+            tab_index = self.tab_title_list.index('运行Python')
+            self.tabWidget.setCurrentIndex(tab_index)
+            code_1 = (
+                "import pyautogui\n\n"
+                "var_1 =  eval( ) # 括号里插入开始位置的变量\n"
+                "var_2 =  eval( ) # 括号里插入结束位置的变量\n"
+                "duration_time = 0.3  # 此处填写移动时间（单位：秒s）\n\n"
+                "pyautogui.moveTo(var_1[0], var_1[1], duration=duration_time)\n"
+                "pyautogui.dragTo(var_2[0], var_2[1], duration=duration_time)"
+            )
+            self.textEdit_5.setText(code_1)
 
         if type_ == "按钮功能":
             # 鼠标拖拽
@@ -2346,6 +2371,7 @@ class Na(QWidget, Ui_navigation):
             # self.pushButton_13.clicked.connect(self.mouseMoveEvent)
             # 拖拽测试按钮
             self.pushButton_14.clicked.connect(test)
+            self.pushButton_83.clicked.connect(method_one)
         elif type_ == "写入参数":
             parameter_dic = get_parameters()
             # 将命令写入数据库

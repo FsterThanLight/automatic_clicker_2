@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_navigation(object):
     def setupUi(self, navigation):
         navigation.setObjectName("navigation")
-        navigation.resize(801, 820)
+        navigation.resize(801, 826)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setBold(False)
@@ -145,7 +145,6 @@ class Ui_navigation(object):
         self.pushButton = QtWidgets.QPushButton(self.tab)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton.setFont(font)
@@ -154,8 +153,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -362,7 +360,6 @@ class Ui_navigation(object):
         self.pushButton_6.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_6.setFont(font)
@@ -371,8 +368,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -416,7 +412,6 @@ class Ui_navigation(object):
         self.pushButton_67 = QtWidgets.QPushButton(self.groupBox_71)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_67.setFont(font)
@@ -425,8 +420,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -448,7 +442,6 @@ class Ui_navigation(object):
         self.pushButton_63 = QtWidgets.QPushButton(self.groupBox_71)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_63.setFont(font)
@@ -457,8 +450,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -625,7 +617,6 @@ class Ui_navigation(object):
         self.pushButton_69.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_69.setFont(font)
@@ -634,8 +625,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -809,7 +799,6 @@ class Ui_navigation(object):
         self.pushButton_23.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_23.setFont(font)
@@ -818,8 +807,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -1028,7 +1016,6 @@ class Ui_navigation(object):
         self.pushButton_52.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_52.setFont(font)
@@ -1037,8 +1024,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -1380,7 +1366,6 @@ class Ui_navigation(object):
         self.pushButton_21.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_21.setFont(font)
@@ -1389,8 +1374,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -1686,7 +1670,6 @@ class Ui_navigation(object):
         self.pushButton_36.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_36.setFont(font)
@@ -1695,8 +1678,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2111,9 +2093,38 @@ class Ui_navigation(object):
         spacerItem22 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_27.addItem(spacerItem22)
         self.verticalLayout_14.addLayout(self.horizontalLayout_27)
-        self.verticalLayout_29.addWidget(self.groupBox_64)
         spacerItem23 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_29.addItem(spacerItem23)
+        self.verticalLayout_14.addItem(spacerItem23)
+        self.horizontalLayout_41 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_41.setObjectName("horizontalLayout_41")
+        self.label_199 = QtWidgets.QLabel(self.groupBox_64)
+        self.label_199.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.label_199.setObjectName("label_199")
+        self.horizontalLayout_41.addWidget(self.label_199)
+        self.spinBox_32 = QtWidgets.QSpinBox(self.groupBox_64)
+        self.spinBox_32.setMaximum(999999)
+        self.spinBox_32.setProperty("value", 300)
+        self.spinBox_32.setObjectName("spinBox_32")
+        self.horizontalLayout_41.addWidget(self.spinBox_32)
+        self.label_200 = QtWidgets.QLabel(self.groupBox_64)
+        self.label_200.setObjectName("label_200")
+        self.horizontalLayout_41.addWidget(self.label_200)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_41)
+        self.verticalLayout_29.addWidget(self.groupBox_64)
+        spacerItem24 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_29.addItem(spacerItem24)
+        self.groupBox_84 = QtWidgets.QGroupBox(self.tab_14)
+        self.groupBox_84.setObjectName("groupBox_84")
+        self.horizontalLayout_42 = QtWidgets.QHBoxLayout(self.groupBox_84)
+        self.horizontalLayout_42.setObjectName("horizontalLayout_42")
+        spacerItem25 = QtWidgets.QSpacerItem(206, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_42.addItem(spacerItem25)
+        self.pushButton_83 = QtWidgets.QPushButton(self.groupBox_84)
+        self.pushButton_83.setObjectName("pushButton_83")
+        self.horizontalLayout_42.addWidget(self.pushButton_83)
+        spacerItem26 = QtWidgets.QSpacerItem(206, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_42.addItem(spacerItem26)
+        self.verticalLayout_29.addWidget(self.groupBox_84)
         self.pushButton_14 = QtWidgets.QPushButton(self.tab_14)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -2182,7 +2193,6 @@ class Ui_navigation(object):
         self.pushButton_14.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_14.setFont(font)
@@ -2191,8 +2201,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2229,8 +2238,8 @@ class Ui_navigation(object):
         self.groupBox_82.setObjectName("groupBox_82")
         self.gridLayout_80 = QtWidgets.QGridLayout(self.groupBox_82)
         self.gridLayout_80.setObjectName("gridLayout_80")
-        spacerItem24 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_80.addItem(spacerItem24, 0, 3, 1, 1)
+        spacerItem27 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_80.addItem(spacerItem27, 0, 3, 1, 1)
         self.pushButton_82 = QtWidgets.QPushButton(self.groupBox_82)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -2278,8 +2287,8 @@ class Ui_navigation(object):
         self.label_195.setObjectName("label_195")
         self.gridLayout_79.addWidget(self.label_195, 1, 1, 1, 1)
         self.gridLayout_80.addLayout(self.gridLayout_79, 0, 1, 1, 1)
-        spacerItem25 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_80.addItem(spacerItem25, 0, 0, 1, 1)
+        spacerItem28 = QtWidgets.QSpacerItem(91, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_80.addItem(spacerItem28, 0, 0, 1, 1)
         self.horizontalLayout_40 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_40.setObjectName("horizontalLayout_40")
         self.label_198 = QtWidgets.QLabel(self.groupBox_82)
@@ -2295,7 +2304,6 @@ class Ui_navigation(object):
         self.pushButton_79 = QtWidgets.QPushButton(self.groupBox_82)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_79.setFont(font)
@@ -2304,8 +2312,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2398,8 +2405,8 @@ class Ui_navigation(object):
         self.gridLayout_78.setColumnStretch(3, 1)
         self.verticalLayout_89.addLayout(self.gridLayout_78)
         self.verticalLayout_88.addWidget(self.groupBox_83)
-        spacerItem26 = QtWidgets.QSpacerItem(20, 189, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_88.addItem(spacerItem26)
+        spacerItem29 = QtWidgets.QSpacerItem(20, 189, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_88.addItem(spacerItem29)
         self.pushButton_81 = QtWidgets.QPushButton(self.tab_46)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -2468,7 +2475,6 @@ class Ui_navigation(object):
         self.pushButton_81.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_81.setFont(font)
@@ -2477,8 +2483,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2579,7 +2584,6 @@ class Ui_navigation(object):
         self.pushButton_5.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_5.setFont(font)
@@ -2588,8 +2592,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2652,26 +2655,26 @@ class Ui_navigation(object):
         self.gridLayout_66.addWidget(self.label_41, 1, 0, 1, 1)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem27 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem27)
+        spacerItem30 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem30)
         self.checkBox_3 = QtWidgets.QCheckBox(self.groupBox_66)
         self.checkBox_3.setObjectName("checkBox_3")
         self.horizontalLayout.addWidget(self.checkBox_3)
-        spacerItem28 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem28)
-        spacerItem29 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem29)
+        spacerItem31 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem31)
+        spacerItem32 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem32)
         self.checkBox_4 = QtWidgets.QCheckBox(self.groupBox_66)
         self.checkBox_4.setObjectName("checkBox_4")
         self.horizontalLayout.addWidget(self.checkBox_4)
-        spacerItem30 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem30)
+        spacerItem33 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem33)
         self.gridLayout_66.addLayout(self.horizontalLayout, 2, 0, 1, 2)
         self.gridLayout_66.setColumnStretch(0, 1)
         self.gridLayout_66.setColumnStretch(1, 5)
         self.verticalLayout_42.addWidget(self.groupBox_66)
-        spacerItem31 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_42.addItem(spacerItem31)
+        spacerItem34 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_42.addItem(spacerItem34)
         self.groupBox_24 = QtWidgets.QGroupBox(self.tab_10)
         self.groupBox_24.setObjectName("groupBox_24")
         self.verticalLayout_18 = QtWidgets.QVBoxLayout(self.groupBox_24)
@@ -2768,7 +2771,6 @@ class Ui_navigation(object):
         self.pushButton_58.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_58.setFont(font)
@@ -2777,8 +2779,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -2848,8 +2849,8 @@ class Ui_navigation(object):
         self.gridLayout_32.addWidget(self.label_54, 0, 0, 1, 1)
         self.verticalLayout_54.addLayout(self.gridLayout_32)
         self.verticalLayout_21.addWidget(self.groupBox_21)
-        spacerItem32 = QtWidgets.QSpacerItem(20, 249, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_21.addItem(spacerItem32)
+        spacerItem35 = QtWidgets.QSpacerItem(20, 249, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_21.addItem(spacerItem35)
         self.label_86 = QtWidgets.QLabel(self.tab_26)
         self.label_86.setAlignment(QtCore.Qt.AlignCenter)
         self.label_86.setWordWrap(False)
@@ -2923,8 +2924,8 @@ class Ui_navigation(object):
         self.verticalLayout_9.addLayout(self.gridLayout_12)
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_11.setObjectName("horizontalLayout_11")
-        spacerItem33 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_11.addItem(spacerItem33)
+        spacerItem36 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_11.addItem(spacerItem36)
         self.pushButton_31 = QtWidgets.QPushButton(self.groupBox_4)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -2937,8 +2938,8 @@ class Ui_navigation(object):
         self.horizontalLayout_11.setStretch(1, 1)
         self.verticalLayout_9.addLayout(self.horizontalLayout_11)
         self.verticalLayout_23.addWidget(self.groupBox_4)
-        spacerItem34 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_23.addItem(spacerItem34)
+        spacerItem37 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_23.addItem(spacerItem37)
         self.groupBox_26 = QtWidgets.QGroupBox(self.tab_11)
         self.groupBox_26.setObjectName("groupBox_26")
         self.verticalLayout_24 = QtWidgets.QVBoxLayout(self.groupBox_26)
@@ -3053,8 +3054,8 @@ class Ui_navigation(object):
         self.gridLayout_16.addWidget(self.radioButton_10, 1, 0, 1, 3)
         self.verticalLayout_27.addLayout(self.gridLayout_16)
         self.verticalLayout_28.addWidget(self.groupBox_7)
-        spacerItem35 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_28.addItem(spacerItem35)
+        spacerItem38 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_28.addItem(spacerItem38)
         self.tabWidget.addTab(self.tab_12, "")
         self.tab_13 = QtWidgets.QWidget()
         self.tab_13.setObjectName("tab_13")
@@ -3097,8 +3098,8 @@ class Ui_navigation(object):
         self.gridLayout_19.setColumnStretch(0, 1)
         self.gridLayout_19.setColumnStretch(1, 3)
         self.verticalLayout_30.addWidget(self.groupBox_12)
-        spacerItem36 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_30.addItem(spacerItem36)
+        spacerItem39 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_30.addItem(spacerItem39)
         self.tabWidget.addTab(self.tab_13, "")
         self.tab_15 = QtWidgets.QWidget()
         self.tab_15.setObjectName("tab_15")
@@ -3148,8 +3149,8 @@ class Ui_navigation(object):
         self.gridLayout_21.addWidget(self.lineEdit_13, 1, 1, 1, 1)
         self.verticalLayout_32.addLayout(self.gridLayout_21)
         self.verticalLayout_33.addWidget(self.groupBox_9)
-        spacerItem37 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_33.addItem(spacerItem37)
+        spacerItem40 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_33.addItem(spacerItem40)
         self.groupBox_25 = QtWidgets.QGroupBox(self.tab_15)
         self.groupBox_25.setObjectName("groupBox_25")
         self.verticalLayout_35 = QtWidgets.QVBoxLayout(self.groupBox_25)
@@ -3237,8 +3238,8 @@ class Ui_navigation(object):
         self.spinBox_11.setObjectName("spinBox_11")
         self.gridLayout_25.addWidget(self.spinBox_11, 0, 3, 1, 1)
         self.verticalLayout_58.addWidget(self.groupBox_11)
-        spacerItem38 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_58.addItem(spacerItem38)
+        spacerItem41 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_58.addItem(spacerItem41)
         self.groupBox_27 = QtWidgets.QGroupBox(self.tab_16)
         self.groupBox_27.setObjectName("groupBox_27")
         self.verticalLayout_36 = QtWidgets.QVBoxLayout(self.groupBox_27)
@@ -3345,8 +3346,8 @@ class Ui_navigation(object):
         self.gridLayout_65.setColumnStretch(0, 1)
         self.gridLayout_65.setColumnStretch(1, 1)
         self.verticalLayout_16.addWidget(self.groupBox_62)
-        spacerItem39 = QtWidgets.QSpacerItem(20, 173, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_16.addItem(spacerItem39)
+        spacerItem42 = QtWidgets.QSpacerItem(20, 173, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_16.addItem(spacerItem42)
         self.pushButton_17 = QtWidgets.QPushButton(self.tab_25)
         self.pushButton_17.setEnabled(True)
         palette = QtGui.QPalette()
@@ -3416,7 +3417,6 @@ class Ui_navigation(object):
         self.pushButton_17.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_17.setFont(font)
@@ -3425,8 +3425,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -3470,8 +3469,8 @@ class Ui_navigation(object):
         self.comboBox_32.addItem("")
         self.gridLayout_26.addWidget(self.comboBox_32, 0, 0, 1, 1)
         self.verticalLayout_39.addWidget(self.groupBox_13)
-        spacerItem40 = QtWidgets.QSpacerItem(20, 280, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_39.addItem(spacerItem40)
+        spacerItem43 = QtWidgets.QSpacerItem(20, 280, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_39.addItem(spacerItem43)
         self.tabWidget.addTab(self.tab_18, "")
         self.tab_17 = QtWidgets.QWidget()
         self.tab_17.setObjectName("tab_17")
@@ -3514,8 +3513,8 @@ class Ui_navigation(object):
         self.groupBox_69.setObjectName("groupBox_69")
         self.horizontalLayout_29 = QtWidgets.QHBoxLayout(self.groupBox_69)
         self.horizontalLayout_29.setObjectName("horizontalLayout_29")
-        spacerItem41 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_29.addItem(spacerItem41)
+        spacerItem44 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_29.addItem(spacerItem44)
         self.radioButton_9 = QtWidgets.QRadioButton(self.groupBox_69)
         self.radioButton_9.setChecked(True)
         self.radioButton_9.setObjectName("radioButton_9")
@@ -3523,8 +3522,8 @@ class Ui_navigation(object):
         self.radioButton_8 = QtWidgets.QRadioButton(self.groupBox_69)
         self.radioButton_8.setObjectName("radioButton_8")
         self.horizontalLayout_29.addWidget(self.radioButton_8)
-        spacerItem42 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_29.addItem(spacerItem42)
+        spacerItem45 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_29.addItem(spacerItem45)
         self.verticalLayout_52.addWidget(self.groupBox_69)
         self.groupBox_14 = QtWidgets.QGroupBox(self.tab_17)
         self.groupBox_14.setObjectName("groupBox_14")
@@ -3551,8 +3550,8 @@ class Ui_navigation(object):
         self.verticalLayout_37.addLayout(self.gridLayout_27)
         self.horizontalLayout_30 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_30.setObjectName("horizontalLayout_30")
-        spacerItem43 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_30.addItem(spacerItem43)
+        spacerItem46 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_30.addItem(spacerItem46)
         self.pushButton_62 = QtWidgets.QPushButton(self.groupBox_14)
         self.pushButton_62.setObjectName("pushButton_62")
         self.horizontalLayout_30.addWidget(self.pushButton_62)
@@ -3560,8 +3559,8 @@ class Ui_navigation(object):
         self.horizontalLayout_30.setStretch(1, 1)
         self.verticalLayout_37.addLayout(self.horizontalLayout_30)
         self.verticalLayout_52.addWidget(self.groupBox_14)
-        spacerItem44 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_52.addItem(spacerItem44)
+        spacerItem47 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_52.addItem(spacerItem47)
         self.pushButton_61 = QtWidgets.QPushButton(self.tab_17)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -3630,7 +3629,6 @@ class Ui_navigation(object):
         self.pushButton_61.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_61.setFont(font)
@@ -3639,8 +3637,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -3718,8 +3715,8 @@ class Ui_navigation(object):
         self.verticalLayout_22.addLayout(self.gridLayout_10)
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_12.setObjectName("horizontalLayout_12")
-        spacerItem45 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_12.addItem(spacerItem45)
+        spacerItem48 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_12.addItem(spacerItem48)
         self.pushButton_30 = QtWidgets.QPushButton(self.groupBox_18)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -3731,8 +3728,8 @@ class Ui_navigation(object):
         self.horizontalLayout_12.setStretch(0, 1)
         self.horizontalLayout_12.setStretch(1, 1)
         self.verticalLayout_22.addLayout(self.horizontalLayout_12)
-        spacerItem46 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_22.addItem(spacerItem46)
+        spacerItem49 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_22.addItem(spacerItem49)
         self.verticalLayout_47.addWidget(self.groupBox_18)
         self.pushButton_15 = QtWidgets.QPushButton(self.tab_22)
         palette = QtGui.QPalette()
@@ -3802,7 +3799,6 @@ class Ui_navigation(object):
         self.pushButton_15.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_15.setFont(font)
@@ -3811,8 +3807,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -3930,8 +3925,8 @@ class Ui_navigation(object):
         self.gridLayout_40.setColumnStretch(0, 1)
         self.gridLayout_40.setColumnStretch(1, 1)
         self.verticalLayout_66.addWidget(self.groupBox_34)
-        spacerItem47 = QtWidgets.QSpacerItem(20, 13, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_66.addItem(spacerItem47)
+        spacerItem50 = QtWidgets.QSpacerItem(20, 13, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_66.addItem(spacerItem50)
         self.pushButton_24 = QtWidgets.QPushButton(self.tab_2)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4000,7 +3995,6 @@ class Ui_navigation(object):
         self.pushButton_24.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_24.setFont(font)
@@ -4009,8 +4003,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4073,12 +4066,12 @@ class Ui_navigation(object):
         self.label_122.setAlignment(QtCore.Qt.AlignCenter)
         self.label_122.setObjectName("label_122")
         self.horizontalLayout_3.addWidget(self.label_122)
-        spacerItem48 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_3.addItem(spacerItem48)
+        spacerItem51 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_3.addItem(spacerItem51)
         self.verticalLayout_67.addLayout(self.horizontalLayout_3)
         self.verticalLayout_68.addWidget(self.groupBox_35)
-        spacerItem49 = QtWidgets.QSpacerItem(20, 306, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_68.addItem(spacerItem49)
+        spacerItem52 = QtWidgets.QSpacerItem(20, 306, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_68.addItem(spacerItem52)
         self.pushButton_25 = QtWidgets.QPushButton(self.tab_28)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4147,7 +4140,6 @@ class Ui_navigation(object):
         self.pushButton_25.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_25.setFont(font)
@@ -4156,8 +4148,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4206,8 +4197,8 @@ class Ui_navigation(object):
         self.gridLayout_44.setColumnStretch(0, 1)
         self.gridLayout_44.setColumnStretch(1, 2)
         self.verticalLayout_74.addWidget(self.groupBox_39)
-        spacerItem50 = QtWidgets.QSpacerItem(20, 314, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_74.addItem(spacerItem50)
+        spacerItem53 = QtWidgets.QSpacerItem(20, 314, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_74.addItem(spacerItem53)
         self.pushButton_27 = QtWidgets.QPushButton(self.tab_32)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4276,7 +4267,6 @@ class Ui_navigation(object):
         self.pushButton_27.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_27.setFont(font)
@@ -4285,8 +4275,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4346,8 +4335,8 @@ class Ui_navigation(object):
         self.gridLayout_41.setColumnStretch(3, 1)
         self.verticalLayout_69.addLayout(self.gridLayout_41)
         self.verticalLayout_70.addWidget(self.groupBox_36)
-        spacerItem51 = QtWidgets.QSpacerItem(20, 343, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_70.addItem(spacerItem51)
+        spacerItem54 = QtWidgets.QSpacerItem(20, 343, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_70.addItem(spacerItem54)
         self.pushButton_26 = QtWidgets.QPushButton(self.tab_29)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4425,8 +4414,8 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    font-size: 14px; /* 设置字体大小，可以根据需要调整 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4468,8 +4457,8 @@ class Ui_navigation(object):
         self.gridLayout_42.setColumnStretch(2, 1)
         self.gridLayout_42.setColumnStretch(3, 1)
         self.verticalLayout_71.addWidget(self.groupBox_37)
-        spacerItem52 = QtWidgets.QSpacerItem(20, 413, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_71.addItem(spacerItem52)
+        spacerItem55 = QtWidgets.QSpacerItem(20, 413, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_71.addItem(spacerItem55)
         self.tabWidget.addTab(self.tab_30, "")
         self.tab_31 = QtWidgets.QWidget()
         self.tab_31.setObjectName("tab_31")
@@ -4490,8 +4479,8 @@ class Ui_navigation(object):
         self.gridLayout_43.setColumnStretch(0, 1)
         self.gridLayout_43.setColumnStretch(1, 1)
         self.verticalLayout_72.addWidget(self.groupBox_38)
-        spacerItem53 = QtWidgets.QSpacerItem(20, 413, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_72.addItem(spacerItem53)
+        spacerItem56 = QtWidgets.QSpacerItem(20, 413, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_72.addItem(spacerItem56)
         self.tabWidget.addTab(self.tab_31, "")
         self.tab_34 = QtWidgets.QWidget()
         self.tab_34.setObjectName("tab_34")
@@ -4529,8 +4518,8 @@ class Ui_navigation(object):
         self.label_135.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_135.setObjectName("label_135")
         self.gridLayout_49.addWidget(self.label_135, 0, 0, 1, 1)
-        spacerItem54 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_49.addItem(spacerItem54, 2, 0, 1, 1)
+        spacerItem57 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_49.addItem(spacerItem57, 2, 0, 1, 1)
         self.pushButton_33 = QtWidgets.QPushButton(self.groupBox_43)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -4542,8 +4531,8 @@ class Ui_navigation(object):
         self.gridLayout_49.setColumnStretch(0, 1)
         self.gridLayout_49.setColumnStretch(1, 1)
         self.verticalLayout_48.addWidget(self.groupBox_43)
-        spacerItem55 = QtWidgets.QSpacerItem(20, 264, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_48.addItem(spacerItem55)
+        spacerItem58 = QtWidgets.QSpacerItem(20, 264, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_48.addItem(spacerItem58)
         self.pushButton_34 = QtWidgets.QPushButton(self.tab_34)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4612,7 +4601,6 @@ class Ui_navigation(object):
         self.pushButton_34.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_34.setFont(font)
@@ -4621,8 +4609,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4664,8 +4651,8 @@ class Ui_navigation(object):
         self.label_156.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_156.setObjectName("label_156")
         self.gridLayout_61.addWidget(self.label_156, 0, 0, 1, 1)
-        spacerItem56 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_61.addItem(spacerItem56, 2, 0, 1, 1)
+        spacerItem59 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_61.addItem(spacerItem59, 2, 0, 1, 1)
         self.pushButton_51 = QtWidgets.QPushButton(self.groupBox_58)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -4677,8 +4664,8 @@ class Ui_navigation(object):
         self.gridLayout_61.setColumnStretch(0, 1)
         self.gridLayout_61.setColumnStretch(1, 1)
         self.verticalLayout_13.addWidget(self.groupBox_58)
-        spacerItem57 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_13.addItem(spacerItem57)
+        spacerItem60 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_13.addItem(spacerItem60)
         self.tabWidget.addTab(self.tab_41, "")
         self.tab_33 = QtWidgets.QWidget()
         self.tab_33.setObjectName("tab_33")
@@ -4735,8 +4722,8 @@ class Ui_navigation(object):
         self.gridLayout_46.setColumnStretch(3, 1)
         self.verticalLayout_73.addLayout(self.gridLayout_46)
         self.verticalLayout_75.addWidget(self.groupBox_41)
-        spacerItem58 = QtWidgets.QSpacerItem(20, 272, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_75.addItem(spacerItem58)
+        spacerItem61 = QtWidgets.QSpacerItem(20, 272, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_75.addItem(spacerItem61)
         self.tabWidget.addTab(self.tab_33, "")
         self.tab_35 = QtWidgets.QWidget()
         self.tab_35.setObjectName("tab_35")
@@ -4774,8 +4761,8 @@ class Ui_navigation(object):
         self.label_140.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_140.setObjectName("label_140")
         self.gridLayout_51.addWidget(self.label_140, 0, 0, 1, 1)
-        spacerItem59 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_51.addItem(spacerItem59, 2, 0, 1, 1)
+        spacerItem62 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_51.addItem(spacerItem62, 2, 0, 1, 1)
         self.pushButton_37 = QtWidgets.QPushButton(self.groupBox_46)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -4787,8 +4774,8 @@ class Ui_navigation(object):
         self.gridLayout_51.setColumnStretch(0, 1)
         self.gridLayout_51.setColumnStretch(1, 1)
         self.verticalLayout_77.addWidget(self.groupBox_46)
-        spacerItem60 = QtWidgets.QSpacerItem(20, 266, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_77.addItem(spacerItem60)
+        spacerItem63 = QtWidgets.QSpacerItem(20, 266, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_77.addItem(spacerItem63)
         self.tabWidget.addTab(self.tab_35, "")
         self.tab_45 = QtWidgets.QWidget()
         self.tab_45.setObjectName("tab_45")
@@ -4805,8 +4792,8 @@ class Ui_navigation(object):
         self.label_175.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_175.setObjectName("label_175")
         self.gridLayout_72.addWidget(self.label_175, 0, 0, 1, 1)
-        spacerItem61 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_72.addItem(spacerItem61, 2, 0, 1, 1)
+        spacerItem64 = QtWidgets.QSpacerItem(84, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_72.addItem(spacerItem64, 2, 0, 1, 1)
         self.pushButton_74 = QtWidgets.QPushButton(self.groupBox_76)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -4818,8 +4805,8 @@ class Ui_navigation(object):
         self.gridLayout_72.setColumnStretch(0, 1)
         self.gridLayout_72.setColumnStretch(1, 1)
         self.verticalLayout_64.addWidget(self.groupBox_76)
-        spacerItem62 = QtWidgets.QSpacerItem(20, 396, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_64.addItem(spacerItem62)
+        spacerItem65 = QtWidgets.QSpacerItem(20, 396, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_64.addItem(spacerItem65)
         self.pushButton_75 = QtWidgets.QPushButton(self.tab_45)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -4888,7 +4875,6 @@ class Ui_navigation(object):
         self.pushButton_75.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_75.setFont(font)
@@ -4897,8 +4883,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -4989,8 +4974,8 @@ class Ui_navigation(object):
         self.horizontalLayout_18.setStretch(2, 1)
         self.horizontalLayout_18.setStretch(3, 1)
         self.verticalLayout_41.addWidget(self.groupBox_49)
-        spacerItem63 = QtWidgets.QSpacerItem(20, 270, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_41.addItem(spacerItem63)
+        spacerItem66 = QtWidgets.QSpacerItem(20, 270, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_41.addItem(spacerItem66)
         self.tabWidget.addTab(self.tab_36, "")
         self.tab_37 = QtWidgets.QWidget()
         self.tab_37.setObjectName("tab_37")
@@ -5126,7 +5111,6 @@ class Ui_navigation(object):
         self.pushButton_40.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_40.setFont(font)
@@ -5135,8 +5119,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -5220,8 +5203,8 @@ class Ui_navigation(object):
         self.horizontalLayout_31.setStretch(0, 1)
         self.horizontalLayout_31.setStretch(1, 1)
         self.verticalLayout_62.addWidget(self.groupBox_75)
-        spacerItem64 = QtWidgets.QSpacerItem(20, 211, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_62.addItem(spacerItem64)
+        spacerItem67 = QtWidgets.QSpacerItem(20, 211, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_62.addItem(spacerItem67)
         self.pushButton_72 = QtWidgets.QPushButton(self.tab_44)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -5290,7 +5273,6 @@ class Ui_navigation(object):
         self.pushButton_72.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_72.setFont(font)
@@ -5299,8 +5281,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -5340,8 +5321,8 @@ class Ui_navigation(object):
         self.gridLayout_56.setColumnStretch(0, 1)
         self.gridLayout_56.setColumnStretch(1, 1)
         self.verticalLayout_82.addWidget(self.groupBox_52)
-        spacerItem65 = QtWidgets.QSpacerItem(20, 341, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_82.addItem(spacerItem65)
+        spacerItem68 = QtWidgets.QSpacerItem(20, 341, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_82.addItem(spacerItem68)
         self.pushButton_42 = QtWidgets.QPushButton(self.tab_38)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -5410,7 +5391,6 @@ class Ui_navigation(object):
         self.pushButton_42.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_42.setFont(font)
@@ -5419,8 +5399,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -5471,8 +5450,8 @@ class Ui_navigation(object):
         self.verticalLayout_50.addLayout(self.gridLayout_57)
         self.horizontalLayout_21 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_21.setObjectName("horizontalLayout_21")
-        spacerItem66 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout_21.addItem(spacerItem66)
+        spacerItem69 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_21.addItem(spacerItem69)
         self.checkBox_10 = QtWidgets.QCheckBox(self.groupBox_53)
         self.checkBox_10.setObjectName("checkBox_10")
         self.horizontalLayout_21.addWidget(self.checkBox_10)
@@ -5496,8 +5475,8 @@ class Ui_navigation(object):
         self.textEdit_6 = QtWidgets.QTextEdit(self.groupBox_54)
         self.textEdit_6.setObjectName("textEdit_6")
         self.gridLayout_58.addWidget(self.textEdit_6, 0, 0, 1, 2)
-        spacerItem67 = QtWidgets.QSpacerItem(218, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_58.addItem(spacerItem67, 1, 0, 1, 1)
+        spacerItem70 = QtWidgets.QSpacerItem(218, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_58.addItem(spacerItem70, 1, 0, 1, 1)
         self.pushButton_45 = QtWidgets.QPushButton(self.groupBox_54)
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
@@ -5509,8 +5488,8 @@ class Ui_navigation(object):
         self.gridLayout_58.setColumnStretch(0, 1)
         self.gridLayout_58.setColumnStretch(1, 1)
         self.verticalLayout_51.addWidget(self.groupBox_54)
-        spacerItem68 = QtWidgets.QSpacerItem(20, 92, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_51.addItem(spacerItem68)
+        spacerItem71 = QtWidgets.QSpacerItem(20, 92, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_51.addItem(spacerItem71)
         self.pushButton_59 = QtWidgets.QPushButton(self.tab_39)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -5579,7 +5558,6 @@ class Ui_navigation(object):
         self.pushButton_59.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_59.setFont(font)
@@ -5588,8 +5566,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -5648,8 +5625,8 @@ class Ui_navigation(object):
         self.gridLayout_59.setColumnStretch(0, 1)
         self.gridLayout_59.setColumnStretch(1, 1)
         self.verticalLayout_85.addWidget(self.groupBox_56)
-        spacerItem69 = QtWidgets.QSpacerItem(20, 308, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.verticalLayout_85.addItem(spacerItem69)
+        spacerItem72 = QtWidgets.QSpacerItem(20, 308, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_85.addItem(spacerItem72)
         self.pushButton_47 = QtWidgets.QPushButton(self.tab_40)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
@@ -5718,7 +5695,6 @@ class Ui_navigation(object):
         self.pushButton_47.setPalette(palette)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_47.setFont(font)
@@ -5727,8 +5703,7 @@ class Ui_navigation(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "    border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -5868,7 +5843,7 @@ class Ui_navigation(object):
         self.horizontalLayout_16.setStretch(1, 3)
 
         self.retranslateUi(navigation)
-        self.tabWidget.setCurrentIndex(38)
+        self.tabWidget.setCurrentIndex(42)
         self.comboBox_2.setCurrentIndex(0)
         self.comboBox_70.setCurrentIndex(0)
         self.comboBox_71.setCurrentIndex(0)
@@ -6180,6 +6155,10 @@ class Ui_navigation(object):
         self.label_65.setText(_translate("navigation", "0"))
         self.checkBox_8.setText(_translate("navigation", "开始使用随机位置"))
         self.checkBox_7.setText(_translate("navigation", "结束使用随机位置"))
+        self.label_199.setText(_translate("navigation", "鼠标移动速度："))
+        self.label_200.setText(_translate("navigation", "毫秒ms"))
+        self.groupBox_84.setTitle(_translate("navigation", "使用变量坐标："))
+        self.pushButton_83.setText(_translate("navigation", "查看示例"))
         self.pushButton_14.setText(_translate("navigation", "拖拽测试"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_14), _translate("navigation", "鼠标拖拽"))
         self.label_187.setText(_translate("navigation", "操作说明：判断目标像素点的颜色，执行对应的控制。"))

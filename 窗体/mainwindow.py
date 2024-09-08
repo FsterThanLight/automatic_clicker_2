@@ -226,7 +226,6 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.tab_2)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_3.setFont(font)
@@ -235,8 +234,7 @@ class Ui_MainWindow(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"
@@ -445,7 +443,6 @@ class Ui_MainWindow(object):
         self.pushButton_5 = QtWidgets.QPushButton(self.groupBox_4)
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei")
-        font.setPointSize(-1)
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_5.setFont(font)
@@ -454,8 +451,7 @@ class Ui_MainWindow(object):
 "    color: white;\n"
 "    border-radius: 10px; /* 设置圆角半径 */\n"
 "    font-family: \'Microsoft YaHei\'; /* 设置字体为微软雅黑 */\n"
-"    font-size: 16px; /* 设置字体大小，可以根据需要调整 */\n"
-"    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */\n"
+"    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */\n"
 "border: 2px solid transparent; /* 设置边框为透明 */\n"
 "}\n"
 "\n"

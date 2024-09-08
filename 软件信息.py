@@ -1,5 +1,5 @@
 APP_NAME = "Clicker"
-CURRENT_VERSION = "v0.26.5 Beta"
+CURRENT_VERSION = "v0.26.6 Beta"
 QQ = "308994839"
 QQ_GROUP = "https://qm.qq.com/q/3ih3PE16Mg"
 INTERFACE = 'http://api.ytsoftware.cn/appClicker/getClickerAppVersion'

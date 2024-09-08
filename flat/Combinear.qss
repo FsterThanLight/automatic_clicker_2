@@ -1,5 +1,4 @@
 
-
 /* 标题栏设置 */
 QMainWindow::title {
     color: #FFFFFF ; /* 黑色 */
@@ -21,8 +20,8 @@ QPushButton {
     color: white;
     border-radius: 10px; /* 设置圆角半径 */
     font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
-    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
-    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    /*font-size: 14px;  设置字体大小，可以根据需要调整 */
+    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */
     border: 2px solid transparent; /* 设置边框为透明 */
 }
 

@@ -25,7 +25,7 @@ import win32con
 import win32gui
 import winsound
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
+from PyQt5.QtGui import QPainter, QPen, QColor, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget
 from aip import AipOcr
 from dateutil.parser import parse
@@ -181,6 +181,35 @@ class ImageClick:
     def parsing_ins_dic(self):
         """从指令字典中解析出指令参数
         :return: 指令参数列表，重复次数"""
+
+        def convert_to_tuple(s):
+            """将形如“(x, y)”的字符串转换为元组(x, y)。"""
+
+            def convert_element(element):
+                """
+                尝试将字符串转换为适当的类型。
+                - 如果可以转换为整数，返回整数。
+                - 如果可以转换为浮点数，返回浮点数。
+                - 否则，返回原字符串。
+                """
+                try:
+                    return int(element)
+                except ValueError:
+                    try:
+                        return float(element)
+                    except ValueError:
+                        return element
+
+            # 去除字符串中的圆括号和空格
+            s = s.strip('()').replace(' ', '')
+            # 以逗号分割字符串
+            parts = s.split(',')
+            if len(parts) == 2:
+                # 将每个部分转换为合适的类型并返回元组
+                return tuple(map(convert_element, parts))
+            else:
+                raise ValueError(f"输入格式不正确: {s}")
+
         # 取重复次数
         re_try = self.ins_dic.get("重复次数")
         # 获取其他参数
@@ -206,7 +235,7 @@ class ImageClick:
             "灰度": parameter_dic_.get("灰度"),  # 是否灰度识别
             "区域": area_identification,
             "精度": float(parameter_dic_.get("精度", 0.8)),  # 图像匹配精度,
-            "点击偏移位置": eval(parameter_dic_.get("点击位置", "(0,0)"))  # 点击偏移位置
+            "点击偏移位置": convert_to_tuple(parameter_dic_.get("点击位置", "(0,0)"))  # 点击偏移位置
         }
 
     def start_execute(self):
@@ -247,7 +276,7 @@ class ImageClick:
         :param click_position: 点击偏移位置"""
 
         # 4个参数：鼠标点击时间，按钮类型（左键右键中键），图片名称，重复次数
-        def image_match_click(location, spend_time):
+        def image_match_click(location, spend_time, new_click_position):
             if location is not None:
                 if not self.is_test:
                     # 参数：位置X，位置Y，点击次数，时间间隔，持续时间，按键
@@ -255,8 +284,8 @@ class ImageClick:
                         f"已找到匹配图片，耗时{spend_time}毫秒。", self.is_test
                     )
                     pyautogui.click(
-                        location.x + click_position[0],
-                        location.y + click_position[1],
+                        location.x + new_click_position[0],
+                        location.y + new_click_position[1],
                         clicks=click_times,
                         interval=self.interval,
                         duration=self.duration,
@@ -268,13 +297,29 @@ class ImageClick:
                     )
                     # 移动鼠标到图片位置
                     pyautogui.moveTo(
-                        location.x + click_position[0],
-                        location.y + click_position[1],
+                        location.x + new_click_position[0],
+                        location.y + new_click_position[1],
                         duration=0.2
                     )
 
+        def get_new_click_position(old_click_position):
+            """获取随机点击位置"""
+            if old_click_position == ('随机', '随机'):
+                pixmap = QPixmap(img)
+                pixmap_width = pixmap.width()
+                pixmap_height = pixmap.height()
+                # 随机生成点击位置
+                new_click_position = (
+                    random.randint(-pixmap_width // 2, pixmap_width // 2),
+                    random.randint(-pixmap_height // 2, pixmap_height // 2)
+                )
+                return new_click_position
+            else:
+                return old_click_position
+
         min_search_time = 1 if skip == "自动略过" else float(skip)
         is_skip = True if skip == "自动略过" else False
+        new_click_position_ = get_new_click_position(click_position)
         try:
             # 显示信息
             self.out_mes.out_mes(f"正在查找匹配图像...", self.is_test)
@@ -290,7 +335,7 @@ class ImageClick:
             )
             if location_:  # 如果找到图像
                 spend_time_ = int((time.time() - start_time) * 1000)  # 计算耗时
-                image_match_click(location_, spend_time_)
+                image_match_click(location_, spend_time_, new_click_position_)
             elif not location_:  # 如果未找到图像
                 self.out_mes.out_mes("未找到匹配图像", self.is_test)
                 raise FileNotFoundError
@@ -1161,7 +1206,7 @@ class EleControl:
             "元素类型": parameter_dic_.get("元素类型"),
             "元素值": image_path,
             "操作类型": parameter_dic_.get("操作"),
-            "文本内容": parameter_dic_.get("文本"),
+            "文本内容": sub_variable(parameter_dic_.get("文本")),
             "超时类型": parameter_dic_.get("超时类型"),
         }
         return list_dic
@@ -1254,19 +1299,21 @@ class MouseDrag:
         parameter_dic_ = eval(self.ins_dic.get("参数1（键鼠指令）"))
         start_position = tuple(map(int, parameter_dic_.get("开始位置").split(",")))
         stop_position = tuple(map(int, parameter_dic_.get("结束位置").split(",")))
+        duration_ = float(parameter_dic_.get("移动速度"))
         start_random = eval(parameter_dic_.get("开始随机"))
         stop_random = eval(parameter_dic_.get("结束随机"))
-        return start_position, stop_position, start_random, stop_random
+        return start_position, stop_position, start_random, stop_random, duration_
 
-    def mouse_drag(self, start_position, end_position):
+    def mouse_drag(self, start_position, end_position, duration_=300):
         """鼠标拖拽事件"""
-        pyautogui.moveTo(start_position[0], start_position[1], duration=0.3)
-        pyautogui.dragTo(end_position[0], end_position[1], duration=0.3)
+        pyautogui.moveTo(start_position[0], start_position[1], duration=duration_//1000)
+        pyautogui.dragTo(end_position[0], end_position[1], duration=duration_//1000)
         self.out_mes.out_mes(
             "鼠标拖拽%s到%s" % (str(start_position), str(end_position)), self.is_test
         )
 
-    def random_position(self, position, random_range=100):
+    @staticmethod
+    def random_position(position, random_range=100):
         """设置随机坐标"""
         if random_range == 0:
             return position
@@ -1277,7 +1324,7 @@ class MouseDrag:
 
     def start_execute(self):
         """执行重复次数"""
-        start_position, end_position, start_random, stop_random = self.parsing_ins_dic()
+        start_position, end_position, start_random, stop_random, duration_ = self.parsing_ins_dic()
         # 设置随机坐标
         if start_random:
             start_position = self.random_position(start_position)
@@ -1286,7 +1333,7 @@ class MouseDrag:
         # 执行鼠标拖拽
         re_try = self.ins_dic.get("重复次数")
         for _ in range(re_try):
-            self.mouse_drag(start_position, end_position)
+            self.mouse_drag(start_position, end_position, duration_)
             time.sleep(self.time_sleep)
 
 

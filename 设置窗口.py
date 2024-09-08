@@ -47,6 +47,7 @@ class Setting(QDialog, Ui_Setting):
         self.pushButton_8.clicked.connect(self.delete_branch)  # 删除分支
         self.pushButton_5.clicked.connect(lambda: self.move_branch('up'))  # 上移分支
         self.pushButton_6.clicked.connect(lambda: self.move_branch('down'))  # 下移分支
+        self.checkBox_5.toggled.connect(self.high_dpi_adaptive)  # 高DPI自适应
         self.load_setting_data()  # 加载设置数据
 
     def unregister_global_shortcut_keys(self):
@@ -94,7 +95,8 @@ class Setting(QDialog, Ui_Setting):
             启动检查更新=str(True if self.checkBox.isChecked() else False),
             退出提醒清空指令=str(True if self.checkBox_2.isChecked() else False),
             系统提示音=str(True if self.checkBox_3.isChecked() else False),
-            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False)
+            任务完成后显示主窗口=str(True if self.checkBox_4.isChecked() else False),
+            高DPI自适应=str(True if self.checkBox_5.isChecked() else False)
         )
         update_settings_in_ini(
             '三方接口',
@@ -136,6 +138,7 @@ class Setting(QDialog, Ui_Setting):
 
     def load_setting_data(self):
         """加载设置数据库中的数据"""
+        self.checkBox_5.disconnect()  # 断开信号槽连接，避免触发高DPI自适应
         # 加载设置数据
         setting_data_dic = get_setting_data_from_ini(
             'Config',
@@ -146,7 +149,8 @@ class Setting(QDialog, Ui_Setting):
             '启动检查更新',
             '退出提醒清空指令',
             '系统提示音',
-            '任务完成后显示主窗口'
+            '任务完成后显示主窗口',
+            '高DPI自适应'
         )
 
         # 设置模式
@@ -172,6 +176,7 @@ class Setting(QDialog, Ui_Setting):
         self.checkBox_2.setChecked(eval(setting_data_dic['退出提醒清空指令']))
         self.checkBox_3.setChecked(eval(setting_data_dic['系统提示音']))
         self.checkBox_4.setChecked(eval(setting_data_dic['任务完成后显示主窗口']))
+        self.checkBox_5.setChecked(eval(setting_data_dic['高DPI自适应']))
 
         # 填入OCR API信息
         self.lineEdit.setText(app_data_dic.get('appId', ''))
@@ -189,6 +194,7 @@ class Setting(QDialog, Ui_Setting):
 
         # 加载分支管理
         self.load_branch_info()
+        self.checkBox_5.toggled.connect(self.high_dpi_adaptive)  # 重新连接信号槽
 
     def change_mode(self, mode: str):
         """切换模式
@@ -303,9 +309,13 @@ class Setting(QDialog, Ui_Setting):
         """打开网页"""
         QDesktopServices.openUrl(QUrl(url))
 
+    def high_dpi_adaptive(self):
+        """高DPI自适应"""
+        QMessageBox.information(self, '提醒', '该功能重启后才能生效！')
+
     def closeEvent(self, event):
         # 窗口大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
         if self.main_window_open:  # 如果是主窗口打开
             # 注册全局快捷键
             self.parent().register_global_shortcut_keys()

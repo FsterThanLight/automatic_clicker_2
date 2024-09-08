@@ -511,7 +511,6 @@
               <property name="font">
                <font>
                 <family>Microsoft YaHei</family>
-                <pointsize>-1</pointsize>
                 <weight>75</weight>
                 <bold>true</bold>
                </font>
@@ -522,8 +521,7 @@
     color: white;
     border-radius: 10px; /* 设置圆角半径 */
     font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
-    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
-    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */
 border: 2px solid transparent; /* 设置边框为透明 */
 }
 
@@ -1096,7 +1094,6 @@ QPushButton:pressed {
          <property name="font">
           <font>
            <family>Microsoft YaHei</family>
-           <pointsize>-1</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -1107,8 +1104,7 @@ QPushButton:pressed {
     color: white;
     border-radius: 10px; /* 设置圆角半径 */
     font-family: 'Microsoft YaHei'; /* 设置字体为微软雅黑 */
-    font-size: 16px; /* 设置字体大小，可以根据需要调整 */
-    padding: 5px 10px; /* 设置内边距，使按钮看起来更美观 */
+    padding: 3px 5px; /* 设置内边距，使按钮看起来更美观 */
 border: 2px solid transparent; /* 设置边框为透明 */
 }
 
