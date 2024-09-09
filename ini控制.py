@@ -480,24 +480,29 @@ def ini_to_excel(wb: Workbook):
         row += 1  # 在每个section后面加一个空行
 
 
-def excel_to_ini(wb: Workbook):
+def excel_to_ini(wb: Workbook, ini_path: str = 'config.ini'):
     try:
-        ws = wb['设置']
         # 创建configparser对象
         config = configparser.ConfigParser()
+        # 如果INI文件存在，则读取现有文件
+        if os.path.exists(ini_path):
+            config.read(ini_path, encoding='utf-8')
+        ws = wb['设置']
         current_section = None
+        # 读取Excel文件中的设置
         for row in ws.iter_rows(values_only=True):
             if row[0] is None:
                 continue
             if row[0].startswith('[') and row[0].endswith(']'):
                 # 这是一个section
                 current_section = row[0][1:-1]
-                config.add_section(current_section)
+                if not config.has_section(current_section):
+                    config.add_section(current_section)
             elif current_section and row[0] and row[1]:
                 # 这是一个键值对
                 config.set(current_section, str(row[0]), str(row[1]))
-        # 将内容写入ini文件
-        with open('config.ini', 'w', encoding='utf-8') as configfile:
+        # 将内容写入INI文件
+        with open(ini_path, 'w', encoding='utf-8') as configfile:
             config.write(configfile)
     except Exception as e:
         print(f"设置写入失败: {e}")
