@@ -91,8 +91,8 @@ collections.Iterable = collections.abc.Iterable
 
 # activate clicker
 
-# pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin
-# pyinstaller -D -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin
+# pyinstaller -D -w -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin -y
+# pyinstaller -D -i clicker.ico Clicker.py --hidden-import=pyttsx4.drivers --uac-admin -y
 
 # 添加指令的步骤：
 # 1. 在导航页的页面中添加指令的控件
@@ -1327,7 +1327,7 @@ class Param(QDialog, Ui_Param):
 
     def closeEvent(self, event):
         # 保存窗体大小
-        save_window_size((self.width(), self.height()), self.windowTitle())
+        save_window_size(self.width(), self.height(), self.windowTitle())
 
     def modify_parameters(self):
         self.parent().modify_parameters()
